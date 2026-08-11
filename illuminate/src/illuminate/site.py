@@ -331,15 +331,20 @@ function Plot(canvas, xlo, xhi, ylo, yhi, pad) {
       ctx.setLineDash([]);
     },
     axes(xlabel, ylabel, stepX, stepY) {
+      // Tick labels are formatted from the step size, not rounded to whole
+      // numbers: an axis stepping by 0.2 was previously printing 0 0 0 1 1 1.
+      const label = (v, step) => step < 1
+        ? v.toFixed(Math.max(0, -Math.floor(Math.log10(step))))
+        : String(Math.round(v));
       ctx.strokeStyle = P.ink; ctx.lineWidth = 1.2;
       ctx.beginPath(); ctx.moveTo(pad.l, pad.t); ctx.lineTo(pad.l, cssH - pad.b);
       ctx.lineTo(cssW - pad.r, cssH - pad.b); ctx.stroke();
       ctx.fillStyle = P.muted; ctx.font = font(11); ctx.textAlign = "center";
       if (stepX) for (let x = xlo; x <= xhi + 1e-9; x += stepX)
-        ctx.fillText(String(Math.round(x)), X(x), cssH - pad.b + 17);
+        ctx.fillText(label(x, stepX), X(x), cssH - pad.b + 17);
       ctx.textAlign = "right";
       if (stepY) for (let y = ylo; y <= yhi + 1e-9; y += stepY)
-        ctx.fillText(String(Math.round(y)), pad.l - 9, Y(y) + 4);
+        ctx.fillText(label(y, stepY), pad.l - 9, Y(y) + 4);
       ctx.fillStyle = P.ink2; ctx.font = font(12); ctx.textAlign = "center";
       if (xlabel) ctx.fillText(xlabel, (pad.l + cssW - pad.r) / 2, cssH - 8);
       if (ylabel) { ctx.save(); ctx.translate(14, (pad.t + cssH - pad.b) / 2);
