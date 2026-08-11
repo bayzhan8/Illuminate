@@ -10,27 +10,14 @@ build the sketch first and name it afterwards.
 
 ## Guides
 
+Numbered in the order they build on each other. The first five are one
+chain and are best read in sequence; queues stands on its own and can be
+read at any point.
+
 **[lp-duality](lp-duality/)** · [read](https://bayzhan8.github.io/Illuminate/lp-duality/) · [play](https://bayzhan8.github.io/Illuminate/lp-duality/sandbox/)
 Every planning problem has a second problem hiding inside it, about prices, and
 solving either one solves both. Where shadow prices come from, and why they
 expire.
-
-**[branch-and-price](branch-and-price/)** · [read](https://bayzhan8.github.io/Illuminate/branch-and-price/) · [play](https://bayzhan8.github.io/Illuminate/branch-and-price/sandbox/)
-A cutting-stock model with four trillion variables that fits on a napkin.
-Column generation asks the prices which variable is missing rather than
-searching for it; branch-and-price puts that loop inside a search tree.
-
-**[queues](queues/)** · [read](https://bayzhan8.github.io/Illuminate/queues/) · [play](https://bayzhan8.github.io/Illuminate/queues/sandbox/)
-A clerk who serves a customer in six minutes will hand someone a wait of an
-hour without ever slowing down. Little's law as one region measured twice, why
-variability rather than utilisation does the damage, and a 95% confidence
-interval that covers 9%.
-
-**[lp-on-gpu](lp-on-gpu/)** · [read](https://bayzhan8.github.io/Illuminate/lp-on-gpu/) · [play](https://bayzhan8.github.io/Illuminate/lp-on-gpu/sandbox/)
-Two runs on the same problem, same step sizes, differing by one term in one
-line: one lands on the answer, the other swings between $0 and $753 forever.
-Why linear programming had to change algorithms when machines started getting
-wider instead of faster.
 
 **[corners-vs-centre](corners-vs-centre/)** · [read](https://bayzhan8.github.io/Illuminate/corners-vs-centre/) · [play](https://bayzhan8.github.io/Illuminate/corners-vs-centre/sandbox/)
 A shape built in 1972 to embarrass the simplex method, which it does: ten
@@ -38,8 +25,30 @@ dimensions, 1024 corners, and the method stops at every one. Nobody has met one
 in practice in seventy years. Why the bad case is real, why it never happens,
 and why the method built to dodge it never lands on a corner at all.
 
-Queued: branch and bound and branch and cut · Benders decomposition · what
-solvers actually do (and why presolve is where the gap opens).
+**[lp-on-gpu](lp-on-gpu/)** · [read](https://bayzhan8.github.io/Illuminate/lp-on-gpu/) · [play](https://bayzhan8.github.io/Illuminate/lp-on-gpu/sandbox/)
+Two runs on the same problem, same step sizes, differing by one term in one
+line: one lands on the answer, the other swings between $0 and $753 forever.
+Why linear programming had to change algorithms when machines started getting
+wider instead of faster.
+
+**[branch-and-price](branch-and-price/)** · [read](https://bayzhan8.github.io/Illuminate/branch-and-price/) · [play](https://bayzhan8.github.io/Illuminate/branch-and-price/sandbox/)
+A cutting-stock model with four trillion variables that fits on a napkin.
+Column generation asks the prices which variable is missing rather than
+searching for it; branch-and-price puts that loop inside a search tree.
+
+**[solvers](solvers/)** · [read](https://bayzhan8.github.io/Illuminate/solvers/) · [play](https://bayzhan8.github.io/Illuminate/solvers/sandbox/)
+Hand a solver a twenty-row model and it deletes thirteen of the rows before any
+algorithm runs, and settles one of the decisions by arithmetic. What presolve
+is, why it is where the gap opens, and which solvers you can actually deploy
+without a licence server ruining your week.
+
+**[queues](queues/)** · [read](https://bayzhan8.github.io/Illuminate/queues/) · [play](https://bayzhan8.github.io/Illuminate/queues/sandbox/)
+A clerk who serves a customer in six minutes will hand someone a wait of an
+hour without ever slowing down. Little's law as one region measured twice, why
+variability rather than utilisation does the damage, and a 95% confidence
+interval that covers 9%.
+
+Queued: branch and bound and branch and cut · Benders decomposition.
 
 ## Repository map
 

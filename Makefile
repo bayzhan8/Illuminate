@@ -1,4 +1,4 @@
-TOPICS  := lp-duality branch-and-price queues lp-on-gpu corners-vs-centre
+TOPICS  := lp-duality corners-vs-centre lp-on-gpu branch-and-price solvers queues
 VENV    := $(CURDIR)/.venv
 PIP     := $(VENV)/bin/pip
 
