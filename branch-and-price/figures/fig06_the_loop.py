@@ -9,13 +9,15 @@ OUT_LOOP = chapter_dir("07-the-loop")
 OUT_TOUCH = chapter_dir("07-the-loop")
 
 
-def loop_gif(fps=1.1):
+def loop_gif(seconds_per_round=1.9):
     """One frame per round: what the master says, and what the prices ask for.
 
-    Slow on purpose. Each frame is a full turn of the loop and carries four
-    numbers the reader has to actually read, so it is paced to be read rather
-    than watched.
+    Paced to be read, not watched. Each frame is a full turn of the loop and
+    carries four quantities -- how many patterns are held, what the master
+    needs, the three prices, and what the knapsack came back with. Under about
+    a second and a half nobody finishes the third line before it changes.
     """
+    fps = 1.0 / seconds_per_round
     inst = m.BOARDS
     rounds = m.ROUNDS
     frames = len(rounds)
@@ -52,7 +54,7 @@ def loop_gif(fps=1.1):
             note.set_color(OK)
         return []
 
-    animate(fig, update, frames, OUT_LOOP / "loop.gif", fps=fps, hold=4.0)
+    animate(fig, update, frames, OUT_LOOP / "loop.gif", fps=fps, hold=3.2)
 
 
 def touched_png():

@@ -25,15 +25,19 @@
 <main class="prose">
 <h1>Two problems, one number</h1>
 <p><strong>Linear programming duality, built from a workshop with three shelves.</strong></p>
-<p>There is a small trick at the centre of operations research that almost nobody
-outside the field has heard of, and it is this: <em>every planning problem comes
-with a second problem attached to it, about prices, and solving either one
-solves both.</em></p>
-<p>That reads like an accounting curiosity. It is why a solver can report what a
-resource is worth to you rather than only what to do with it, why large
-problems can be split up and stitched back together, and what column generation
-and Benders decomposition are made of. The whole thing is built here from a
-workshop with three shelves and two products, without an equation.</p>
+<p>Here is a claim that sounds like an accounting curiosity and is not.</p>
+<p><em>Every planning problem has a second problem hiding inside it, about prices.
+Solving either one solves both.</em></p>
+<p>That fact is why a solver can tell you what a bottleneck is costing you rather
+than only what to do about it. It is why big problems can be cut into pieces
+and stitched back together. And it is what column generation and Benders
+decomposition are made of.</p>
+<p>This guide builds the whole thing from a workshop with three shelves and two
+products, and never writes an equation.</p>
+<p><strong>The plan.</strong> Chapters 1 and 2 set up the problem and show why it cannot be
+solved by trying things. Chapter 3 invents the second problem, and chapters 4
+and 5 are the two halves of the theorem. Chapters 6 to 8 are what practitioners
+actually use it for. Chapter 9 fences off what it does not say.</p>
 <p>The numbers below are produced by the code in this folder and asserted by its
 tests. Exact rationals throughout, so &quot;equal&quot; means equal.</p>
 <h2 id="ch0"><span class="num">0</span>What this is</h2>
@@ -41,17 +45,18 @@ tests. Exact rationals throughout, so &quot;equal&quot; means equal.</p>
 profit line climbing until it rests on a corner. On the right the buyer's
 possible prices, with a cost line falling until it rests on a corner. Both stop
 at three hundred and fifty dollars." loading="lazy"></figure>
-<p>Two different questions, asked by two different people, about the same
-workshop.</p>
-<p>The owner asks: <em>what should I build?</em> They push their profit as high as it
-will go.</p>
-<p>The buyer asks: <em>what would I have to pay to buy the place out?</em> They push
-their bill as low as it will go.</p>
-<p>The two pictures have different axes and are not the same shape. One climbs,
-the other falls, and neither is allowed to look at the other. They stop at the
-same number. Not close to it; on it.</p>
-<p>The rest of this guide is about why that happens, what the second picture is
-telling you that the first cannot, and where it stops being true.</p>
+<p>Watch the two panels. They are not the same picture.</p>
+<p>The left one is a workshop owner asking <em>what should I build?</em> They push their
+profit as high as it will go.</p>
+<p>The right one is a buyer asking <em>what would I have to pay to buy this place
+out?</em> They push their bill as low as it will go.</p>
+<p>Different axes. Different shapes. One climbing, one falling. Neither is allowed
+to look at the other.</p>
+<p>They stop at the same number. Not close to it. On it.</p>
+<blockquote class="takeaway">
+<p><strong>In one sentence.</strong> Two unrelated-looking questions about the same workshop
+have the same answer, and the rest of this guide is about why.</p>
+</blockquote>
 <h2 id="ch1"><span class="num">1</span>The workshop</h2>
 <p>A workshop builds tables and chairs.</p>
 <div class="overflow-x"><table>
@@ -89,144 +94,185 @@ telling you that the first cannot, and where it stops being true.</p>
 </tbody>
 </table></div>
 <p>That is the whole problem. Three things there is a limited amount of, two
-things to make out of them, and a question: what is the most money that can
-come out of this building?</p>
+things to make out of them, one question: what is the most money that can come
+out of this building?</p>
+<p>Every possible plan is a point on a picture.</p>
 <figure class="plate"><img src="chapters/01-the-workshop/region.png" alt="The set of plans the workshop could actually carry out, drawn as a shaded
 region with straight edges and sharp corners, with the three limits drawn as
 straight lines." loading="lazy"></figure>
-<p>Every point in the shaded region is a plan the workshop could really carry out.
-The edges are straight because building twice as much uses twice as much. That
-is the only assumption in the guide, and it is what gives the picture flat
-sides and corners rather than curves.</p>
-<p>To find the best plan, take the set of plans worth some particular amount (a
-straight line) and push it outwards.</p>
+<p>Build 5 tables and 2 chairs and you have used 24 planks, 16 hours and 17 of saw
+time. All three fit, so that plan sits somewhere inside the shaded region.
+Build 11 tables and you have consumed every plank with nothing left for chairs;
+that is the far corner on the right.</p>
+<p>The edges are straight because building twice as much uses twice as much. That
+proportionality is the only assumption in this guide, and it is what gives the
+picture flat sides and sharp corners rather than curves.</p>
+<p>Now find the best plan. Take all the plans worth some particular amount — that
+is a straight line — and push it outwards.</p>
 <figure class="plate"><img src="chapters/01-the-workshop/sweep.gif" alt="A line of equal profit sweeping across the region until it is about to leave,
 resting finally on a single corner." loading="lazy"></figure>
-<p>The last plan the line still touches is the best one: 9 tables and 4 chairs,
-worth $350. It is a corner. That is not luck, and it is why every method in this
+<p>The last plan the line still touches is the best one: <strong>9 tables and 4 chairs,
+worth $350.</strong></p>
+<p>It stops on a corner. That is not luck, and it is why every method in this
 repository spends its time on corners.</p>
 <p><strong><a href="https://bayzhan8.github.io/Illuminate/lp-duality/sandbox/01.html">Try it yourself →</a></strong>
 Change what a table and a chair sell for, and watch the best corner jump from
 one to the next.</p>
+<blockquote class="takeaway">
+<p><strong>In one sentence.</strong> The plans form a region with flat sides, and the best one
+is always at a corner.</p>
+</blockquote>
 <h2 id="ch2"><span class="num">2</span>A good plan cannot prove itself best</h2>
 <p>You have a plan worth $350. How do you know there is nothing better?</p>
-<p>The region is a continuum. 7 tables and 4½ chairs sits in it, and so does
-everything between that and its neighbours. Enumeration is not slow here; it is
-not defined.</p>
-<p>You could try a great many of them anyway and watch the best one you have
-found.</p>
+<p>The obvious move is to try more plans. So try a lot of them.</p>
 <figure class="plate"><img src="chapters/02-no-way-to-check/guessing.png" alt="A curve showing the best profit found so far against the number of plans
 tried. It rises quickly, then flattens, and stays flat." loading="lazy"></figure>
-<p>The curve flattens. <strong>A flat curve looks the same whether you have found the
-best plan or have merely stopped getting lucky</strong>, and nothing in the search
-distinguishes those, because a plan can only ever say <em>at least this much is
-possible</em>.</p>
+<p>The curve flattens, and that is exactly the problem.</p>
+<p><strong>A flat curve looks the same whether you have found the best plan or have
+merely stopped getting lucky.</strong> Nothing in the search distinguishes those two.</p>
+<p>Nor can you finish the job by being more thorough. The region is a continuum. 7
+tables and 4½ chairs sits in it, and so does everything between that and its
+neighbours. Enumeration is not slow here; it is not defined.</p>
+<p>The deeper issue is what a plan is able to say. A plan you can actually build
+is a statement of the form <em>at least this much is possible</em>. Stack up as many
+as you like and you still only have a floor.</p>
 <p>What is needed is a statement of the opposite kind, saying <em>no more than this
-is possible</em>. No plan will ever say that. It has to come from elsewhere.</p>
+is possible</em>, and no plan will ever be one.</p>
+<blockquote class="takeaway">
+<p><strong>In one sentence.</strong> Plans give you floors, never ceilings, so no amount of
+searching can certify that you are finished.</p>
+</blockquote>
 <h2 id="ch3"><span class="num">3</span>Charging for the ingredients</h2>
-<p>It comes from the other side of the ledger.</p>
-<p>Forget building anything. Put a price on each of the three things in stock: so
-much per plank, so much per hour of work, so much per hour of saw time. Any
-prices you like, as long as none of them is negative.</p>
-<p>Now those prices imply a price for a table, because a table is 4 planks, 2
-hours and 3 hours of saw time. They imply a price for a chair too. And if the
-prices you chose happen to have this property:</p>
+<p>The ceiling comes from the other side of the ledger.</p>
+<p>Stop building things. Instead put a price on each of the three things in stock:
+so much per plank, so much per hour of work, so much per hour of saw time. Any
+prices you like, as long as none is negative.</p>
+<p>Those prices imply a price for a table, because a table <em>is</em> 4 planks, 2 hours
+and 3 of saw time. Try $7 a plank, $3 an hour, nothing for the saw. Then a
+table's ingredients are worth 4×7 + 2×3 = $34, and a chair's are worth
+2×7 + 3×3 = $23.</p>
+<p>Now notice something. A table sells for $30 and its ingredients are priced at
+$34. A chair sells for $20 and its ingredients are priced at $23. Both products
+are worth more as ingredients than as furniture.</p>
+<p>Suppose that holds for every product. Then whatever the workshop builds, it
+consumes ingredients worth at least what the finished goods sell for. So the
+total value of everything on the shelves is at least the most the workshop
+could possibly earn.</p>
+<p>That is a ceiling, and it came from prices rather than from plans.</p>
+<p>The condition it needs is the one we just checked:</p>
 <blockquote class="aside">
 <p><strong>every product is priced at least as high as it sells for</strong></p>
 </blockquote>
-<p>then something strong follows. Whatever the workshop builds, the ingredients it
-consumes are worth at least what the finished goods sell for. So the total
-value of everything in the building is at least the most the workshop could
-ever earn. That is a ceiling.</p>
+<p>Both halves of that matter, and the animation exists to make the failure
+concrete.</p>
 <figure class="plate"><img src="chapters/03-mixing-the-rules/mixing.gif" alt="Two panels. On the left, bars showing what the current prices charge for one
 table and one chair, each against a line showing what that product earns. On
 the right, the ceiling those prices prove, falling as the prices
 change." loading="lazy"></figure>
 <p>Watch the left panel first. Raising the plank price alone covers tables long
-before it covers chairs, and while <em>either</em> bar is short the prices prove
-nothing whatever. Not a weak ceiling. No ceiling. A price list satisfying one
-condition is worth as much as no price list.</p>
-<p>Then watch what happens once both are covered: there is room to trade a lower
-plank price for a higher hourly rate, stay legal the whole way, and the ceiling
-comes down.</p>
+before it covers chairs. While either bar is short, the prices prove nothing
+whatever. Not a weak ceiling. No ceiling. A price list satisfying one condition
+is worth as much as no price list.</p>
+<p>Then watch what happens once both are covered. There is room to trade a lower
+plank price for a higher hourly rate, stay legal the whole way, and bring the
+ceiling down.</p>
 <p><strong><a href="https://bayzhan8.github.io/Illuminate/lp-duality/sandbox/03.html">Try it yourself →</a></strong>
 Set the three prices by hand and find out how low you can push the ceiling
 before one of the products slips under its price.</p>
+<blockquote class="takeaway">
+<p><strong>In one sentence.</strong> A price list that covers every product proves an upper
+limit on what the workshop can earn, without reference to any plan.</p>
+</blockquote>
 <h2 id="ch4"><span class="num">4</span>Every honest price list is a ceiling</h2>
-<p>The claim in the last chapter deserves to be seen rather than asserted, because
-it is the load-bearing step and it is two ideas rather than one.</p>
+<p>That claim is the load-bearing step, so it deserves to be seen rather than
+asserted. It is also two ideas rather than one, and separating them is what
+makes it obvious.</p>
 <p>Take any plan; it does not have to be a good one. Take any price list that
 covers both products. Line up three numbers.</p>
 <figure class="plate"><img src="chapters/04-every-mix-is-a-ceiling/chain.png" alt="Three bars. What the plan earns, three hundred and forty dollars. What those
 prices charge for the ingredients the plan uses, three hundred and eighty six.
 What those prices charge for everything in the building, three hundred and
 ninety eight." loading="lazy"></figure>
-<p>The plan shown builds 10 tables and 2 chairs, earning $340. The prices
-shown are $7 a plank, $3 an hour and nothing for saw time. Then:</p>
+<p>The plan builds 10 tables and 2 chairs, earning <strong>$340</strong>. The prices are $7 a
+plank, $3 an hour, nothing for saw time. Then:</p>
 <ul>
-<li>$340 ≤ $386, because every product is priced at least what it earns, so
+<li><strong>$340 ≤ $386</strong>, because every product is priced at least what it earns, so
 the ingredients a plan eats are worth at least what the plan makes.</li>
-<li>$386 ≤ $398, because a plan cannot use more of anything than there is.</li>
+<li><strong>$386 ≤ $398</strong>, because a plan cannot use more of anything than there is.</li>
 </ul>
-<p>So $340 ≤ $398. Notice what the argument never used: that this was a <em>good</em>
-plan, or that these were <em>cheap</em> prices. It holds for every plan and every
-covering price list simultaneously. <strong>Every honest price list is a ceiling over
-every possible plan.</strong></p>
-<p>That is the whole payoff. Find a plan worth $350 and a price list charging
-$350, and no plan can beat $350 while you are holding one that reaches it. You
-are finished, you know you are finished, and you never examined a second plan.</p>
+<p>So $340 ≤ $398.</p>
+<p>Now notice what the argument never used: that this was a <em>good</em> plan, or that
+these were <em>cheap</em> prices. It holds for every plan and every covering price
+list simultaneously.</p>
+<p>That is the payoff. Find a plan worth $350 and a price list charging $350, and
+no plan can beat $350 while you are holding one that reaches it. You are
+finished, you know you are finished, and you never examined a second plan.</p>
+<p><em>(The standard name for this is <strong>weak duality</strong>. You can forget the name; the
+two bullets above are the whole content.)</em></p>
+<blockquote class="takeaway">
+<p><strong>In one sentence.</strong> Any honest price list is a ceiling over every possible
+plan at once, which is why a matching plan and price list end the search.</p>
+</blockquote>
 <h2 id="ch5"><span class="num">5</span>The gap closes, every time</h2>
 <p>So plans push up from below and price lists press down from above. The question
-is whether they meet, or whether they stop with a gap between them that nothing
-can close.</p>
+is whether they meet, or stop with a gap that nothing can close.</p>
 <figure class="plate"><img src="chapters/05-the-gap-closes/meet.gif" alt="Real plans appearing along a dollar scale from the left, and real price lists
 appearing from the right, with the band of remaining possibilities shrinking
 until it is a single point at three hundred and fifty
 dollars." loading="lazy"></figure>
 <p>They meet. The best plan earns $350, the cheapest honest price list charges
 $350, and the space between them has nothing left in it.</p>
-<p>It would be fair to suspect this workshop of being rigged. So here are 320 more,
-invented at random, with different numbers of products, different numbers of
-shelves and different recipes. Each was solved twice from scratch: once for its
-best plan, and once, as a separate problem, for its cheapest prices.</p>
+<p>It would be fair to suspect this workshop of being rigged. So here are 320
+more, invented at random, with different numbers of products, different numbers
+of shelves and different recipes. Each was solved twice from scratch: once for
+its best plan, and once, as a separate problem, for its cheapest prices.</p>
 <figure class="plate"><img src="chapters/05-the-gap-closes/always.png" alt="A scatter plot of the best plan's profit against the cheapest price list's
 bill for three hundred and twenty random workshops. Every point lies on the
 diagonal." loading="lazy"></figure>
 <p>Every point is on the diagonal. Both sides are computed in exact fractions, so
 the largest disagreement across all 320 is zero. Not small. Zero.</p>
-<p>This is the theorem the subject rests on, and it is called <strong>strong duality</strong>.
-Be clear about what the picture above is. It is not a proof. It is 320 pieces
-of evidence, and a warning that any explanation had better account for all of
-them. The proof exists; chapter 9 shows its shape by looking at what happens
-when the theorem's conditions fail.</p>
-<p>Two problems, then. The one about plans is called the <strong>primal</strong>; the one about
-prices is called the <strong>dual</strong>. Each is built from the other by turning it inside out. Rows become variables,
-variables become rows, the objective and the stock levels trade places, and the
-inequalities reverse. Do it twice and you are back where you started, which is
-the sense in which neither one is the original.</p>
+<p>Be clear about what that picture is, though. It is not a proof. It is 320
+pieces of evidence, and a warning that any explanation had better account for
+all of them. The proof exists, and chapter 9 shows its shape by looking at what
+happens when the conditions fail.</p>
+<p>This is the theorem the subject rests on, and it is called <strong>strong duality</strong>.</p>
+<p>Two problems, then. The one about plans is the <strong>primal</strong>; the one about prices
+is the <strong>dual</strong>. Each is built from the other by turning it inside out. Rows
+become variables, variables become rows, the objective and the stock levels
+trade places, and the inequalities reverse. Do it twice and you are back where
+you started, which is the sense in which neither one is the original.</p>
+<blockquote class="takeaway">
+<p><strong>In one sentence.</strong> The best plan and the cheapest honest price list always
+agree exactly, which is what makes the second problem worth solving.</p>
+</blockquote>
 <h2 id="ch6"><span class="num">6</span>Which rules are actually holding you back</h2>
 <p>Now the dual starts paying for itself.</p>
-<p>The best plan is 9 tables and 4 chairs. It uses all 44 planks and all 30 hours,
-and 31 of the 32 hours of saw time. One hour of saw time sits there unused.</p>
+<p>The best plan is 9 tables and 4 chairs. Look at what it consumes: all 44
+planks, all 30 hours, and 31 of the 32 hours of saw time. One hour of saw time
+sits there unused.</p>
 <p>Now look at the prices: $6.25 a plank, $2.50 an hour, and nothing at all for
 saw time.</p>
 <figure class="plate"><img src="chapters/06-who-is-binding/binding.png" alt="The feasible region with the two limits the best plan is pressed against drawn
 solid and priced, and the limit it is clear of drawn dashed and priced at
 zero." loading="lazy"></figure>
-<p>Spare saw time, zero saw price. Planks fully consumed, planks priced. <strong>A
-resource with something left over is worth nothing; a resource that is all used
-up is worth something.</strong> If saw time is not what is stopping you, nobody would
-pay you for another hour of it.</p>
+<p>Spare saw time, zero saw price. Planks fully consumed, planks priced.</p>
+<p><strong>A resource with something left over is worth nothing; a resource that is all
+used up is worth something.</strong> Which, once said, is obvious. If saw time is not
+what is stopping you, nobody would pay you for another hour of it.</p>
 <p>The same rule runs the other way, for products rather than resources. A product
 that gets built is priced at what it earns and no more. A product priced
 <em>above</em> what it earns is one you are better off not building, and in the best
 plan its quantity is zero.</p>
-<p>This pairing has a name, <strong>complementary slackness</strong>, and in practice it is the
-first thing anyone looks at, because it answers the question people actually
-care about: not &quot;what should I do&quot; but &quot;what is in my way&quot;.</p>
+<p>This pairing is called <strong>complementary slackness</strong>. In practice it is the first
+thing anyone looks at, because it answers the question people actually have:
+not &quot;what should I do&quot; but &quot;what is in my way&quot;.</p>
 <p><strong><a href="https://bayzhan8.github.io/Illuminate/lp-duality/sandbox/06.html">Try it yourself →</a></strong>
 Change the stock levels and watch which rules become binding, and which prices
 switch on and off in response.</p>
+<blockquote class="takeaway">
+<p><strong>In one sentence.</strong> The prices identify the bottleneck by being zero on
+exactly the constraints that have slack.</p>
+</blockquote>
 <h2 id="ch7"><span class="num">7</span>What one more plank is worth</h2>
 <p>The prices are more than a ranking. They are exact rates.</p>
 <p>The plank price is $6.25, meaning one more plank in stock is worth $6.25 of
@@ -234,14 +280,20 @@ extra profit. To the penny, and you can watch it happen.</p>
 <figure class="plate"><img src="chapters/07-what-one-more-is-worth/shadow.gif" alt="The plank limit sliding outward, the region growing, and the best corner
 sliding along with it while the profit climbs at a steady rate, until the rate
 suddenly stops." loading="lazy"></figure>
-<p>Add a plank, the plank line moves out, the best corner slides along the hours
-line, and the profit goes up by $6.25. Again, and again.</p>
-<p>This is what a dual variable <em>is</em>, and why the name <strong>shadow price</strong> stuck.
-Planks might cost $3 at the yard. Here the forty-fifth one is worth $6.25,
-because of what else this workshop happens to be short of. That is the number
-you want when deciding what to buy, what to negotiate for, and what a
-bottleneck is costing.</p>
+<p>Add a plank. The plank line moves out, the best corner slides along the hours
+line, and the profit goes up by $6.25. Add another. Same again.</p>
+<p>This is what a dual variable <em>is</em>, and why the name <strong>shadow price</strong> stuck.</p>
+<p>It is worth being careful about what kind of number that is. Planks might cost
+$3 at the yard. Here the forty-fifth one is worth $6.25, because of what else
+this workshop happens to be short of. It is not a market price. It is a price
+<em>to this workshop, given everything else it has</em>, and that is the number you
+want when deciding what to buy, what to negotiate for, and what a bottleneck is
+costing.</p>
 <p>Watch the end of that animation, though. The rate stops.</p>
+<blockquote class="takeaway">
+<p><strong>In one sentence.</strong> A dual variable is the exact rate at which the answer
+improves per extra unit of that resource.</p>
+</blockquote>
 <h2 id="ch8"><span class="num">8</span>The price is only local</h2>
 <p>Keep adding planks and eventually the saw becomes the problem instead. From
 that point on, extra planks pile up unused and are worth nothing.</p>
@@ -276,15 +328,20 @@ the piece you happen to be standing on</em>:</p>
 </tr>
 </tbody>
 </table></div>
-<p>The workshop has 44 planks. It is 1 ⅐ planks away from its price collapsing
-to nothing. A shadow price without the range it holds over is close to useless,
-and quoting one without the other is the most common way this idea gets misused
-in practice.</p>
+<p>The workshop has 44 planks. It is 1 ⅐ planks away from its price collapsing to
+nothing.</p>
+<p>That is a narrow shelf to be standing on, and it is the most common way this
+idea gets misused. A shadow price quoted without the range over which it holds
+is close to useless.</p>
 <p>The pieces get flatter, never steeper. Easy uses go first, so more of a
 resource is never worth more per unit than the last lot was, and the curve can
 only bend one way.</p>
 <p><strong><a href="https://bayzhan8.github.io/Illuminate/lp-duality/sandbox/08.html">Try it yourself →</a></strong>
 Slide the stock of any of the three resources and watch its own price step down.</p>
+<blockquote class="takeaway">
+<p><strong>In one sentence.</strong> A shadow price is a local slope with an expiry date, so
+it always has to be quoted with the range over which it holds.</p>
+</blockquote>
 <h2 id="ch9"><span class="num">9</span>When it goes wrong</h2>
 <p>Two things can go wrong, and the dual has something to say about both.</p>
 <figure class="plate"><img src="chapters/09-when-it-goes-wrong/edges.png" alt="Two panels. On the left, a region with no upper limit and profit lines
@@ -296,28 +353,33 @@ forever, there is no best plan. A ceiling would have to be a number bigger than
 every plan, and no such number exists, so there are no honest prices either.
 The two failures come as a pair: <em>the plan side runs away precisely when the
 price side has nothing to offer.</em></p>
-<p><strong>A plan that cannot exist.</strong> Suppose an order arrives for 12 tables. Forty-four
-planks make eleven tables, so the order cannot be met. The impossibility has a
-<em>short proof</em>, and the proof is arithmetic rather than an exhausted search:</p>
+<p><strong>A plan that cannot exist.</strong> Suppose an order arrives for 12 tables.
+Forty-four planks make eleven tables, so the order cannot be met. The
+impossibility has a <em>short proof</em>, and the proof is arithmetic rather than an
+exhausted search:</p>
 <blockquote class="aside">
 <p>Take a quarter of the plank rule, and all of the order.
 Add them together, and they say: half of the chairs, at most −1.
 A count of chairs cannot be negative. So there is no such plan.</p>
 </blockquote>
 <p>Four lines, checkable by anyone, and it settles the question forever. This is
-the same idea as a price list, wearing different clothes: a weighted mixture of
+the same idea as a price list wearing different clothes: a weighted mixture of
 the rules that adds up to something plainly absurd. It is called a <strong>Farkas
 certificate</strong>, and the fact that one always exists when a system is impossible
-is the fact that strong duality is built on.</p>
+is the fact strong duality is built on.</p>
 <p>One more case, so it does not surprise you. At a bend in the curve from chapter
-8 the price is not unique. Standing exactly
-at 45 ⅐ planks, one more plank is worth nothing and one fewer costs $6.25, and
-both numbers are legitimate prices. A solver will hand you one of them without
-mentioning the other. This is called <strong>degeneracy</strong>, and it is why a
-sensitivity report should always be read as a range and never as a point.</p>
+8 the price is not unique. Standing exactly at 45 ⅐ planks, one more plank is
+worth nothing and one fewer costs $6.25, and both numbers are legitimate
+prices. A solver will hand you one of them without mentioning the other. This
+is called <strong>degeneracy</strong>, and it is why a sensitivity report should be read as
+a range and never as a point.</p>
+<blockquote class="takeaway">
+<p><strong>In one sentence.</strong> Unbounded on one side means infeasible on the other, and
+impossibility always has a short arithmetic proof.</p>
+</blockquote>
 <h2 id="ch10"><span class="num">10</span>Where this leads</h2>
-<p>Everything above is one small problem solved by hand. The reason duality is
-worth this much attention is what gets built on it.</p>
+<p>Everything above is one small problem solved by hand. What makes duality worth
+this much attention is what gets built on it.</p>
 <ul>
 <li><strong>The simplex method</strong> decides which product to bring into a plan by asking
 whether its dual row is violated. The &quot;reduced cost&quot; in any solver's log is
@@ -327,16 +389,16 @@ products to write down, solve with a few, read the prices off the dual, and
 use those prices to <em>ask</em> whether some product you have not written down yet
 would be worth adding. The prices are the entire interface between the two
 halves.</li>
-<li><strong>Dantzig–Wolfe decomposition</strong> is what you get when that idea is applied to a
-problem with repeated structure, and <strong>branch and price</strong> is what you get when
-the pieces have to come out whole.</li>
+<li><strong>Dantzig–Wolfe decomposition</strong> is that idea applied to a problem with
+repeated structure, and <strong>branch and price</strong> is what you get when the pieces
+have to come out whole.</li>
 <li><strong>Benders decomposition</strong> cuts the other way: fix the hard decisions, solve
 what is left, and take the <em>dual</em> of that leftover problem as a new rule to
 send back. Every Benders cut is a price list from chapter 3, doing the job it
 did there: proving a proposal cannot be as good as it claims.</li>
 </ul>
-<p>Those are the next topics in this repository. They are all this chapter's idea,
-under load.</p>
+<p>The next guide, <a href="../branch-and-price/">solving a model you never wrote down</a>,
+is the second of those under load.</p>
 <h2>What the plain words are really called</h2>
 <p>Every invented phrase in this guide has a standard name. They are here so that
 anything you read next is legible.</p>
@@ -407,16 +469,15 @@ anything you read next is legible.</p>
 </tbody>
 </table></div>
 <h2>Running the code</h2>
-<pre><code class="language-bash">make venv     # once
-make test     # re-check every number this page quotes
-make figures  # re-render every image
+<pre><code class="language-bash">make bootstrap    # once, from the repository root
+cd lp-duality &amp;&amp; make verify
 </code></pre>
-<p>The solver in <code>src/lpduality/</code> uses exact fractions throughout and Bland's
-pivoting rule, which is slower than the usual choice and cannot cycle. It is
-about 250 lines and is meant to be read. The tests check three separate things:
-that the mathematics is right, that the numbers written on this page still match
-what the code produces, and that the interactive pages compute the same values
-as the Python does.</p>
+<p>The solver uses exact fractions throughout and Bland's pivoting rule, which is
+slower than the usual choice and cannot cycle. It is about 250 lines and is
+meant to be read. The tests check three separate things: that the mathematics
+is right, that the numbers written on this page still match what the code
+produces, and that the interactive pages compute the same values the Python
+does.</p>
 
 </main>
 <footer class="foot">

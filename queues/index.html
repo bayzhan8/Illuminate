@@ -33,6 +33,10 @@ it looks like it cannot be worth stating, and so general it applies to
 warehouses, hospitals and software teams that contain no queue at all. The
 second is that the thing which actually generates waiting is not how busy you
 are. It is how <em>irregular</em> you are, and those are different dials.</p>
+<p><strong>The plan.</strong> Chapter 2 proves the identity, with a picture and no
+probability. Chapter 3 lists what it does not need, which is nearly everything.
+Chapters 4 to 6 are where the waiting actually comes from and what to do about
+it. Chapter 7 is about why measuring your own queue is harder than it looks.</p>
 <p>The numbers below come from the code in this folder, in exact rationals,
 asserted by its tests.</p>
 <h2 id="ch0"><span class="num">0</span>What this is</h2>
@@ -45,6 +49,10 @@ often people arrive.</p>
 busy, it is very nearly ten hours.</p>
 <p>The clerk has not slowed down at any point. What ran out was idleness, and
 idleness turns out to be the thing that was absorbing all the irregularity.</p>
+<blockquote class="takeaway">
+<p><strong>In one sentence.</strong> The wait is not set by how fast the clerk works; it is
+set by how little slack is left.</p>
+</blockquote>
 <h2 id="ch1"><span class="num">1</span>The desk</h2>
 <p>One clerk, serving on average ten customers an hour, so <strong>six minutes</strong> a
 customer. People arrive at random.</p>
@@ -75,13 +83,19 @@ customer. People arrive at random.</p>
 </tr>
 </tbody>
 </table></div>
-<p>These are averages of different things. <code>L</code> averages over <em>time</em>: take a
-photograph at random moments and count heads. <code>W</code> averages over <em>people</em>: ask
-each one how long they were there. Nobody computing <code>L</code> ever asks anyone a
-question, and nobody computing <code>W</code> ever looks at a clock on the wall.</p>
-<p>One more quantity worth naming now, because it turns out to be the same idea:
-<strong>utilisation</strong>, the fraction of the time the clerk is busy. At ten customers
-an hour arriving and six minutes each, the clerk is busy 90% of the time.</p>
+<p>These are averages of different things, and that is the point.</p>
+<p><code>L</code> averages over <em>time</em>. Take a photograph at random moments and count heads.</p>
+<p><code>W</code> averages over <em>people</em>. Ask each one how long they were there.</p>
+<p>Nobody computing <code>L</code> ever asks anyone a question, and nobody computing <code>W</code> ever
+looks at a clock on the wall. They are not two views of one measurement; they
+are two measurements.</p>
+<p>One more quantity, because it turns out to be the same idea: <strong>utilisation</strong>,
+the fraction of the time the clerk is busy. At ten customers an hour arriving
+and six minutes each, the clerk is busy 90% of the time.</p>
+<blockquote class="takeaway">
+<p><strong>In one sentence.</strong> <code>L</code> is counted off the clock and <code>W</code> off the customers,
+and nothing so far connects them.</p>
+</blockquote>
 <h2 id="ch2"><span class="num">2</span>Draw a box</h2>
 <p>Here is the whole theorem, and it contains no probability.</p>
 <p>Draw two staircases. One steps up whenever somebody arrives. The other steps
@@ -123,6 +137,10 @@ the fraction of time the clerk is busy. So:</p>
 </blockquote>
 <p>Utilisation is not a separate concept. It is Little's law applied to the
 smallest interesting box in the building.</p>
+<blockquote class="takeaway">
+<p><strong>In one sentence.</strong> One region measured two ways gives <code>L = λW</code>, and the
+proof is the picture.</p>
+</blockquote>
 <h2 id="ch3"><span class="num">3</span>What the law does not need</h2>
 <p>The proof used a picture of eight customers. It did not use a distribution, so
 the list of things Little's law does not require is unusually long, and worth
@@ -141,12 +159,17 @@ Only the long-run averages need to settle.</li>
 <li><strong>No single server, and no server at all.</strong> The box may contain a hundred
 clerks, or a warehouse, or an entire hospital.</li>
 </ul>
-<p>What it <em>does</em> need is small and mostly about bookkeeping. λ has to count
-entries to <em>the box you drew</em>. If people give up and leave the line, they are
-not arrivals to the part of the system you are measuring. <code>W</code> has to be
-measured across the same boundary as <code>L</code>; mixing &quot;time spent queueing&quot; with
-&quot;number of people in the building&quot; is the most common way to get a wrong answer
-from a correct theorem. And everyone who enters has to eventually leave.</p>
+<p>What it <em>does</em> need is small and mostly about bookkeeping.</p>
+<p>λ has to count entries to <em>the box you drew</em>. If people give up and leave the
+line, they are not arrivals to the part of the system you are measuring.</p>
+<p><code>W</code> has to be measured across the same boundary as <code>L</code>. Mixing &quot;time spent
+queueing&quot; with &quot;number of people in the building&quot; is the most common way to get
+a wrong answer out of a correct theorem.</p>
+<p>And everyone who enters has to eventually leave.</p>
+<blockquote class="takeaway">
+<p><strong>In one sentence.</strong> Little's law needs no probability at all, only that you
+draw one box and measure both quantities across the same edge.</p>
+</blockquote>
 <h2 id="ch4"><span class="num">4</span>The wait explodes long before the clerk is full</h2>
 <p>Little's law relates the averages. It does not say how big they are. For that
 you need to know something about the randomness, and with random arrivals and
@@ -212,6 +235,10 @@ percent of the clerk's time is carrying all of the queue.</p>
 <p>This is also why a dashboard that reports utilisation and calls 97% green is
 reporting the one number that cannot go bad. Utilisation is bounded above by
 one. The wait is bounded by nothing.</p>
+<blockquote class="takeaway">
+<p><strong>In one sentence.</strong> The wait is the service time divided by the <em>idle</em>
+fraction, so the last sliver of spare capacity carries the whole queue.</p>
+</blockquote>
 <h2 id="ch5"><span class="num">5</span>It is not the utilisation, it is the variability</h2>
 <p>Here is the part that changes what you would actually do.</p>
 <p>Take the desk at 90% busy, where people wait 54 minutes. Change nothing about
@@ -272,6 +299,13 @@ turn:</p>
 <p>Cutting variability in half does the same thing as a large capacity increase,
 and is frequently cheaper. &quot;Reduce variation&quot; sounds like a slogan. It is
 arithmetic.</p>
+<p><em>(The exact version of this is the <strong>Pollaczek–Khinchine</strong> formula, and the
+general approximation is <strong>Kingman's</strong>. You can forget both names; the three
+dials are the content.)</em></p>
+<blockquote class="takeaway">
+<p><strong>In one sentence.</strong> At fixed speed and fixed utilisation, how irregular the
+work is can change the wait by a factor of twenty-six.</p>
+</blockquote>
 <p><strong><a href="https://bayzhan8.github.io/Illuminate/queues/sandbox/05.html">Try it yourself →</a></strong>
 Move utilisation and variability independently and watch which one costs more.</p>
 <h2 id="ch6"><span class="num">6</span>Two clerks, arranged two ways</h2>
@@ -325,6 +359,11 @@ have a separate minor injuries stream and supermarkets have a basket-only till.<
 <p><strong><a href="https://bayzhan8.github.io/Illuminate/queues/sandbox/06.html">Try it yourself →</a></strong>
 Add clerks and watch the single line pull ahead, then make them busier and
 watch the gap close again.</p>
+<blockquote class="takeaway">
+<p><strong>In one sentence.</strong> One line for many clerks usually wins, by removing idle
+servers rather than by adding capacity, and it loses when the jobs are wildly
+different sizes.</p>
+</blockquote>
 <h2 id="ch7"><span class="num">7</span>Measuring it is harder than computing it</h2>
 <p>If you did not believe any of the above, the obvious move is to measure your
 own queue. This chapter is about why that is much harder than it looks.</p>
@@ -336,7 +375,7 @@ riding exactly on top of the other, both wandering between 44 and 60 minutes
 over three hundred thousand customers. Right, a nominal 95% confidence interval
 covering the true answer 9% of the time when it assumes independence, and 96%
 when it does not." loading="lazy"></figure>
-<p>Two things in that picture, and they point in opposite directions.</p>
+<p>Two things are in that picture, and they point in opposite directions.</p>
 <p><strong>Little's law is satisfied from almost the first customer.</strong> The two curves
 sit on top of each other the whole way. That is the identity of chapter 2
 doing its work: over a window that starts and ends with an empty room, the
@@ -355,16 +394,21 @@ hundred times.</p>
 <p>It contains the true answer <strong>9% of the time</strong>. It is about twenty times
 too narrow.</p>
 <p>The reason is that consecutive waits in a queue are not independent
-observations, and it is not close. One long wait makes the next one long, and
-at 90% busy roughly four hundred consecutive customers behave as a single
-observation. A million measurements are worth about two and a half thousand.
-The square root of four hundred is twenty, which is exactly the factor by which
+observations, and it is not close. One long wait makes the next one long.</p>
+<p>At 90% busy, roughly four hundred consecutive customers behave as a single
+observation. So a million measurements are worth about two and a half thousand.</p>
+<p>The square root of four hundred is twenty, which is exactly the factor by which
 the interval is wrong.</p>
 <p>Cutting the run into ten large blocks and treating the block averages as the
 observations restores it: <strong>96% coverage</strong>, with an honest interval more than twenty
 times wider than the confident, wrong one.</p>
 <p>The moral is not that simulation is useless. It is that near saturation, the
 formula is not the approximation. The measurement is.</p>
+<blockquote class="takeaway">
+<p><strong>In one sentence.</strong> Little's law being satisfied is not evidence that your
+measurement has converged, and the ordinary confidence interval is twenty
+times too narrow.</p>
+</blockquote>
 <h2 id="ch8"><span class="num">8</span>The same law somewhere else entirely</h2>
 <p>Little's law says nothing about queues. It says something about boxes with
 things going in and out. Rename the three letters:</p>
@@ -431,6 +475,11 @@ and markdown scale with <code>W</code>, and you just increased it by a third.</p
 <p>Neither of those needed a demand distribution, a lead-time model, or an
 independence assumption. That is why this particular result survives contact
 with reality when most inventory theory does not.</p>
+<blockquote class="takeaway">
+<p><strong>In one sentence.</strong> Anything with a boundary, an inflow and an outflow obeys
+the same identity, which is why a WIP limit and a days-of-supply figure are
+the same statement twice.</p>
+</blockquote>
 <h2>What the plain words are really called</h2>
 <div class="overflow-x"><table>
 <thead>

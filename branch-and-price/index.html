@@ -31,22 +31,29 @@ of solving it that never writes down more than a handful of them.</p>
 every option prove no plan beats your number. Run that backwards and it
 generates. An option the prices fail to cover is a missing variable, and you
 can solve for it directly instead of hunting for it.</p>
+<p><strong>The plan.</strong> Chapters 1 to 3 set up cutting stock and show that the obvious
+model is too weak while the good model is too big to write down. Chapters 5 to
+7 are the loop that solves it anyway. Chapter 8 puts the loop inside a search
+tree, and confesses to two bugs that cost this repository real answers.</p>
 <p>Numbers below come from the code in this folder, in exact rationals, asserted
 by its tests.</p>
 <h2 id="ch0"><span class="num">0</span>What this is</h2>
 <figure class="plate"><img src="chapters/00-what-this-is/hero.gif" alt="A scale marked in boards. A grey bar creeps up to five point four four, then a
 blue bar pushes past six to six and a half, and the answer lands on
 seven." loading="lazy"></figure>
-<p>An order has to be cut from standard boards, and the question is how many
-boards it takes.</p>
-<p>The obvious model, relaxed, proves you need at least <strong>5.44</strong> boards. So six
-might be enough; the model cannot say otherwise.</p>
-<p>A different model of the <em>same order</em>, relaxed the same way, proves you need at
-least <strong>6.5</strong>. Six is now impossible. And seven boards can be cut, so seven is
-the answer, proved.</p>
-<p>The second model has one variable for every way of cutting a board, which for a
-real order is a few trillion variables. This guide is about why that model is
+<p>An order has to be cut from standard boards. How many boards does it take?</p>
+<p>Model it the obvious way, relax it, and it proves you need at least <strong>5.44</strong>
+boards. So six might be enough. The model cannot say otherwise.</p>
+<p>Now model the <em>same order</em> differently, relax it the same way, and it proves
+you need at least <strong>6.5</strong>. Six is now impossible.</p>
+<p>Seven boards can be cut. So seven is the answer, proved.</p>
+<p>The second model has one variable for every way of cutting a board, which for
+a real order is a few trillion variables. This guide is about why that model is
 so much stronger, and how it gets solved without ever being written down.</p>
+<blockquote class="takeaway">
+<p><strong>In one sentence.</strong> Two models of the same order, both relaxed the same way,
+and only one of them can rule out six boards.</p>
+</blockquote>
 <h2 id="ch1"><span class="num">1</span>The order</h2>
 <p>A workshop buys boards <strong>25 feet</strong> long and needs shorter lengths cut from them.</p>
 <figure class="plate"><img src="chapters/01-the-order/order.png" alt="One 25-foot board drawn to scale, with the order listed beneath
@@ -87,6 +94,10 @@ leftover:</p>
 foot pieces, with the wasted end hatched." loading="lazy"></figure>
 <p>Six is a small enough number to print, which is exactly why this is the order
 to learn on. Chapter 4 is where that stops being true.</p>
+<blockquote class="takeaway">
+<p><strong>In one sentence.</strong> A pattern is one way of cutting one board, and the
+decision to be made is how many boards to cut with each.</p>
+</blockquote>
 <h2 id="ch2"><span class="num">2</span>The obvious model, and why it is too weak</h2>
 <p>The natural way to model this is to decide, for each board, what comes off it:
 take a pile of boards, mark some of them &quot;used&quot;, and assign pieces to them
@@ -102,8 +113,12 @@ quietly permits: the leftover at the end of one board carries over to the next.
 It is the answer you would get if boards were <em>liquid</em>. Round it up and six
 boards might do.</p>
 <p>Six boards will not do. The relaxation cannot see it, because the fact that
-makes it impossible (a 10-foot piece sits on one board, whole) is precisely
+makes it impossible — a 10-foot piece sits on one board, whole — is precisely
 what was relaxed away.</p>
+<blockquote class="takeaway">
+<p><strong>In one sentence.</strong> Relaxing the obvious model throws away the very thing
+that makes the problem hard, so its bound is far too low.</p>
+</blockquote>
 <h2 id="ch3"><span class="num">3</span>One variable per pattern</h2>
 <p>So model the decision differently. Instead of <em>which pieces go on which board</em>,
 decide <strong>how many boards to cut with each pattern.</strong></p>
@@ -147,6 +162,12 @@ patterns cannot un-decide it. What remains to relax does far less harm.</p>
 </table></div>
 <p>Here the second relaxation settles the question by itself, which is the reason
 to put up with everything that follows.</p>
+<p><em>(The standard name for this reformulation is <strong>Dantzig–Wolfe decomposition</strong>.
+Chapter 9 comes back to it; for now the idea is all you need.)</em></p>
+<blockquote class="takeaway">
+<p><strong>In one sentence.</strong> Deciding in whole patterns rather than in individual
+pieces absorbs the integrality, so relaxing what is left costs much less.</p>
+</blockquote>
 <h2 id="ch4"><span class="num">4</span>Too many to write down</h2>
 <p>The catch arrives immediately. The strong model needs one variable per pattern,
 and patterns multiply.</p>
@@ -160,12 +181,17 @@ down, you cannot store it, and you certainly cannot hand it to a solver.</p>
 <p>Almost all of those variables are worthless. A good answer uses a handful of
 patterns and leaves the rest at zero. The difficulty is not the count. It is
 that you cannot tell which handful matters until the thing is solved.</p>
+<blockquote class="takeaway">
+<p><strong>In one sentence.</strong> The strong model is unwritable, and almost all of it is
+irrelevant, but you cannot tell which part until you have solved it.</p>
+</blockquote>
 <h2 id="ch5"><span class="num">5</span>Start with a few, and let the prices ask for more</h2>
-<p>Start with a model that is obviously too small. Take a few patterns, say the
-lazy ones with each board cut into copies of a single length, and solve <em>that</em>.
-This is the <strong>restricted master</strong>: the real model, restricted to the columns
-someone has bothered to write down.</p>
-<p>For our order, starting with three lazy patterns, it says: 7 boards.</p>
+<p>Start with a model that is obviously too small.</p>
+<p>Take a few patterns — say the lazy ones, each board cut into copies of a single
+length — and solve <em>that</em>. This is the <strong>restricted master</strong>: the real model,
+restricted to the columns someone has bothered to write down.</p>
+<p>For our order, starting with three lazy patterns, it says: 7 boards. That is an
+answer to a smaller question than the one we asked.</p>
 <p>That is an honest upper bound, since those patterns really do fill the order.
 It is not the answer to the strong model, which has three more patterns nobody
 has written down. Whether any of them would help, answered without adding them,
@@ -195,9 +221,9 @@ would be worth. At the first round they come out as</p>
 </tr>
 </tbody>
 </table></div>
-<p>Now take <em>any</em> pattern, written down or not. Cutting a board with it costs one
-board. The pieces that come off it are worth, at these prices, some amount. So
-the pattern is worth adding exactly when</p>
+<p>Now take <em>any</em> pattern, written down or not.</p>
+<p>Cutting a board with it costs one board. The pieces that come off it are worth,
+at these prices, some amount. So the pattern is worth adding exactly when</p>
 <blockquote class="aside">
 <p>the pieces it yields are worth <strong>more than one board.</strong></p>
 </blockquote>
@@ -210,14 +236,18 @@ too, they are feasible for the full problem's dual, and the restricted answer
 is the full answer, proved without ever building the full model. A pattern that
 violates its dual constraint is a missing column. The two statements are one
 statement seen from opposite sides.</p>
+<blockquote class="takeaway">
+<p><strong>In one sentence.</strong> The prices from a small model can judge a pattern that
+model has never seen, which turns &quot;is anything missing&quot; into arithmetic.</p>
+</blockquote>
 <h2 id="ch6"><span class="num">6</span>Asking for a pattern is a knapsack</h2>
 <p>The question is whether some unwritten pattern yields more than one board's
 worth at these prices.</p>
-<p>Do not search the list. <em>Build</em> the answer. Fill one 25-foot board so as to
-maximise the total value of the pieces taken off it, at the current prices.
-That is a knapsack problem, small and standard, and its answer is the best
-pattern in existence at these prices, including every one nobody has written
-down.</p>
+<p>Do not search the list. <em>Build</em> the answer.</p>
+<p>Fill one 25-foot board so as to maximise the total value of the pieces taken
+off it, at the current prices. That is a knapsack problem: small, fast,
+entirely standard. And its answer is the best pattern in existence at these
+prices, including every one nobody has written down.</p>
 <p>At the prices above the knapsack returns <strong>four 4-foot pieces and one
 9-foot piece</strong>, worth 4×(1/6) + 1×(1/2) = <strong>7/6</strong>. More than one board, so
 that pattern is missing and it goes into the model.</p>
@@ -227,6 +257,10 @@ the knapsack's best is worth <strong>1 or less</strong>, nothing anywhere would 
 the restricted model is optimal for the full one.</p>
 <p><strong><a href="https://bayzhan8.github.io/Illuminate/branch-and-price/sandbox/06.html">Try it yourself →</a></strong>
 Set the three prices by hand and watch which pattern the knapsack builds.</p>
+<blockquote class="takeaway">
+<p><strong>In one sentence.</strong> Finding the missing column is a knapsack, and it returns
+the best pattern in existence or a proof that none would help.</p>
+</blockquote>
 <h2 id="ch7"><span class="num">7</span>The loop, and why it is allowed to stop</h2>
 <p>Put the two halves together and they take turns.</p>
 <blockquote class="aside">
@@ -258,6 +292,10 @@ mill instance the same sentence holds with four trillion in place of
 twenty-four.</p>
 <p><strong><a href="https://bayzhan8.github.io/Illuminate/branch-and-price/sandbox/07.html">Try it yourself →</a></strong>
 Step the loop one round at a time and watch the prices move.</p>
+<blockquote class="takeaway">
+<p><strong>In one sentence.</strong> Alternating between a small model and a knapsack solves
+a model nobody wrote down, and the last round is the one that proves it.</p>
+</blockquote>
 <h2 id="ch8"><span class="num">8</span>Branching, when the answer is 6.5 boards</h2>
 <p>Nobody cuts half a board. The relaxation says 6.5, and 6.5 is not a plan.</p>
 <p>For this order rounding up happens to be right, and for cutting stock it nearly
@@ -308,6 +346,11 @@ brute-force solver exposed them.</p>
 whether two pieces share a board and pushes the restriction down into the
 knapsack itself. This guide keeps the simpler rule for legibility and pays for
 it in tree size.</p>
+<blockquote class="takeaway">
+<p><strong>In one sentence.</strong> Branch-and-price is branch-and-bound whose relaxation is
+generated rather than written down, and the traps are all in the interaction
+between the two.</p>
+</blockquote>
 <h2 id="ch9"><span class="num">9</span>Where this leads</h2>
 <p>The shape of what just happened is more general than cutting boards.</p>
 <p><strong>Dantzig–Wolfe decomposition</strong> is the name for what chapter 3 did. A problem

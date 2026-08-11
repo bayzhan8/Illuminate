@@ -22,6 +22,9 @@ from lpduality import workshop as w
 ROOT = Path(__file__).resolve().parents[1]
 LESSON = ROOT / "lesson.md"
 TEXT = LESSON.read_text()
+# phrases are checked against a whitespace-flattened copy, so that
+# re-wrapping a paragraph never breaks a test about its content
+FLAT = " ".join(TEXT.split())
 IMAGE = re.compile(r"!\[([^\]]*)\]\(([^)]+)\)")
 
 sys.path.insert(0, str(ROOT))
@@ -53,36 +56,36 @@ def test_alt_text_is_a_real_description():
 def test_the_headline_numbers_are_the_computed_ones():
     assert w.money(w.BEST_PROFIT) == "$350"
     assert f"{w.PLAN[0]} tables and {w.PLAN[1]} chairs" == "9 tables and 4 chairs"
-    assert "9 tables and 4 chairs" in TEXT
-    assert "$350" in TEXT
+    assert "9 tables and 4 chairs" in FLAT
+    assert "$350" in FLAT
 
 
 def test_the_prices_in_the_prose_are_the_computed_ones():
     plank, hour, saw = (w.money(p) for p in w.PRICES)
     assert (plank, hour, saw) == ("$6.25", "$2.50", "$0")
-    assert "$6.25 a plank" in TEXT
-    assert "$2.50 an hour" in TEXT
+    assert "$6.25 a plank" in FLAT
+    assert "$2.50 an hour" in FLAT
 
 
 def test_the_stock_table_matches_the_program():
     for resource in w.RESOURCES:
-        assert resource in TEXT
+        assert resource in FLAT
     row = "| **in stock** | **44** | **30** | **32** | |"
-    assert row in TEXT
+    assert row in FLAT
     assert [int(v) for v in w.PRIMAL.b] == [44, 30, 32]
 
 
 def test_the_recipes_in_the_table_match_the_program():
     assert w.RECIPE["tables"] == (4, 2, 3)
     assert w.RECIPE["chairs"] == (2, 3, 1)
-    assert "| a table | 4 | 2 | 3 | $30 |" in TEXT
-    assert "| a chair | 2 | 3 | 1 | $20 |" in TEXT
+    assert "| a table | 4 | 2 | 3 | $30 |" in FLAT
+    assert "| a chair | 2 | 3 | 1 | $20 |" in FLAT
 
 
 def test_the_spare_saw_time_the_prose_claims_is_the_real_amount():
     spare = w.PRIMAL.slack(w.SAW, w.PLAN)
     assert spare == 1
-    assert "31 of the 32 hours of saw time" in TEXT
+    assert "31 of the 32 hours of saw time" in FLAT
 
 
 def test_the_weak_duality_worked_example_adds_up():
@@ -94,16 +97,16 @@ def test_the_weak_duality_worked_example_adds_up():
     assert (earns, used, whole) == (340, 386, 398)
     assert earns <= used <= whole
     for number in ("$340", "$386", "$398"):
-        assert number in TEXT
+        assert number in FLAT
 
 
 def test_the_price_range_in_the_prose_is_the_computed_one():
     from fractions import Fraction
     assert (w.WOOD_FROM, w.WOOD_TO) == (Fraction(20), Fraction(316, 7))
-    assert "20 to 45 ⅐" in TEXT
+    assert "20 to 45 ⅐" in FLAT
     headroom = w.WOOD_TO - w.PRIMAL.b[w.WOOD]
     assert headroom == Fraction(8, 7)
-    assert "1 ⅐ planks away" in TEXT
+    assert "1 ⅐ planks away" in FLAT
 
 
 def test_the_three_slopes_quoted_in_the_table_are_the_computed_ones():
@@ -116,9 +119,9 @@ def test_the_three_slopes_quoted_in_the_table_are_the_computed_ones():
 
 
 def test_the_impossible_order_is_the_size_the_prose_says():
-    assert "order arrives for 12 tables" in TEXT
+    assert "order arrives for 12 tables" in FLAT
     assert int(w.PRIMAL.b[w.WOOD] / w.RECIPE["tables"][0]) == 11
-    assert "make eleven tables" in TEXT
+    assert "make eleven tables" in FLAT
 
 
 def test_the_random_sample_size_matches_the_figure():
@@ -127,8 +130,8 @@ def test_the_random_sample_size_matches_the_figure():
     import fig05_they_always_meet as fig
     default = inspect.signature(fig.always_png).parameters["count"].default
     assert default == 320
-    assert f"{default} more" in TEXT
-    assert f"across all {default}" in TEXT
+    assert f"{default} more" in FLAT
+    assert f"across all {default}" in FLAT
 
 
 # --- structure -------------------------------------------------------------
@@ -168,4 +171,4 @@ def test_every_invented_phrase_has_its_real_name():
 
 def test_the_lesson_does_not_oversell_the_evidence():
     """Chapter 5 shows 320 examples of a theorem. It has to say so."""
-    assert "It is not a proof." in TEXT
+    assert "It is not a proof." in FLAT

@@ -172,6 +172,10 @@ def decorate(body: str) -> str:
     body = body.replace("<table>", '<div class="overflow-x"><table>')
     body = body.replace("</table>", "</table></div>")
     body = body.replace("<blockquote>", '<blockquote class="aside">')
+    # A chapter that ends on a one-line landing gets a band rather than the
+    # rust rule an aside carries, so the two read as different kinds of pause.
+    body = body.replace('<blockquote class="aside">\n<p><strong>In one sentence.</strong>',
+                        '<blockquote class="takeaway">\n<p><strong>In one sentence.</strong>')
     return body
 
 
