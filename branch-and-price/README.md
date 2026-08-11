@@ -1,6 +1,6 @@
 # Column generation and branch-and-price
 
-*Ask the prices what you are missing.*
+*Solving a model you never wrote down.*
 
 A model with four trillion variables that fits on a napkin, and a method that
 solves it without writing down more than a handful of them.
