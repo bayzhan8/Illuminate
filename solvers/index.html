@@ -389,6 +389,11 @@ Every one of them has a free size-limited or academic tier.</p>
 <td>NVIDIA's GPU engine for LP, MIP and routing</td>
 <td>Apache 2.0</td>
 </tr>
+<tr>
+<td><strong>Clarabel</strong>, <strong>SCS</strong>, <strong>OSQP</strong></td>
+<td>Conic and quadratic. What the convex problems of chapter 7 get sent to</td>
+<td>Apache 2.0 / MIT</td>
+</tr>
 </tbody>
 </table></div>
 <p>Two changes here matter more than any benchmark. SCIP moved from an academic
@@ -413,6 +418,34 @@ engines: Pyomo, PuLP and python-mip in Python, JuMP in Julia, and the commercial
 languages AMPL and GAMS. Switching solvers becomes a one-line change, which is
 the strongest practical argument for using one: it makes the solver decision
 reversible.</p>
+<p><strong>CVXPY</strong> is a layer too, and a different animal, because it is not aimed at
+linear and integer models at all. It is for <strong>convex</strong> optimisation, the larger
+family that linear programming sits inside. Write a portfolio problem with a
+risk term that squares, or a fitting problem with a penalty on the size of the
+answer, and none of that is linear, all of it is convex, and none of the
+solvers named so far will take it.</p>
+<p>What makes CVXPY worth singling out is that it will not let you write nonsense.
+It carries a rule system, <strong>disciplined convex programming</strong>, which checks that
+what you typed is <em>provably</em> convex by construction rather than hoping. A
+squared error is convex, so it passes. Multiply two variables together and it
+refuses, because that expression is not convex and no amount of solver effort
+would make the answer trustworthy. Most modelling layers accept whatever you
+type and let something downstream fail later, usually by returning a local
+answer with no warning that it is local. CVXPY stops at the door.</p>
+<p>That is the same instinct as the presolve loop in this guide raising rather
+than returning a half-reduced model, and it is the right instinct. A refusal
+you can read beats a number you cannot check.</p>
+<p>Underneath, CVXPY rewrites your problem into a standard <strong>conic</strong> form and
+hands it to a solver built for that, which is a different set of names again:
+<strong>Clarabel</strong>, <strong>SCS</strong> and <strong>OSQP</strong> among the open ones, MOSEK among the
+commercial. It has used Clarabel as its default since version 1.5, having
+replaced ECOS, which had been the default for years and had known trouble with
+numerical stability at the edges. It will also drive HiGHS when what you wrote
+turns out to be an ordinary linear program.</p>
+<p>The limit is the same as the strength. CVXPY wants convexity. If your problem
+genuinely is not convex, or its difficulty lives in whole-number decisions
+rather than in curvature, this is the wrong tool and a MIP solver is the right
+one.</p>
 <p><strong>Google OR-Tools</strong> is where this gets misread. OR-Tools is a toolkit, not a
 solver. Inside it are Google's own engines, <strong>GLOP</strong> for linear programming and
 <strong>PDLP</strong> for very large ones, alongside wrappers that let it drive SCIP, HiGHS
@@ -526,6 +559,10 @@ first, because that constraint is harder to change than the solver.</p>
 <td>try <strong>CP-SAT</strong> before anything LP-based</td>
 </tr>
 <tr>
+<td>it is convex but not linear: squares, norms, risk terms</td>
+<td><strong>CVXPY</strong>, which will pick Clarabel or SCS for you</td>
+</tr>
+<tr>
 <td>it is a hard MIP and the answer is worth money</td>
 <td>benchmark <strong>Gurobi</strong>, <strong>COPT</strong> and <strong>Xpress</strong> on your own instances</td>
 </tr>
@@ -623,6 +660,14 @@ solver behind a layer so that none of this has to be decided permanently.</p>
 <tr>
 <td>write once, send to any solver</td>
 <td>a <strong>modelling layer</strong> or algebraic modelling language</td>
+</tr>
+<tr>
+<td>the rule system that refuses non-convex input</td>
+<td><strong>disciplined convex programming</strong>, DCP</td>
+</tr>
+<tr>
+<td>the standard form CVXPY rewrites into</td>
+<td>a <strong>conic</strong> program</td>
 </tr>
 </tbody>
 </table></div>
