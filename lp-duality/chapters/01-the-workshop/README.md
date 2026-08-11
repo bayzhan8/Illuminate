@@ -50,7 +50,7 @@ one to the next.
 
 ---
 
-Chapter 1 of 10
+Chapter 1 of 11
 
 Previous: [What this is](../00-what-this-is/README.md)  
 Next: [A good plan cannot prove itself best](../02-no-way-to-check/README.md)  

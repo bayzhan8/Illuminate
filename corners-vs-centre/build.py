@@ -17,11 +17,15 @@ CHAPTERS = [
     Chapter(3, "03-it-should-have-been-slow", "It should have been slow"),
     Chapter(4, "04-the-cube", "Klee and Minty build a cube"),
     Chapter(5, "05-not-the-rule", "The rule, not the method"),
-    Chapter(6, "06-polynomial-and-slower", "Polynomial, and slower"),
-    Chapter(7, "07-through-the-middle", "Through the middle"),
-    Chapter(8, "08-what-the-barrier-does", "What the barrier actually does"),
-    Chapter(9, "09-a-gap-you-can-forecast", "A gap you can forecast"),
-    Chapter(10, "10-neither-one-won", "Neither one won"),
+    Chapter(6, "06-not-cycling-is-not-fast", "Not cycling is not the same as being fast"),
+    Chapter(7, "07-every-rule-has-a-cube", "Every rule has a cube"),
+    Chapter(8, "08-why-nobody-meets-one", "Why nobody ever meets one"),
+    Chapter(9, "09-polynomial-and-slower", "Polynomial, and slower"),
+    Chapter(10, "10-the-wall-that-pushes-back", "The wall that pushes back"),
+    Chapter(11, "11-the-central-path", "The central path"),
+    Chapter(12, "12-what-the-barrier-does", "What the barrier actually does"),
+    Chapter(13, "13-a-gap-you-can-forecast", "A gap you can forecast"),
+    Chapter(14, "14-neither-one-won", "Neither one won"),
 ]
 
 # The same two methods as src/twopaths, in JavaScript so the pages need nothing
@@ -273,7 +277,7 @@ draw();
         "exponent belongs to the rule."),
 
     Sandbox(
-        7, "Turn the repulsion down",
+        11, "Turn the repulsion down",
         "The barrier problem for the workshop, solved exactly at whatever mu "
         "you choose. The curve is where the answer goes as you sweep it.",
         "Start at the far left, where profit is irrelevant and the point sits "

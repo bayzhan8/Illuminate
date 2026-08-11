@@ -46,7 +46,7 @@ The first was answered in 1972. The second took until 2004.
 
 ---
 
-Chapter 3 of 10
+Chapter 3 of 14
 
 Previous: [Along the edge](../02-along-the-edge/README.md)  
 Next: [Klee and Minty build a cube](../04-the-cube/README.md)  

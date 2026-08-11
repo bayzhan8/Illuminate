@@ -46,7 +46,7 @@ do. The row can never bite. It is deleted.
 **A row can also just narrow a variable.** The balance row for A in period 2
 says `holdA1 + makeA2 = 40`. Both are at or above zero, so neither can exceed
 40. Nothing is fixed and nothing is deleted, but two columns are now boxed in,
-and that turns out to matter enormously in the next chapter.
+and that turns out to matter enormously two chapters from here.
 
 **Whole numbers round.** If a variable has to be an integer and its bounds are
 now 0.25 and 0.75, there is no value left and the model is infeasible. If its
@@ -62,7 +62,7 @@ ones that prove a variable can be moved to a bound without loss.)*
 
 ---
 
-Chapter 2 of 10
+Chapter 2 of 14
 
 Previous: [A solver is not an algorithm](../01-not-an-algorithm/README.md)  
 Next: [The cascade, and where the gap opens](../03-the-cascade/README.md)  

@@ -175,3 +175,13 @@ def test_each_chapter_ends_on_its_one_sentence_summary():
     _, chapters, _ = build.split_lesson(build.TOPIC)
     for index, body in enumerate(chapters):
         assert "> **In one sentence.**" in body, f"chapter {index} has no summary"
+
+def test_the_readme_chapter_table_matches_the_chapters():
+    """The topic README is hand-written, so nothing else catches it going stale
+    when a chapter is split. Every link must resolve and be in build order."""
+    readme = (ROOT / "README.md").read_text()
+    linked = re.findall(r"\]\(chapters/([^)/]+)/\)", readme)
+    assert linked == [c.folder for c in build.CHAPTERS], \
+        "run the chapter table in README.md past build.CHAPTERS again"
+    for folder in linked:
+        assert (ROOT / "chapters" / folder).is_dir(), folder

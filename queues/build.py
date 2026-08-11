@@ -18,11 +18,16 @@ CHAPTERS = [
     Chapter(1, "01-the-desk", "The desk"),
     Chapter(2, "02-draw-a-box", "Draw a box"),
     Chapter(3, "03-what-it-does-not-need", "What the law does not need"),
-    Chapter(4, "04-the-wait-explodes", "The wait explodes before the clerk is full"),
-    Chapter(5, "05-variance-not-utilisation", "It is not the utilisation"),
-    Chapter(6, "06-two-clerks", "Two clerks, arranged two ways"),
-    Chapter(7, "07-measuring-is-harder", "Measuring it is harder than computing it"),
-    Chapter(8, "08-the-same-law-elsewhere", "The same law somewhere else"),
+    Chapter(4, "04-the-multiplier", "Where the multiplier comes from"),
+    Chapter(5, "05-the-wait-explodes", "The wait explodes before the clerk is full"),
+    Chapter(6, "06-variance-not-utilisation", "It is not the utilisation"),
+    Chapter(7, "07-the-long-job", "Why you keep arriving during the long job"),
+    Chapter(8, "08-three-dials", "Three dials"),
+    Chapter(9, "09-two-clerks", "Two clerks, one line"),
+    Chapter(10, "10-when-pooling-loses", "When pooling is the wrong answer"),
+    Chapter(11, "11-measuring-is-harder", "Measuring it is harder than computing it"),
+    Chapter(12, "12-coverage", "The confidence interval is twenty times too narrow"),
+    Chapter(13, "13-the-same-law-elsewhere", "The same law somewhere else"),
 ]
 
 # The same formulas as src/queues, in JavaScript so the pages need no server.
@@ -65,7 +70,7 @@ function minutes(hours) { return hours * 60; }
 
 SANDBOXES = [
     Sandbox(
-        5, "Turn the three dials",
+        8, "Turn the three dials",
         "The wait, as utilisation and service variability move independently. "
         "The clerk's average speed never changes.",
         "Set the variability to zero and push utilisation up to 95%. Then put "
@@ -112,7 +117,7 @@ draw();
         "sold with variance, not with capacity."),
 
     Sandbox(
-        6, "One line or several",
+        9, "One line or several",
         "The same clerks and the same work, arranged as one shared queue or as "
         "one queue each.",
         "Drag the number of clerks up while keeping them equally busy. The "

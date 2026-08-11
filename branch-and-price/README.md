@@ -18,16 +18,18 @@ for it.
 
 | | | |
 |---|---|---|
-| 0 | [What this is](chapters/00-what-this-is/) | two relaxations, one order |
-| 1 | [The order](chapters/01-the-order/) | cutting stock, and what a pattern is |
-| 2 | [The obvious model](chapters/02-the-obvious-model/) | and why it is too weak |
-| 3 | [One variable per pattern](chapters/03-one-variable-per-pattern/) | integrality absorbed into the variables |
-| 4 | [Too many to write down](chapters/04-too-many-to-write-down/) | four trillion of them |
-| 5 | [Let the prices ask](chapters/05-let-the-prices-ask/) | the restricted master, and reduced cost |
-| 6 | [Asking is a knapsack](chapters/06-a-knapsack/) | the pricing problem |
-| 7 | [The loop](chapters/07-the-loop/) | and why it is allowed to stop |
-| 8 | [Branching](chapters/08-branch-and-price/) | branch-and-price, and two traps |
-| 9 | [Where this leads](chapters/09-where-this-leads/) | Dantzig–Wolfe, Benders, pre-generated columns |
+| 0 | [What this is](chapters/00-what-this-is/) | 5.44, 6.5, and the answer 7 |
+| 1 | [The order](chapters/01-the-order/) | boards, pieces, and what a pattern is |
+| 2 | [The obvious model, and why it is too weak](chapters/02-the-obvious-model/) | the obvious model, relaxed into uselessness |
+| 3 | [One variable per pattern](chapters/03-one-variable-per-pattern/) | one variable per pattern, and 6.5 |
+| 4 | [Too many to write down](chapters/04-too-many-to-write-down/) | four trillion columns |
+| 5 | [Start with a few](chapters/05-start-with-a-few/) | start with three patterns and 7 boards |
+| 6 | [What the prices are telling you](chapters/06-what-the-prices-say/) | the prices judge a pattern nobody wrote |
+| 7 | [The same test, from the other side](chapters/07-the-same-from-the-dual/) | the same test, read from the dual side |
+| 8 | [Asking for a pattern is a knapsack](chapters/08-a-knapsack/) | the missing column is a knapsack |
+| 9 | [The loop, and why it is allowed to stop](chapters/09-the-loop/) | the loop, and why it may stop |
+| 10 | [Branching, when the answer is 6.5 boards](chapters/10-branch-and-price/) | the loop inside a tree, and two real bugs |
+| 11 | [Where this leads](chapters/11-where-this-leads/) | Dantzig-Wolfe, Benders, and a warning |
 
 ## The claim
 
@@ -43,7 +45,7 @@ slow honest way still finishes.
 
 That check earned its keep. The first version of the search disagreed with
 brute force on **476 of 1230** instances, for two reasons that are now written
-up in chapter 8 because neither of them announces itself.
+up in chapter 10 because neither of them announces itself.
 
 ```bash
 cd .. && make venv

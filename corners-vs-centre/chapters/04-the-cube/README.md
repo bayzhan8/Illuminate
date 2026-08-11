@@ -2,9 +2,10 @@
 
 ## 4 · Klee and Minty build a cube
 
-![A three-dimensional cube drawn in perspective, slightly squashed so that its
-faces are no longer square, with a path threading through every one of its
-eight corners in turn before reaching the far one.](cube.png)
+![A logarithmic chart of pivots taken against the dimension of the cube. A
+dashed grey line counts the corners the cube has. A red line for the greedy rule
+runs just below it, one pivot short at every size. A blue line climbs more
+gently and a green line stays flat at one.](cube.png)
 
 Victor Klee and George Minty presented their answer at a 1969 symposium; it
 appeared in print in 1972, under the title *How good is the simplex algorithm?*
@@ -27,12 +28,19 @@ actually get somewhere, at every corner, all the way around the cube. The rule
 is not being stupid; it is being exactly as greedy as it was designed to be,
 against a shape built to punish greed.
 
+You can check the claim off the chart rather than taking it on trust, and the
+easiest place is the left-hand end. At dimension 3 the cube has 2³ = 8 corners,
+which is where the dashed line sits. The red line sits at 7. Standing on 8
+corners takes 7 hops between them, so a walk one pivot short of the corner count
+is a walk that missed nothing. Read across at any dimension you like and the
+gap stays exactly one: at dimension 10, 1024 and 1023.
+
 > **In one sentence.** The worst case is real, it is exponential, and it is not
 > a pathological or degenerate input.
 
 ---
 
-Chapter 4 of 10
+Chapter 4 of 14
 
 Previous: [It should have been slow](../03-it-should-have-been-slow/README.md)  
 Next: [The rule, not the method](../05-not-the-rule/README.md)  

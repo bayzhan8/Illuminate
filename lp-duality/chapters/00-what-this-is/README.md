@@ -25,7 +25,7 @@ They stop at the same number. Not close to it. On it.
 
 ---
 
-Chapter 0 of 10
+Chapter 0 of 11
 
 Next: [The workshop](../01-the-workshop/README.md)  
 Contents: [lp-duality](../../README.md)

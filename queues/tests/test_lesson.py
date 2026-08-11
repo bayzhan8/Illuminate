@@ -179,7 +179,7 @@ def test_the_kanban_and_inventory_arithmetic_in_the_prose():
 
 def test_the_lesson_splits_into_the_chapters_build_expects():
     front, chapters, _ = build.split_lesson(build.TOPIC)
-    assert len(chapters) == len(build.CHAPTERS) == 9
+    assert len(chapters) == len(build.CHAPTERS) == 14
     assert front.startswith(build.TOPIC.heading)
 
 
@@ -320,3 +320,13 @@ def test_chapter_seven_quotes_the_run_length_the_figure_actually_uses():
     # and the deflation the prose does with it: 200,000 / 400 correlated waits
     assert run_length // 400 == 500
     assert "worth about five hundred" in FLAT
+
+def test_the_readme_chapter_table_matches_the_chapters():
+    """The topic README is hand-written, so nothing else catches it going stale
+    when a chapter is split. Every link must resolve and be in build order."""
+    readme = (ROOT / "README.md").read_text()
+    linked = re.findall(r"\]\(chapters/([^)/]+)/\)", readme)
+    assert linked == [c.folder for c in build.CHAPTERS], \
+        "run the chapter table in README.md past build.CHAPTERS again"
+    for folder in linked:
+        assert (ROOT / "chapters" / folder).is_dir(), folder

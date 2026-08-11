@@ -52,7 +52,7 @@ Watch the end of that animation, though. The rate stops.
 
 ---
 
-Chapter 7 of 10
+Chapter 7 of 11
 
 Previous: [Which rules are actually holding you back](../06-who-is-binding/README.md)  
 Next: [The price is only local](../08-the-price-breaks/README.md)  

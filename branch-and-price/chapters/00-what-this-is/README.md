@@ -25,7 +25,7 @@ so much stronger, and how it gets solved without ever being written down.
 
 ---
 
-Chapter 0 of 9
+Chapter 0 of 11
 
 Next: [The order](../01-the-order/README.md)  
 Contents: [branch-and-price](../../README.md)

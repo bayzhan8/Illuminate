@@ -30,11 +30,16 @@
     <li><a href="#ch1"><span class="toc-num">1</span><span class="toc-title">The desk</span></a></li>
     <li><a href="#ch2"><span class="toc-num">2</span><span class="toc-title">Draw a box</span></a></li>
     <li><a href="#ch3"><span class="toc-num">3</span><span class="toc-title">What the law does not need</span></a></li>
-    <li><a href="#ch4"><span class="toc-num">4</span><span class="toc-title">The wait explodes before the clerk is full</span></a></li>
-    <li><a href="#ch5"><span class="toc-num">5</span><span class="toc-title">It is not the utilisation</span></a></li>
-    <li><a href="#ch6"><span class="toc-num">6</span><span class="toc-title">Two clerks, arranged two ways</span></a></li>
-    <li><a href="#ch7"><span class="toc-num">7</span><span class="toc-title">Measuring it is harder than computing it</span></a></li>
-    <li><a href="#ch8"><span class="toc-num">8</span><span class="toc-title">The same law somewhere else</span></a></li>
+    <li><a href="#ch4"><span class="toc-num">4</span><span class="toc-title">Where the multiplier comes from</span></a></li>
+    <li><a href="#ch5"><span class="toc-num">5</span><span class="toc-title">The wait explodes before the clerk is full</span></a></li>
+    <li><a href="#ch6"><span class="toc-num">6</span><span class="toc-title">It is not the utilisation</span></a></li>
+    <li><a href="#ch7"><span class="toc-num">7</span><span class="toc-title">Why you keep arriving during the long job</span></a></li>
+    <li><a href="#ch8"><span class="toc-num">8</span><span class="toc-title">Three dials</span></a></li>
+    <li><a href="#ch9"><span class="toc-num">9</span><span class="toc-title">Two clerks, one line</span></a></li>
+    <li><a href="#ch10"><span class="toc-num">10</span><span class="toc-title">When pooling is the wrong answer</span></a></li>
+    <li><a href="#ch11"><span class="toc-num">11</span><span class="toc-title">Measuring it is harder than computing it</span></a></li>
+    <li><a href="#ch12"><span class="toc-num">12</span><span class="toc-title">The confidence interval is twenty times too narrow</span></a></li>
+    <li><a href="#ch13"><span class="toc-num">13</span><span class="toc-title">The same law somewhere else</span></a></li>
   </ol>
 </nav>
 <main class="prose">
@@ -51,9 +56,11 @@ and those are separate dials. Same clerk, same six minutes on average, same 90%
 busy: make every job take exactly six minutes and the wait is 27 minutes; let a
 few of them run long and it is 702.</p>
 <p><strong>The plan.</strong> Chapter 2 proves the identity, with a picture and no
-probability. Chapter 3 lists what it does not need, which is nearly everything.
-Chapters 4 to 6 are where the waiting actually comes from and what to do about
-it. Chapter 7 is about why measuring your own queue is harder than it looks.</p>
+probability. Chapter 3 lists what it does not need, which is nearly
+everything. Chapters 4 to 8 are where the waiting actually comes from, and
+they end by taking it apart into three things you can move separately.
+Chapters 9 and 10 are what to do about it. Chapters 11 and 12 are why
+measuring your own queue is harder than it looks.</p>
 <p>The numbers below come from the code in this folder, in exact rationals,
 asserted by its tests.</p>
 <h2 id="ch0"><span class="num">0</span>What this is</h2>
@@ -191,12 +198,12 @@ a wrong answer out of a correct theorem.</p>
 <p><strong>In one sentence.</strong> Little's law needs no probability at all, only that you
 draw one box and measure both quantities across the same edge.</p>
 </blockquote>
-<h2 id="ch4"><span class="num">4</span>The wait explodes long before the clerk is full</h2>
+<h2 id="ch4"><span class="num">4</span>Where the multiplier comes from</h2>
 <p>Little's law relates the averages. It does not say how big they are. For that
 you have to know something about the randomness, and here the guide stops
 proving things and starts quoting one:</p>
 <blockquote class="aside">
-<p><strong>wait = service time × 1/(fraction of time idle)</strong></p>
+<p><strong>time in the building = service time × 1/(fraction of time idle)</strong></p>
 </blockquote>
 <p>That line deserves a warning label. Chapter 2 needed no assumptions at all;
 this one needs three, and they are the ones chapter 3 spent a page celebrating the
@@ -229,7 +236,15 @@ damage.</p>
 stretch, not one customer's wait. But the 1/(idle fraction) sits in both, and
 it is there for the same reason, and for one clerk with random arrivals the two
 happen to land on the same sixty minutes.</p>
-<figure class="plate"><img src="chapters/04-the-wait-explodes/explode.png" alt="The average wait against utilisation: barely moving up to about 70%, then
+<blockquote class="takeaway">
+<p><strong>In one sentence.</strong> Each round of serving drags in a smaller round of
+arrivals, and the chain of rounds runs to the service time divided by the
+idle fraction.</p>
+</blockquote>
+<h2 id="ch5"><span class="num">5</span>The wait explodes long before the clerk is full</h2>
+<p>Now put numbers through it, because the shape of the answer is not what anybody
+expects.</p>
+<figure class="plate"><img src="chapters/05-the-wait-explodes/explode.png" alt="The average wait against utilisation: barely moving up to about 70%, then
 bending sharply and going vertical as the idle fraction approaches
 zero." loading="lazy"></figure>
 <p>Sixty minutes is the whole visit, service included. The table below reports the
@@ -292,13 +307,13 @@ an hour, an hour in the building each, so <code>L = λW</code> says nine people 
 standing there on average. They are.</p>
 <p>This is also why a dashboard that reports utilisation and calls 97% green is
 reporting the one number that cannot go bad. Utilisation is bounded above by
-one. The wait is bounded by nothing.</p>
+one, so it can never look alarming. The wait is bounded by nothing, and by the
+time utilisation looks impressive the wait has already left the building.</p>
 <blockquote class="takeaway">
-<p><strong>In one sentence.</strong> This one is quoted, not proved: time in the building is
-the service time divided by the <em>idle</em> fraction, so the last sliver of spare
-capacity carries the whole queue.</p>
+<p><strong>In one sentence.</strong> What runs out as you approach saturation is not capacity
+but slack, so a few percent more work near the top multiplies the wait.</p>
 </blockquote>
-<h2 id="ch5"><span class="num">5</span>It is not the utilisation, it is the variability</h2>
+<h2 id="ch6"><span class="num">6</span>It is not the utilisation, it is the variability</h2>
 <p>So far everything has said the wait comes from how busy the clerk is. That is
 half of it, and the smaller half.</p>
 <p>Take the desk at 90% busy, where people wait 54 minutes. Change nothing about
@@ -306,13 +321,13 @@ the speed: the clerk still averages six minutes a customer, still serves ten an
 hour, still busy exactly 90% of the time. Only make the six minutes <em>reliable</em>
 so that every customer takes exactly six minutes, no more and no less.</p>
 <p>The wait falls to <strong>27 minutes</strong>. Exactly half.</p>
-<figure class="plate"><img src="chapters/05-variance-not-utilisation/variance.png" alt="Left, the wait at 90% busy for five different levels of service variability,
+<figure class="plate"><img src="chapters/06-variance-not-utilisation/variance.png" alt="Left, the wait at 90% busy for five different levels of service variability,
 from 27 minutes when every job is identical to 702 minutes when a few are
 enormously longer. Right, two curves against utilisation, the constant-service
 one exactly half the variable one at every
 point." loading="lazy"></figure>
-<p>Not roughly half. Half at every utilisation, exactly. And the ladder continues
-in the other direction:</p>
+<p>Half at every utilisation, exactly, and not approximately. The ladder continues
+in the other direction too:</p>
 <div class="overflow-x"><table>
 <thead>
 <tr>
@@ -345,16 +360,27 @@ in the other direction:</p>
 </table></div>
 <p>Same clerk. Same average service time. Same 90% utilisation. A <strong>twenty-six
 fold</strong> spread in how long people wait.</p>
+<p>Nothing in chapter 4 predicts that. The formula there had a service time and an
+idle fraction in it, and both are being held fixed across every row of that
+table. Something else is setting the wait, and the next two chapters are about
+what.</p>
+<blockquote class="takeaway">
+<p><strong>In one sentence.</strong> Two desks can be identical in speed and identical in how
+busy they are, and still differ twenty-six fold in how long you queue.</p>
+</blockquote>
+<h2 id="ch7"><span class="num">7</span>Why you keep arriving during the long job</h2>
 <p>The reason is not obvious, and the smallest possible example makes it obvious.</p>
 <p>Give this clerk two kinds of job and nothing else. Nine customers out of every
 ten need two minutes. The tenth needs forty-two. Nothing about the desk has
 changed: (9 × 2 + 42) / 10 = 60 / 10 = 6, so the average job is still six
 minutes and the clerk is still 90% busy.</p>
-<p>Now walk in at a random moment and find the clerk mid-job. Which job is it?
-Those ten customers occupy the clerk for 9 × 2 = 18 minutes of short work and
-42 minutes of long work, 60 minutes in total. Forty-two of those sixty minutes
-are inside the long job. So seven times out of ten you have walked in on the
-forty-two-minute customer, even though only one customer in ten is one.</p>
+<p>Now walk in at a random moment and find the clerk mid-job. Which job is it?</p>
+<p>Here is the check worth doing in your head, because it is where the whole
+chapter lives. Those ten customers occupy the clerk for 9 × 2 = 18 minutes of
+short work and 42 minutes of long work, 60 minutes in total. Forty-two of those
+sixty minutes are inside the long job. So seven times out of ten you have walked
+in on the forty-two-minute customer, even though only one customer in ten is
+one.</p>
 <p>That is the inspection paradox, and it has nothing to do with queues. Sample a
 timeline by picking a moment rather than by picking an item, and long items get
 picked in proportion to how long they are. The clock is not counting customers.
@@ -368,56 +394,83 @@ customer list does:</p>
 middle of it, so what is left to run when you sit down is about fifteen
 minutes, against the three minutes you would have guessed by halving the
 average job and stopping there.</p>
-<p>Run that same weighting on the exponential clerk and the leftover comes to six
-minutes. On the perfectly regular clerk, where every job is six minutes and
-there is nothing for the clock to be biased toward, it is three. Three, six,
-fifteen. Now look back at the ladder: 27, 54, 135. Every wait in it is nine
-times the leftover, and the nine is the busy fraction over the idle fraction,
-0.9 / 0.1, which is the only place utilisation gets in. Three, six and fifteen
-minutes of leftover give 27, 54 and 135, and the two-minute-and-forty-two
-clerk is the fourth row exactly: 9 × 15 = 135. The two rows I skipped work the
-same way.</p>
-<p>Which gives three separate dials, and it is a genuine design choice which to
-turn:</p>
+<p>That leftover is the quantity the next chapter needs. Run the same weighting on
+the exponential clerk and it comes to six minutes. On the perfectly regular
+clerk, where every job is six minutes and there is nothing for the clock to be
+biased toward, it is three.</p>
+<p>Three, six, fifteen.</p>
+<blockquote class="takeaway">
+<p><strong>In one sentence.</strong> You do not meet the average job; you meet the job that
+was occupying the most minutes, which is why irregular work costs so much.</p>
+</blockquote>
+<h2 id="ch8"><span class="num">8</span>Three dials</h2>
+<p>Three, six and fifteen minutes of leftover. Now look back at the ladder in
+chapter 6: 27, 54 and 135 minutes of wait.</p>
+<p>Every wait in it is exactly nine times the leftover.</p>
+<p>The nine is the busy fraction over the idle fraction, 0.9 / 0.1, which is the
+only place utilisation gets in at all. Three, six and fifteen minutes of
+leftover give 27, 54 and 135, and the two-minutes-and-one-forty-two clerk from
+chapter 7 is the fourth row exactly: 9 × 15 = 135. The two rows skipped above
+work the same way.</p>
+<p>So the wait was never one quantity. It is three, multiplied:</p>
 <blockquote class="aside">
 <p><strong>wait = (utilisation dial) × (variability dial) × (how long the job takes)</strong></p>
 </blockquote>
-<p>The last two multiplied together are the leftover we just computed, and the
-first is the 0.9 / 0.1. Nothing else is in there.</p>
-<p>Cutting variability in half does the same thing as a large capacity increase,
-and is frequently cheaper. &quot;Reduce variation&quot; sounds like a slogan. It is
-arithmetic.</p>
+<p>The last two multiplied together are the leftover of chapter 7, and the first is
+the 0.9 / 0.1. Nothing else is in there.</p>
+<p>Which makes it a genuine design choice, and the dials do not cost the same to
+turn. Buying capacity moves the first one, and near saturation it moves it
+brutally slowly, because 0.9 / 0.1 is a ratio that fights back. Making the work
+more uniform moves the second one, in direct proportion, at any utilisation at
+all. Cutting variability in half does the same thing as a large capacity
+increase, and is frequently cheaper.</p>
+<p>&quot;Reduce variation&quot; sounds like a slogan. It is arithmetic.</p>
 <p><em>(The exact version of this is the <strong>Pollaczek–Khinchine</strong> formula, and the
 general approximation is <strong>Kingman's</strong>. You can forget both names; the three
 dials are the content.)</em></p>
-<blockquote class="takeaway">
-<p><strong>In one sentence.</strong> At fixed speed and fixed utilisation, how irregular the
-work is can change the wait by a factor of twenty-six.</p>
-</blockquote>
-<p><strong><a href="https://bayzhan8.github.io/Illuminate/queues/sandbox/05.html">Try it yourself →</a></strong>
+<p><strong><a href="https://bayzhan8.github.io/Illuminate/queues/sandbox/08.html">Try it yourself →</a></strong>
 Move utilisation and variability independently and watch which one costs more.</p>
-<h2 id="ch6"><span class="num">6</span>Two clerks, arranged two ways</h2>
+<blockquote class="takeaway">
+<p><strong>In one sentence.</strong> The wait is a product of three separate things, and the
+one everybody manages is the one that is hardest to move.</p>
+</blockquote>
+<h2 id="ch9"><span class="num">9</span>Two clerks, one line</h2>
 <p>Two clerks, the same total work. Either two separate lines, one per clerk, or a
 single line feeding whichever clerk frees up first. Identical staff, identical
 capacity, identical utilisation.</p>
-<figure class="plate"><img src="chapters/06-two-clerks/pooling.png" alt="Left, how many times shorter the single-line wait is, as a function of how
-busy the clerks are: over three times better when quiet, falling toward twice
-as good when busy. Right, a case where dedicating a desk to each job type beats
-pooling by a factor of 1.5." loading="lazy"></figure>
+<figure class="plate"><img src="chapters/09-two-clerks/pooling.png" alt="How many times shorter the single-line wait is, as a function of how busy the
+clerks are: over three times better when quiet, falling toward twice as good
+when busy." loading="lazy"></figure>
 <p>At 90% busy: <strong>54 minutes</strong> in separate lines, <strong>25.6 minutes</strong> in one line.
 Twice as good, for free.</p>
 <p>At 45% busy: <strong>4.9 minutes</strong> against <strong>1.5 minutes</strong>. Over three times better.</p>
 <p>Note which way round that goes, because most people guess the opposite.
 <strong>Pooling helps most when you are quiet</strong>, and its advantage shrinks toward a
-factor of two as you get busy. The mechanism is not extra capacity; there
-isn't any. It is the elimination of the situation where one clerk sits idle
-while somebody waits in the other line. When you are nearly saturated, that
-situation is rare anyway, so there is less of it to eliminate.</p>
-<h3>When pooling is the wrong answer</h3>
+factor of two as you get busy.</p>
+<p>The mechanism is not extra capacity; there isn't any. It is the elimination of
+one specific situation: a clerk sitting idle while somebody waits in the other
+line. That situation is pure waste, it is the only thing separate lines can do
+that a shared line cannot, and pooling removes all of it.</p>
+<p>Which is also why the gain shrinks as you get busier. At 90% busy an idle clerk
+is a rare event to begin with, so there is very little of it left to eliminate.
+Pooling is worth most exactly when you feel you need it least.</p>
+<p><strong><a href="https://bayzhan8.github.io/Illuminate/queues/sandbox/09.html">Try it yourself →</a></strong>
+Add clerks and watch the single line pull ahead, then make them busier and
+watch the gap close again.</p>
+<blockquote class="takeaway">
+<p><strong>In one sentence.</strong> One line for many clerks wins by deleting idle servers
+rather than by adding capacity, so it helps most when you are quiet.</p>
+</blockquote>
+<h2 id="ch10"><span class="num">10</span>When pooling is the wrong answer</h2>
+<p>Chapter 9 makes pooling sound unconditional. It is not, and chapter 8 already
+handed you the reason it can fail.</p>
 <p>Suppose the work is not all alike. Quick jobs take an hour and arrive often;
 slow jobs take ten hours and arrive rarely. Give each type its own desk, and
 each desk runs at 80% busy. Or pool them into one line served by a desk of
 double speed, at identical total capacity and identical utilisation.</p>
+<figure class="plate"><img src="chapters/10-when-pooling-loses/dedicated.png" alt="Two bars at identical total capacity and identical utilisation: a desk for
+quick jobs and a desk for slow ones waits 3.64 hours, while one line served by
+a desk of double speed waits 5.50 hours." loading="lazy"></figure>
 <div class="overflow-x"><table>
 <thead>
 <tr>
@@ -436,33 +489,32 @@ double speed, at identical total capacity and identical utilisation.</p>
 </tr>
 </tbody>
 </table></div>
-<p>Pooling is <strong>1.5 times worse</strong>. Nothing was taken away; the arrangement
-alone did it. Putting everything in one line means a one-hour job can arrive behind a
-ten-hour job and wait for it, and chapter 5 already told us what happens when
-you increase the variability of what people are stuck behind.</p>
-<p>Pooling raises the number of servers, which helps, and raises the variability
-of the queue everyone is standing in, which hurts. Usually the first wins. When
-the jobs are wildly different sizes, the second does, which is why hospitals
-have a separate minor injuries stream and supermarkets have a basket-only till.</p>
-<p><strong><a href="https://bayzhan8.github.io/Illuminate/queues/sandbox/06.html">Try it yourself →</a></strong>
-Add clerks and watch the single line pull ahead, then make them busier and
-watch the gap close again.</p>
+<p>Pooling is <strong>1.5 times worse</strong>. Nothing was taken away; the arrangement alone
+did it.</p>
+<p>Read it through the three dials. Putting everything in one line means a
+one-hour job can arrive behind a ten-hour job and wait for it, so the <em>thing
+people queue behind</em> has become wildly more irregular. That is the second dial
+of chapter 8, turned the wrong way, and chapter 7 is why it hurts: arrive at a
+random moment and you are far more likely to land inside a ten-hour job than a
+count of the jobs would suggest.</p>
+<p>So pooling does two things at once. It raises the number of servers, which
+helps, and it raises the variability of the single queue everyone now stands
+in, which hurts. Usually the first wins. When the jobs are wildly different
+sizes, the second does, which is why hospitals have a separate minor injuries
+stream and supermarkets have a basket-only till.</p>
 <blockquote class="takeaway">
-<p><strong>In one sentence.</strong> One line for many clerks usually wins, by removing idle
-servers rather than by adding capacity, and it loses when the jobs are wildly
-different sizes.</p>
+<p><strong>In one sentence.</strong> Pooling trades more servers against a more irregular
+queue, and when job sizes differ wildly that trade goes the wrong way.</p>
 </blockquote>
-<h2 id="ch7"><span class="num">7</span>Measuring it is harder than computing it</h2>
+<h2 id="ch11"><span class="num">11</span>Measuring it is harder than computing it</h2>
 <p>If you did not believe any of the above, the obvious move is to measure your
 own queue. This chapter is about why that is much harder than it looks.</p>
 <p>Run a simulated desk at 90% busy and track both averages as they accumulate:
 counting heads over time and dividing by the arrival rate, against asking each
 customer and averaging.</p>
-<figure class="plate"><img src="chapters/07-measuring-is-harder/measuring.png" alt="Left, two estimates of the average time in the system as a run proceeds, one
-riding exactly on top of the other, both wandering between 44 and 60 minutes
-over three hundred thousand customers. Right, a nominal 95% confidence interval
-covering the true answer 9% of the time when it assumes independence, and 96%
-when it does not." loading="lazy"></figure>
+<figure class="plate"><img src="chapters/11-measuring-is-harder/measuring.png" alt="Two estimates of the average time in the system as a run proceeds, one riding
+exactly on top of the other, both wandering between 44 and 60 minutes over
+three hundred thousand customers." loading="lazy"></figure>
 <p>Two things are in that picture, and they point in opposite directions.</p>
 <p><strong>Little's law is satisfied from almost the first customer.</strong> The two curves
 sit on top of each other the whole way. That is the identity of chapter 2
@@ -471,14 +523,28 @@ agreement is exact to fourteen decimal places, with no assumptions and no limit
 taken.</p>
 <p><strong>And both of them are wrong for a very long time.</strong> After three hundred
 thousand customers the estimate is still wandering around in the fifties for a
-true answer of sixty. Your simulation satisfying <code>L = λW</code> tells you nothing
-whatsoever about whether it has converged. It was never going to fail that
-check.</p>
-<p>Then the part that should worry anyone who has ever reported a simulation
-result. Take the ordinary 95% confidence interval, the one every statistics course
+true answer of sixty.</p>
+<p>Put those together and you get the trap. Your simulation satisfying <code>L = λW</code>
+tells you nothing whatsoever about whether it has converged, because it was
+never going to fail that check. The identity holds on any sample path at all,
+converged or not — that is precisely what chapter 3 was celebrating. A test that
+cannot fail is not evidence.</p>
+<p>So the reassuring thing your run reports is the one thing that carries no
+information about the number you care about.</p>
+<blockquote class="takeaway">
+<p><strong>In one sentence.</strong> Little's law is satisfied long before your estimate is
+right, so watching it agree tells you nothing about whether you can stop.</p>
+</blockquote>
+<h2 id="ch12"><span class="num">12</span>The confidence interval is twenty times too narrow</h2>
+<p>Now the part that should worry anyone who has ever reported a simulation result.</p>
+<p>Take the ordinary 95% confidence interval, the one every statistics course
 teaches, the standard deviation over the square root of the sample size, and
 apply it to two hundred thousand measured waits. Repeat the whole experiment
-three hundred times.</p>
+three hundred times, and count how often the interval actually contains the true
+answer.</p>
+<figure class="plate"><img src="chapters/12-coverage/coverage.png" alt="A nominal 95% confidence interval covering the true answer 9% of the time when
+it assumes independence, and 96% when it does
+not." loading="lazy"></figure>
 <p>It contains the true answer <strong>9% of the time</strong>. It is about twenty times
 too narrow.</p>
 <p>The reason is that consecutive waits in a queue are not independent
@@ -509,7 +575,7 @@ formula is not the approximation. The measurement is.</p>
 measurement has converged, and the ordinary confidence interval is twenty
 times too narrow.</p>
 </blockquote>
-<h2 id="ch8"><span class="num">8</span>The same law somewhere else entirely</h2>
+<h2 id="ch13"><span class="num">13</span>The same law somewhere else entirely</h2>
 <p>Little's law says nothing about queues. It says something about boxes with
 things going in and out. Rename the three letters:</p>
 <div class="overflow-x"><table>
@@ -650,7 +716,7 @@ Stidham's 1974 version, which is the one that needs no probability.</p>
 <pre><code class="language-bash">make bootstrap    # once, from the repository root
 cd queues &amp;&amp; make verify
 </code></pre>
-<p>The formulas are exact rationals, so &quot;exactly half&quot; in chapter 5 means exactly
+<p>The formulas are exact rationals, so &quot;exactly half&quot; in chapter 6 means exactly
 half. The simulation shares no code with the formulas, which is what lets the
 tests use each to check the other.</p>
 

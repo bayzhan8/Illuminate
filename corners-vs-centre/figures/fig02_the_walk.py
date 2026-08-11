@@ -21,7 +21,7 @@ B = [44, 30, 32]
 PROFIT = [30, 20]
 CORNERS = [(0, 0), (32 / 3, 0), (10, 2), (9, 4), (0, 10)]
 WINDOW = (0, 12.6, 0, 11.6)
-RULES = ("planks", "bench", "finishing")
+RULES = ("planks", "labour", "saw")
 
 
 def walk():

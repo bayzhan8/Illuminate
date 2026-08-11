@@ -22,10 +22,11 @@ actually get stuck on: which solvers exist, how they differ, which ones you can
 put in a container without a licence server ruining your week, and what the
 public benchmarks can and cannot tell you.
 
-**The plan.** Chapters 1 to 4 are what a solver does before it solves anything,
-and what that costs. Chapter 5 is the rest of the machine. Chapters 6 to 9 are
-the landscape: who is who, what a modelling layer is, why the benchmarks are
-harder to read than they look, and licensing. Chapter 10 is how to choose.
+**The plan.** Chapters 1 to 5 are what a solver does before it solves
+anything, and what that costs. Chapter 6 is the rest of the machine.
+Chapters 7 to 13 are the landscape: who is who, what a modelling layer is,
+why the benchmarks are harder to read than they look, and licensing.
+Chapter 14 is how to choose.
 
 Every number in the first half is computed by the code in this folder, in exact
 rational arithmetic, and asserted by a test. The second half is mostly not
@@ -150,7 +151,7 @@ do. The row can never bite. It is deleted.
 **A row can also just narrow a variable.** The balance row for A in period 2
 says `holdA1 + makeA2 = 40`. Both are at or above zero, so neither can exceed
 40. Nothing is fixed and nothing is deleted, but two columns are now boxed in,
-and that turns out to matter enormously in the next chapter.
+and that turns out to matter enormously two chapters from here.
 
 **Whole numbers round.** If a variable has to be an integer and its bounds are
 now 0.25 and 0.75, there is no value left and the model is infeasible. If its
@@ -178,11 +179,34 @@ many rounds.](chapters/03-the-cascade/cascade.png)
 
 If presolve were a checklist applied once, those lines would fall in round one
 and go flat. They do not. The small model takes **13 rounds** to settle and the
-larger one takes **27**, because each reduction is what makes the next one
-visible. Deleting a row creates a fixed column. Fixing a column empties a row.
-Emptying a row narrows a bound. Narrowing a bound fixes another column.
+larger one takes **27**.
+
+The reason is that each reduction is what makes the next one visible. Deleting a
+row creates a fixed column. Fixing a column empties a row. Emptying a row
+narrows a bound. Narrowing a bound fixes another column.
+
+None of those steps is clever. What is doing the work is the loop: a reduction
+that was invisible in round one becomes obvious in round nine, because eight
+rounds of other reductions have cleared the view. That is why presolve is
+described as a fixed point rather than a pass, and why a solver keeps going
+until a whole round changes nothing.
+
+It is also why two solvers with the same list of reductions can end up with
+models of different sizes. Run them in a different order and you reach a
+different fixed point.
+
+> **In one sentence.** Presolve is a loop rather than a checklist, because each
+> reduction is what exposes the next one.
+
+---
+
+## 4 · A decision made by arithmetic
 
 Here is the best thing in this guide, and it happens in round 9.
+
+Everything so far has deleted rows and columns — bookkeeping, however useful.
+This is different. This is the loop settling one of the actual decisions in the
+model, the kind a person would assume requires a search.
 
 Product B needs 25 units in period 1. The balance row therefore forces
 `makeB1 ≥ 25`. The link row says `makeB1 − 100 × openB1 ≤ 0`, so
@@ -194,24 +218,37 @@ number at or above 0.25 is 1.
 
 **The setup happens.** Not "probably happens", not "happens in the best
 solution found so far". It is forced, it is proved, and it is proved by
-division and rounding, before branch and bound has opened a single node. One of
-the actual decisions in the model has been made by arithmetic.
+division and rounding, before branch and bound has opened a single node.
 
-**[Try it yourself →](https://bayzhan8.github.io/Illuminate/solvers/sandbox/03.html)**
+That is four lines of arithmetic you can check by hand, and it disposes of a
+binary decision permanently. A search would have had to try both branches and
+prove one of them worthless.
+
+**[Try it yourself →](https://bayzhan8.github.io/Illuminate/solvers/sandbox/04.html)**
 Move demand and the big-M constant, and watch the switch stop being a decision.
 
-That is also the answer to why the big-M constant matters so much. Make it
-1,000,000 instead of 100 and the same chain gives `openB1 ≥ 0.000025`, which
-still rounds to 1, so this particular deduction survives. But every *fractional*
-relaxation of that row gets weaker as the constant grows, which is why "just use
-a big number" is the most expensive habit in integer modelling.
+Now the part that turns this into advice. Look at what the deduction leaned on:
+the 100 in the link row, which is there only to mean "no limit, really". Make it
+1,000,000 instead and the same chain gives `openB1 ≥ 0.000025`, which still
+rounds to 1, so this particular deduction survives.
 
-> **In one sentence.** The reductions feed each other, and the loop can settle
-> a real decision without searching for it.
+But look at what happens to the *fractional* relaxation of that row. At 100, a
+model that wants to make 25 units must set `openB1` to at least 0.25 and pay a
+quarter of the setup cost. At 1,000,000 it need only set it to 0.000025 and pays
+essentially nothing, so the relaxation happily makes things in a factory it has
+not paid to open. The bound it reports is correspondingly useless.
+
+That is why "just use a big number" is the most expensive habit in integer
+modelling. The constant does not change what is feasible. It changes how much
+the relaxation is allowed to lie, and the relaxation is what prunes the tree.
+
+> **In one sentence.** A loop of obvious steps can settle a yes/no decision by
+> division and rounding, and how big you made your big-M decides how much that
+> kind of reasoning is worth.
 
 ---
 
-## 4 · What it costs you
+## 5 · What it costs you
 
 The reductions above changed the shape of the model. They also changed what the
 model can prove about itself, and that is the part that pays.
@@ -219,7 +256,7 @@ model can prove about itself, and that is the part that pays.
 ![A number line from 240 to 298 dollars. A grey dot marks the bound the model
 could prove as written, a blue dot marks the stronger bound after presolve, and
 a red dot marks the true best plan, with the closed part of the gap
-marked.](chapters/04-what-it-costs/bound.png)
+marked.](chapters/05-what-it-costs/bound.png)
 
 Ignore the whole-number requirement and solve what is left, and the model as
 written proves the answer cannot be cheaper than **$248**. After presolve, the
@@ -269,7 +306,7 @@ of the machine to suspect.
 
 ---
 
-## 5 · The rest of the machine
+## 6 · The rest of the machine
 
 Presolve is the part this guide can compute. It is not the only part, and for
 mixed-integer problems it is not the largest.
@@ -310,7 +347,7 @@ big".
 
 ---
 
-## 6 · Who is who
+## 7 · Who is who
 
 The landscape splits cleanly, and the split is about money rather than
 mathematics.
@@ -348,7 +385,7 @@ the harder your model, the more that is true.
 
 ---
 
-## 7 · A layer is not a solver
+## 8 · A layer is not a solver
 
 This is the distinction that causes the most confusion, and it is worth getting
 straight before you compare anything.
@@ -360,6 +397,21 @@ engines: Pyomo, PuLP and python-mip in Python, JuMP in Julia, and the commercial
 languages AMPL and GAMS. Switching solvers becomes a one-line change, which is
 the strongest practical argument for using one: it makes the solver decision
 reversible.
+
+So the first question about any name you are handed is which of the two it is.
+Get that wrong and you will compare a language with an engine and conclude
+something about neither.
+
+> **In one sentence.** You write a model in a layer and it is solved by an
+> engine, and keeping those separate is what keeps the engine replaceable.
+
+---
+
+## 9 · When the problem is not linear
+
+Everything named so far assumes your model is linear, or linear with some
+whole-number decisions in it. Plenty of real models are neither, and they fail
+at the door rather than solving slowly.
 
 **CVXPY** is a layer too, and a different animal, because it is not aimed at
 linear and integer models at all. It is for **convex** optimisation, the larger
@@ -377,9 +429,9 @@ would make the answer trustworthy. Most modelling layers accept whatever you
 type and let something downstream fail later, usually by returning a local
 answer with no warning that it is local. CVXPY stops at the door.
 
-That is the same instinct as the presolve loop in this guide raising rather
-than returning a half-reduced model, and it is the right instinct. A refusal
-you can read beats a number you cannot check.
+That is the same instinct as the presolve in this guide reporting infeasible
+outright rather than handing back a half-reduced model, and it is the right
+instinct. A refusal you can read beats a number you cannot check.
 
 Underneath, CVXPY rewrites your problem into a standard **conic** form and
 hands it to a solver built for that, which is a different set of names again:
@@ -393,6 +445,17 @@ The limit is the same as the strength. CVXPY wants convexity. If your problem
 genuinely is not convex, or its difficulty lives in whole-number decisions
 rather than in curvature, this is the wrong tool and a MIP solver is the right
 one.
+
+> **In one sentence.** If your model has squares or norms in it, none of the
+> solvers named so far will take it, and the layer that will also refuses to
+> let you write something it cannot vouch for.
+
+---
+
+## 10 · A toolkit is not a solver either
+
+There is a third thing a name can refer to, and it causes more confusion than
+either of the first two, because it contains both.
 
 **Google OR-Tools** is where this gets misread. OR-Tools is a toolkit, not a
 solver. Inside it are Google's own engines, **GLOP** for linear programming and
@@ -412,12 +475,12 @@ Its limits are the mirror image. It wants integers and bounded variables. Give
 it genuinely continuous quantities, or a model whose strength lives in its
 linear relaxation, and a MIP solver is the better answer.
 
-> **In one sentence.** Write through a modelling layer so the solver stays a
-> choice, and know whether the thing you named is a layer, an engine, or both.
+> **In one sentence.** "We used OR-Tools" names a toolkit rather than an
+> engine, and the one engine in it worth choosing deliberately is CP-SAT.
 
 ---
 
-## 8 · Why the benchmarks cannot be read straight
+## 11 · Why the benchmarks cannot be read straight
 
 The obvious move is to look up which solver is fastest. The standard source is
 Hans Mittelmann's benchmark pages, which have run for years and are the closest
@@ -431,30 +494,53 @@ objected, following the 2018 INFORMS annual meeting. **Gurobi withdrew in August
 still run, but the leaderboard now shows the solvers that stayed, and the
 absence of a name is not information about its speed.
 
-That is the first problem. The second is worse and applies to every benchmark
-ever published: **a benchmark is a set of models, and yours is not in it.**
-Solver performance varies over instances by orders of magnitude. A solver that
-wins on a shifted geometric mean over a public set can be the slower one on your
-particular model, and the only way to find out is to run yours.
+So the leaderboard now shows the solvers that stayed. The pages remain valuable
+and the methodology was never the problem; what changed is that an absence on
+them is not information about a solver's speed, and reading them as a complete
+ranking will mislead you about exactly the products that cost money.
 
-Which is not hard, and is the actual advice. Take ten instances that look like
-what you will be solving, run every candidate on them with a fixed time limit,
-and compare. That measurement is worth more than every published table put
-together, because it is measuring the thing you care about.
-
-Two traps while you do it. Compare like with like: a solver that returns a
-0.01% gap has not done the same work as one that proved optimality. And solve
-each model more than once, because most solvers are deterministic only when
-their thread count is fixed, and a concurrent run will give you different
-timings and sometimes different optimal solutions on repeat runs of the same
-input.
-
-> **In one sentence.** The public tables are missing most of the commercial
-> field by request, and even complete they would not be about your model.
+> **In one sentence.** Most of the commercial field left the public benchmarks
+> by request, so what those tables rank is who is willing to be ranked.
 
 ---
 
-## 9 · The licence is the deployment problem
+## 12 · Measure on your own models
+
+Suppose the tables were complete. They would still not answer your question, and
+this is the more important of the two problems because no amount of tidying up
+fixes it.
+
+**A benchmark is a set of models, and yours is not in it.**
+
+Solver performance varies over instances by orders of magnitude — not by tens of
+percent, by factors of a thousand. A solver that wins on a shifted geometric
+mean over a public set can comfortably be the slower one on your particular
+model, because your model has structure that the set does not, and structure is
+what solvers exploit. The aggregate is a fact about the aggregate.
+
+Which makes the actual advice short, and it is the only thing in this chapter
+worth remembering. Take ten instances that look like what you will really be
+solving, run every candidate on them with a fixed time limit, and compare. That
+measurement is worth more than every published table put together, because it is
+the only one measuring the thing you care about.
+
+Two traps while you do it.
+
+**Compare like with like.** A solver that returns a 0.01% gap has not done the
+same work as one that proved optimality, and the second is doing something much
+harder. Fix the gap tolerance across candidates before you time anything.
+
+**Solve each model more than once.** Most solvers are deterministic only when
+their thread count is fixed. A concurrent run will give you different timings,
+and sometimes different optimal solutions, on repeat runs of the same input. If
+you measure once, you are partly measuring the weather.
+
+> **In one sentence.** The only benchmark that answers your question is ten of
+> your own models with the tolerances pinned.
+
+---
+
+## 13 · The licence is the deployment problem
 
 Here is the part nobody warns you about, and it is where most of the pain
 actually is. The mathematics never fails on a Friday. The licence does.
@@ -508,7 +594,7 @@ model that does not fit your infrastructure is not.
 
 ---
 
-## 10 · How to choose
+## 14 · How to choose
 
 The short version, in the order the questions actually arrive.
 
@@ -523,19 +609,20 @@ The short version, in the order the questions actually arrive.
 | it is enormous, sparse, and a rough answer is fine | a first-order method: **PDLP**, or **cuOpt** on a GPU |
 | you cannot manage licence servers | anything open source, and stop worrying |
 
-Three closing observations, which are the ones I would want to have been told.
+Three closing observations, and they are the ones worth having been told
+first.
 
 **Modelling beats solver choice, usually by more than an order of magnitude.**
 The chapters above are about a solver deleting two thirds of a model. A better
 formulation does not need deleting. If a solve is too slow, rewriting the model
 will usually buy you more than any solver will, and the big-M constant from
-chapter 3 is the first place to look.
+chapter 4 is the first place to look.
 
 **Measure before you buy.** The evaluation licences exist for this. Ten of your
 own instances, a fixed time limit, all candidates.
 
 **Keep the solver replaceable.** Write through a layer, and the decision you
-make today stays cheap to revisit. Everything in chapters 6 to 9 changes. SCIP's
+make today stays cheap to revisit. Everything in chapters 7 to 13 changes. SCIP's
 licence changed. Gurobi left the benchmarks. cuOpt was proprietary and is now
 Apache 2.0. The one durable move is to not be welded to any of it.
 
@@ -572,9 +659,9 @@ speedups came from, and Koch and co-authors' *Progress in Mathematical
 Programming Solvers from 2001 to 2020* for the same exercise done again.
 Achterberg's thesis on SCIP is the most detailed public account of what is
 actually inside a MIP solver. Mittelmann's pages at `plato.asu.edu/bench.html`
-for benchmarks, read with chapter 8 in mind.
+for benchmarks, read with chapters 11 and 12 in mind.
 
-Product and licence details in chapters 6 to 9 were checked in August 2026.
+Product and licence details in chapters 7 to 13 were checked in August 2026.
 They are the parts of this guide most likely to date, which is why they are
 dated rather than stated flatly.
 

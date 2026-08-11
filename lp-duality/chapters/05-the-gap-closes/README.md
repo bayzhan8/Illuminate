@@ -68,7 +68,7 @@ which neither one is the original.
 
 ---
 
-Chapter 5 of 10
+Chapter 5 of 11
 
 Previous: [Every honest price list is a ceiling](../04-every-mix-is-a-ceiling/README.md)  
 Next: [Which rules are actually holding you back](../06-who-is-binding/README.md)  

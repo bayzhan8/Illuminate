@@ -39,7 +39,7 @@ switch on and off in response.
 
 ---
 
-Chapter 6 of 10
+Chapter 6 of 11
 
 Previous: [The gap closes, every time](../05-the-gap-closes/README.md)  
 Next: [What one more plank is worth](../07-what-one-more-is-worth/README.md)  

@@ -60,8 +60,8 @@ Slide the stock of any of the three resources and watch its own price step down.
 
 ---
 
-Chapter 8 of 10
+Chapter 8 of 11
 
 Previous: [What one more plank is worth](../07-what-one-more-is-worth/README.md)  
-Next: [When it goes wrong](../09-when-it-goes-wrong/README.md)  
+Next: [Profit that runs away](../09-profit-runs-away/README.md)  
 Contents: [lp-duality](../../README.md)

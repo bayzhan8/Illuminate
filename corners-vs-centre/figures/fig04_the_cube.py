@@ -28,7 +28,7 @@ def cube_png():
 
     fig, ax = figure(8.0, 4.8)
     fig.subplots_adjust(top=0.84, bottom=0.16, left=0.12, right=0.96)
-    heading(ax, "corners visited on the squashed cube")
+    heading(ax, "pivots taken on the squashed cube")
 
     ax.semilogy(ns, [r[1] for r in rows], color=TEXT_FAINT, linewidth=1.4,
                 linestyle=(0, (4, 3)), zorder=4)
@@ -40,7 +40,7 @@ def cube_png():
                 marker="o", markersize=4.5, markeredgecolor=SURFACE, markeredgewidth=1.4)
 
     ax.set_xlabel("dimensions of the cube", fontsize=10, color=TEXT_DIM, labelpad=6)
-    ax.set_ylabel("corners visited", fontsize=10, color=TEXT_DIM, labelpad=6)
+    ax.set_ylabel("pivots taken", fontsize=10, color=TEXT_DIM, labelpad=6)
     ax.set_xticks(list(ns))
     ax.set_xlim(0.7, max(ns) + 0.3)
     for side in ("top", "right"):
@@ -49,12 +49,12 @@ def cube_png():
     ax.set_axisbelow(True)
 
     last = rows[-1]
-    tag(ax, 6.1, last[1] * 1.5, f"corners in the cube ({last[1]:,})",
+    tag(ax, 1.25, 260, f"corners the cube has\n(1 to {last[1]:,})",
         color=TEXT_FAINT, size=9)
-    tag(ax, 5.4, last[2] * 0.22, "the greedy rule visits\nevery single one",
+    tag(ax, 5.9, 2.6, "the greedy rule stops at every corner:\none pivot short of the dashed line",
         color=PRICE, size=9.5)
-    tag(ax, 1.3, 40, "the lowest-index rule", color=PLAN, size=9.5)
-    tag(ax, 4.2, 1.35, "improvement per unit of movement: one step, every time",
+    tag(ax, 2.6, 78, "the lowest-index rule", color=PLAN, size=9.5)
+    tag(ax, 3.6, 1.32, "improvement per unit of movement: one pivot, every time",
         color=OK, size=9.5)
     save(fig, OUT / "cube.png", tight=False)
     return rows

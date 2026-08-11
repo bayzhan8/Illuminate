@@ -22,11 +22,13 @@ CHAPTERS = [
     Chapter(2, "02-the-obvious-model", "The obvious model, and why it is too weak"),
     Chapter(3, "03-one-variable-per-pattern", "One variable per pattern"),
     Chapter(4, "04-too-many-to-write-down", "Too many to write down"),
-    Chapter(5, "05-let-the-prices-ask", "Start with a few, and let the prices ask"),
-    Chapter(6, "06-a-knapsack", "Asking for a pattern is a knapsack"),
-    Chapter(7, "07-the-loop", "The loop, and why it is allowed to stop"),
-    Chapter(8, "08-branch-and-price", "Branching, when the answer is 6.5 boards"),
-    Chapter(9, "09-where-this-leads", "Where this leads"),
+    Chapter(5, "05-start-with-a-few", "Start with a few"),
+    Chapter(6, "06-what-the-prices-say", "What the prices are telling you"),
+    Chapter(7, "07-the-same-from-the-dual", "The same test, from the other side"),
+    Chapter(8, "08-a-knapsack", "Asking for a pattern is a knapsack"),
+    Chapter(9, "09-the-loop", "The loop, and why it is allowed to stop"),
+    Chapter(10, "10-branch-and-price", "Branching, when the answer is 6.5 boards"),
+    Chapter(11, "11-where-this-leads", "Where this leads"),
 ]
 
 # The same mathematics as src/bandp, written a second time in JavaScript so the
@@ -81,7 +83,7 @@ function knapsack(prices, board, widths) {
 
 SANDBOXES = [
     Sandbox(
-        6, "Ask for a pattern",
+        8, "Ask for a pattern",
         "Set a price on each ordered length. The knapsack builds the single "
         "most valuable board there is at those prices — including patterns "
         "nobody has written down.",
@@ -135,7 +137,7 @@ draw();
         "written down."),
 
     Sandbox(
-        7, "Run the loop",
+        9, "Run the loop",
         "Column generation on the 25-foot order, one round at a time: solve, "
         "read the prices, ask the knapsack, add.",
         "Step to the end. Three patterns get added, the number falls from 7 to "

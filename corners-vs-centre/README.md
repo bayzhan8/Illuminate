@@ -7,7 +7,7 @@ One walks the boundary corner to corner and never steps inside. The other
 starts in the middle and follows a curve that approaches the answer without
 ever reaching it.
 
-Eleven chapters on why there are two, which is mostly a question about a proof
+Fifteen chapters on why there are two, which is mostly a question about a proof
 from 1972 and what it does and does not say.
 
 **[Read it →](https://bayzhan8.github.io/Illuminate/corners-vs-centre/)**
@@ -18,18 +18,22 @@ from 1972 and what it does and does not say.
 | | | |
 |---|---|---|
 | 0 | [What this is](chapters/00-what-this-is/) | two routes, one answer |
-| 1 | [A new kind of problem](chapters/01-a-new-kind-of-problem/) | 1939, 1947, and who got the prize |
-| 2 | [Along the edge](chapters/02-along-the-edge/) | three hops out of five corners |
-| 3 | [It should have been slow](chapters/03-it-should-have-been-slow/) | 10¹⁷ corners at 30 variables |
-| 4 | [Klee and Minty build a cube](chapters/04-the-cube/) | every corner, 2ⁿ − 1 pivots |
-| 5 | [The rule, not the method](chapters/05-not-the-rule/) | Bland is exponential too |
-| 6 | [Polynomial, and slower](chapters/06-polynomial-and-slower/) | 29 cuts against three hops |
-| 7 | [Through the middle](chapters/07-through-the-middle/) | one exact answer per μ |
-| 8 | [What the barrier does](chapters/08-what-the-barrier-does/) | a bowl that tilts |
-| 9 | [A gap you can forecast](chapters/09-a-gap-you-can-forecast/) | the receipt is 5μ |
-| 10 | [Neither one won](chapters/10-neither-one-won/) | crossover, and what is still open |
+| 1 | [A new kind of problem](chapters/01-a-new-kind-of-problem/) | where the region and the question came from |
+| 2 | [Along the edge](chapters/02-along-the-edge/) | the walk, and why it may stop |
+| 3 | [It should have been slow](chapters/03-it-should-have-been-slow/) | the corner count says it cannot work |
+| 4 | [Klee and Minty build a cube](chapters/04-the-cube/) | the cube that visits every corner |
+| 5 | [The rule, not the method](chapters/05-not-the-rule/) | change one function, lose the exponent |
+| 6 | [Not cycling is not the same as being fast](chapters/06-not-cycling-is-not-fast/) | a guarantee to finish is not a guarantee to be quick |
+| 7 | [Every rule has a cube](chapters/07-every-rule-has-a-cube/) | every rule has a cube of its own |
+| 8 | [Why nobody ever meets one](chapters/08-why-nobody-meets-one/) | the bad cases are knife-edges |
+| 9 | [Polynomial, and slower](chapters/09-polynomial-and-slower/) | polynomial, and slower than the walk |
+| 10 | [The wall that pushes back](chapters/10-the-wall-that-pushes-back/) | a penalty with no floor |
+| 11 | [The central path](chapters/11-the-central-path/) | the curve of exact answers to wrong questions |
+| 12 | [What the barrier actually does](chapters/12-what-the-barrier-does/) | one bowl, and Newton's method on it |
+| 13 | [A gap you can forecast](chapters/13-a-gap-you-can-forecast/) | the receipt a path point carries |
+| 14 | [Neither one won](chapters/14-neither-one-won/) | crossover, and the division of labour |
 
-## The claim chapter 5 rests on
+## The claim chapters 5 and 6 rest on
 
 The Klee-Minty cube is usually presented as a fact about the simplex method.
 It is a fact about a *pivot rule*, and the difference is checkable rather than

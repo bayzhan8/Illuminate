@@ -35,7 +35,7 @@ what was relaxed away.
 
 ---
 
-Chapter 2 of 9
+Chapter 2 of 11
 
 Previous: [The order](../01-the-order/README.md)  
 Next: [One variable per pattern](../03-one-variable-per-pattern/README.md)  

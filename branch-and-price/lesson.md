@@ -11,9 +11,11 @@ generates. An option the prices fail to cover is a missing variable, and you
 can solve for it directly instead of hunting for it.
 
 **The plan.** Chapters 1 to 3 set up cutting stock and show that the obvious
-model is too weak while the good model is too big to write down. Chapters 5 to
-7 are the loop that solves it anyway. Chapter 8 puts the loop inside a search
-tree, and confesses to two bugs that cost this repository real answers.
+model is too weak while a second model is far stronger. Chapter 4 is why that
+second model cannot be written down. Chapters 5 to 9 are the loop that solves
+it anyway. Chapter 10 puts the loop inside a search tree, and confesses to two
+bugs that cost this repository real answers. Chapter 11 is what the same shape
+is called everywhere else.
 
 Numbers below come from the code in this folder, in exact rationals, asserted
 by its tests.
@@ -166,7 +168,7 @@ Here the second relaxation settles the question by itself, which is the reason
 to put up with everything that follows.
 
 *(The standard name for this reformulation is **Dantzig–Wolfe decomposition**.
-Chapter 9 comes back to it; for now the idea is all you need.)*
+Chapter 11 comes back to it; for now the idea is all you need.)*
 
 > **In one sentence.** Deciding in whole patterns rather than in individual
 > pieces absorbs the integrality, so relaxing what is left costs much less.
@@ -197,9 +199,10 @@ that you cannot tell which handful matters until the thing is solved.
 
 ---
 
-## 5 · Start with a few, and let the prices ask for more
+## 5 · Start with a few
 
-Start with a model that is obviously too small.
+The model cannot be written down. So do not write it down. Start with a model
+that is obviously too small.
 
 Take a few patterns — say the lazy ones, each board cut into copies of a single
 length — and solve *that*. This is the **restricted master**: the real model,
@@ -208,22 +211,41 @@ restricted to the columns someone has bothered to write down.
 Our order has three lazy patterns: a board cut into six 4-foot pieces, a board
 cut into two 9s, a board cut into two 10s. With only those three on the table
 there is nothing to decide, because each ordered length has exactly one source.
-Three 4-foot pieces, six to a board, is half a board of cutting. Six 9-foot
-pieces, two to a board, is three boards. Seven 10-foot pieces, two to a board,
-is three and a half. Add them up: 7 boards, which answers a smaller question
-than the one we asked.
+Here is the whole calculation, and it is arithmetic you can do in your head:
 
-That is an honest upper bound, since those patterns really do fill the order.
-It is not the answer to the strong model, which has three more patterns nobody
-has written down. Whether any of them would help, answered without adding them,
-is the whole method.
+- Three 4-foot pieces, six to a board, is half a board of cutting.
+- Six 9-foot pieces, two to a board, is three boards.
+- Seven 10-foot pieces, two to a board, is three and a half.
 
-Solve the restricted master and read off its **prices**, one per ordered
-length. A price answers one specific question. Suppose the customer rang up and
-asked for one more 9-foot piece: how much extra cutting would that cost, in
-boards? That number is the price of a 9-foot piece. The duality guide is where
-these come from and why they exist for every ordered length at once. At the
-first round they come out as
+Add them up: **7 boards**, which answers a smaller question than the one we
+asked.
+
+That number is an honest upper bound, since those three patterns really do fill
+the order. What it is not is the answer to the strong model, which has three
+more patterns nobody has written down, and in the mill instance four trillion.
+
+So the method now needs one thing, and only one. Not a way to search the missing
+patterns — there are too many. A way to answer *whether any of them would help*
+without adding them, and ideally without looking at them.
+
+That is what the next two chapters are, and the surprising part is that the
+too-small model already contains the answer.
+
+> **In one sentence.** Solving a deliberately impoverished model is free, and
+> the only question left is whether anything is missing from it.
+
+---
+
+## 6 · What the prices are telling you
+
+Solve the restricted master and it hands back more than a number. It hands back
+**prices**, one per ordered length.
+
+A price answers one specific question. Suppose the customer rang up and asked
+for one more 9-foot piece: how much extra cutting would that cost, in boards?
+That number is the price of a 9-foot piece. The duality guide is where these
+come from and why one exists for every ordered length at once. At the first
+round they come out as
 
 | length | price |
 |---|---|
@@ -233,58 +255,85 @@ first round they come out as
 
 Each one is readable straight off the lazy pattern that supplies it. The only
 source of 4-foot pieces here is a board cut into six, so one more of them costs
-a sixth of a board. The only source of 9-foot pieces is a board cut into two,
-so one more costs half a board. The 10s the same, for the same reason. These
-are not the prices of the real problem. They are what this impoverished
-three-pattern model currently believes, and they will move as better patterns
-arrive.
+a sixth of a board. The only source of 9-foot pieces is a board cut into two, so
+one more costs half a board. The 10s the same, for the same reason.
 
-Now take *any* pattern, written down or not.
+Be clear about what these are. They are not the prices of the real problem. They
+are what this impoverished three-pattern model currently believes, and they will
+move as better patterns arrive.
+
+Now the move the whole method rests on. Take *any* pattern, written down or not.
 
 Cutting a board with it costs one board. The pieces that come off it are worth,
 at these prices, some amount. So the pattern is worth adding exactly when
 
 > the pieces it yields are worth **more than one board.**
 
-Try it on the three patterns the model already holds. Six 4-foot pieces at 1/6
-each: worth exactly 1. Two 9s at 1/2 each: exactly 1. Two 10s: exactly 1. Not a
-surprise and not a help. A pattern the model is already leaning on cannot be
-worth more than the board it eats, or the prices would not have come out of
-that model in the first place.
+Check it on the three patterns the model already holds. Six 4-foot pieces at 1/6
+each: worth exactly 1. Two 9s at 1/2 each: exactly 1. Two 10s at 1/2: exactly 1.
+Three sums, all landing on 1, and none of them a help.
+
+That is not a coincidence and it is worth seeing why: a pattern the model is
+already leaning on *cannot* be worth more than the board it eats, or the prices
+would not have come out of that model in the first place. Solving forced them to
+be consistent with everything on the table.
 
 One board in, pieces worth some amount out. The difference between the two is
 what everyone else calls the pattern's **reduced cost**: below zero when the
 pieces beat the board, which is when the pattern is worth having, and zero for
-the three just checked. What the name buys you is small compared with what the
-comparison buys you: it uses the prices and the pattern's own contents and
-nothing else, so a pattern nobody has written down can still be judged by it.
+the three just checked.
 
-There is a second way to say all of this, and it is worth carrying both.
+What the name buys you is small compared with what the comparison buys you. It
+uses the prices and the pattern's own contents, and nothing else. No solve, no
+model, no list. Which means a pattern nobody has ever written down can still be
+judged by it — and that is the crack the rest of the method goes through.
 
-Duality puts a rule on what a price list is allowed to be. Prices are legal
-only when no board anywhere can be cut into pieces worth more than the board
-costs. A list that fails that test is promising value out of nowhere, and it
-can be used to argue for anything. The rule has a name, **dual feasibility**,
-and it is one condition per pattern: one for each way of cutting a board.
-
-The prices we just read off pass the test for every pattern in the restricted
-master. Solving that model is what forced them to. What is open is the patterns
-left out of it, because a price list has no way of knowing which patterns
-exist. If it passes for those too, it is legal for the full model, and then the
-duality guide's check applies: the number the restricted master reported is the
-full model's number, proved without the full model ever being built.
-
-If some unwritten pattern fails the test, the prices were only legal because
-that pattern was missing. Writing it down is exactly what will force them to
-move. Hunting for a pattern worth more than a board and hunting for a broken
-dual condition are one search, seen from the two sides.
-
-> **In one sentence.** The prices from a small model can judge a pattern that
-> model has never seen, which turns "is anything missing" into arithmetic.
+> **In one sentence.** A pattern is worth adding when its pieces are worth more
+> than a board, a test that needs only the prices and the pattern itself.
 
 ---
 
-## 6 · Asking for a pattern is a knapsack
+## 7 · The same test, from the other side
+
+There is a second way to say all of that, and it is worth carrying both, because
+each one makes a different thing obvious.
+
+Duality puts a rule on what a price list is allowed to be. Prices are legal only
+when no board anywhere can be cut into pieces worth more than the board costs. A
+list that fails that test is promising value out of nowhere, and a price list
+that promises value out of nowhere can be used to argue for anything.
+
+The rule has a name, **dual feasibility**, and the thing to notice is its shape:
+it is one condition per pattern. One for each way of cutting a board. All four
+trillion of them.
+
+The prices from chapter 6 pass that test for every pattern in the restricted
+master. Solving that model is what forced them to. What is *open* is every
+pattern left out of it, because a price list has no way of knowing which
+patterns exist — it is a list of numbers, one per length, and nothing in it
+records what it has never been shown.
+
+So there are two cases, and they are the two halves of the method.
+
+**If the prices pass for the unwritten patterns too**, the list is legal for the
+full model. Then the duality guide's check applies exactly as written: a plan
+and a price list that agree end the search. The number the restricted master
+reported is the full model's number, proved without the full model ever being
+built.
+
+**If some unwritten pattern fails**, the prices were only legal because that
+pattern was missing. Writing it down is precisely what will force them to move.
+
+Which is why the two framings are one search. Hunting for a pattern worth more
+than a board, and hunting for a broken dual condition, are the same hunt seen
+from opposite sides — and the next chapter is how you run it without a list.
+
+> **In one sentence.** A price list cannot tell which patterns it has never been
+> shown, so the whole method is the search for one that would embarrass it.
+
+---
+
+## 8 · Asking for a pattern is a knapsack
 
 The question is whether some unwritten pattern yields more than one board's
 worth at these prices.
@@ -301,11 +350,12 @@ At the prices above the knapsack returns **four 4-foot pieces and one
 that pattern is missing and it goes into the model.
 
 Pricing is where the work happens, and note what it returns: the argmax over
-every column, or a proof that none is worth adding. Not a candidate list. When
+every column, or a proof that none is worth adding, rather than a shortlist to
+sift through afterwards. When
 the knapsack's best is worth **1 or less**, nothing anywhere would help, and
 the restricted model is optimal for the full one.
 
-**[Try it yourself →](https://bayzhan8.github.io/Illuminate/branch-and-price/sandbox/06.html)**
+**[Try it yourself →](https://bayzhan8.github.io/Illuminate/branch-and-price/sandbox/08.html)**
 Set the three prices by hand and watch which pattern the knapsack builds.
 
 > **In one sentence.** Finding the missing column is a knapsack, and it returns
@@ -313,7 +363,7 @@ Set the three prices by hand and watch which pattern the knapsack builds.
 
 ---
 
-## 7 · The loop, and why it is allowed to stop
+## 9 · The loop, and why it is allowed to stop
 
 Put the two halves together and they take turns.
 
@@ -328,7 +378,7 @@ Put the two halves together and they take turns.
 
 ![Four rounds of the loop, each showing what the master needs, the current
 prices, and the pattern the knapsack asks for
-next.](chapters/07-the-loop/loop.gif)
+next.](chapters/09-the-loop/loop.gif)
 
 Watch the number come down: **7 boards**, then 6.875, then 6.5. Then the
 knapsack returns a pattern worth exactly 1 and the loop stops. Three patterns
@@ -342,13 +392,13 @@ On a slightly bigger order, 55-foot boards with four different lengths, there
 are thirty usable patterns, and the loop settles after touching six of them:
 
 ![Thirty patterns drawn as boards, with the six the loop actually built
-highlighted and the rest left blank.](chapters/07-the-loop/touched.png)
+highlighted and the rest left blank.](chapters/09-the-loop/touched.png)
 
 Twenty-four patterns were never written down and never needed to be. On the
 mill instance the same sentence holds with four trillion in place of
 twenty-four.
 
-**[Try it yourself →](https://bayzhan8.github.io/Illuminate/branch-and-price/sandbox/07.html)**
+**[Try it yourself →](https://bayzhan8.github.io/Illuminate/branch-and-price/sandbox/09.html)**
 Step the loop one round at a time and watch the prices move.
 
 > **In one sentence.** Alternating between a small model and a knapsack solves
@@ -356,7 +406,7 @@ Step the loop one round at a time and watch the prices move.
 
 ---
 
-## 8 · Branching, when the answer is 6.5 boards
+## 10 · Branching, when the answer is 6.5 boards
 
 Nobody cuts half a board. The relaxation says 6.5, and 6.5 is not a plan.
 
@@ -379,7 +429,7 @@ node is itself solved by generating columns.
 
 ![A search tree of eleven boxes, each labelled with the number of boards its
 relaxation needs, some marked whole, some cannot win, branching down four
-levels.](chapters/08-branch-and-price/tree.png)
+levels.](chapters/10-branch-and-price/tree.png)
 
 Each box hides a complete solve-price-add cycle. The tree stays small because
 it starts from a bound that is already nearly right, which is chapter 3 being
@@ -422,7 +472,7 @@ it in tree size.
 
 ---
 
-## 9 · Where this leads
+## 11 · Where this leads
 
 The shape of what just happened is more general than cutting boards.
 
@@ -440,7 +490,7 @@ extreme points of the block that the current prices ask for.
 **Benders decomposition** points the same idea the other way. It generates
 *rows* rather than columns: fix the hard decisions, solve what is left, and
 take the dual of that leftover problem as a new constraint to send back. Every
-Benders cut is a price list doing exactly the job it did in chapter 5, proving
+Benders cut is a price list doing exactly the job it did in chapter 7, proving
 a proposal cannot be as good as it claims.
 
 ### When pricing is just filtering a list

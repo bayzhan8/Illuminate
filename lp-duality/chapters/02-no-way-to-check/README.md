@@ -30,7 +30,7 @@ is possible*, and no plan will ever be one.
 
 ---
 
-Chapter 2 of 10
+Chapter 2 of 11
 
 Previous: [The workshop](../01-the-workshop/README.md)  
 Next: [Charging for the ingredients](../03-mixing-the-rules/README.md)  

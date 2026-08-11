@@ -7,7 +7,7 @@ from bandp.search import branch_and_price
 from illuminate.draw import (TEXT, TEXT_DIM, TEXT_FAINT, OK, SURFACE, PLAN, PRICE, HAIRLINE,
                              chapter_dir, figure, heading, save, tag)
 
-OUT = chapter_dir("08-branch-and-price")
+OUT = chapter_dir("10-branch-and-price")
 
 
 def tree_png():

@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en" data-page="sandbox">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turn the repulsion down — Illuminate</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/site.css">
+<script>
+  try {
+    var t = localStorage.getItem("illuminate-theme");
+    document.documentElement.dataset.theme = t ||
+      (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  } catch (e) {}
+</script>
+</head>
+<body>
+<header class="bar">
+  <a class="brand" href="../../">ILLUMINATE</a>
+  <button class="toggle" id="theme" type="button" aria-label="Switch colour scheme">DARK</button>
+</header>
+<main class="sandbox">
+  <a class="back" href="../index.html#ch11">← back to chapter 11</a>
+  <h1>Turn the repulsion down</h1>
+  <p class="lede">The barrier problem for the workshop, solved exactly at whatever mu you choose. The curve is where the answer goes as you sweep it.</p>
+  <p class="try"><strong>Try this.</strong> Start at the far left, where profit is irrelevant and the point sits at the analytic centre. Drag towards zero and watch the receipt at the bottom: the promise shrinks in step with mu, and the real gap stays under it the whole way.</p>
+  <canvas id="c" width="660" height="380"></canvas>
+  <div class="controls"><div class="row"><label for="mu">log10 of mu</label><input type="range" id="mu" min="-6" max="4" step="0.1" value="2"><output class="val" id="muv"></output></div></div>
+  <pre class="out" id="out"></pre>
+  <p class="note">The promise is 5 mu at every setting, and the real gap sits under it at every setting. That is what a forecastable method looks like.</p>
+  <nav class="pager"><a href="05.html">← Change the rule, not the method</a> · <a href="index.html">all 2</a></nav>
+</main>
+<script src="../../assets/site.js"></script>
+<script>
+
+// --- the squashed cube, and a simplex whose pivot rule is an argument -------
+
+function kleeMinty(n) {
+  const c = [], A = [], b = [];
+  for (let j = 0; j < n; j++) c.push(Math.pow(2, n - j - 1));
+  for (let i = 0; i < n; i++) {
+    const row = [];
+    for (let j = 0; j < i; j++) row.push(2 * Math.pow(10, i - j));
+    row.push(1);
+    for (let j = i + 1; j < n; j++) row.push(0);
+    A.push(row);
+    b.push(Math.pow(100, i));
+  }
+  return { c, A, b };
+}
+
+function dantzig(obj, width) {
+  let best = 0, at = null;
+  for (let j = 0; j < width; j++) if (obj[j] < best) { best = obj[j]; at = j; }
+  return at;
+}
+
+function bland(obj, width) {
+  for (let j = 0; j < width; j++) if (obj[j] < -1e-9) return j;
+  return null;
+}
+
+function steepest(obj, width, T) {
+  let bestScore = null, at = null;
+  for (let j = 0; j < width; j++) {
+    if (obj[j] >= -1e-9) continue;
+    let len = 1;
+    for (let i = 1; i < T.length; i++) len += T[i][j] * T[i][j];
+    const score = (obj[j] * obj[j]) / len;
+    if (bestScore === null || score > bestScore) { bestScore = score; at = j; }
+  }
+  return at;
+}
+
+const RULES = { dantzig: dantzig, bland: bland, steepest: steepest };
+
+// Maximise c.x subject to Ax <= b, x >= 0, from the slack basis at the origin.
+// Returns the pivot count and the value; the cube's numbers span many orders
+// of magnitude, so this is floating point and the Python side is exact.
+function simplex(c, A, b, ruleName, limit) {
+  const rows = A.length, cols = c.length, width = cols + rows;
+  const T = [];
+  const top = [];
+  for (let j = 0; j < cols; j++) top.push(-c[j]);
+  for (let j = 0; j < rows; j++) top.push(0);
+  top.push(0);
+  T.push(top);
+  for (let i = 0; i < rows; i++) {
+    const row = A[i].slice();
+    for (let j = 0; j < rows; j++) row.push(i === j ? 1 : 0);
+    row.push(b[i]);
+    T.push(row);
+  }
+  const basis = [];
+  for (let i = 0; i < rows; i++) basis.push(cols + i);
+  const rule = RULES[ruleName];
+
+  for (let step = 0; step <= (limit || 100000); step++) {
+    const entering = ruleName === "steepest"
+      ? steepest(T[0], width, T) : rule(T[0], width);
+    if (entering === null) return { steps: step, value: T[0][width] };
+    let bestKey = null, bestRow = -1;
+    for (let i = 1; i <= rows; i++) {
+      if (T[i][entering] > 1e-12) {
+        const ratio = T[i][width] / T[i][entering];
+        if (bestKey === null || ratio < bestKey - 1e-12 ||
+            (Math.abs(ratio - bestKey) <= 1e-12 && basis[i - 1] < basis[bestRow - 1])) {
+          bestKey = ratio; bestRow = i;
+        }
+      }
+    }
+    if (bestRow < 0) return { steps: step, value: Infinity };
+    const piece = T[bestRow][entering];
+    for (let j = 0; j <= width; j++) T[bestRow][j] /= piece;
+    for (let i = 0; i <= rows; i++) {
+      if (i === bestRow || T[i][entering] === 0) continue;
+      const factor = T[i][entering];
+      for (let j = 0; j <= width; j++) T[i][j] -= factor * T[bestRow][j];
+    }
+    basis[bestRow - 1] = entering;
+  }
+  return { steps: -1, value: NaN };
+}
+
+// --- the workshop, and the barrier that walks through the middle of it -----
+
+const WA = [[4, 2], [2, 3], [3, 1]];
+const WB = [44, 30, 32];
+const WPROFIT = [30, 20];
+
+// Every wall as w.x <= limit: the three rules, then the two floors.
+const WALLS = [[4, 2], [2, 3], [3, 1], [-1, 0], [0, -1]];
+const LIMITS = [44, 30, 32, 0, 0];
+
+function slack(x) { return LIMITS.map((c, i) => c - WALLS[i][0] * x[0] - WALLS[i][1] * x[1]); }
+function inside(x) { return slack(x).every(s => s > 0); }
+
+function barrier(x, mu) {
+  const room = slack(x);
+  if (room.some(s => s <= 0)) return Infinity;
+  let logs = 0;
+  for (const s of room) logs += Math.log(s);
+  return -(WPROFIT[0] * x[0] + WPROFIT[1] * x[1]) - mu * logs;
+}
+
+// Damped Newton on the barrier. Halving until the step lands somewhere legal
+// is the whole safeguard: a full step walks through a wall, where the thing
+// being minimised is not merely worse but undefined.
+function centreFor(mu, start) {
+  let x = start.slice();
+  for (let it = 0; it < 200; it++) {
+    const room = slack(x);
+    let g = [-WPROFIT[0], -WPROFIT[1]];
+    let H = [[0, 0], [0, 0]];
+    for (let i = 0; i < WALLS.length; i++) {
+      const inv = 1 / room[i];
+      g[0] += mu * WALLS[i][0] * inv;
+      g[1] += mu * WALLS[i][1] * inv;
+      const w = mu * inv * inv;
+      H[0][0] += w * WALLS[i][0] * WALLS[i][0];
+      H[0][1] += w * WALLS[i][0] * WALLS[i][1];
+      H[1][0] += w * WALLS[i][1] * WALLS[i][0];
+      H[1][1] += w * WALLS[i][1] * WALLS[i][1];
+    }
+    const det = H[0][0] * H[1][1] - H[0][1] * H[1][0];
+    if (Math.abs(det) < 1e-300) break;
+    const d = [(-g[0] * H[1][1] + g[1] * H[0][1]) / det,
+               (-g[1] * H[0][0] + g[0] * H[1][0]) / det];
+    let len = 1, ok = false;
+    for (let k = 0; k < 80; k++) {
+      const trial = [x[0] + len * d[0], x[1] + len * d[1]];
+      if (inside(trial) && barrier(trial, mu) <= barrier(x, mu)) { ok = true; break; }
+      len /= 2;
+    }
+    if (!ok) break;
+    x = [x[0] + len * d[0], x[1] + len * d[1]];
+    if (Math.hypot(len * d[0], len * d[1]) < 1e-13) break;
+  }
+  return x;
+}
+
+function centralPath(muFrom, muTo, points) {
+  const out = [];
+  let x = [1, 1];
+  for (let k = 0; k < points; k++) {
+    const t = points === 1 ? 0 : k / (points - 1);
+    const mu = Math.exp(Math.log(muFrom) + t * (Math.log(muTo) - Math.log(muFrom)));
+    x = centreFor(mu, x);
+    out.push({ mu: mu, x: x.slice() });
+  }
+  return out;
+}
+
+function worth(x) { return WPROFIT[0] * x[0] + WPROFIT[1] * x[1]; }
+
+
+// --- a very small drawing helper, in the site's colours -------------------
+function palette() {
+  const dark = document.documentElement.dataset.theme === "dark";
+  return dark
+    ? { paper: "#1a1816", ink: "#e8e6e0", ink2: "#a8a599", muted: "#787366",
+        rule: "#4a4540", plan: "#4A87CC", price: "#C25A42", ok: "#4E8F55" }
+    : { paper: "#fffff8", ink: "#000000", ink2: "#404040", muted: "#707070",
+        rule: "#C0BDAD", plan: "#1B4F9C", price: "#B4341F", ok: "#2E6B33" };
+}
+
+function Plot(canvas, xlo, xhi, ylo, yhi, pad) {
+  const dpr = window.devicePixelRatio || 1;
+  const cssW = canvas.clientWidth || 660, cssH = canvas.clientHeight || 380;
+  canvas.width = Math.round(cssW * dpr);
+  canvas.height = Math.round(cssH * dpr);
+  const ctx = canvas.getContext("2d");
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  pad = pad || { l: 54, r: 22, t: 18, b: 42 };
+  const P = palette();
+  const X = x => pad.l + (x - xlo) / (xhi - xlo) * (cssW - pad.l - pad.r);
+  const Y = y => cssH - pad.b - (y - ylo) / (yhi - ylo) * (cssH - pad.t - pad.b);
+  const font = n => `${n}px "IBM Plex Mono", ui-monospace, monospace`;
+  return {
+    ctx, X, Y, P, W: cssW, H: cssH, pad, font,
+    clear() { ctx.clearRect(0, 0, cssW, cssH); },
+    grid(stepX, stepY) {
+      ctx.strokeStyle = P.rule; ctx.lineWidth = 1; ctx.setLineDash([1, 4]);
+      for (let x = xlo; x <= xhi + 1e-9; x += stepX) {
+        ctx.beginPath(); ctx.moveTo(X(x), pad.t); ctx.lineTo(X(x), cssH - pad.b); ctx.stroke();
+      }
+      for (let y = ylo; y <= yhi + 1e-9; y += stepY) {
+        ctx.beginPath(); ctx.moveTo(pad.l, Y(y)); ctx.lineTo(cssW - pad.r, Y(y)); ctx.stroke();
+      }
+      ctx.setLineDash([]);
+    },
+    axes(xlabel, ylabel, stepX, stepY) {
+      // Tick labels are formatted from the step size, not rounded to whole
+      // numbers: an axis stepping by 0.2 was previously printing 0 0 0 1 1 1.
+      const label = (v, step) => step < 1
+        ? v.toFixed(Math.max(0, -Math.floor(Math.log10(step))))
+        : String(Math.round(v));
+      ctx.strokeStyle = P.ink; ctx.lineWidth = 1.2;
+      ctx.beginPath(); ctx.moveTo(pad.l, pad.t); ctx.lineTo(pad.l, cssH - pad.b);
+      ctx.lineTo(cssW - pad.r, cssH - pad.b); ctx.stroke();
+      ctx.fillStyle = P.muted; ctx.font = font(11); ctx.textAlign = "center";
+      if (stepX) for (let x = xlo; x <= xhi + 1e-9; x += stepX)
+        ctx.fillText(label(x, stepX), X(x), cssH - pad.b + 17);
+      ctx.textAlign = "right";
+      if (stepY) for (let y = ylo; y <= yhi + 1e-9; y += stepY)
+        ctx.fillText(label(y, stepY), pad.l - 9, Y(y) + 4);
+      ctx.fillStyle = P.ink2; ctx.font = font(12); ctx.textAlign = "center";
+      if (xlabel) ctx.fillText(xlabel, (pad.l + cssW - pad.r) / 2, cssH - 8);
+      if (ylabel) { ctx.save(); ctx.translate(14, (pad.t + cssH - pad.b) / 2);
+        ctx.rotate(-Math.PI / 2); ctx.fillText(ylabel, 0, 0); ctx.restore(); }
+    },
+    polygon(pts, fill, stroke) {
+      if (!pts.length) return;
+      ctx.beginPath(); ctx.moveTo(X(pts[0][0]), Y(pts[0][1]));
+      for (const p of pts.slice(1)) ctx.lineTo(X(p[0]), Y(p[1]));
+      ctx.closePath();
+      if (fill) { ctx.globalAlpha = 0.14; ctx.fillStyle = fill; ctx.fill(); ctx.globalAlpha = 1; }
+      if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = 1.8; ctx.stroke(); }
+    },
+    rect(x0, y0, x1, y1, fill, alpha) {
+      ctx.save(); ctx.globalAlpha = alpha === undefined ? 1 : alpha;
+      ctx.fillStyle = fill;
+      ctx.fillRect(X(x0), Y(y1), X(x1) - X(x0), Y(y0) - Y(y1));
+      ctx.restore();
+    },
+    line(x0, y0, x1, y1, color, width, dash) {
+      ctx.save(); ctx.strokeStyle = color; ctx.lineWidth = width || 1.4;
+      if (dash) ctx.setLineDash(dash);
+      ctx.beginPath(); ctx.moveTo(X(x0), Y(y0)); ctx.lineTo(X(x1), Y(y1));
+      ctx.stroke(); ctx.restore();
+    },
+    dot(x, y, color, r) {
+      ctx.beginPath(); ctx.arc(X(x), Y(y), r || 6, 0, 7);
+      ctx.fillStyle = color; ctx.fill();
+      ctx.lineWidth = 2; ctx.strokeStyle = P.paper; ctx.stroke();
+    },
+    label(x, y, text, color, align, size) {
+      ctx.fillStyle = color; ctx.font = font(size || 12);
+      ctx.textAlign = align || "left"; ctx.fillText(text, X(x), Y(y));
+    }
+  };
+}
+
+function sortRound(pts) {
+  if (!pts.length) return pts;
+  const cx = pts.reduce((s, p) => s + p[0], 0) / pts.length;
+  const cy = pts.reduce((s, p) => s + p[1], 0) / pts.length;
+  return pts.slice().sort((a, b) =>
+    Math.atan2(a[1] - cy, a[0] - cx) - Math.atan2(b[1] - cy, b[0] - cx));
+}
+
+
+const cv = document.getElementById("c"), out = document.getElementById("out");
+const muEl = document.getElementById("mu");
+const CORNERS = [[0, 0], [32 / 3, 0], [10, 2], [9, 4], [0, 10]];
+const BEST = 350;
+
+function draw() {
+  const mu = Math.pow(10, +muEl.value);
+  document.getElementById("muv").textContent = mu.toPrecision(3);
+
+  const p = Plot(cv, 0, 12.4, 0, 11.4, { l: 52, r: 22, t: 20, b: 44 });
+  p.clear(); p.grid(2, 2); p.axes("tables", "chairs", 2, 2);
+
+  p.ctx.beginPath(); p.ctx.strokeStyle = p.P.text; p.ctx.lineWidth = 1.4;
+  CORNERS.concat([CORNERS[0]]).forEach((c, k) => {
+    if (k === 0) p.ctx.moveTo(p.X(c[0]), p.Y(c[1])); else p.ctx.lineTo(p.X(c[0]), p.Y(c[1]));
+  });
+  p.ctx.stroke();
+
+  const path = centralPath(1e4, 1e-7, 90);
+  p.ctx.beginPath(); p.ctx.strokeStyle = p.P.price; p.ctx.lineWidth = 1.2;
+  p.ctx.globalAlpha = 0.45;
+  path.forEach((s, k) => {
+    if (k === 0) p.ctx.moveTo(p.X(s.x[0]), p.Y(s.x[1])); else p.ctx.lineTo(p.X(s.x[0]), p.Y(s.x[1]));
+  });
+  p.ctx.stroke(); p.ctx.globalAlpha = 1;
+
+  const x = centreFor(mu, [1, 1]);
+  p.dot(9, 4, p.P.ok, 6);
+  p.dot(x[0], x[1], p.P.price, 6);
+
+  const value = worth(x);
+  const promised = mu * WALLS.length;
+  const room = Math.min.apply(null, slack(x));
+  out.textContent =
+    "mu = " + mu.toPrecision(3) + "\n" +
+    "  plan            " + x[0].toFixed(4) + " tables, " + x[1].toFixed(4) + " chairs\n" +
+    "  worth           $" + value.toFixed(4) + "\n" +
+    "  nearest wall    " + room.toExponential(2) + " away\n\n" +
+    "  promised within $" + promised.toFixed(4) + "  (5 walls x mu)\n" +
+    "  actually within $" + (BEST - value).toFixed(4) + "\n" +
+    (room > 0 ? "  still strictly inside, as it will be at every mu > 0."
+              : "  on a wall, which should not happen.");
+}
+muEl.addEventListener("input", draw);
+window.addEventListener("resize", draw);
+document.addEventListener("themechange", draw);
+draw();
+
+</script>
+</body>
+</html>

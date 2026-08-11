@@ -8,7 +8,7 @@ from illuminate.draw import (HAIRLINE, PLAN, PRICE, SURFACE, TEXT, TEXT_DIM,
                              TEXT_FAINT, chapter_dir, figure, heading, save, tag)
 from solvers import library as L
 
-OUT = chapter_dir("04-what-it-costs")
+OUT = chapter_dir("05-what-it-costs")
 
 BEFORE = float(L.SMALL_RELAXATION)              # 248
 AFTER = float(L.SMALL_REDUCED_RELAXATION)       # 263

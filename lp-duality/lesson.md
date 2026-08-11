@@ -29,7 +29,7 @@ products, and never writes an equation.
 **The plan.** Chapters 1 and 2 set up the problem and show why it cannot be
 solved by trying things. Chapter 3 invents the second problem, and chapters 4
 and 5 are the two halves of the theorem. Chapters 6 to 8 are what practitioners
-actually use it for. Chapter 9 fences off what it does not say.
+actually use it for. Chapters 9 and 10 fence off what it does not say.
 
 The numbers below are produced by the code in this folder and asserted by its
 tests. Exact rationals throughout, so "equal" means equal.
@@ -179,8 +179,8 @@ change.](chapters/03-mixing-the-rules/mixing.gif)
 
 Watch the left panel first. Raising the plank price alone covers tables long
 before it covers chairs. While either bar is short, the prices prove nothing
-whatever. Not a weak ceiling. No ceiling. A price list satisfying one condition
-is worth as much as no price list.
+whatever. A price list that covers one product and not the other proves no
+upper limit at all, which makes it worth exactly as much as no price list.
 
 Then watch what happens once both are covered. There is room to trade a lower
 plank price for a higher hourly rate, stay legal the whole way, and bring the
@@ -453,26 +453,49 @@ Slide the stock of any of the three resources and watch its own price step down.
 
 ---
 
-## 9 · When it goes wrong
+## 9 · Profit that runs away
 
-Two things can go wrong, and the dual has something to say about both.
+Two things can go wrong, and the dual has something to say about both. Here is
+the first.
 
-![Two panels. On the left, a region with no upper limit and profit lines
-marching off it forever. On the right, a scale of tables showing that the planks
-reach eleven and the order starts at twelve, with nothing in
-between.](chapters/09-when-it-goes-wrong/edges.png)
+![A region with no upper limit and profit lines marching off it
+forever.](chapters/09-profit-runs-away/edges.png)
 
-**Profit that runs away.** If the rules leave a direction the workshop can go
-forever, there is no best plan. A ceiling would have to be a number bigger than
-every plan, and no such number exists, so there are no honest prices either.
-The two failures come as a pair: *the plan side runs away precisely when the
-price side has nothing to offer.*
+If the rules leave a direction the workshop can go forever, there is no best
+plan. Nothing is stopping it, so the profit is unbounded and there is no number
+to report.
 
-**A plan that cannot exist.** Suppose an order arrives for 12 tables.
+Now ask what the price side makes of that. An honest price list has to be a
+ceiling over every plan at once, which is chapter 4. But a ceiling would have to
+be a number bigger than every plan, and no such number exists. So there is no
+honest price list either — not a bad one, not a loose one, none at all.
+
+The two failures come as a pair, and it is worth stating the pairing plainly
+because it is the shape the whole theory keeps taking: *the plan side runs away
+precisely when the price side has nothing to offer.*
+
+Which is also how a solver tells you. Hand it a model with a direction of escape
+and it does not search forever and give up. It finds the direction, reports
+unbounded, and the thing it hands back as evidence is a fact about the prices.
+
+> **In one sentence.** Profit running away on one side is exactly the same event
+> as no honest price list existing on the other.
+
+---
+
+## 10 · A plan that cannot exist
+
+The second failure is the more interesting one, because of *how* it gets
+settled.
+
+![A scale of tables showing that the planks reach eleven and the order starts at
+twelve, with nothing in between.](chapters/10-no-such-plan/no-such-plan.png)
+
+Suppose an order arrives for 12 tables.
 Forty-four planks make eleven tables, so the order cannot be met. Nothing about
-that is surprising. What is worth watching is *how* it gets settled: by
-arithmetic you can check by hand, rather than by a search that eventually gives
-up.
+that is surprising. What is worth watching is that it gets settled by
+arithmetic you can do on the back of an envelope, rather than by a search that
+eventually gives up.
 
 Two rules do all the work here. Written out flat, with no symbols:
 
@@ -508,19 +531,20 @@ instead of on a ceiling. It is called a **Farkas certificate**, and the fact
 that one always exists when a system is impossible is the fact strong duality
 is built on.
 
-One more case, so it does not surprise you. At a bend in the curve from chapter
-8 the price is not unique. Standing exactly at 45 ⅐ planks, one more plank is
+One footnote to chapter 8 before leaving the subject, because it is the way
+this bites people in practice. At a bend in that curve the price is not
+unique. Standing exactly at 45 ⅐ planks, one more plank is
 worth nothing and one fewer costs $6.25, and both numbers are legitimate
 prices. A solver will hand you one of them without mentioning the other. This
 is called **degeneracy**, and it is why a sensitivity report should be read as
 a range and never as a point.
 
-> **In one sentence.** Unbounded on one side means infeasible on the other, and
-> impossibility always has a short arithmetic proof.
+> **In one sentence.** Impossibility always has a short arithmetic proof, built
+> by mixing the rules exactly the way a price list mixes them.
 
 ---
 
-## 10 · Where this leads
+## 11 · Where this leads
 
 Everything above is one small problem solved by hand. What makes duality worth
 this much attention is what gets built on it.
@@ -541,8 +565,10 @@ this much attention is what gets built on it.
   send back. Every Benders cut is a price list from chapter 3, doing the job it
   did there: proving a proposal cannot be as good as it claims.
 
-The next guide, [solving a model you never wrote down](../branch-and-price/),
-is the second of those under load.
+The next guide, [along the edge, or through the middle](../corners-vs-centre/),
+takes the first of those apart: how the walk uses the dual row to choose, and
+what a rival method that refuses corners does instead. [Solving a model you
+never wrote down](../branch-and-price/) is the second of them under load.
 
 ---
 

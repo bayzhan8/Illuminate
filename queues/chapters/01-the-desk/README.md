@@ -37,7 +37,7 @@ and six minutes each, the clerk is busy 90% of the time.
 
 ---
 
-Chapter 1 of 8
+Chapter 1 of 13
 
 Previous: [What this is](../00-what-this-is/README.md)  
 Next: [Draw a box](../02-draw-a-box/README.md)  

@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en" data-page="sandbox">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Run the loop — Illuminate</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/site.css">
+<script>
+  try {
+    var t = localStorage.getItem("illuminate-theme");
+    document.documentElement.dataset.theme = t ||
+      (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  } catch (e) {}
+</script>
+</head>
+<body>
+<header class="bar">
+  <a class="brand" href="../../">ILLUMINATE</a>
+  <button class="toggle" id="theme" type="button" aria-label="Switch colour scheme">DARK</button>
+</header>
+<main class="sandbox">
+  <a class="back" href="../index.html#ch9">← back to chapter 9</a>
+  <h1>Run the loop</h1>
+  <p class="lede">Column generation on the 25-foot order, one round at a time: solve, read the prices, ask the knapsack, add.</p>
+  <p class="try"><strong>Try this.</strong> Step to the end. Three patterns get added, the number falls from 7 to 6.5, and the last round is the one that proves there is nothing left.</p>
+  <canvas id="c" width="660" height="380"></canvas>
+  <div class="controls"><div class="row"><label for="step">round</label><input type="range" id="step" min="0" max="3" step="1" value="0"><output class="val" id="stepv"></output></div></div>
+  <pre class="out" id="out"></pre>
+  <p class="note">The last round is not wasted work. It is the round that proves the previous answer was already optimal, and without it you would only have a good number rather than the right one.</p>
+  <nav class="pager"><a href="08.html">← Ask for a pattern</a> · <a href="index.html">all 2</a></nav>
+</main>
+<script src="../../assets/site.js"></script>
+<script>
+
+const BOARD = 25;
+const WIDTHS = [4, 9, 10];
+const DEMANDS = [3, 6, 7];
+
+// every maximal way to cut one board: nothing more would fit in the leftover
+function allPatterns(board, widths) {
+  const out = [];
+  (function extend(i, left, sofar) {
+    if (i === widths.length) {
+      if (sofar.some(v => v > 0) && left < Math.min(...widths)) out.push(sofar.slice());
+      return;
+    }
+    for (let k = 0; k <= Math.floor(left / widths[i]); k++)
+      extend(i + 1, left - k * widths[i], sofar.concat([k]));
+  })(0, board, []);
+  return out;
+}
+
+function waste(pattern, board, widths) {
+  return board - pattern.reduce((s, n, i) => s + n * widths[i], 0);
+}
+
+function describe(pattern, widths) {
+  const parts = [];
+  for (let i = 0; i < widths.length; i++)
+    if (pattern[i]) parts.push(pattern[i] + "×" + widths[i]);
+  return parts.length ? parts.join(" + ") : "nothing";
+}
+
+// Fill one board to maximise the value of the pieces taken off it: an
+// unbounded knapsack, solved exactly by working up from an empty board.
+function knapsack(prices, board, widths) {
+  const best = new Array(board + 1).fill(0);
+  const took = new Array(board + 1).fill(-1);
+  for (let cap = 1; cap <= board; cap++)
+    for (let i = 0; i < widths.length; i++)
+      if (widths[i] <= cap && best[cap - widths[i]] + prices[i] > best[cap] + 1e-12) {
+        best[cap] = best[cap - widths[i]] + prices[i];
+        took[cap] = i;
+      }
+  const pattern = new Array(widths.length).fill(0);
+  let cap = board;
+  while (took[cap] >= 0) { pattern[took[cap]]++; cap -= widths[took[cap]]; }
+  return { value: best[board], pattern: pattern };
+}
+
+
+// --- a very small drawing helper, in the site's colours -------------------
+function palette() {
+  const dark = document.documentElement.dataset.theme === "dark";
+  return dark
+    ? { paper: "#1a1816", ink: "#e8e6e0", ink2: "#a8a599", muted: "#787366",
+        rule: "#4a4540", plan: "#4A87CC", price: "#C25A42", ok: "#4E8F55" }
+    : { paper: "#fffff8", ink: "#000000", ink2: "#404040", muted: "#707070",
+        rule: "#C0BDAD", plan: "#1B4F9C", price: "#B4341F", ok: "#2E6B33" };
+}
+
+function Plot(canvas, xlo, xhi, ylo, yhi, pad) {
+  const dpr = window.devicePixelRatio || 1;
+  const cssW = canvas.clientWidth || 660, cssH = canvas.clientHeight || 380;
+  canvas.width = Math.round(cssW * dpr);
+  canvas.height = Math.round(cssH * dpr);
+  const ctx = canvas.getContext("2d");
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  pad = pad || { l: 54, r: 22, t: 18, b: 42 };
+  const P = palette();
+  const X = x => pad.l + (x - xlo) / (xhi - xlo) * (cssW - pad.l - pad.r);
+  const Y = y => cssH - pad.b - (y - ylo) / (yhi - ylo) * (cssH - pad.t - pad.b);
+  const font = n => `${n}px "IBM Plex Mono", ui-monospace, monospace`;
+  return {
+    ctx, X, Y, P, W: cssW, H: cssH, pad, font,
+    clear() { ctx.clearRect(0, 0, cssW, cssH); },
+    grid(stepX, stepY) {
+      ctx.strokeStyle = P.rule; ctx.lineWidth = 1; ctx.setLineDash([1, 4]);
+      for (let x = xlo; x <= xhi + 1e-9; x += stepX) {
+        ctx.beginPath(); ctx.moveTo(X(x), pad.t); ctx.lineTo(X(x), cssH - pad.b); ctx.stroke();
+      }
+      for (let y = ylo; y <= yhi + 1e-9; y += stepY) {
+        ctx.beginPath(); ctx.moveTo(pad.l, Y(y)); ctx.lineTo(cssW - pad.r, Y(y)); ctx.stroke();
+      }
+      ctx.setLineDash([]);
+    },
+    axes(xlabel, ylabel, stepX, stepY) {
+      // Tick labels are formatted from the step size, not rounded to whole
+      // numbers: an axis stepping by 0.2 was previously printing 0 0 0 1 1 1.
+      const label = (v, step) => step < 1
+        ? v.toFixed(Math.max(0, -Math.floor(Math.log10(step))))
+        : String(Math.round(v));
+      ctx.strokeStyle = P.ink; ctx.lineWidth = 1.2;
+      ctx.beginPath(); ctx.moveTo(pad.l, pad.t); ctx.lineTo(pad.l, cssH - pad.b);
+      ctx.lineTo(cssW - pad.r, cssH - pad.b); ctx.stroke();
+      ctx.fillStyle = P.muted; ctx.font = font(11); ctx.textAlign = "center";
+      if (stepX) for (let x = xlo; x <= xhi + 1e-9; x += stepX)
+        ctx.fillText(label(x, stepX), X(x), cssH - pad.b + 17);
+      ctx.textAlign = "right";
+      if (stepY) for (let y = ylo; y <= yhi + 1e-9; y += stepY)
+        ctx.fillText(label(y, stepY), pad.l - 9, Y(y) + 4);
+      ctx.fillStyle = P.ink2; ctx.font = font(12); ctx.textAlign = "center";
+      if (xlabel) ctx.fillText(xlabel, (pad.l + cssW - pad.r) / 2, cssH - 8);
+      if (ylabel) { ctx.save(); ctx.translate(14, (pad.t + cssH - pad.b) / 2);
+        ctx.rotate(-Math.PI / 2); ctx.fillText(ylabel, 0, 0); ctx.restore(); }
+    },
+    polygon(pts, fill, stroke) {
+      if (!pts.length) return;
+      ctx.beginPath(); ctx.moveTo(X(pts[0][0]), Y(pts[0][1]));
+      for (const p of pts.slice(1)) ctx.lineTo(X(p[0]), Y(p[1]));
+      ctx.closePath();
+      if (fill) { ctx.globalAlpha = 0.14; ctx.fillStyle = fill; ctx.fill(); ctx.globalAlpha = 1; }
+      if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = 1.8; ctx.stroke(); }
+    },
+    rect(x0, y0, x1, y1, fill, alpha) {
+      ctx.save(); ctx.globalAlpha = alpha === undefined ? 1 : alpha;
+      ctx.fillStyle = fill;
+      ctx.fillRect(X(x0), Y(y1), X(x1) - X(x0), Y(y0) - Y(y1));
+      ctx.restore();
+    },
+    line(x0, y0, x1, y1, color, width, dash) {
+      ctx.save(); ctx.strokeStyle = color; ctx.lineWidth = width || 1.4;
+      if (dash) ctx.setLineDash(dash);
+      ctx.beginPath(); ctx.moveTo(X(x0), Y(y0)); ctx.lineTo(X(x1), Y(y1));
+      ctx.stroke(); ctx.restore();
+    },
+    dot(x, y, color, r) {
+      ctx.beginPath(); ctx.arc(X(x), Y(y), r || 6, 0, 7);
+      ctx.fillStyle = color; ctx.fill();
+      ctx.lineWidth = 2; ctx.strokeStyle = P.paper; ctx.stroke();
+    },
+    label(x, y, text, color, align, size) {
+      ctx.fillStyle = color; ctx.font = font(size || 12);
+      ctx.textAlign = align || "left"; ctx.fillText(text, X(x), Y(y));
+    }
+  };
+}
+
+function sortRound(pts) {
+  if (!pts.length) return pts;
+  const cx = pts.reduce((s, p) => s + p[0], 0) / pts.length;
+  const cy = pts.reduce((s, p) => s + p[1], 0) / pts.length;
+  return pts.slice().sort((a, b) =>
+    Math.atan2(a[1] - cy, a[0] - cx) - Math.atan2(b[1] - cy, b[0] - cx));
+}
+
+
+const cv = document.getElementById("c"), out = document.getElementById("out");
+const step = document.getElementById("step");
+// the rounds as the Python produced them; tests/test_sandbox.py checks these
+// against a live run rather than trusting the numbers pasted here
+const ROUNDS = [{"held": 3, "value": 7.0, "duals": ["1/6", "1/2", "1/2"], "best": "4\u00d74 + 1\u00d79", "bestValue": 1.1666666666666667, "added": true}, {"held": 4, "value": 6.875, "duals": ["1/8", "1/2", "1/2"], "best": "1\u00d74 + 2\u00d79", "bestValue": 1.125, "added": true}, {"held": 5, "value": 6.5, "duals": ["1/7", "3/7", "1/2"], "best": "1\u00d74 + 2\u00d710", "bestValue": 1.1428571428571428, "added": true}, {"held": 6, "value": 6.5, "duals": ["0", "1/2", "1/2"], "best": "1\u00d74 + 2\u00d79", "bestValue": 1.0, "added": false}];
+function draw() {
+  const k = +step.value, r = ROUNDS[k];
+  document.getElementById("stepv").textContent = (k + 1) + " of " + ROUNDS.length;
+  const p = Plot(cv, 0, 4, 6.2, 7.2, { l: 54, r: 22, t: 22, b: 40 });
+  p.clear(); p.grid(1, 0.2); p.axes("round", "boards needed", 1, 0.2);
+  const xs = ROUNDS.map((_, i) => i);
+  p.ctx.beginPath(); p.ctx.strokeStyle = p.P.plan; p.ctx.lineWidth = 2.4;
+  ROUNDS.forEach((rr, i) => {
+    if (i <= k) { const X = p.X(i), Y = p.Y(rr.value);
+      if (i === 0) p.ctx.moveTo(X, Y); else p.ctx.lineTo(X, Y); }
+  });
+  p.ctx.stroke();
+  ROUNDS.forEach((rr, i) => { if (i <= k) p.dot(i, rr.value, p.P.plan, 6); });
+  p.line(0, 6.5, 4, 6.5, p.P.muted, 1, [4, 4]);
+  p.label(3.9, 6.54, "6.5", p.P.muted, "right", 11);
+  const prices = r.duals.map((d, i) => WIDTHS[i] + "ft " + d).join("   ");
+  out.textContent =
+    "holding " + r.held + " patterns   master needs " + r.value.toFixed(4) + " boards\n" +
+    "prices   " + prices + "\n\n" +
+    "knapsack builds  " + r.best + "\n" +
+    "worth            " + r.bestValue.toFixed(4) + "\n" +
+    (r.added ? "more than one board — add it, go again"
+             : "exactly one board — nothing is missing, stop");
+}
+step.addEventListener("input", draw);
+window.addEventListener("resize", draw);
+document.addEventListener("themechange", draw);
+draw();
+
+</script>
+</body>
+</html>

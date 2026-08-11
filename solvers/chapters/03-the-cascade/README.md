@@ -12,41 +12,29 @@ many rounds.](cascade.png)
 
 If presolve were a checklist applied once, those lines would fall in round one
 and go flat. They do not. The small model takes **13 rounds** to settle and the
-larger one takes **27**, because each reduction is what makes the next one
-visible. Deleting a row creates a fixed column. Fixing a column empties a row.
-Emptying a row narrows a bound. Narrowing a bound fixes another column.
+larger one takes **27**.
 
-Here is the best thing in this guide, and it happens in round 9.
+The reason is that each reduction is what makes the next one visible. Deleting a
+row creates a fixed column. Fixing a column empties a row. Emptying a row
+narrows a bound. Narrowing a bound fixes another column.
 
-Product B needs 25 units in period 1. The balance row therefore forces
-`makeB1 ≥ 25`. The link row says `makeB1 − 100 × openB1 ≤ 0`, so
+None of those steps is clever. What is doing the work is the loop: a reduction
+that was invisible in round one becomes obvious in round nine, because eight
+rounds of other reductions have cleared the view. That is why presolve is
+described as a fixed point rather than a pass, and why a solver keeps going
+until a whole round changes nothing.
 
-> `openB1 ≥ makeB1 / 100 ≥ 25 / 100 = 0.25`
+It is also why two solvers with the same list of reductions can end up with
+models of different sizes. Run them in a different order and you reach a
+different fixed point.
 
-and `openB1` is a yes/no switch, so it is a whole number. The smallest whole
-number at or above 0.25 is 1.
-
-**The setup happens.** Not "probably happens", not "happens in the best
-solution found so far". It is forced, it is proved, and it is proved by
-division and rounding, before branch and bound has opened a single node. One of
-the actual decisions in the model has been made by arithmetic.
-
-**[Try it yourself →](https://bayzhan8.github.io/Illuminate/solvers/sandbox/03.html)**
-Move demand and the big-M constant, and watch the switch stop being a decision.
-
-That is also the answer to why the big-M constant matters so much. Make it
-1,000,000 instead of 100 and the same chain gives `openB1 ≥ 0.000025`, which
-still rounds to 1, so this particular deduction survives. But every *fractional*
-relaxation of that row gets weaker as the constant grows, which is why "just use
-a big number" is the most expensive habit in integer modelling.
-
-> **In one sentence.** The reductions feed each other, and the loop can settle
-> a real decision without searching for it.
+> **In one sentence.** Presolve is a loop rather than a checklist, because each
+> reduction is what exposes the next one.
 
 ---
 
-Chapter 3 of 10
+Chapter 3 of 14
 
 Previous: [What presolve takes out](../02-what-it-removes/README.md)  
-Next: [What it costs you](../04-what-it-costs/README.md)  
+Next: [A decision made by arithmetic](../04-a-decision-by-arithmetic/README.md)  
 Contents: [solvers](../../README.md)

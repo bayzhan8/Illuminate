@@ -25,7 +25,7 @@ same speed.
 
 ---
 
-Chapter 0 of 10
+Chapter 0 of 14
 
 Next: [A solver is not an algorithm](../01-not-an-algorithm/README.md)  
 Contents: [solvers](../../README.md)

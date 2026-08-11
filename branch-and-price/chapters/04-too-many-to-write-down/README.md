@@ -24,8 +24,8 @@ that you cannot tell which handful matters until the thing is solved.
 
 ---
 
-Chapter 4 of 9
+Chapter 4 of 11
 
 Previous: [One variable per pattern](../03-one-variable-per-pattern/README.md)  
-Next: [Start with a few, and let the prices ask](../05-let-the-prices-ask/README.md)  
+Next: [Start with a few](../05-start-with-a-few/README.md)  
 Contents: [branch-and-price](../../README.md)

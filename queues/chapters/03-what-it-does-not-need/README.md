@@ -35,8 +35,8 @@ And everyone who enters has to eventually leave.
 
 ---
 
-Chapter 3 of 8
+Chapter 3 of 13
 
 Previous: [Draw a box](../02-draw-a-box/README.md)  
-Next: [The wait explodes before the clerk is full](../04-the-wait-explodes/README.md)  
+Next: [Where the multiplier comes from](../04-the-multiplier/README.md)  
 Contents: [queues](../../README.md)

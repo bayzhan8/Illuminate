@@ -6,7 +6,7 @@ For thirty years the way to solve a linear program faster was a quicker
 processor. What replaced it was a much wider one, and the simplex method cannot
 use it — not for want of trying, but because of what simplex *is*.
 
-Eleven chapters on what a method would have to look like instead, starting from
+Fourteen chapters on what a method would have to look like instead, starting from
 the version that does not work.
 
 **[Read it →](https://bayzhan8.github.io/Illuminate/lp-on-gpu/)**
@@ -16,17 +16,20 @@ the version that does not work.
 
 | | | |
 |---|---|---|
-| 0 | [What this is](chapters/00-what-this-is/) | two methods, one term apart |
-| 1 | [Wider, not faster](chapters/01-wider-not-faster/) | 0.17 operations per byte |
-| 2 | [The wrong shape](chapters/02-the-wrong-shape/) | why simplex is a chain |
-| 3 | [One operation](chapters/03-one-operation/) | a method built from matrix products |
-| 4 | [The obvious version](chapters/04-the-obvious-version/) | spirals outward, cycles forever |
-| 5 | [One term different](chapters/05-one-term-different/) | and it spirals inward |
-| 6 | [Fast turn, slow shrink](chapters/06-fast-turn-slow-shrink/) | 11.5° a step, 2% closer |
-| 7 | [Cancel the rotation](chapters/07-cancel-the-rotation/) | restarts, worth 10⁶ for free |
-| 8 | [The same answer](chapters/08-the-same-answer/) | checked against the exact solver |
-| 9 | [What it costs](chapters/09-what-it-costs/) | no legal plan, no corner |
-| 10 | [Where this leaves things](chapters/10-where-this-leaves-things/) | honestly |
+| 0 | [What this is](chapters/00-what-this-is/) | one term, and whether it settles |
+| 1 | [How much arithmetic per byte](chapters/01-arithmetic-per-byte/) | 0.17 operations per byte |
+| 2 | [The roofline](chapters/02-the-roofline/) | 1.3% of the arithmetic, 14.5x the speed |
+| 3 | [Why simplex is the wrong shape](chapters/03-the-wrong-shape/) | a chain of dependent decisions |
+| 4 | [Reading the table two ways](chapters/04-reading-the-table/) | one table, read across and down |
+| 5 | [Two players, one score](chapters/05-two-players/) | the plan and the prices as opponents |
+| 6 | [A method made of one operation](chapters/06-one-operation/) | two matrix products and a clamp |
+| 7 | [The obvious version does not work](chapters/07-the-obvious-version/) | the spiral that winds outward |
+| 8 | [One term different](chapters/08-one-term-different/) | anticipation, and the spiral reverses |
+| 9 | [It turns fast and shrinks slowly](chapters/09-fast-turn-slow-shrink/) | it turns fast and closes in slowly |
+| 10 | [Cancel the rotation](chapters/10-cancel-the-rotation/) | averaging cancels the turn, for free |
+| 11 | [Does it get the right answer?](chapters/11-the-same-answer/) | the same plan, and the same prices |
+| 12 | [What it costs](chapters/12-what-it-costs/) | no legal plan until it converges, and no corner |
+| 13 | [Where this leaves things](chapters/13-where-this-leaves-things/) | what actually changed |
 
 ## The claim
 

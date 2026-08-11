@@ -32,7 +32,7 @@ to learn on. Chapter 4 is where that stops being true.
 
 ---
 
-Chapter 1 of 9
+Chapter 1 of 11
 
 Previous: [What this is](../00-what-this-is/README.md)  
 Next: [The obvious model, and why it is too weak](../02-the-obvious-model/README.md)  

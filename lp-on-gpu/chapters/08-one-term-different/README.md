@@ -1,0 +1,58 @@
+<!-- generated from ../../lesson.md by ../../build.py; do not edit -->
+
+## 8 · One term different
+
+Here is the fix, and it is almost nothing.
+
+When the prices react, do not show them the plan's current position. Show them
+where the plan is *heading*: the new plan, plus the step it has just taken,
+again.
+
+If the plan moved from `x` to `x′`, the prices are shown `2x′ − x`, which is
+`x′` plus the change `x′ − x` a second time. That is the cheapest imaginable
+guess at where the plan will be next: assume it keeps going the way it was
+going. On the toy problem the second line becomes
+
+```
+new price  =  price − 0.2 × (2 × new plan − plan − 3)
+```
+
+and nothing else changes. First step from a plan of 2 and a price of 2: the
+plan still moves to 2.4, but the price is now shown 2×2.4 − 2 = 2.8 instead of
+2. Still short of 3, so the price still rises, but to 2.04 rather than 2.2. The
+correction is smaller because it arrives less late, and that is the entire
+repair.
+
+![The same trajectory in the same plane, now winding inward toward the answer
+in a tightening spiral.](inward.png)
+
+Same problem, same step sizes, same starting point, one changed term. The
+spiral reverses. After 90 steps it is 0.36 away instead of 13.1.
+
+Side by side, from the same start, it is not a subtle difference:
+
+![Two planes side by side, each tracing a path from the same starting point.
+On the left the path winds outward and leaves the frame. On the right it winds
+inward and settles on the answer.](spiral.gif)
+
+This is the **primal-dual hybrid gradient** method, and it is the algorithm
+underneath the first-order LP solvers that run on GPUs.
+
+Its per-iteration cost is unchanged: still two matrix-vector products, still no
+factorisation. It has not become a more expensive method. It has become a
+convergent one.
+
+**[Try it yourself →](https://bayzhan8.github.io/Illuminate/lp-on-gpu/sandbox/08.html)**
+Switch the anticipation off and watch the same code start cycling, then turn it
+back on and raise the step size until even that stops working.
+
+> **In one sentence.** Letting the prices anticipate the plan's next move
+> rather than react to its last one turns the spiral inward, at no extra cost.
+
+---
+
+Chapter 8 of 13
+
+Previous: [The obvious version does not work](../07-the-obvious-version/README.md)  
+Next: [It turns fast and shrinks slowly](../09-fast-turn-slow-shrink/README.md)  
+Contents: [lp-on-gpu](../../README.md)

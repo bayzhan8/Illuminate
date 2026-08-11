@@ -167,7 +167,7 @@ def test_the_tie_lands_where_the_prose_says():
 
 def test_the_lesson_splits_into_the_chapters_build_expects():
     front, chapters, tail = build.split_lesson(build.TOPIC)
-    assert len(chapters) == len(build.CHAPTERS) == 11
+    assert len(chapters) == len(build.CHAPTERS) == 14
     assert front.startswith(build.TOPIC.heading)
     assert tail
 
@@ -198,7 +198,7 @@ def test_every_invented_phrase_has_its_real_name():
 
 def test_the_lesson_does_not_quote_benchmark_numbers_it_cannot_check():
     """This area moves fast and the guide deliberately stays out of it."""
-    assert "have not quoted any" in FLAT
+    assert "none are quoted\nhere" in TEXT or "none are quoted here" in FLAT
     for vendor in ("Gurobi", "CPLEX", "Xpress", "COPT", "cuOpt"):
         assert vendor not in TEXT, f"{vendor} appears; that is a dateable claim"
 
@@ -260,3 +260,13 @@ def test_the_page_cycles_when_the_term_is_switched_off():
     """)
     assert got["hi"] == pytest.approx(s.CYCLE_HIGH, rel=1e-6)
     assert got["lo"] == pytest.approx(max(s.CYCLE_LOW, 0.0), abs=1e-6)
+
+def test_the_readme_chapter_table_matches_the_chapters():
+    """The topic README is hand-written, so nothing else catches it going stale
+    when a chapter is split. Every link must resolve and be in build order."""
+    readme = (ROOT / "README.md").read_text()
+    linked = re.findall(r"\]\(chapters/([^)/]+)/\)", readme)
+    assert linked == [c.folder for c in build.CHAPTERS], \
+        "run the chapter table in README.md past build.CHAPTERS again"
+    for folder in linked:
+        assert (ROOT / "chapters" / folder).is_dir(), folder

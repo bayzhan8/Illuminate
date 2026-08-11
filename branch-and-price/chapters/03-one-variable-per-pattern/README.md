@@ -54,14 +54,14 @@ Here the second relaxation settles the question by itself, which is the reason
 to put up with everything that follows.
 
 *(The standard name for this reformulation is **Dantzig–Wolfe decomposition**.
-Chapter 9 comes back to it; for now the idea is all you need.)*
+Chapter 11 comes back to it; for now the idea is all you need.)*
 
 > **In one sentence.** Deciding in whole patterns rather than in individual
 > pieces absorbs the integrality, so relaxing what is left costs much less.
 
 ---
 
-Chapter 3 of 9
+Chapter 3 of 11
 
 Previous: [The obvious model, and why it is too weak](../02-the-obvious-model/README.md)  
 Next: [Too many to write down](../04-too-many-to-write-down/README.md)  

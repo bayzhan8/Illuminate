@@ -6,7 +6,7 @@ from illuminate.draw import (HAIRLINE, PLAN, PRICE, SURFACE, TEXT_DIM,
                              TEXT_FAINT, chapter_dir, figure, heading, save, tag)
 from queues import desk as d
 
-OUT = chapter_dir("04-the-wait-explodes")
+OUT = chapter_dir("05-the-wait-explodes")
 
 
 def explode_png():

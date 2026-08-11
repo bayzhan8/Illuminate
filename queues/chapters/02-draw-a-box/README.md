@@ -57,7 +57,7 @@ smallest interesting box in the building.
 
 ---
 
-Chapter 2 of 8
+Chapter 2 of 13
 
 Previous: [The desk](../01-the-desk/README.md)  
 Next: [What the law does not need](../03-what-it-does-not-need/README.md)  

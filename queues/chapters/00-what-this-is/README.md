@@ -20,7 +20,7 @@ idleness turns out to be the thing that was absorbing all the irregularity.
 
 ---
 
-Chapter 0 of 8
+Chapter 0 of 13
 
 Next: [The desk](../01-the-desk/README.md)  
 Contents: [queues](../../README.md)

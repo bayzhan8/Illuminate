@@ -46,7 +46,7 @@ the National Medal of Science that same year.
 
 ---
 
-Chapter 1 of 10
+Chapter 1 of 14
 
 Previous: [What this is](../00-what-this-is/README.md)  
 Next: [Along the edge](../02-along-the-edge/README.md)  

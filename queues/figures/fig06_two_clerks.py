@@ -1,4 +1,4 @@
-"""Chapter 6: one line for two clerks, and the case where that is wrong."""
+"""Chapter 8: what one shared queue buys, across the whole range of busy."""
 
 import numpy as np
 
@@ -7,17 +7,16 @@ from illuminate.draw import (HAIRLINE, OK, PLAN, PRICE, SURFACE, TEXT, TEXT_DIM,
 from queues import desk as d
 from queues.formulas import MM1, MMC
 
-OUT = chapter_dir("06-two-clerks")
+OUT = chapter_dir("09-two-clerks")
 
 
 def pooling_png():
     import matplotlib.pyplot as plt
 
-    fig, (axL, axR) = plt.subplots(1, 2, figsize=(10.0, 4.4),
-                                   gridspec_kw={"width_ratios": [1.25, 1]})
-    fig.subplots_adjust(left=0.09, right=0.97, bottom=0.16, top=0.84, wspace=0.30)
+    fig, axL = plt.subplots(1, 1, figsize=(7.4, 4.4))
+    fig.subplots_adjust(left=0.12, right=0.97, bottom=0.16, top=0.84)
 
-    # --- left: the gain, across utilisation
+    # the gain from pooling, across the whole range of how busy the clerks are
     heading(axL, "one queue for two clerks, against two queues")
     loads = np.linspace(0.05, 0.95, 400)
     gain = []
@@ -55,30 +54,6 @@ def pooling_png():
     axL.grid(True, color=HAIRLINE, linewidth=0.7, linestyle=(0, (1, 3)))
     axL.set_axisbelow(True)
 
-    # --- right: the counterexample
-    heading(axR, "and when it is the wrong answer")
-    values = [float(d.DEDICATED), float(d.COMBINED)]
-    names = ["a desk for quick jobs\nand a desk for slow ones",
-             "one line, one desk\nof double speed"]
-    colours = [OK, PRICE]
-    ys = [1, 0]
-    axR.barh(ys, values, height=0.42, color=colours, zorder=4,
-             edgecolor=SURFACE, linewidth=2)
-    for y, v, c in zip(ys, values, colours):
-        axR.text(v + 0.12, y, f"{v:.2f} hr", va="center", ha="left",
-                 fontsize=11, color=c, fontweight="semibold", zorder=6)
-    axR.set_yticks(ys)
-    axR.set_yticklabels(names, fontsize=9, color=TEXT_DIM)
-    axR.set_xlim(0, 7.6)
-    axR.set_ylim(-0.55, 1.75)
-    axR.set_xlabel("average wait, hours", fontsize=10, color=TEXT_DIM, labelpad=6)
-    for side in ("top", "right", "left"):
-        axR.spines[side].set_visible(False)
-    axR.tick_params(axis="y", length=0)
-    axR.grid(True, axis="x", color=HAIRLINE, linewidth=0.7, linestyle=(0, (1, 3)))
-    axR.set_axisbelow(True)
-    axR.text(0.05, 1.55, "identical total capacity, identical utilisation",
-             color=TEXT_FAINT, fontsize=9)
     save(fig, OUT / "pooling.png", tight=False)
 
 

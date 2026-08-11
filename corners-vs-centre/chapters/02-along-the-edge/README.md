@@ -39,9 +39,9 @@ On the workshop, from a standing start:
 | corner | plan | worth | what has run out |
 |---|---|---|---|
 | 0 | build nothing | $0 | nothing |
-| 1 | 10⅔ tables | $320 | finishing |
-| 2 | 10 tables, 2 chairs | $340 | finishing, planks |
-| 3 | 9 tables, 4 chairs | **$350** | planks, bench time |
+| 1 | 10⅔ tables | $320 | saw time |
+| 2 | 10 tables, 2 chairs | $340 | saw time, planks |
+| 3 | 9 tables, 4 chairs | **$350** | planks, labour |
 
 Three hops, out of five corners. At the last one every edge leads downhill, so
 it stops.
@@ -52,7 +52,7 @@ it stops.
 
 ---
 
-Chapter 2 of 10
+Chapter 2 of 14
 
 Previous: [A new kind of problem](../01-a-new-kind-of-problem/README.md)  
 Next: [It should have been slow](../03-it-should-have-been-slow/README.md)  

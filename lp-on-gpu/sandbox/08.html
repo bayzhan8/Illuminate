@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en" data-page="sandbox">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>One term, on or off — Illuminate</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/site.css">
+<script>
+  try {
+    var t = localStorage.getItem("illuminate-theme");
+    document.documentElement.dataset.theme = t ||
+      (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  } catch (e) {}
+</script>
+</head>
+<body>
+<header class="bar">
+  <a class="brand" href="../../">ILLUMINATE</a>
+  <button class="toggle" id="theme" type="button" aria-label="Switch colour scheme">DARK</button>
+</header>
+<main class="sandbox">
+  <a class="back" href="../index.html#ch8">← back to chapter 8</a>
+  <h1>One term, on or off</h1>
+  <p class="lede">The two methods of chapters 7 and 8, on the workshop, with the extrapolation you can switch off.</p>
+  <p class="try"><strong>Try this.</strong> Turn anticipation off and watch it start cycling instead of settling. Then turn it back on and raise the step size until even that fails.</p>
+  <canvas id="c" width="660" height="380"></canvas>
+  <div class="controls"><div class="row"><label for="mode">the prices see</label><select id="mode"><option value="1">where the plan is heading</option><option value="0">where the plan was</option></select></div><div class="row"><label for="step">step size</label><input type="range" id="step" min="2" max="30" step="1" value="14"><output class="val" id="stepv"></output></div></div>
+  <pre class="out" id="out"></pre>
+  <p class="note">The step size has a ceiling above which even the working method stops converging. That ceiling is the same rule that makes it contract so slowly below it, which is chapter 9.</p>
+  <nav class="pager"><a href="index.html">all 2</a> · <a href="10.html">Restart it →</a></nav>
+</main>
+<script src="../../assets/site.js"></script>
+<script>
+
+// the workshop: three shelves, two products
+const A = [[4, 2], [2, 3], [3, 1]];
+const B = [44, 30, 32];
+const PROFIT = [30, 20];
+
+function matvec(M, v) { return M.map(r => r.reduce((s, a, j) => s + a * v[j], 0)); }
+function matTvec(M, v) {
+  const out = new Array(M[0].length).fill(0);
+  for (let i = 0; i < M.length; i++)
+    for (let j = 0; j < M[i].length; j++) out[j] += M[i][j] * v[i];
+  return out;
+}
+function clamp(v) { return v.map(t => Math.max(t, 0)); }
+
+// largest stretch of A, by power iteration: sets the safe step size
+function norm2(M) {
+  let v = new Array(M[0].length).fill(1);
+  for (let k = 0; k < 200; k++) {
+    const w = matTvec(M, matvec(M, v));
+    const n = Math.hypot(...w);
+    v = w.map(t => t / n);
+  }
+  return Math.sqrt(Math.hypot(...matvec(M, v)) ** 2 / (Math.hypot(...v) ** 2));
+}
+
+// One sweep of either method. `extrapolate` is the single differing term:
+// with it the prices see where the plan is heading, without it where it was.
+function step(x, y, tau, sigma, extrapolate) {
+  const grad = matTvec(A, y).map((t, j) => -PROFIT[j] + t);
+  const xn = clamp(x.map((t, j) => t - tau * grad[j]));
+  const lead = extrapolate ? xn.map((t, j) => 2 * t - x[j]) : x;
+  const resid = matvec(A, lead).map((t, i) => t - B[i]);
+  const yn = clamp(y.map((t, i) => t + sigma * resid[i]));
+  return [xn, yn];
+}
+
+function run(iterations, stepSize, extrapolate, restartEvery) {
+  let x = [0, 0], y = [0, 0, 0];
+  const path = [[x.slice(), y.slice()]];
+  let sx = [0, 0], sy = [0, 0, 0], seen = 0;
+  for (let k = 1; k <= iterations; k++) {
+    [x, y] = step(x, y, stepSize, stepSize, extrapolate);
+    sx = sx.map((t, j) => t + x[j]); sy = sy.map((t, i) => t + y[i]); seen++;
+    if (restartEvery && seen === restartEvery) {
+      x = sx.map(t => t / seen); y = sy.map(t => t / seen);
+      sx = [0, 0]; sy = [0, 0, 0]; seen = 0;
+    }
+    path.push([x.slice(), y.slice()]);
+  }
+  return path;
+}
+
+function value(x) { return PROFIT[0] * x[0] + PROFIT[1] * x[1]; }
+function violation(x) {
+  const over = matvec(A, x).map((t, i) => t - B[i]);
+  return Math.max(0, ...over, ...x.map(t => -t));
+}
+
+
+// --- a very small drawing helper, in the site's colours -------------------
+function palette() {
+  const dark = document.documentElement.dataset.theme === "dark";
+  return dark
+    ? { paper: "#1a1816", ink: "#e8e6e0", ink2: "#a8a599", muted: "#787366",
+        rule: "#4a4540", plan: "#4A87CC", price: "#C25A42", ok: "#4E8F55" }
+    : { paper: "#fffff8", ink: "#000000", ink2: "#404040", muted: "#707070",
+        rule: "#C0BDAD", plan: "#1B4F9C", price: "#B4341F", ok: "#2E6B33" };
+}
+
+function Plot(canvas, xlo, xhi, ylo, yhi, pad) {
+  const dpr = window.devicePixelRatio || 1;
+  const cssW = canvas.clientWidth || 660, cssH = canvas.clientHeight || 380;
+  canvas.width = Math.round(cssW * dpr);
+  canvas.height = Math.round(cssH * dpr);
+  const ctx = canvas.getContext("2d");
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  pad = pad || { l: 54, r: 22, t: 18, b: 42 };
+  const P = palette();
+  const X = x => pad.l + (x - xlo) / (xhi - xlo) * (cssW - pad.l - pad.r);
+  const Y = y => cssH - pad.b - (y - ylo) / (yhi - ylo) * (cssH - pad.t - pad.b);
+  const font = n => `${n}px "IBM Plex Mono", ui-monospace, monospace`;
+  return {
+    ctx, X, Y, P, W: cssW, H: cssH, pad, font,
+    clear() { ctx.clearRect(0, 0, cssW, cssH); },
+    grid(stepX, stepY) {
+      ctx.strokeStyle = P.rule; ctx.lineWidth = 1; ctx.setLineDash([1, 4]);
+      for (let x = xlo; x <= xhi + 1e-9; x += stepX) {
+        ctx.beginPath(); ctx.moveTo(X(x), pad.t); ctx.lineTo(X(x), cssH - pad.b); ctx.stroke();
+      }
+      for (let y = ylo; y <= yhi + 1e-9; y += stepY) {
+        ctx.beginPath(); ctx.moveTo(pad.l, Y(y)); ctx.lineTo(cssW - pad.r, Y(y)); ctx.stroke();
+      }
+      ctx.setLineDash([]);
+    },
+    axes(xlabel, ylabel, stepX, stepY) {
+      // Tick labels are formatted from the step size, not rounded to whole
+      // numbers: an axis stepping by 0.2 was previously printing 0 0 0 1 1 1.
+      const label = (v, step) => step < 1
+        ? v.toFixed(Math.max(0, -Math.floor(Math.log10(step))))
+        : String(Math.round(v));
+      ctx.strokeStyle = P.ink; ctx.lineWidth = 1.2;
+      ctx.beginPath(); ctx.moveTo(pad.l, pad.t); ctx.lineTo(pad.l, cssH - pad.b);
+      ctx.lineTo(cssW - pad.r, cssH - pad.b); ctx.stroke();
+      ctx.fillStyle = P.muted; ctx.font = font(11); ctx.textAlign = "center";
+      if (stepX) for (let x = xlo; x <= xhi + 1e-9; x += stepX)
+        ctx.fillText(label(x, stepX), X(x), cssH - pad.b + 17);
+      ctx.textAlign = "right";
+      if (stepY) for (let y = ylo; y <= yhi + 1e-9; y += stepY)
+        ctx.fillText(label(y, stepY), pad.l - 9, Y(y) + 4);
+      ctx.fillStyle = P.ink2; ctx.font = font(12); ctx.textAlign = "center";
+      if (xlabel) ctx.fillText(xlabel, (pad.l + cssW - pad.r) / 2, cssH - 8);
+      if (ylabel) { ctx.save(); ctx.translate(14, (pad.t + cssH - pad.b) / 2);
+        ctx.rotate(-Math.PI / 2); ctx.fillText(ylabel, 0, 0); ctx.restore(); }
+    },
+    polygon(pts, fill, stroke) {
+      if (!pts.length) return;
+      ctx.beginPath(); ctx.moveTo(X(pts[0][0]), Y(pts[0][1]));
+      for (const p of pts.slice(1)) ctx.lineTo(X(p[0]), Y(p[1]));
+      ctx.closePath();
+      if (fill) { ctx.globalAlpha = 0.14; ctx.fillStyle = fill; ctx.fill(); ctx.globalAlpha = 1; }
+      if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = 1.8; ctx.stroke(); }
+    },
+    rect(x0, y0, x1, y1, fill, alpha) {
+      ctx.save(); ctx.globalAlpha = alpha === undefined ? 1 : alpha;
+      ctx.fillStyle = fill;
+      ctx.fillRect(X(x0), Y(y1), X(x1) - X(x0), Y(y0) - Y(y1));
+      ctx.restore();
+    },
+    line(x0, y0, x1, y1, color, width, dash) {
+      ctx.save(); ctx.strokeStyle = color; ctx.lineWidth = width || 1.4;
+      if (dash) ctx.setLineDash(dash);
+      ctx.beginPath(); ctx.moveTo(X(x0), Y(y0)); ctx.lineTo(X(x1), Y(y1));
+      ctx.stroke(); ctx.restore();
+    },
+    dot(x, y, color, r) {
+      ctx.beginPath(); ctx.arc(X(x), Y(y), r || 6, 0, 7);
+      ctx.fillStyle = color; ctx.fill();
+      ctx.lineWidth = 2; ctx.strokeStyle = P.paper; ctx.stroke();
+    },
+    label(x, y, text, color, align, size) {
+      ctx.fillStyle = color; ctx.font = font(size || 12);
+      ctx.textAlign = align || "left"; ctx.fillText(text, X(x), Y(y));
+    }
+  };
+}
+
+function sortRound(pts) {
+  if (!pts.length) return pts;
+  const cx = pts.reduce((s, p) => s + p[0], 0) / pts.length;
+  const cy = pts.reduce((s, p) => s + p[1], 0) / pts.length;
+  return pts.slice().sort((a, b) =>
+    Math.atan2(a[1] - cy, a[0] - cx) - Math.atan2(b[1] - cy, b[0] - cx));
+}
+
+
+const cv = document.getElementById("c"), out = document.getElementById("out");
+const mode = document.getElementById("mode"), stepEl = document.getElementById("step");
+const SHOWN = 300;
+function draw() {
+  const extrapolate = mode.value === "1";
+  const tau = +stepEl.value / 100;
+  document.getElementById("stepv").textContent = tau.toFixed(2);
+  const path = run(SHOWN, tau, extrapolate, 0);
+  const vals = path.map(p => value(p[0]));
+  const p = Plot(cv, 0, SHOWN, -50, 850, { l: 58, r: 22, t: 20, b: 42 });
+  p.clear(); p.grid(50, 100); p.axes("iterations", "claimed value", 100, 200);
+  p.line(0, 350, SHOWN, 350, p.P.muted, 1.2, [4, 4]);
+  p.label(SHOWN - 4, 372, "the answer, 350", p.P.muted, "right", 11);
+  p.ctx.beginPath();
+  p.ctx.strokeStyle = extrapolate ? p.P.plan : p.P.price;
+  p.ctx.lineWidth = 1.8;
+  vals.forEach((v, k) => {
+    const V = Math.max(-50, Math.min(850, v));
+    if (k === 0) p.ctx.moveTo(p.X(k), p.Y(V)); else p.ctx.lineTo(p.X(k), p.Y(V));
+  });
+  p.ctx.stroke();
+  const last = path[path.length - 1][0];
+  const tail = vals.slice(-60);
+  const spread = Math.max(...tail) - Math.min(...tail);
+  out.textContent =
+    "after " + SHOWN + " iterations\n" +
+    "  plan       " + last[0].toFixed(4) + " tables, " + last[1].toFixed(4) + " chairs\n" +
+    "  claims     " + value(last).toFixed(4) + "\n" +
+    "  breaks a rule by " + violation(last).toExponential(2) + "\n\n" +
+    (spread < 1e-3
+      ? "settled. the true answer is 9 tables, 4 chairs, 350."
+      : "still swinging by " + spread.toFixed(1) + " over the last 60 steps: not converging.");
+}
+mode.addEventListener("change", draw); stepEl.addEventListener("input", draw);
+window.addEventListener("resize", draw);
+document.addEventListener("themechange", draw);
+draw();
+
+</script>
+</body>
+</html>

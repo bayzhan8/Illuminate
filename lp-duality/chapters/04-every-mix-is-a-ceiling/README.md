@@ -39,7 +39,7 @@ two bullets above are the whole content.)*
 
 ---
 
-Chapter 4 of 10
+Chapter 4 of 11
 
 Previous: [Charging for the ingredients](../03-mixing-the-rules/README.md)  
 Next: [The gap closes, every time](../05-the-gap-closes/README.md)  

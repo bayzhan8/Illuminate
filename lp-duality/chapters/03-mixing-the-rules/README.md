@@ -38,8 +38,8 @@ change.](mixing.gif)
 
 Watch the left panel first. Raising the plank price alone covers tables long
 before it covers chairs. While either bar is short, the prices prove nothing
-whatever. Not a weak ceiling. No ceiling. A price list satisfying one condition
-is worth as much as no price list.
+whatever. A price list that covers one product and not the other proves no
+upper limit at all, which makes it worth exactly as much as no price list.
 
 Then watch what happens once both are covered. There is room to trade a lower
 plank price for a higher hourly rate, stay legal the whole way, and bring the
@@ -54,7 +54,7 @@ before one of the products slips under its price.
 
 ---
 
-Chapter 3 of 10
+Chapter 3 of 11
 
 Previous: [A good plan cannot prove itself best](../02-no-way-to-check/README.md)  
 Next: [Every honest price list is a ceiling](../04-every-mix-is-a-ceiling/README.md)  

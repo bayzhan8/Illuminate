@@ -56,7 +56,13 @@ you never solve at all if you need to quote a number like "four trillion".
 
 ### 2. Write the curriculum notes, not the prose
 
-`notes/design.md`, before `lesson.md`. Decide and write down:
+Read `notes/craft.md` at the repository root first. It holds the prose rules
+every guide is written to — one idea per chapter and how to test for that,
+the hope-then-the-thing-that-kills-it shape, giving the reader arithmetic
+they can check by hand, announcing the notation budget, the tics to avoid,
+and the mechanical order for re-cutting chapters later.
+
+Then `notes/design.md`, before `lesson.md`. Decide and write down:
 
 - **who it is for.** Assume no background and full intelligence. The test of a
   paragraph is whether a busy person who last did algebra at school gets

@@ -26,7 +26,7 @@ do.
 
 ---
 
-Chapter 0 of 10
+Chapter 0 of 13
 
-Next: [Wider, not faster](../01-wider-not-faster/README.md)  
+Next: [How much arithmetic per byte](../01-arithmetic-per-byte/README.md)  
 Contents: [lp-on-gpu](../../README.md)

@@ -45,7 +45,7 @@ before and around the arithmetic.
 
 ---
 
-Chapter 1 of 10
+Chapter 1 of 14
 
 Previous: [What this is](../00-what-this-is/README.md)  
 Next: [What presolve takes out](../02-what-it-removes/README.md)  

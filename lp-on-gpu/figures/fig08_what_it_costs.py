@@ -6,8 +6,8 @@ from firstorder import story as s
 from illuminate.draw import (HAIRLINE, OK, PLAN, PRICE, SURFACE, TEXT, TEXT_DIM,
                              TEXT_FAINT, chapter_dir, figure, heading, save, tag)
 
-OUT_AGREE = chapter_dir("08-the-same-answer")
-OUT_COST = chapter_dir("09-what-it-costs")
+OUT_AGREE = chapter_dir("11-the-same-answer")
+OUT_COST = chapter_dir("12-what-it-costs")
 
 
 def agree_png():

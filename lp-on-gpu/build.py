@@ -12,16 +12,19 @@ ROOT = Path(__file__).resolve().parent
 
 CHAPTERS = [
     Chapter(0, "00-what-this-is", "What this is"),
-    Chapter(1, "01-wider-not-faster", "Wider, not faster"),
-    Chapter(2, "02-the-wrong-shape", "Why simplex is the wrong shape"),
-    Chapter(3, "03-one-operation", "A method made of one operation"),
-    Chapter(4, "04-the-obvious-version", "The obvious version does not work"),
-    Chapter(5, "05-one-term-different", "One term different"),
-    Chapter(6, "06-fast-turn-slow-shrink", "It turns fast and shrinks slowly"),
-    Chapter(7, "07-cancel-the-rotation", "Cancel the rotation"),
-    Chapter(8, "08-the-same-answer", "Does it get the right answer?"),
-    Chapter(9, "09-what-it-costs", "What it costs"),
-    Chapter(10, "10-where-this-leaves-things", "Where this leaves things"),
+    Chapter(1, "01-arithmetic-per-byte", "How much arithmetic per byte"),
+    Chapter(2, "02-the-roofline", "The roofline"),
+    Chapter(3, "03-the-wrong-shape", "Why simplex is the wrong shape"),
+    Chapter(4, "04-reading-the-table", "Reading the table two ways"),
+    Chapter(5, "05-two-players", "Two players, one score"),
+    Chapter(6, "06-one-operation", "A method made of one operation"),
+    Chapter(7, "07-the-obvious-version", "The obvious version does not work"),
+    Chapter(8, "08-one-term-different", "One term different"),
+    Chapter(9, "09-fast-turn-slow-shrink", "It turns fast and shrinks slowly"),
+    Chapter(10, "10-cancel-the-rotation", "Cancel the rotation"),
+    Chapter(11, "11-the-same-answer", "Does it get the right answer?"),
+    Chapter(12, "12-what-it-costs", "What it costs"),
+    Chapter(13, "13-where-this-leaves-things", "Where this leaves things"),
 ]
 
 # The same iteration as src/firstorder, in JavaScript so the pages run with
@@ -88,8 +91,8 @@ function violation(x) {
 
 SANDBOXES = [
     Sandbox(
-        5, "One term, on or off",
-        "The two methods of chapters 4 and 5, on the workshop, with the "
+        8, "One term, on or off",
+        "The two methods of chapters 7 and 8, on the workshop, with the "
         "extrapolation you can switch off.",
         "Turn anticipation off and watch it start cycling instead of settling. "
         "Then turn it back on and raise the step size until even that fails.",
@@ -140,11 +143,11 @@ draw();
 """,
         "The step size has a ceiling above which even the working method stops "
         "converging. That ceiling is the same rule that makes it contract so "
-        "slowly below it, which is chapter 6."),
+        "slowly below it, which is chapter 9."),
 
     Sandbox(
-        7, "Restart it",
-        "The same iteration, with the averaging of chapter 7. The cost per "
+        10, "Restart it",
+        "The same iteration, with the averaging of chapter 10. The cost per "
         "step is identical either way.",
         "Sweep the restart period. There is a best value near the length of one "
         "revolution of the spiral, and it beats never restarting by orders of "
