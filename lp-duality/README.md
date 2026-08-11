@@ -1,6 +1,6 @@
 # Linear programming duality
 
-*Every plan has a price tag.*
+*Two problems, one number.*
 
 Every planning problem comes with a second problem attached to it, about
 prices, and solving either one solves both. That fact is why a solver can tell

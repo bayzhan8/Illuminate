@@ -186,13 +186,13 @@ draw();
 TOPIC = Topic(
     slug="branch-and-price",
     root=ROOT,
-    title="Ask the prices what you are missing — column generation",
+    title="Solving a model you never wrote down — column generation",
     blurb=("Column generation and branch-and-price built from a cutting-stock "
            "order, with every number checked by code."),
     chapters=CHAPTERS,
     sandboxes=SANDBOXES,
     maths=MATHS,
-    heading="# Ask the prices what you are missing",
+    heading="# Solving a model you never wrote down",
 )
 
 

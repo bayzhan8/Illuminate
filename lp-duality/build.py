@@ -330,13 +330,13 @@ draw();
 TOPIC = Topic(
     slug="lp-duality",
     root=ROOT,
-    title="Every plan has a price tag — LP duality",
+    title="Two problems, one number — LP duality",
     blurb=("Linear programming duality built from a workshop with three "
            "shelves and two products, with every number checked by code."),
     chapters=CHAPTERS,
     sandboxes=SANDBOXES,
     maths=MATHS,
-    heading="# Every plan has a price tag",
+    heading="# Two problems, one number",
 )
 
 if __name__ == "__main__":

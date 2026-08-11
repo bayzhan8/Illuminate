@@ -1,4 +1,4 @@
-# Every plan has a price tag
+# Two problems, one number
 
 **Linear programming duality, built from a workshop with three shelves.**
 

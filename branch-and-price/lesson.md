@@ -1,4 +1,4 @@
-# Ask the prices what you are missing
+# Solving a model you never wrote down
 
 **Column generation and branch-and-price, built from a cutting-stock order.**
 

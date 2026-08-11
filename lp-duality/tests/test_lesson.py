@@ -136,7 +136,7 @@ def test_the_random_sample_size_matches_the_figure():
 def test_the_lesson_splits_into_the_chapters_build_expects():
     front, chapters, tail = build.split_lesson(build.TOPIC)
     assert len(chapters) == len(build.CHAPTERS) == 11
-    assert front.startswith("# Every plan has a price tag")
+    assert front.startswith(build.TOPIC.heading)
     assert tail
 
 
