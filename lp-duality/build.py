@@ -20,10 +20,10 @@ ROOT = Path(__file__).resolve().parent
 CHAPTERS = [
     Chapter(0, "00-what-this-is", "What this is"),
     Chapter(1, "01-the-workshop", "The workshop"),
-    Chapter(2, "02-no-way-to-check", "Why you cannot just check"),
+    Chapter(2, "02-no-way-to-check", "A good plan cannot prove itself best"),
     Chapter(3, "03-mixing-the-rules", "Charging for the ingredients"),
     Chapter(4, "04-every-mix-is-a-ceiling", "Every honest price list is a ceiling"),
-    Chapter(5, "05-they-always-meet", "They always meet"),
+    Chapter(5, "05-the-gap-closes", "The gap closes, every time"),
     Chapter(6, "06-who-is-binding", "Which rules are actually holding you back"),
     Chapter(7, "07-what-one-more-is-worth", "What one more plank is worth"),
     Chapter(8, "08-the-price-breaks", "The price is only local"),

@@ -10,7 +10,7 @@ for whoever edits this next, including me.
 Chosen by search, not taste. The requirements were: two variables so the
 feasible set is drawable; an optimum at a vertex with integer coordinates; and
 at least one row slack at that vertex. That last one is the whole reason
-chapter 6 has a picture instead of a paragraph — with every row tight,
+chapter 6 has a picture instead of a paragraph. With every row tight,
 complementary slackness has nothing to point at.
 
 Rejected: the first candidate (wood 40) gave T = 7.5. Fractional table counts
@@ -65,7 +65,7 @@ bugs.
 **The value-function reconstruction refuses rather than guesses.**
 
 Bends are found by sampling, and a bend almost never lands on a sample. This
-example bends at 316/7; a grid stepping 45 → 45.5 straddles it, and the
+example bends at 316/7. A grid stepping 45 to 45.5 straddles it, and the
 straddling pair reports slope 25/14, which belongs to neither adjacent piece.
 Taken at face value that becomes a phantom fourth segment a tenth of a unit
 wide.
@@ -95,9 +95,9 @@ The cost is one chapter of apparent stalling. Worth it.
 Relations appear as pictures or sentences; the program itself appears once, as
 a table of stock and recipes, because that is a shopping list. Every invented
 term is mapped to its standard name in a table at the end, so the reader can
-leave and read anything else. "Price" means a dual variable throughout and
-never a market price in the same passage — chapter 7 has to separate those two
-senses explicitly, which is a sign the word is working hard.
+leave and read anything else. "Price" means a dual variable throughout and never a
+market price in the same passage. Chapter 7 has to separate those two senses
+explicitly, which is a sign the word is working hard.
 
 ---
 
@@ -106,7 +106,7 @@ senses explicitly, which is a sign the word is working hard.
 Motion is spent where the motion carries the argument: two regions converging,
 an objective line sweeping to a corner, price bars covering their products, two
 ladders closing, a capacity sliding until its price dies. Everything else is a
-chart. Nine early drafts were boxes containing words; those became tables,
+chart. Nine early drafts were boxes containing words. Those became tables,
 which are searchable, selectable, and legible to a screen reader.
 
 Animations hold three seconds on the final frame. The encoder folds identical
@@ -126,20 +126,19 @@ blue/rust pair against a second surface for no reading benefit.
 
 Blue is a plan, rust is a price, everywhere, in every topic. Candidates were
 run through a colour-vision validator rather than eyeballed. A third
-categorical hue kept failing — blue↔violet and rust↔green both fall under the
-separation floor — so green survives only as a status mark, always beside a
-word or a tick.
+categorical hue kept failing (blue against violet, rust against green, both
+under the separation floor), so green survives only as a status mark, always
+beside a word or a tick.
 
 ---
 
 **Tests split three ways because they fail for different reasons.**
 
-`test_lp.py` is mathematics. `test_lesson.py` is prose against code, and it
-catches the class of failure that is invisible by reading, because a stale
-number leaves a page that still scans perfectly. `test_sandbox.py` is
-JavaScript against Python.
+`test_lp.py` is mathematics. `test_lesson.py` is prose against code, catching
+the class of failure invisible by reading, since a stale number leaves a page
+that still scans perfectly. `test_sandbox.py` is JavaScript against Python.
 
-Where the mathematics is genuinely non-unique — degenerate corners have several
-valid dual vectors — the sandbox test asserts the property (feasible, same
-objective) rather than the vector. Demanding an exact match there would be
-demanding something false.
+Where the mathematics is genuinely non-unique (degenerate corners have several
+valid dual vectors) the sandbox test asserts the property, feasible and same
+objective, rather than the vector. Demanding an exact match would be demanding
+something false.

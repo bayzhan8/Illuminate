@@ -16,7 +16,7 @@ node is itself solved by generating columns.
 > **At each node**
 >
 > 1. Impose the node's branching decisions on the master.
-> 2. Solve that relaxation by column generation — the full loop, at every node.
+> 2. Solve that relaxation by column generation: the full loop, at every node.
 > 3. Prune if it is infeasible, or if its bound cannot beat the best plan found.
 > 4. If the answer is whole, record it. Otherwise pick a fractional pattern
 >    count and split: one child uses it at most ⌊x⌋ times, the other at least ⌈x⌉.
@@ -50,9 +50,9 @@ and can produce prices; they fall out on their own as real patterns arrive.
 
 The first version of the solver in this folder had neither fix, and disagreed
 with brute force on **476 of 1230** test instances. It now agrees on all of
-them. Neither bug announced itself — the trees looked sensible and the answers
+them. Neither bug announced itself. The trees looked sensible and the answers
 looked plausible, and only running every small instance against an independent
-brute-force solver revealed it.
+brute-force solver exposed them.
 
 One more admission. Branching on a single pattern's count, as above, is a
 *weak* rule. Real implementations use Ryan–Foster branching, which splits on

@@ -10,7 +10,7 @@ An order has to be cut from standard boards, and the question is how many
 boards it takes.
 
 The obvious model, relaxed, proves you need at least **5.44** boards. So six
-might be enough — the model cannot say otherwise.
+might be enough; the model cannot say otherwise.
 
 A different model of the *same order*, relaxed the same way, proves you need at
 least **6.5**. Six is now impossible. And seven boards can be cut, so seven is

@@ -12,9 +12,9 @@ OUT = chapter_dir("01-the-workshop")
 def region_png():
     """Every plan the workshop could actually carry out, and the corners of that set.
 
-    The three rules are straight lines because doubling a plan doubles what it
-    consumes; that is the only assumption in the whole guide, and it is worth
-    seeing that it is what makes the picture have flat sides and sharp corners.
+    Straight boundaries because doubling a plan doubles what it consumes. That
+    proportionality is the only modelling assumption in the guide, and it is
+    what gives the region flat sides and sharp corners rather than curves.
     """
     fig, ax = figure(7.6, 5.0)
     draw_axes(ax)
@@ -40,10 +40,10 @@ def region_png():
 def sweep_gif(frames=46, fps=12):
     """Push the equal-profit line outwards until it is about to leave the region.
 
-    The line is the set of plans worth some particular amount.  Sliding it
-    outwards raises that amount, and the last plan it still touches is the best
-    one.  It stops on a corner, which is not a coincidence and is the reason
-    every method in this repository looks at corners.
+    Each position of the line is a set of plans worth the same amount. Sliding
+    it outwards raises that amount; the last plan it touches is the best one.
+    It lands on a corner, which is why every method in this repository spends
+    its time on corners.
     """
     fig, ax = figure(7.6, 5.0)
     fig.subplots_adjust(bottom=0.22)

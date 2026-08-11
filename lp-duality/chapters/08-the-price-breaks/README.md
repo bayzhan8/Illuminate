@@ -18,7 +18,7 @@ the piece you happen to be standing on*:
 | 20 to 45 ⅐ | **$6.25** | where this workshop actually is |
 | over 45 ⅐ | $0.00 | the saw is the binding rule now; planks pile up |
 
-The workshop has 44 planks. It is **1 ⅐ planks away** from its price collapsing
+The workshop has 44 planks. It is 1 ⅐ planks away from its price collapsing
 to nothing. A shadow price without the range it holds over is close to useless,
 and quoting one without the other is the most common way this idea gets misused
 in practice.

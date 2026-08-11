@@ -13,12 +13,12 @@ prices charge for the ingredients the plan uses, three hundred and eighty six.
 What those prices charge for everything in the building, three hundred and
 ninety eight.](chain.png)
 
-The plan shown builds 10 tables and 2 chairs, earning **$340**. The prices
+The plan shown builds 10 tables and 2 chairs, earning $340. The prices
 shown are $7 a plank, $3 an hour and nothing for saw time. Then:
 
-- **$340 ≤ $386**, because every product is priced at least what it earns, so
+- $340 ≤ $386, because every product is priced at least what it earns, so
   the ingredients a plan eats are worth at least what the plan makes.
-- **$386 ≤ $398**, because a plan cannot use more of anything than there is.
+- $386 ≤ $398, because a plan cannot use more of anything than there is.
 
 So $340 ≤ $398. Notice what the argument never used: that this was a *good*
 plan, or that these were *cheap* prices. It holds for every plan and every
@@ -34,5 +34,5 @@ are finished, you know you are finished, and you never examined a second plan.
 Chapter 4 of 10
 
 Previous: [Charging for the ingredients](../03-mixing-the-rules/README.md)  
-Next: [They always meet](../05-they-always-meet/README.md)  
+Next: [The gap closes, every time](../05-the-gap-closes/README.md)  
 Contents: [lp-duality](../../README.md)

@@ -20,10 +20,10 @@ never writes an equation.
 |---|---|---|
 | 0 | [What this is](chapters/00-what-this-is/) | two problems, one number |
 | 1 | [The workshop](chapters/01-the-workshop/) | the problem, and its picture |
-| 2 | [Why you cannot just check](chapters/02-no-way-to-check/) | searching never proves you are done |
+| 2 | [A good plan cannot prove itself best](chapters/02-no-way-to-check/) | searching never certifies |
 | 3 | [Charging for the ingredients](chapters/03-mixing-the-rules/) | where a ceiling comes from |
 | 4 | [Every honest price list is a ceiling](chapters/04-every-mix-is-a-ceiling/) | weak duality, in two steps |
-| 5 | [They always meet](chapters/05-they-always-meet/) | strong duality |
+| 5 | [The gap closes, every time](chapters/05-the-gap-closes/) | strong duality |
 | 6 | [Which rules are holding you back](chapters/06-who-is-binding/) | complementary slackness |
 | 7 | [What one more plank is worth](chapters/07-what-one-more-is-worth/) | shadow prices |
 | 8 | [The price is only local](chapters/08-the-price-breaks/) | and how local |

@@ -23,7 +23,7 @@ from illuminate.draw import (TEXT, TEXT_DIM, TEXT_FAINT, OK, SURFACE, PLAN, PRIC
 from lpduality.duality import ceiling_from, dual
 from lpduality.lp import LP, solve
 
-OUT = chapter_dir("05-they-always-meet")
+OUT = chapter_dir("05-the-gap-closes")
 
 
 def meet_gif(fps=11):

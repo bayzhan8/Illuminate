@@ -10,10 +10,10 @@ at three hundred and fifty dollars.](hero.gif)
 Two different questions, asked by two different people, about the same
 workshop.
 
-The **owner** asks: *what should I build?* They push their profit as high as it
+The owner asks: *what should I build?* They push their profit as high as it
 will go.
 
-The **buyer** asks: *what would I have to pay to buy the place out?* They push
+The buyer asks: *what would I have to pay to buy the place out?* They push
 their bill as low as it will go.
 
 The two pictures have different axes and are not the same shape. One climbs,

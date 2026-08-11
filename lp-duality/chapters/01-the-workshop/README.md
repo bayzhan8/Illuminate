@@ -29,8 +29,8 @@ straight line) and push it outwards.
 ![A line of equal profit sweeping across the region until it is about to leave,
 resting finally on a single corner.](sweep.gif)
 
-The last plan the line still touches is the best one: **9 tables and 4 chairs,
-worth $350.** It is a corner. That is not luck, and it is why every method in this
+The last plan the line still touches is the best one: 9 tables and 4 chairs,
+worth $350. It is a corner. That is not luck, and it is why every method in this
 repository spends its time on corners.
 
 **[Try it yourself →](https://bayzhan8.github.io/Illuminate/lp-duality/sandbox/01.html)**
@@ -42,5 +42,5 @@ one to the next.
 Chapter 1 of 10
 
 Previous: [What this is](../00-what-this-is/README.md)  
-Next: [Why you cannot just check](../02-no-way-to-check/README.md)  
+Next: [A good plan cannot prove itself best](../02-no-way-to-check/README.md)  
 Contents: [lp-duality](../../README.md)

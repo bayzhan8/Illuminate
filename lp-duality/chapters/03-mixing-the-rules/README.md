@@ -10,14 +10,14 @@ prices you like, as long as none of them is negative.
 
 Now those prices imply a price for a table, because a table is 4 planks, 2
 hours and 3 hours of saw time. They imply a price for a chair too. And if the
-prices you chose happen to have this property —
+prices you chose happen to have this property:
 
 > **every product is priced at least as high as it sells for**
 
-— then something quite strong follows. Whatever the workshop builds, the
-ingredients it consumes are worth at least what the finished goods sell for. So
-the total value of everything in the building is at least the most the workshop
-could ever earn. **You have a ceiling.**
+then something strong follows. Whatever the workshop builds, the ingredients it
+consumes are worth at least what the finished goods sell for. So the total
+value of everything in the building is at least the most the workshop could
+ever earn. That is a ceiling.
 
 ![Two panels. On the left, bars showing what the current prices charge for one
 table and one chair, each against a line showing what that product earns. On
@@ -41,6 +41,6 @@ before one of the products slips under its price.
 
 Chapter 3 of 10
 
-Previous: [Why you cannot just check](../02-no-way-to-check/README.md)  
+Previous: [A good plan cannot prove itself best](../02-no-way-to-check/README.md)  
 Next: [Every honest price list is a ceiling](../04-every-mix-is-a-ceiling/README.md)  
 Contents: [lp-duality](../../README.md)

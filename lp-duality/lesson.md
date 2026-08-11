@@ -28,10 +28,10 @@ at three hundred and fifty dollars.](chapters/00-what-this-is/hero.gif)
 Two different questions, asked by two different people, about the same
 workshop.
 
-The **owner** asks: *what should I build?* They push their profit as high as it
+The owner asks: *what should I build?* They push their profit as high as it
 will go.
 
-The **buyer** asks: *what would I have to pay to buy the place out?* They push
+The buyer asks: *what would I have to pay to buy the place out?* They push
 their bill as low as it will go.
 
 The two pictures have different axes and are not the same shape. One climbs,
@@ -72,8 +72,8 @@ straight line) and push it outwards.
 ![A line of equal profit sweeping across the region until it is about to leave,
 resting finally on a single corner.](chapters/01-the-workshop/sweep.gif)
 
-The last plan the line still touches is the best one: **9 tables and 4 chairs,
-worth $350.** It is a corner. That is not luck, and it is why every method in this
+The last plan the line still touches is the best one: 9 tables and 4 chairs,
+worth $350. It is a corner. That is not luck, and it is why every method in this
 repository spends its time on corners.
 
 **[Try it yourself →](https://bayzhan8.github.io/Illuminate/lp-duality/sandbox/01.html)**
@@ -116,14 +116,14 @@ prices you like, as long as none of them is negative.
 
 Now those prices imply a price for a table, because a table is 4 planks, 2
 hours and 3 hours of saw time. They imply a price for a chair too. And if the
-prices you chose happen to have this property —
+prices you chose happen to have this property:
 
 > **every product is priced at least as high as it sells for**
 
-— then something quite strong follows. Whatever the workshop builds, the
-ingredients it consumes are worth at least what the finished goods sell for. So
-the total value of everything in the building is at least the most the workshop
-could ever earn. **You have a ceiling.**
+then something strong follows. Whatever the workshop builds, the ingredients it
+consumes are worth at least what the finished goods sell for. So the total
+value of everything in the building is at least the most the workshop could
+ever earn. That is a ceiling.
 
 ![Two panels. On the left, bars showing what the current prices charge for one
 table and one chair, each against a line showing what that product earns. On
@@ -158,12 +158,12 @@ prices charge for the ingredients the plan uses, three hundred and eighty six.
 What those prices charge for everything in the building, three hundred and
 ninety eight.](chapters/04-every-mix-is-a-ceiling/chain.png)
 
-The plan shown builds 10 tables and 2 chairs, earning **$340**. The prices
+The plan shown builds 10 tables and 2 chairs, earning $340. The prices
 shown are $7 a plank, $3 an hour and nothing for saw time. Then:
 
-- **$340 ≤ $386**, because every product is priced at least what it earns, so
+- $340 ≤ $386, because every product is priced at least what it earns, so
   the ingredients a plan eats are worth at least what the plan makes.
-- **$386 ≤ $398**, because a plan cannot use more of anything than there is.
+- $386 ≤ $398, because a plan cannot use more of anything than there is.
 
 So $340 ≤ $398. Notice what the argument never used: that this was a *good*
 plan, or that these were *cheap* prices. It holds for every plan and every
@@ -176,7 +176,7 @@ are finished, you know you are finished, and you never examined a second plan.
 
 ---
 
-## 5 · They always meet
+## 5 · The gap closes, every time
 
 So plans push up from below and price lists press down from above. The question
 is whether they meet, or whether they stop with a gap between them that nothing
@@ -185,36 +185,34 @@ can close.
 ![Real plans appearing along a dollar scale from the left, and real price lists
 appearing from the right, with the band of remaining possibilities shrinking
 until it is a single point at three hundred and fifty
-dollars.](chapters/05-they-always-meet/meet.gif)
+dollars.](chapters/05-the-gap-closes/meet.gif)
 
-They meet. The best plan earns **$350** and the cheapest honest price list
-charges **$350**, and the space in between has nothing left in it.
+They meet. The best plan earns $350, the cheapest honest price list charges
+$350, and the space between them has nothing left in it.
 
-It would be fair to suspect this workshop of being rigged. So here are 320 more
-workshops, invented at random — different numbers of products, different
-numbers of shelves, different recipes — each one solved twice from scratch, once
-for its best plan and once, as a completely separate problem, for its cheapest
-prices.
+It would be fair to suspect this workshop of being rigged. So here are 320 more,
+invented at random, with different numbers of products, different numbers of
+shelves and different recipes. Each was solved twice from scratch: once for its
+best plan, and once, as a separate problem, for its cheapest prices.
 
 ![A scatter plot of the best plan's profit against the cheapest price list's
 bill for three hundred and twenty random workshops. Every point lies on the
-diagonal.](chapters/05-they-always-meet/always.png)
+diagonal.](chapters/05-the-gap-closes/always.png)
 
-Every point is on the diagonal, and because both sides are computed in exact
-fractions the largest disagreement across all 320 is not "small" — it is zero.
+Every point is on the diagonal. Both sides are computed in exact fractions, so
+the largest disagreement across all 320 is zero. Not small. Zero.
 
-This is the theorem that makes the subject work. It has a name — **strong
-duality** — and it is worth being clear about what the picture above is and is
-not. It is not a proof. It is 320 pieces of evidence and a warning that any
-proposed explanation had better predict all of them. The proof exists, and
-chapter 9 shows the shape of it by looking at what happens when the theorem's
-conditions fail.
+This is the theorem the subject rests on, and it is called **strong duality**.
+Be clear about what the picture above is. It is not a proof. It is 320 pieces
+of evidence, and a warning that any explanation had better account for all of
+them. The proof exists; chapter 9 shows its shape by looking at what happens
+when the theorem's conditions fail.
 
 Two problems, then. The one about plans is called the **primal**; the one about
-prices is called the **dual**. Each is built from the other by turning it inside
-out — rows become variables, variables become rows, the objective and the stock
-levels trade places, and the inequalities reverse. Do it twice and you are back
-where you started, which is the sense in which neither one is the original.
+prices is called the **dual**. Each is built from the other by turning it inside out. Rows become variables,
+variables become rows, the objective and the stock levels trade places, and the
+inequalities reverse. Do it twice and you are back where you started, which is
+the sense in which neither one is the original.
 
 ---
 
@@ -222,12 +220,11 @@ where you started, which is the sense in which neither one is the original.
 
 Now the dual starts paying for itself.
 
-The best plan is 9 tables and 4 chairs. It uses **all 44 planks** and **all 30
-hours**, and 31 of the 32 hours of saw time — one hour of saw time is left
-sitting there.
+The best plan is 9 tables and 4 chairs. It uses all 44 planks and all 30 hours,
+and 31 of the 32 hours of saw time. One hour of saw time sits there unused.
 
-Now look at the prices: **$6.25 a plank, $2.50 an hour, and nothing at all for
-saw time.**
+Now look at the prices: $6.25 a plank, $2.50 an hour, and nothing at all for
+saw time.
 
 ![The feasible region with the two limits the best plan is pressed against drawn
 solid and priced, and the limit it is clear of drawn dashed and priced at
@@ -239,9 +236,9 @@ up is worth something.** If saw time is not what is stopping you, nobody would
 pay you for another hour of it.
 
 The same rule runs the other way, for products rather than resources. A product
-that gets built is priced at exactly what it earns — no more. A product priced
-*above* what it earns would be one you are better off not building at all, and
-in the best plan its quantity is zero.
+that gets built is priced at what it earns and no more. A product priced
+*above* what it earns is one you are better off not building, and in the best
+plan its quantity is zero.
 
 This pairing has a name, **complementary slackness**, and in practice it is the
 first thing anyone looks at, because it answers the question people actually
@@ -295,7 +292,7 @@ the piece you happen to be standing on*:
 | 20 to 45 ⅐ | **$6.25** | where this workshop actually is |
 | over 45 ⅐ | $0.00 | the saw is the binding rule now; planks pile up |
 
-The workshop has 44 planks. It is **1 ⅐ planks away** from its price collapsing
+The workshop has 44 planks. It is 1 ⅐ planks away from its price collapsing
 to nothing. A shadow price without the range it holds over is close to useless,
 and quoting one without the other is the most common way this idea gets misused
 in practice.
@@ -320,14 +317,13 @@ between.](chapters/09-when-it-goes-wrong/edges.png)
 
 **Profit that runs away.** If the rules leave a direction the workshop can go
 forever, there is no best plan. A ceiling would have to be a number bigger than
-every plan, and there is no such number — so there are no honest prices at all.
-The two failures come as a pair: *the plan side runs away exactly when the price
-side has nothing to offer.*
+every plan, and no such number exists, so there are no honest prices either.
+The two failures come as a pair: *the plan side runs away precisely when the
+price side has nothing to offer.*
 
 **A plan that cannot exist.** Suppose an order arrives for 12 tables. Forty-four
-planks make eleven tables, so the order cannot be met. Here is the part worth
-seeing — the impossibility has a *short proof*, and the proof is arithmetic
-rather than an exhausted search:
+planks make eleven tables, so the order cannot be met. The impossibility has a
+*short proof*, and the proof is arithmetic rather than an exhausted search:
 
 > Take a quarter of the plank rule, and all of the order.
 > Add them together, and they say: half of the chairs, at most −1.
@@ -339,8 +335,8 @@ the rules that adds up to something plainly absurd. It is called a **Farkas
 certificate**, and the fact that one always exists when a system is impossible
 is the fact that strong duality is built on.
 
-There is one more case worth naming so it does not surprise you: at a bend in
-that curve from chapter 8, the price is genuinely not unique. Standing exactly
+One more case, so it does not surprise you. At a bend in the curve from chapter
+8 the price is not unique. Standing exactly
 at 45 ⅐ planks, one more plank is worth nothing and one fewer costs $6.25, and
 both numbers are legitimate prices. A solver will hand you one of them without
 mentioning the other. This is called **degeneracy**, and it is why a
@@ -354,8 +350,8 @@ Everything above is one small problem solved by hand. The reason duality is
 worth this much attention is what gets built on it.
 
 - **The simplex method** decides which product to bring into a plan by asking
-  whether its dual row is violated — the "reduced cost" in any solver's log is
-  exactly the amount by which a product's ingredients cost less than it earns.
+  whether its dual row is violated. The "reduced cost" in any solver's log is
+  the amount by which a product's ingredients cost less than it earns.
 - **Column generation** turns that around. When there are too many possible
   products to write down, solve with a few, read the prices off the dual, and
   use those prices to *ask* whether some product you have not written down yet
@@ -367,7 +363,7 @@ worth this much attention is what gets built on it.
 - **Benders decomposition** cuts the other way: fix the hard decisions, solve
   what is left, and take the *dual* of that leftover problem as a new rule to
   send back. Every Benders cut is a price list from chapter 3, doing the job it
-  was doing there — proving that a proposal cannot be as good as it claims.
+  did there: proving a proposal cannot be as good as it claims.
 
 Those are the next topics in this repository. They are all this chapter's idea,
 under load.

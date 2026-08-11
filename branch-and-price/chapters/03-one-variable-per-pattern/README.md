@@ -5,19 +5,19 @@
 So model the decision differently. Instead of *which pieces go on which board*,
 decide **how many boards to cut with each pattern.**
 
-Every pattern is a way of cutting a board that is already legal — the pieces
-fit, by construction. So the model has nothing left to say about fitting. It
-only has to say that enough pieces come out:
+Every pattern is a way of cutting a board that is already legal: the pieces fit,
+by construction. So the model has nothing left to say about fitting. It only
+has to say that enough pieces come out:
 
 > **choose** how many boards to cut with each pattern, to **minimise** the
 > total number of boards, so that for each length, the pieces produced across
 > all patterns **cover the order**.
 
-Relax *that* — allow a fractional number of boards cut with a pattern — and the
-answer is **6.5 boards.**
+Relax *that*, allowing a fractional number of boards cut with a pattern, and
+the answer is **6.5 boards.**
 
 Two relaxations of the same order, an enormous distance apart. Integrality was
-not discarded this time. It was **absorbed into the variables**: every pattern
+not discarded this time. It was absorbed into the variables: every pattern
 is a whole-board decision already made correctly, so relaxing the *count* of
 patterns cannot un-decide it. What remains to relax does far less harm.
 

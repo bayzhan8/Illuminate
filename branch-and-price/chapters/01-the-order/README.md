@@ -13,9 +13,9 @@ it.](order.png)
 | medium pieces | 9 ft | 6 |
 | long pieces | 10 ft | 7 |
 
-Boards are identical and there are plenty of them. Each one is cut once,
-however you like, and the leftover at the end is waste — you cannot glue two
-offcuts together. **Use as few boards as possible.**
+Boards are identical and there are plenty of them. Each is cut once, however
+you like, and the leftover at the end is waste, since two offcuts cannot be
+glued together. **Use as few boards as possible.**
 
 A **pattern** is one way of cutting one board. For this order there are only
 six worth using, in the sense that no further piece could be squeezed into the

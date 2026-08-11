@@ -2,12 +2,12 @@
 
 ## 5 · Start with a few, and let the prices ask for more
 
-Start with a model that is obviously too small. Take a few patterns — say the
-lazy ones, each board cut into copies of a single length — and solve *that*.
+Start with a model that is obviously too small. Take a few patterns, say the
+lazy ones with each board cut into copies of a single length, and solve *that*.
 This is the **restricted master**: the real model, restricted to the columns
-you have bothered to write down.
+someone has bothered to write down.
 
-For our order, starting with three lazy patterns, it says: **7 boards.**
+For our order, starting with three lazy patterns, it says: 7 boards.
 
 That is an honest upper bound, since those patterns really do fill the order.
 It is not the answer to the strong model, which has three more patterns nobody
@@ -37,9 +37,9 @@ pattern nobody has written down can still be judged by it.
 restricted master satisfy every dual constraint belonging to a pattern you have
 got. If they satisfy the constraints of all the patterns you *have not* got
 too, they are feasible for the full problem's dual, and the restricted answer
-is the full answer — proved, without ever building the full model. A pattern
-that violates its dual constraint is a missing column, and the two things are
-the same thing seen from opposite sides.
+is the full answer, proved without ever building the full model. A pattern that
+violates its dual constraint is a missing column. The two statements are one
+statement seen from opposite sides.
 
 ---
 

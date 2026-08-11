@@ -19,14 +19,14 @@ next.](loop.gif)
 
 Watch the number come down: **7 boards**, then 6.875, then 6.5. Then the
 knapsack returns a pattern worth exactly 1 and the loop stops. Three patterns
-added, and **6.5 boards** is optimal for a model nobody wrote down.
+added, and 6.5 boards is optimal for a model nobody wrote down.
 
 Be exact about what step 5 claims. Not that no better answer exists: that no
 *column* exists which would improve this one. The knapsack searched every
 pattern implicitly rather than sampling some, so it is a proof.
 
-On a slightly bigger order — 55-foot boards, four different lengths — there are
-thirty usable patterns, and the loop settles after touching six of them:
+On a slightly bigger order, 55-foot boards with four different lengths, there
+are thirty usable patterns, and the loop settles after touching six of them:
 
 ![Thirty patterns drawn as boards, with the six the loop actually built
 highlighted and the rest left blank.](touched.png)

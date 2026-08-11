@@ -6,7 +6,7 @@ The natural way to model this is to decide, for each board, what comes off it:
 take a pile of boards, mark some of them "used", and assign pieces to them
 without overfilling any.
 
-Relax that — let a board be 30% used, let a piece be split across two boards —
+Relax that, letting a board be 30% used and a piece be split across two boards,
 and the answer it gives is:
 
 > total length ordered ÷ board length

@@ -25,10 +25,10 @@ a proposal cannot be as good as it claims.
 
 A case that resembles the above and is not.
 
-Suppose the columns are not defined by a polyhedron but *pre-generated* — a
-fixed list of candidate driver schedules, say, computed in advance. Then there
-is no optimisation problem to solve for the best column; you scan the list and
-take the best reduced cost. The algorithm still works, and the surrounding
+Suppose the columns are not defined by a polyhedron but *pre-generated*: a fixed
+list of candidate driver schedules, say, computed in advance. Then there is no
+optimisation problem to solve for the best column. You scan the list and take
+the best reduced cost. The algorithm still works and the surrounding
 branch-and-price machinery is unchanged.
 
 But it is no longer generating the extreme points of a block. It is
@@ -67,9 +67,9 @@ make figures  # re-render every image
 ```
 
 The solver reuses the exact-fraction simplex from
-[the duality topic](../lp-duality/) rather than carrying a second copy of it —
-this topic really is that one under load. The tests check the mathematics, the
-prose against the code, and branch-and-price against a brute-force solver that
+[the duality topic](../lp-duality/) rather than carrying a second copy. This
+topic really is that one under load. The tests check the mathematics, the prose
+against the code, and branch-and-price against a brute-force solver that
 enumerates every pattern.
 
 ---

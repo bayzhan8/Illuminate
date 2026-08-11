@@ -25,7 +25,7 @@ An order has to be cut from standard boards, and the question is how many
 boards it takes.
 
 The obvious model, relaxed, proves you need at least **5.44** boards. So six
-might be enough — the model cannot say otherwise.
+might be enough; the model cannot say otherwise.
 
 A different model of the *same order*, relaxed the same way, proves you need at
 least **6.5**. Six is now impossible. And seven boards can be cut, so seven is
@@ -50,9 +50,9 @@ it.](chapters/01-the-order/order.png)
 | medium pieces | 9 ft | 6 |
 | long pieces | 10 ft | 7 |
 
-Boards are identical and there are plenty of them. Each one is cut once,
-however you like, and the leftover at the end is waste — you cannot glue two
-offcuts together. **Use as few boards as possible.**
+Boards are identical and there are plenty of them. Each is cut once, however
+you like, and the leftover at the end is waste, since two offcuts cannot be
+glued together. **Use as few boards as possible.**
 
 A **pattern** is one way of cutting one board. For this order there are only
 six worth using, in the sense that no further piece could be squeezed into the
@@ -72,7 +72,7 @@ The natural way to model this is to decide, for each board, what comes off it:
 take a pile of boards, mark some of them "used", and assign pieces to them
 without overfilling any.
 
-Relax that — let a board be 30% used, let a piece be split across two boards —
+Relax that, letting a board be 30% used and a piece be split across two boards,
 and the answer it gives is:
 
 > total length ordered ÷ board length
@@ -94,19 +94,19 @@ what was relaxed away.
 So model the decision differently. Instead of *which pieces go on which board*,
 decide **how many boards to cut with each pattern.**
 
-Every pattern is a way of cutting a board that is already legal — the pieces
-fit, by construction. So the model has nothing left to say about fitting. It
-only has to say that enough pieces come out:
+Every pattern is a way of cutting a board that is already legal: the pieces fit,
+by construction. So the model has nothing left to say about fitting. It only
+has to say that enough pieces come out:
 
 > **choose** how many boards to cut with each pattern, to **minimise** the
 > total number of boards, so that for each length, the pieces produced across
 > all patterns **cover the order**.
 
-Relax *that* — allow a fractional number of boards cut with a pattern — and the
-answer is **6.5 boards.**
+Relax *that*, allowing a fractional number of boards cut with a pattern, and
+the answer is **6.5 boards.**
 
 Two relaxations of the same order, an enormous distance apart. Integrality was
-not discarded this time. It was **absorbed into the variables**: every pattern
+not discarded this time. It was absorbed into the variables: every pattern
 is a whole-board decision already made correctly, so relaxing the *count* of
 patterns cannot un-decide it. What remains to relax does far less harm.
 
@@ -143,12 +143,12 @@ that you cannot tell which handful matters until the thing is solved.
 
 ## 5 · Start with a few, and let the prices ask for more
 
-Start with a model that is obviously too small. Take a few patterns — say the
-lazy ones, each board cut into copies of a single length — and solve *that*.
+Start with a model that is obviously too small. Take a few patterns, say the
+lazy ones with each board cut into copies of a single length, and solve *that*.
 This is the **restricted master**: the real model, restricted to the columns
-you have bothered to write down.
+someone has bothered to write down.
 
-For our order, starting with three lazy patterns, it says: **7 boards.**
+For our order, starting with three lazy patterns, it says: 7 boards.
 
 That is an honest upper bound, since those patterns really do fill the order.
 It is not the answer to the strong model, which has three more patterns nobody
@@ -178,9 +178,9 @@ pattern nobody has written down can still be judged by it.
 restricted master satisfy every dual constraint belonging to a pattern you have
 got. If they satisfy the constraints of all the patterns you *have not* got
 too, they are feasible for the full problem's dual, and the restricted answer
-is the full answer — proved, without ever building the full model. A pattern
-that violates its dual constraint is a missing column, and the two things are
-the same thing seen from opposite sides.
+is the full answer, proved without ever building the full model. A pattern that
+violates its dual constraint is a missing column. The two statements are one
+statement seen from opposite sides.
 
 ---
 
@@ -228,14 +228,14 @@ next.](chapters/07-the-loop/loop.gif)
 
 Watch the number come down: **7 boards**, then 6.875, then 6.5. Then the
 knapsack returns a pattern worth exactly 1 and the loop stops. Three patterns
-added, and **6.5 boards** is optimal for a model nobody wrote down.
+added, and 6.5 boards is optimal for a model nobody wrote down.
 
 Be exact about what step 5 claims. Not that no better answer exists: that no
 *column* exists which would improve this one. The knapsack searched every
 pattern implicitly rather than sampling some, so it is a proof.
 
-On a slightly bigger order — 55-foot boards, four different lengths — there are
-thirty usable patterns, and the loop settles after touching six of them:
+On a slightly bigger order, 55-foot boards with four different lengths, there
+are thirty usable patterns, and the loop settles after touching six of them:
 
 ![Thirty patterns drawn as boards, with the six the loop actually built
 highlighted and the rest left blank.](chapters/07-the-loop/touched.png)
@@ -265,7 +265,7 @@ node is itself solved by generating columns.
 > **At each node**
 >
 > 1. Impose the node's branching decisions on the master.
-> 2. Solve that relaxation by column generation — the full loop, at every node.
+> 2. Solve that relaxation by column generation: the full loop, at every node.
 > 3. Prune if it is infeasible, or if its bound cannot beat the best plan found.
 > 4. If the answer is whole, record it. Otherwise pick a fractional pattern
 >    count and split: one child uses it at most ⌊x⌋ times, the other at least ⌈x⌉.
@@ -299,9 +299,9 @@ and can produce prices; they fall out on their own as real patterns arrive.
 
 The first version of the solver in this folder had neither fix, and disagreed
 with brute force on **476 of 1230** test instances. It now agrees on all of
-them. Neither bug announced itself — the trees looked sensible and the answers
+them. Neither bug announced itself. The trees looked sensible and the answers
 looked plausible, and only running every small instance against an independent
-brute-force solver revealed it.
+brute-force solver exposed them.
 
 One more admission. Branching on a single pattern's count, as above, is a
 *weak* rule. Real implementations use Ryan–Foster branching, which splits on
@@ -336,10 +336,10 @@ a proposal cannot be as good as it claims.
 
 A case that resembles the above and is not.
 
-Suppose the columns are not defined by a polyhedron but *pre-generated* — a
-fixed list of candidate driver schedules, say, computed in advance. Then there
-is no optimisation problem to solve for the best column; you scan the list and
-take the best reduced cost. The algorithm still works, and the surrounding
+Suppose the columns are not defined by a polyhedron but *pre-generated*: a fixed
+list of candidate driver schedules, say, computed in advance. Then there is no
+optimisation problem to solve for the best column. You scan the list and take
+the best reduced cost. The algorithm still works and the surrounding
 branch-and-price machinery is unchanged.
 
 But it is no longer generating the extreme points of a block. It is
@@ -378,7 +378,7 @@ make figures  # re-render every image
 ```
 
 The solver reuses the exact-fraction simplex from
-[the duality topic](../lp-duality/) rather than carrying a second copy of it —
-this topic really is that one under load. The tests check the mathematics, the
-prose against the code, and branch-and-price against a brute-force solver that
+[the duality topic](../lp-duality/) rather than carrying a second copy. This
+topic really is that one under load. The tests check the mathematics, the prose
+against the code, and branch-and-price against a brute-force solver that
 enumerates every pattern.
