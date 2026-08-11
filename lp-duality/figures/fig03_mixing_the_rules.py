@@ -13,7 +13,7 @@ whole way and the ceiling falls.  Chapter 4 asks how far it can fall.
 """
 
 from lpduality import workshop as w
-from lpduality.draw import (INK, INK2, MUTED, OK, PAPER, PLAN, PRICE, RULE,
+from illuminate.draw import (INK, INK2, MUTED, OK, PAPER, PLAN, PRICE, RULE,
                             animate, chapter_dir, heading, readout)
 from lpduality.duality import ceiling_from, mixture
 

@@ -15,7 +15,7 @@ quantity that cannot be negative is at most minus one.
 from fractions import Fraction
 
 from lpduality import workshop as w
-from lpduality.draw import (INK, INK2, MUTED, OK, PAPER, PLAN, PRICE, RULE,
+from illuminate.draw import (INK, INK2, MUTED, OK, PAPER, PLAN, PRICE, RULE,
                             chapter_dir, heading, save, tag)
 from lpduality.duality import farkas_certificate, mixture, verify_farkas
 from lpduality.lp import solve

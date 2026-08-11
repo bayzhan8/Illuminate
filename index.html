@@ -53,6 +53,22 @@
     </div>
   </section>
 
+  <section class="topic">
+    <p class="meta">02 · Column generation</p>
+    <h2><a href="branch-and-price/">Ask the prices what you are missing</a></h2>
+    <p>A cutting-stock model with four trillion variables that fits on a
+    napkin. If a set of prices fails to cover some option, that option is
+    exactly the variable your model is missing — so you can ask for it instead
+    of searching for it. Ten chapters, ending with branch-and-price and the two
+    bugs that cost this repository 476 wrong answers before the tests caught
+    them.</p>
+    <div class="links">
+      <a href="branch-and-price/">Read it</a>
+      <a href="branch-and-price/sandbox/">Play with it</a>
+      <a href="https://github.com/bayzhan8/Illuminate/tree/main/branch-and-price">Source and tests</a>
+    </div>
+  </section>
+
   <section class="topic soon">
     <p class="meta">Next</p>
     <h2>Coming</h2>
@@ -64,12 +80,10 @@
         not the worst case for the other.</li>
       <li><strong>Branch and bound</strong> — the tree, and what pruning
         actually prunes.</li>
-      <li><strong>Column generation</strong> — too many options to write down,
-        so let the prices ask for the one you are missing.</li>
-      <li><strong>Dantzig–Wolfe and Benders</strong> — the same idea pointed in
-        the two opposite directions.</li>
-      <li><strong>Branch and cut, branch and price</strong> — what happens when
-        the pieces have to come out whole.</li>
+      <li><strong>Benders decomposition</strong> — column generation pointed the
+        other way, producing rows instead of columns.</li>
+      <li><strong>LP on the GPU</strong> — why simplex resists parallel
+        hardware, and what first-order methods changed.</li>
       <li><strong>Queues and Little's law</strong> — why the wait explodes long
         before the servers are full.</li>
     </ul>

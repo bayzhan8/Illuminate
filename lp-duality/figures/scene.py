@@ -11,7 +11,7 @@ from __future__ import annotations
 import math
 from fractions import Fraction
 
-from lpduality.draw import (INK, INK2, MUTED, PAPER, PLAN, PLAN_FILL, PRICE,
+from illuminate.draw import (INK, INK2, MUTED, PAPER, PLAN, PLAN_FILL, PRICE,
                             RULE, tag)
 from lpduality.lp import LP, vertices
 

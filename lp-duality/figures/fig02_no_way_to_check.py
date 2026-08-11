@@ -3,7 +3,7 @@
 import random
 
 from lpduality import workshop as w
-from lpduality.draw import (INK, INK2, MUTED, PLAN, PRICE, RULE, chapter_dir,
+from illuminate.draw import (INK, INK2, MUTED, PLAN, PRICE, RULE, chapter_dir,
                             figure, heading, save, style, tag)
 
 OUT = chapter_dir("02-no-way-to-check")

@@ -18,7 +18,7 @@ applies to all of them at once.
 """
 
 from lpduality import workshop as w
-from lpduality.draw import (INK, INK2, MUTED, PAPER, PLAN, PRICE, RULE,
+from illuminate.draw import (INK, INK2, MUTED, PAPER, PLAN, PRICE, RULE,
                             chapter_dir, figure, heading, save, tag)
 
 OUT = chapter_dir("04-every-mix-is-a-ceiling")

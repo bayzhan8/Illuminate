@@ -131,7 +131,7 @@ def test_the_random_sample_size_matches_the_figure():
 # --- structure -------------------------------------------------------------
 
 def test_the_lesson_splits_into_the_chapters_build_expects():
-    front, chapters, tail = build.split_lesson()
+    front, chapters, tail = build.split_lesson(build.TOPIC)
     assert len(chapters) == len(build.CHAPTERS) == 11
     assert front.startswith("# Every plan has a price tag")
     assert tail
@@ -139,18 +139,20 @@ def test_the_lesson_splits_into_the_chapters_build_expects():
 
 def test_the_generated_chapter_files_are_up_to_date():
     """These files are generated. A hand edit is a bug, not a change."""
-    _, chapters, _ = build.split_lesson()
+    _, chapters, _ = build.split_lesson(build.TOPIC)
     stale = []
     for index, body in enumerate(chapters):
-        path = ROOT / "chapters" / build.CHAPTERS[index][1] / "README.md"
-        if not path.exists() or path.read_text() != build.chapter_markdown(index, body):
-            stale.append(build.CHAPTERS[index][1])
+        folder = build.CHAPTERS[index].folder
+        path = ROOT / "chapters" / folder / "README.md"
+        expected = build.chapter_markdown(build.TOPIC, index, body)
+        if not path.exists() or path.read_text() != expected:
+            stale.append(folder)
     assert stale == [], "run: python build.py chapters"
 
 
 def test_every_chapter_folder_has_its_file():
-    for _, folder, _ in build.CHAPTERS:
-        assert (ROOT / "chapters" / folder / "README.md").exists()
+    for chapter in build.CHAPTERS:
+        assert (ROOT / "chapters" / chapter.folder / "README.md").exists()
 
 
 def test_every_invented_phrase_has_its_real_name():

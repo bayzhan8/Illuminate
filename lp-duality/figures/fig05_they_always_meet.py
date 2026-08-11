@@ -17,7 +17,7 @@ two numbers match".
 import random
 
 from lpduality import workshop as w
-from lpduality.draw import (INK, INK2, MUTED, OK, PAPER, PLAN, PRICE, RULE,
+from illuminate.draw import (INK, INK2, MUTED, OK, PAPER, PLAN, PRICE, RULE,
                             animate, chapter_dir, figure, heading, readout,
                             save, tag)
 from lpduality.duality import ceiling_from, dual

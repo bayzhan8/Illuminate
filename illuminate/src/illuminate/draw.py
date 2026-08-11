@@ -1,4 +1,4 @@
-"""House style for every figure: cream paper, black ink, one typeface.
+"""House style for every figure in every topic: cream paper, black ink, one typeface.
 
 The figures are meant to look like plates pasted into a notebook rather than
 like output from a plotting library, because that is what the surrounding site
@@ -48,7 +48,7 @@ WARN = "#A9761A"      # status only
 PLAN_FILL = "#1B4F9C22"
 PRICE_FILL = "#B4341F22"
 
-FONTS = Path(__file__).resolve().parents[2] / "assets" / "fonts"
+FONTS = Path(__file__).resolve().parent / "fonts"
 
 
 def _install_fonts() -> str:
@@ -164,6 +164,10 @@ def readout(fig, x=0.014, y=0.03, size=10.5, color=INK2, ha="left"):
 
 # --- output ----------------------------------------------------------------
 
+def _short(path: Path) -> str:
+    """<topic>/chapters/<chapter>/<file>, however deep the repository sits."""
+    return "/".join(path.parts[-4:])
+
 def save(fig, path: Path, tight: bool = True) -> Path:
     """Write a PNG.
 
@@ -177,7 +181,7 @@ def save(fig, path: Path, tight: bool = True) -> Path:
         fig.tight_layout()
     fig.savefig(path, facecolor=PAPER, bbox_inches="tight", pad_inches=0.16)
     plt.close(fig)
-    print(f"  wrote {path.relative_to(path.parents[3])}")
+    print(f"  wrote {_short(path)}")
     return path
 
 
@@ -202,8 +206,7 @@ def animate(fig, update, frames: int, path: Path, fps: int = 12,
               savefig_kwargs={"facecolor": PAPER})
     plt.close(fig)
     shrink_gif(path)
-    print(f"  wrote {path.relative_to(path.parents[3])} "
-          f"({path.stat().st_size / 1024:.0f} kB)")
+    print(f"  wrote {_short(path)} ({path.stat().st_size / 1024:.0f} kB)")
     return path
 
 
@@ -245,7 +248,15 @@ def shrink_gif(path: Path, colours: int = 48) -> None:
                  duration=durations, optimize=True)
 
 
-def chapter_dir(slug: str) -> Path:
-    d = Path(__file__).resolve().parents[2] / "chapters" / slug
+def chapter_dir(slug: str, topic_root: Path | None = None) -> Path:
+    """The folder a chapter's images belong in.
+
+    Figure scripts live in ``<topic>/figures/`` and are run from there, so the
+    topic root is two levels up from the calling script unless it is given.
+    """
+    if topic_root is None:
+        import __main__
+        topic_root = Path(getattr(__main__, "__file__", ".")).resolve().parents[1]
+    d = Path(topic_root) / "chapters" / slug
     d.mkdir(parents=True, exist_ok=True)
     return d

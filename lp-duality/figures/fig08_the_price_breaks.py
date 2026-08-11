@@ -13,7 +13,7 @@ so a bend drawn in the wrong place would fail rather than look plausible.
 """
 
 from lpduality import workshop as w
-from lpduality.draw import (INK, INK2, MUTED, OK, PAPER, PLAN, PRICE, RULE,
+from illuminate.draw import (INK, INK2, MUTED, OK, PAPER, PLAN, PRICE, RULE,
                             chapter_dir, figure, heading, save, tag)
 
 OUT = chapter_dir("08-the-price-breaks")

@@ -1,0 +1,16 @@
+[project]
+name = "illuminate"
+version = "0.1.0"
+description = "Shared house style and site machinery for every Illuminate topic"
+requires-python = ">=3.10"
+dependencies = ["numpy", "matplotlib", "pillow", "markdown-it-py"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+illuminate = ["fonts/*.ttf", "fonts/*.txt"]
