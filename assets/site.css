@@ -94,6 +94,66 @@ a { color: inherit; }
 
 main { flex: 1 0 auto; }
 
+/* the guide pages put a chapter list beside the prose. The pair is centred as
+   a unit rather than the prose being centred and the list hung off it, so the
+   text stays in the same place whether or not the list is showing. */
+.withtoc {
+  flex: 1 0 auto;
+  display: grid;
+  grid-template-columns: 14rem minmax(0, 46rem);
+  gap: 3.5rem;
+  justify-content: center;
+  align-items: start;
+  padding: 0 1.5rem;
+}
+.withtoc .prose { padding-left: 0; padding-right: 0; max-width: none; }
+
+.toc {
+  position: sticky;
+  top: 4.6rem;
+  align-self: start;
+  padding: 3rem 0 2rem;
+  max-height: calc(100vh - 6rem);
+  overflow-y: auto;
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+.toc-label {
+  text-transform: uppercase;
+  letter-spacing: 0.13em;
+  font-size: 0.66rem;
+  font-weight: 500;
+  color: var(--muted);
+  margin-bottom: 0.9rem;
+}
+.toc ol { list-style: none; margin: 0; padding: 0; }
+.toc li { margin: 0; }
+.toc a {
+  display: grid;
+  grid-template-columns: 1.6rem 1fr;
+  gap: 0.2rem;
+  padding: 0.42rem 0;
+  text-decoration: none;
+  border: 0;
+  color: var(--muted);
+  border-left: 2px solid transparent;
+  padding-left: 0.7rem;
+  margin-left: -0.7rem;
+}
+.toc a:hover { color: var(--ink); }
+.toc-num { color: var(--rule-soft); }
+.toc a.current {
+  color: var(--ink);
+  border-left-color: var(--plan);
+  font-weight: 500;
+}
+.toc a.current .toc-num { color: var(--plan); }
+
+@media (max-width: 1060px) {
+  .withtoc { grid-template-columns: minmax(0, 46rem); }
+  .toc { display: none; }
+}
+
 .prose {
   max-width: 46rem;
   margin: 0 auto;

@@ -140,9 +140,12 @@ PAGE = """<!doctype html>
   <a class="brand" href="../">ILLUMINATE</a>
   <button class="toggle" id="theme" type="button" aria-label="Switch colour scheme">DARK</button>
 </header>
+<div class="withtoc">
+{contents}
 <main class="prose">
 {body}
 </main>
+</div>
 <footer class="foot">
   <a href="{site}">Illuminate</a> ·
   <a href="{repo}/tree/main/{slug}">source and tests</a>
@@ -179,12 +182,30 @@ def decorate(body: str) -> str:
     return body
 
 
+def contents(topic: Topic) -> str:
+    """The clickable chapter list that sits beside the prose.
+
+    Built from `topic.chapters`, so it cannot list a chapter that does not
+    exist or miss one that does. The anchors are the ones `decorate` puts on
+    the headings.
+    """
+    items = "\n".join(
+        f'    <li><a href="#ch{c.number}">'
+        f'<span class="toc-num">{c.number}</span>'
+        f'<span class="toc-title">{html.escape(c.title)}</span></a></li>'
+        for c in topic.chapters)
+    return (f'<nav class="toc" aria-label="Chapters">\n'
+            f'  <p class="toc-label">Contents</p>\n'
+            f'  <ol>\n{items}\n  </ol>\n</nav>')
+
+
 def build_page(topic: Topic) -> None:
     front, chapters, tail = split_lesson(topic)
     body = decorate(renderer.render("\n\n".join([front] + chapters + [tail])))
     (topic.root / "index.html").write_text(PAGE.format(
         title=html.escape(topic.title), blurb=html.escape(topic.blurb),
-        body=body, site=SITE, repo=REPO, slug=topic.slug, boot=THEME_BOOT))
+        body=body, site=SITE, repo=REPO, slug=topic.slug, boot=THEME_BOOT,
+        contents=contents(topic)))
     print(f"  wrote {topic.slug}/index.html")
 
 
