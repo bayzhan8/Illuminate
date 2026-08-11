@@ -38,9 +38,8 @@ rule 2^n - 1 pivots and Bland's exactly 2 Fib(n+1) - 1, so the exponent belongs
 to the pivot rule rather than the method; the barrier answer to it never lands
 on a corner at all.
 
-Queued: branch and bound and branch and cut ·
-Benders decomposition · what solvers actually do (and why presolve is where the
-gap opens) · LP on the GPU.
+Queued: branch and bound and branch and cut · Benders decomposition · what
+solvers actually do (and why presolve is where the gap opens).
 
 ## Repository map
 
