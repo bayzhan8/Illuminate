@@ -27,16 +27,16 @@ variability rather than utilisation does the damage, and a 95% confidence
 interval that covers 9%.
 
 **[lp-on-gpu](lp-on-gpu/)** · [read](https://bayzhan8.github.io/Illuminate/lp-on-gpu/) · [play](https://bayzhan8.github.io/Illuminate/lp-on-gpu/sandbox/)
-Why linear programming had to change algorithms to use parallel hardware.
-Sparse matrix work asks 0.17 operations per byte, so only bandwidth is
-reachable; simplex is the wrong shape for that, and the method that is the
-right shape fails until one term is changed.
+Two runs on the same problem, same step sizes, differing by one term in one
+line: one lands on the answer, the other swings between $0 and $753 forever.
+Why linear programming had to change algorithms when machines started getting
+wider instead of faster.
 
 **[corners-vs-centre](corners-vs-centre/)** · [read](https://bayzhan8.github.io/Illuminate/corners-vs-centre/) · [play](https://bayzhan8.github.io/Illuminate/corners-vs-centre/sandbox/)
-Two methods, thirty-seven years apart. Klee and Minty's cube costs Dantzig's
-rule 2^n - 1 pivots and Bland's exactly 2 Fib(n+1) - 1, so the exponent belongs
-to the pivot rule rather than the method; the barrier answer to it never lands
-on a corner at all.
+A shape built in 1972 to embarrass the simplex method, which it does: ten
+dimensions, 1024 corners, and the method stops at every one. Nobody has met one
+in practice in seventy years. Why the bad case is real, why it never happens,
+and why the method built to dodge it never lands on a corner at all.
 
 Queued: branch and bound and branch and cut · Benders decomposition · what
 solvers actually do (and why presolve is where the gap opens).

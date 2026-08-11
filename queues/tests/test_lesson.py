@@ -276,3 +276,47 @@ def _run_js(snippet: str):
                             capture_output=True, text=True, timeout=60)
     assert result.returncode == 0, result.stderr
     return json.loads(result.stdout)
+
+
+def test_the_two_job_example_in_chapter_five_is_the_row_it_claims_to_be():
+    """Chapter 5 explains the c-squared ladder with a concrete mix: nine jobs
+    in ten take 2 minutes and the tenth takes 42. That mix has to be exactly
+    the 135-minute row of the table, or the explanation explains a different
+    number from the one printed."""
+    from queues import formulas as ff
+
+    short, long_, mean = F(2), F(42), F(6)
+    assert (9 * short + long_) / 10 == mean                    # six minutes
+    second = (9 * short ** 2 + long_ ** 2) / 10
+    assert second == 180
+    assert second / mean ** 2 - 1 == 4                         # c-squared of 4
+
+    # the clock-weighted picture the prose draws: busy time inside the long job
+    assert long_ / (9 * short + long_) == F(7, 10)
+    clock_weighted = (9 * short / 60) * short + (long_ / 60) * long_
+    assert clock_weighted == 30                                # minutes
+    assert clock_weighted / 2 == 15                            # leftover
+
+    # and the leftovers, multiplied by the congestion factor, are the ladder
+    congestion = d.BUSY.load / (1 - d.BUSY.load)
+    assert congestion == 9
+    assert [congestion * x for x in (F(3), F(6), F(15))] == [27, 54, 135]
+
+    # 135 is what the formula returns for this mix, in minutes
+    wait = ff.wait_from_variability(F(9), F(1, 10), F(4))
+    assert wait * 60 == 135
+    assert "| some customers much longer | 135 min |" in FLAT
+
+
+def test_chapter_seven_quotes_the_run_length_the_figure_actually_uses():
+    """The prose used to say a million waits; the coverage study runs 200,000.
+    Read the figure's own constants rather than trusting the sentence."""
+    script = (ROOT / "figures" / "fig07_measuring.py").read_text()
+    run_length = int(re.search(r"RUN_LENGTH = ([\d_]+)", script)[1].replace("_", ""))
+    trials = int(re.search(r"TRIALS = ([\d_]+)", script)[1])
+    assert (run_length, trials) == (200_000, 300)
+    assert "two hundred thousand measured waits" in FLAT
+    assert "three hundred times" in FLAT
+    # and the deflation the prose does with it: 200,000 / 400 correlated waits
+    assert run_length // 400 == 500
+    assert "worth about five hundred" in FLAT
