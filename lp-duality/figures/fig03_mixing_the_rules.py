@@ -13,8 +13,8 @@ whole way and the ceiling falls.  Chapter 4 asks how far it can fall.
 """
 
 from lpduality import workshop as w
-from illuminate.draw import (INK, INK2, MUTED, OK, PAPER, PLAN, PRICE, RULE,
-                            animate, chapter_dir, heading, readout)
+from illuminate.draw import (TEXT, TEXT_DIM, TEXT_FAINT, OK, SURFACE, PLAN, PRICE, HAIRLINE,
+                            animate, chapter_dir, heading, margin_note)
 from lpduality.duality import ceiling_from, mixture
 
 OUT = chapter_dir("03-mixing-the-rules")
@@ -43,14 +43,14 @@ def mixing_gif(frames=76, fps=13):
     for s in ("top", "right"):
         axL.spines[s].set_visible(False)
     axL.set_xticks([0, 1])
-    axL.set_xticklabels(PRODUCTS, fontsize=10, color=INK2)
-    axL.set_ylabel("dollars", fontsize=10, color=INK2, labelpad=7)
-    axL.grid(True, axis="y", color=RULE, linewidth=0.7, linestyle=(0, (1, 3)))
+    axL.set_xticklabels(PRODUCTS, fontsize=10, color=TEXT_DIM)
+    axL.set_ylabel("dollars", fontsize=10, color=TEXT_DIM, labelpad=7)
+    axL.grid(True, axis="y", color=HAIRLINE, linewidth=0.7, linestyle=(0, (1, 3)))
     axL.set_axisbelow(True)
     heading(axL, "what the mix charges")
 
     bars = axL.bar([0, 1], [0, 0], width=0.46, color=PRICE, zorder=4,
-                   edgecolor=PAPER, linewidth=2)
+                   edgecolor=SURFACE, linewidth=2)
     for k, profit in enumerate((30, 20)):
         axL.plot([k - 0.34, k + 0.34], [profit, profit], color=PLAN,
                  linewidth=2.4, zorder=6, solid_capstyle="butt")
@@ -65,21 +65,21 @@ def mixing_gif(frames=76, fps=13):
     for s in ("top", "right", "bottom"):
         axR.spines[s].set_visible(False)
     axR.set_xticks([])
-    axR.set_ylabel("dollars", fontsize=10, color=INK2, labelpad=7)
-    axR.grid(True, axis="y", color=RULE, linewidth=0.7, linestyle=(0, (1, 3)))
+    axR.set_ylabel("dollars", fontsize=10, color=TEXT_DIM, labelpad=7)
+    axR.grid(True, axis="y", color=HAIRLINE, linewidth=0.7, linestyle=(0, (1, 3)))
     axR.set_axisbelow(True)
     heading(axR, "the ceiling it proves")
 
     ceiling_line, = axR.plot([], [], color=PRICE, linewidth=2.6, zorder=5)
     trail, = axR.plot([], [], color=PRICE, linewidth=1.0, alpha=0.35, zorder=3)
-    axR.axhline(float(w.BEST_PROFIT), color=MUTED, linewidth=1.0,
+    axR.axhline(float(w.BEST_PROFIT), color=TEXT_FAINT, linewidth=1.0,
                 linestyle=(0, (4, 4)), zorder=2)
-    axR.text(0.98, float(w.BEST_PROFIT) - 22, "$350", color=MUTED, fontsize=9.5,
+    axR.text(0.98, float(w.BEST_PROFIT) - 22, "$350", color=TEXT_FAINT, fontsize=9.5,
              ha="right", va="top")
 
-    waiting = axR.text(0.5, 640, "no ceiling yet", color=MUTED, fontsize=10.5,
+    waiting = axR.text(0.5, 640, "no ceiling yet", color=TEXT_FAINT, fontsize=10.5,
                        ha="center", va="center", zorder=4)
-    note = readout(fig, x=0.045, size=10.5)
+    note = margin_note(fig, x=0.045, size=10.5)
     history_x, history_y = [], []
 
     def update(i):
@@ -106,7 +106,7 @@ def mixing_gif(frames=76, fps=13):
             note.set_text(f"planks ${y[0]:.2f}   hours ${y[1]:.2f}   "
                           f"saw ${y[2]:.2f}\nboth products covered — "
                           f"so nothing can beat ${float(total):,.2f}")
-            note.set_color(INK)
+            note.set_color(TEXT)
             waiting.set_text("")
         else:
             ceiling_line.set_data([], [])

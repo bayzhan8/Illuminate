@@ -17,8 +17,8 @@ two numbers match".
 import random
 
 from lpduality import workshop as w
-from illuminate.draw import (INK, INK2, MUTED, OK, PAPER, PLAN, PRICE, RULE,
-                            animate, chapter_dir, figure, heading, readout,
+from illuminate.draw import (TEXT, TEXT_DIM, TEXT_FAINT, OK, SURFACE, PLAN, PRICE, HAIRLINE,
+                            animate, chapter_dir, figure, heading, margin_note,
                             save, tag)
 from lpduality.duality import ceiling_from, dual
 from lpduality.lp import LP, solve
@@ -40,21 +40,21 @@ def meet_gif(fps=11):
     ax.set_xlim(-40, 1010)
     ax.set_ylim(-1.15, 1.15)
     ax.set_yticks([])
-    ax.set_xlabel("dollars", fontsize=10, color=INK2, labelpad=7)
+    ax.set_xlabel("dollars", fontsize=10, color=TEXT_DIM, labelpad=7)
     for s in ("top", "right", "left"):
         ax.spines[s].set_visible(False)
-    ax.grid(True, axis="x", color=RULE, linewidth=0.7, linestyle=(0, (1, 3)))
+    ax.grid(True, axis="x", color=HAIRLINE, linewidth=0.7, linestyle=(0, (1, 3)))
     ax.set_axisbelow(True)
 
-    band = ax.axvspan(0, 1000, color=MUTED, alpha=0.10, zorder=1)
+    band = ax.axvspan(0, 1000, color=TEXT_FAINT, alpha=0.10, zorder=1)
     floor_dots, = ax.plot([], [], "o", color=PLAN, markersize=8, zorder=6,
-                          markeredgecolor=PAPER, markeredgewidth=1.6)
+                          markeredgecolor=SURFACE, markeredgewidth=1.6)
     ceil_dots, = ax.plot([], [], "o", color=PRICE, markersize=8, zorder=6,
-                         markeredgecolor=PAPER, markeredgewidth=1.6)
+                         markeredgecolor=SURFACE, markeredgewidth=1.6)
     tag(ax, -30, 0.72, "plans you could really carry out", color=PLAN, size=10)
     tag(ax, -30, -0.85, "prices that really cover every product", color=PRICE,
         size=10)
-    note = readout(fig, x=0.04, size=10.5)
+    note = margin_note(fig, x=0.04, size=10.5)
 
     def update(i):
         i = min(i, frames - 1)
@@ -71,12 +71,12 @@ def meet_gif(fps=11):
         if lo == hi:
             note.set_text(f"the answer is exactly ${lo:,.0f}\n"
                           "no room left for it to be anything else")
-            note.set_color(INK)
+            note.set_color(TEXT)
             band.set_color(OK)
         else:
             note.set_text(f"the answer is somewhere in ${lo:,.0f} to ${hi:,.0f}\n"
                           f"{fl[-1][1]}   /   {ce[-1][1]}")
-            note.set_color(INK2)
+            note.set_color(TEXT_DIM)
         return []
 
     animate(fig, update, frames, OUT / "meet.gif", fps=fps, hold=3.2)
@@ -108,7 +108,7 @@ def always_png(count=320, seed=7):
     fig, ax = figure(6.0, 5.4)
     heading(ax, "320 workshops, each solved twice")
     top = float(max(max(p) for p in pairs)) * 1.06
-    ax.plot([0, top], [0, top], color=MUTED, linewidth=1.0,
+    ax.plot([0, top], [0, top], color=TEXT_FAINT, linewidth=1.0,
             linestyle=(0, (4, 4)), zorder=2)
     ax.plot([float(p[0]) for p in pairs], [float(p[1]) for p in pairs], "o", markersize=5.5,
             color=PLAN, alpha=0.45, zorder=4, markeredgewidth=0)
@@ -118,7 +118,7 @@ def always_png(count=320, seed=7):
     ax.set_ylabel("the cheapest prices' bill", fontsize=10, color=PRICE, labelpad=7)
     for s in ("top", "right"):
         ax.spines[s].set_visible(False)
-    ax.grid(True, color=RULE, linewidth=0.7, linestyle=(0, (1, 3)))
+    ax.grid(True, color=HAIRLINE, linewidth=0.7, linestyle=(0, (1, 3)))
     ax.set_axisbelow(True)
     ax.set_aspect("equal")
 
@@ -127,7 +127,7 @@ def always_png(count=320, seed=7):
     tag(ax, top * 0.05, top * 0.88,
         f"every point is on the line\nlargest disagreement, in exact\n"
         f"arithmetic, across all {len(pairs)}: {worst}",
-        color=INK2, size=10.5)
+        color=TEXT_DIM, size=10.5)
     save(fig, OUT / "always.png")
 
 

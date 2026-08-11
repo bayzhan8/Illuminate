@@ -1,4 +1,4 @@
-"""Linear programming duality, from zero, with everything checked by code.
+"""Linear programming duality: exact-arithmetic LP, its dual, and sensitivity.
 
     from lpduality import workshop
     workshop.BEST_PROFIT   # 350

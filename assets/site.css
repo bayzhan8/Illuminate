@@ -189,7 +189,7 @@ main { flex: 1 0 auto; }
 
 /* --- tables ------------------------------------------------------------- */
 
-.scroll { overflow-x: auto; margin: 0 0 1.6rem; }
+.overflow-x { overflow-x: auto; margin: 0 0 1.6rem; }
 
 table {
   border-collapse: collapse;
@@ -328,7 +328,7 @@ select {
 
 /* --- landing ------------------------------------------------------------ */
 
-.hero { border-bottom: 2px solid var(--rule); padding-bottom: 2.4rem; margin-bottom: 0; }
+.masthead { border-bottom: 2px solid var(--rule); padding-bottom: 2.4rem; margin-bottom: 0; }
 .kicker {
   text-transform: uppercase;
   letter-spacing: 0.12em;
@@ -337,22 +337,22 @@ select {
   font-weight: 500;
   margin-bottom: 1rem;
 }
-.topic {
+.entry {
   border-bottom: 2px solid var(--rule);
   padding: 2rem 0;
 }
-.topic h2 { font-size: 1.3rem; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 0.5rem; }
-.topic h2 a { text-decoration: none; border: 0; }
-.topic h2 a:hover { color: var(--plan); }
-.topic .meta {
+.entry h2 { font-size: 1.3rem; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 0.5rem; }
+.entry h2 a { text-decoration: none; border: 0; }
+.entry h2 a:hover { color: var(--plan); }
+.entry .meta {
   text-transform: uppercase;
   letter-spacing: 0.1em;
   font-size: 0.72rem;
   color: var(--muted);
   margin-bottom: 0.9rem;
 }
-.topic p { color: var(--ink2); }
-.topic .links { margin-top: 0.9rem; display: flex; gap: 1.1rem; flex-wrap: wrap; font-size: 0.86rem; }
+.entry p { color: var(--ink2); }
+.entry .entry-actions { margin-top: 0.9rem; display: flex; gap: 1.1rem; flex-wrap: wrap; font-size: 0.86rem; }
 
 .soon { color: var(--muted); }
 .soon h2 { color: var(--muted); }

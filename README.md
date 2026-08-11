@@ -1,108 +1,83 @@
 # Illuminate
 
-*Operations research, from nothing, with pictures that move.*
+Optimisation, drawn.
 
 **[bayzhan8.github.io/Illuminate](https://bayzhan8.github.io/Illuminate/)**
 
-Optimisation is full of ideas that are genuinely simple once you can see them,
-and that are usually introduced as a page of algebra with a *hence* in the
-middle. This is an attempt at the other order: build the picture first, move it
-around until it is obvious, and only then say what everyone else calls it.
+Most of this subject is taught as algebra. Most of it is actually geometry, or
+bookkeeping, or a small argument you could sketch on a napkin. These guides
+build the sketch first and name it afterwards.
 
-Every number on every page is computed by the code in this repository, in exact
-arithmetic, and re-checked by its tests. If a number in the prose ever stops
-matching what the code produces, `make test` fails.
+## Guides
 
-## Topics
+**[lp-duality](lp-duality/)** · [read](https://bayzhan8.github.io/Illuminate/lp-duality/) · [play](https://bayzhan8.github.io/Illuminate/lp-duality/sandbox/)
+Every planning problem has a second problem hiding inside it, about prices, and
+solving either one solves both. Where shadow prices come from, and why they
+expire.
 
-| Topic | What it is about | |
-|---|---|---|
-| [lp-duality](lp-duality/) | Every planning problem has a second problem hiding inside it, about prices, and solving either one solves both. It is where shadow prices come from, and it is the engine inside most of the methods below. | [read](https://bayzhan8.github.io/Illuminate/lp-duality/) · [play](https://bayzhan8.github.io/Illuminate/lp-duality/sandbox/) |
-| [branch-and-price](branch-and-price/) | A model with four trillion variables that fits on a napkin. Column generation asks the prices which variable is missing instead of searching for it; branch-and-price puts that loop inside a search tree. | [read](https://bayzhan8.github.io/Illuminate/branch-and-price/) · [play](https://bayzhan8.github.io/Illuminate/branch-and-price/sandbox/) |
+**[branch-and-price](branch-and-price/)** · [read](https://bayzhan8.github.io/Illuminate/branch-and-price/) · [play](https://bayzhan8.github.io/Illuminate/branch-and-price/sandbox/)
+A cutting-stock model with four trillion variables that fits on a napkin.
+Column generation asks the prices which variable is missing rather than
+searching for it; branch-and-price puts that loop inside a search tree.
 
-### Planned
+Queued: simplex against interior point · branch and bound and branch and cut ·
+Benders decomposition · LP on the GPU · queues and Little's law.
 
-Each of these leans on duality, which is why that one came first.
+## Repository map
 
-- **Simplex against interior point** — walking the corners against cutting through the middle
-- **Branch and bound** and **branch and cut** — the tree, and what pruning actually prunes
-- **Benders decomposition** — generating rows instead of columns
-- **LP on the GPU** — why simplex resists parallel hardware, and what first-order methods changed
-- **Queues and Little's law** — why the wait explodes long before the servers are full
+| path | what it holds |
+|---|---|
+| `<topic>/lesson.md` | the prose. The only place it exists |
+| `<topic>/build.py` | the topic's configuration: chapter names, sandbox definitions |
+| `<topic>/chapters/` | generated per-chapter READMEs, and the images belonging to each |
+| `<topic>/figures/` | one script per chapter, writing into `chapters/` |
+| `<topic>/sandbox/` | generated client-side pages |
+| `<topic>/src/` | the code behind every number |
+| `<topic>/tests/` | maths · prose-against-code · JavaScript-against-Python |
+| `<topic>/notes/` | the decision log |
+| `illuminate/` | shared package: figure style, typeface, and the `lesson.md` → site machinery |
+| `index.html`, `assets/` | the published site |
 
-## How a topic is laid out
+Pages serves from the repository root rather than a `docs/` folder. [^1]
 
-```
-<topic>/
-  README.md      the topic's front page and chapter list
-  lesson.md      the prose, and the only place it exists
-  build.py       lesson.md -> chapter files, the web page, the sandboxes
-  chapters/      one folder per chapter: a generated README and its images
-  figures/       one script per chapter, writing into chapters/
-  sandbox/       generated pages you can push around, no server needed
-  src/           the code behind every number
-  tests/         the maths, the prose-against-the-code, the JS-against-the-Python
-  notes/         why it is built the way it is
-```
+[^1]: Which means an image has one location, and the paths written in
+`lesson.md` are the paths the published page requests. Serving from `docs/`
+would require either duplicating every figure or rewriting every link.
 
-`illuminate/` is a small shared package: the house style for every figure, the
-typeface, and the machinery that turns a `lesson.md` into chapter files, a web
-page and its sandboxes. A topic supplies configuration, not a copy of the
-build.
-
-Two more things live at the root because they have to. `index.html` and `assets/`
-are the published site — GitHub Pages serves this repository from its root,
-which means a figure has exactly one home and the image paths in `lesson.md`
-are the same paths the published page uses. `.venv/` is one shared virtualenv
-for every topic.
-
-## Running it
+## Build
 
 ```bash
-make venv     # create .venv and install every topic
-make test     # re-check every number every topic quotes
-make figures  # re-render every image
-make docs     # regenerate the chapter files, pages and sandboxes
+make bootstrap    # .venv, shared package, all topics
+make verify       # every topic's tests
+make render       # every figure
+make publish      # every chapter file, page and sandbox
 ```
 
-Or work inside one topic:
+Inside one topic: `make check` runs render, publish and verify in that order.
 
-```bash
-cd lp-duality
-make test
-make check    # figures, then build, then test
-```
+Python 3.10+. `node` is optional; without it the tests that execute the
+sandbox JavaScript are skipped and everything else runs.
 
-Python 3.10 or later. `node` is optional — without it, the tests that run the
-interactive pages' JavaScript against the Python are skipped and everything
-else still runs.
+## Adding a guide
 
-## Adding a topic
+Read `.claude/skills/new-topic/SKILL.md` first. Short version: find the worked
+example by computation before writing a word of prose, then write `lesson.md`,
+then let `build.py` generate the rest. Register the folder in `TOPICS` here, in
+the list above, and in `index.html`.
 
-1. Create the folder following the layout above, and add it to `TOPICS` in the
-   root [Makefile](Makefile).
-2. Add it to the table above and to the list in [index.html](index.html).
-3. Write `lesson.md` first. The chapters, the page and the sandboxes are all
-   generated from it, and the tests will not let them drift.
+## The standard
 
-## Why bother
+Every number in every guide is produced by the code beside it, in exact
+rational arithmetic, and asserted by a test. Where a result can be reached by a
+second route that shares no code with the first, it is: the simplex answers are
+checked against brute-force vertex enumeration, column generation against
+solving the full model, branch-and-price against exhaustive integer search.
 
-Two reasons.
-
-The first is that these ideas are more useful outside the field than inside it.
-"What is this bottleneck actually costing me, and how far can I trust that
-number" is a question almost every organisation has and almost nobody phrases
-that way. The mathematics that answers it is a century old and mostly locked
-behind notation.
-
-The second is that a picture you can move is a different kind of object from a
-picture. Reading that a price collapses when a different constraint takes over
-is weaker than dragging the slider until it happens to you. So the animations
-are not decoration on the argument; where they exist, they are the argument,
-and where they would only have been decoration there is a chart instead.
+That habit is not decoration. It caught two bugs in branch-and-price that
+returned confident wrong answers on 476 of 1230 instances, and both are now
+written up in the guide itself.
 
 ## Licence
 
-Code and prose: MIT. The vendored copy of IBM Plex Mono in
-`illuminate/src/illuminate/fonts/` is under the SIL Open Font Licence 1.1,
-included alongside it.
+MIT for code and prose. The bundled IBM Plex Mono in
+`illuminate/src/illuminate/fonts/` is SIL OFL 1.1, licence included alongside.

@@ -1,11 +1,12 @@
-"""The mathematics, checked against something that shares no code with it.
+"""Mathematics, verified by a route that shares no code with the thing tested.
 
-The pattern of these tests is the same as the duality topic's: wherever a claim
-can be verified by an independent route, it is.  Column generation is checked
-against solving the master over *every* pattern; branch-and-price is checked
-against brute-force integer optimisation over every pattern.  Both of those are
-hopeless at any real size, which is the point -- they are only ever run on
-instances small enough that the slow honest way still finishes.
+Column generation is checked against solving the master over every pattern.
+Branch-and-price is checked against brute-force integer optimisation over every
+pattern. Both comparisons are useless above about thirty patterns, so they run
+only on instances where the slow method still terminates.
+
+Runtime is dominated by test_branch_and_price_agrees_with_brute_force. Leave it
+that way.
 """
 
 import itertools

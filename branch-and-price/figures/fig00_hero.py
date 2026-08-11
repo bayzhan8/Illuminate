@@ -8,8 +8,8 @@ two claims, and how it is closed without ever writing the patterns down.
 import math
 
 from bandp import mill as m
-from illuminate.draw import (INK, INK2, MUTED, OK, PAPER, PLAN, PRICE, RULE,
-                             animate, chapter_dir, figure, heading, readout, tag)
+from illuminate.draw import (TEXT, TEXT_DIM, TEXT_FAINT, OK, SURFACE, PLAN, PRICE, HAIRLINE,
+                             animate, chapter_dir, figure, heading, margin_note, tag)
 
 OUT = chapter_dir("00-what-this-is")
 
@@ -23,21 +23,21 @@ def hero_gif(frames=48, fps=12):
     ax.set_ylim(-1.0, 1.25)
     ax.set_yticks([])
     ax.set_xticks([5, 6, 7, 8])
-    ax.set_xlabel("boards", fontsize=10, color=INK2, labelpad=7)
+    ax.set_xlabel("boards", fontsize=10, color=TEXT_DIM, labelpad=7)
     for side in ("top", "right", "left"):
         ax.spines[side].set_visible(False)
-    ax.grid(True, axis="x", color=RULE, linewidth=0.7, linestyle=(0, (1, 3)))
+    ax.grid(True, axis="x", color=HAIRLINE, linewidth=0.7, linestyle=(0, (1, 3)))
     ax.set_axisbelow(True)
 
     naive, dw, answer = float(m.NAIVE_BOUND), float(m.DW_BOUND), float(m.ANSWER)
 
     bar = ax.barh([0.35], [0], left=4.6, height=0.34, color=PLAN, zorder=4,
-                  edgecolor=PAPER, linewidth=2)[0]
+                  edgecolor=SURFACE, linewidth=2)[0]
     marker, = ax.plot([], [], "o", color=PRICE, markersize=9, zorder=7,
-                      markeredgecolor=PAPER, markeredgewidth=2)
-    ax.axvline(answer, color=MUTED, linewidth=1.0, linestyle=(0, (4, 4)), zorder=2)
-    tag(ax, answer + 0.06, 1.05, "the answer: 7 boards", color=INK2, size=10)
-    note = readout(fig, x=0.06, size=10.5)
+                      markeredgecolor=SURFACE, markeredgewidth=2)
+    ax.axvline(answer, color=TEXT_FAINT, linewidth=1.0, linestyle=(0, (4, 4)), zorder=2)
+    tag(ax, answer + 0.06, 1.05, "the answer: 7 boards", color=TEXT_DIM, size=10)
+    note = margin_note(fig, x=0.06, size=10.5)
 
     def update(i):
         i = min(i, frames - 1)
@@ -56,8 +56,8 @@ def hero_gif(frames=48, fps=12):
             note.set_text("the obvious model proves you need at least "
                           f"{reached:.2f} boards\nso six might be enough — "
                           "it cannot say otherwise")
-            note.set_color(INK2)
-            bar.set_color(MUTED)
+            note.set_color(TEXT_DIM)
+            bar.set_color(TEXT_FAINT)
         elif phase == "dw":
             note.set_text(f"one variable per cutting pattern proves at least "
                           f"{reached:.2f}\nsix is now impossible")

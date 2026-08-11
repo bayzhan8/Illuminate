@@ -15,8 +15,8 @@ through the answer.
 from fractions import Fraction
 
 from lpduality import workshop as w
-from illuminate.draw import (INK, INK2, MUTED, PAPER, PLAN, PRICE, RULE, animate,
-                            chapter_dir, figure, heading, readout, tag)
+from illuminate.draw import (TEXT, TEXT_DIM, TEXT_FAINT, SURFACE, PLAN, PRICE, HAIRLINE, animate,
+                            chapter_dir, figure, heading, margin_note, tag)
 from lpduality.lp import LP
 from scene import clipped_corners, draw_constraint, draw_region, ordered_corners
 
@@ -48,27 +48,27 @@ def hero_gif(frames=54, fps=12):
     axL.set_ylim(*PRIMAL_WINDOW[2:])
     for spine in ("top", "right"):
         axL.spines[spine].set_visible(False)
-    axL.grid(True, color=RULE, linewidth=0.7, linestyle=(0, (1, 3)), zorder=0)
+    axL.grid(True, color=HAIRLINE, linewidth=0.7, linestyle=(0, (1, 3)), zorder=0)
     axL.set_axisbelow(True)
-    axL.set_xlabel("tables", fontsize=9.5, color=MUTED, labelpad=5)
-    axL.set_ylabel("chairs", fontsize=9.5, color=MUTED, labelpad=5)
+    axL.set_xlabel("tables", fontsize=9.5, color=TEXT_FAINT, labelpad=5)
+    axL.set_ylabel("chairs", fontsize=9.5, color=TEXT_FAINT, labelpad=5)
     heading(axL, "the workshop picks a plan")
     for i in range(w.PRIMAL.m):
-        draw_constraint(axL, w.PRIMAL, i, label=False, color=INK, lw=1.0)
+        draw_constraint(axL, w.PRIMAL, i, label=False, color=TEXT, lw=1.0)
     draw_region(axL, w.PRIMAL, edge=PLAN)
     up_line, = axL.plot([], [], color=PLAN, linewidth=2.0, zorder=5)
     up_dot, = axL.plot([], [], "o", markersize=8, color=PLAN, zorder=7,
-                       markeredgecolor=PAPER, markeredgewidth=2)
+                       markeredgecolor=SURFACE, markeredgewidth=2)
 
     # --- right: the buyer's prices
     axR.set_xlim(*DUAL_WINDOW[:2])
     axR.set_ylim(*DUAL_WINDOW[2:])
     for spine in ("top", "right"):
         axR.spines[spine].set_visible(False)
-    axR.grid(True, color=RULE, linewidth=0.7, linestyle=(0, (1, 3)), zorder=0)
+    axR.grid(True, color=HAIRLINE, linewidth=0.7, linestyle=(0, (1, 3)), zorder=0)
     axR.set_axisbelow(True)
-    axR.set_xlabel("price of a plank", fontsize=9.5, color=MUTED, labelpad=5)
-    axR.set_ylabel("price of an hour", fontsize=9.5, color=MUTED, labelpad=5)
+    axR.set_xlabel("price of a plank", fontsize=9.5, color=TEXT_FAINT, labelpad=5)
+    axR.set_ylabel("price of an hour", fontsize=9.5, color=TEXT_FAINT, labelpad=5)
     heading(axR, "a buyer picks prices")
     corners = clipped_corners(DUAL_SLICE, DUAL_WINDOW[1], DUAL_WINDOW[3])
     axR.fill([p[0] for p in corners], [p[1] for p in corners],
@@ -77,13 +77,13 @@ def hero_gif(frames=54, fps=12):
              [p[1] for p in corners] + [corners[0][1]],
              color=PRICE, linewidth=1.8, zorder=3)
     for i in range(DUAL_SLICE.m):
-        draw_constraint(axR, DUAL_SLICE, i, label=False, color=INK, lw=1.0)
+        draw_constraint(axR, DUAL_SLICE, i, label=False, color=TEXT, lw=1.0)
     down_line, = axR.plot([], [], color=PRICE, linewidth=2.0, zorder=5)
     down_dot, = axR.plot([], [], "o", markersize=8, color=PRICE, zorder=7,
-                         markeredgecolor=PAPER, markeredgewidth=2)
+                         markeredgecolor=SURFACE, markeredgewidth=2)
 
-    floor_txt = readout(fig, x=0.045, size=11.5, color=PLAN)
-    ceil_txt = readout(fig, x=0.56, size=11.5, color=PRICE)
+    floor_txt = margin_note(fig, x=0.045, size=11.5, color=PLAN)
+    ceil_txt = margin_note(fig, x=0.56, size=11.5, color=PRICE)
 
     answer = float(w.BEST_PROFIT)
     start_floor, start_ceil = 0.0, 760.0

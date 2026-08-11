@@ -3,7 +3,7 @@
 import math
 
 from bandp import mill as m
-from illuminate.draw import (INK, INK2, MUTED, PLAN, PRICE, chapter_dir, figure,
+from illuminate.draw import (TEXT, TEXT_DIM, TEXT_FAINT, PLAN, PRICE, chapter_dir, figure,
                              heading, save, tag)
 from boards import board_axes, draw_board
 
@@ -28,7 +28,7 @@ def patterns_png():
         waste = draw_board(ax, y, pattern, inst, height=0.55,
                            label=inst.describe(pattern))
         ax.text(inst.width + 0.8, y + 0.28, f"{int(waste)} wasted", ha="left",
-                va="center", fontsize=8.5, color=MUTED)
+                va="center", fontsize=8.5, color=TEXT_FAINT)
     save(fig, OUT / "patterns.png", tight=False)
 
 
@@ -43,10 +43,10 @@ def order_png():
     draw_board(ax, 0.95, tuple([0] * inst.m), inst, height=0.6,
                label="a board", show_waste=False)
     ax.add_patch(__import__("matplotlib").patches.Rectangle(
-        (0, 0.95), inst.width, 0.6, facecolor="none", edgecolor=INK,
+        (0, 0.95), inst.width, 0.6, facecolor="none", edgecolor=TEXT,
         linewidth=1.3, zorder=5))
     ax.text(inst.width / 2, 1.25, f"{inst.width} feet", ha="center",
-            va="center", fontsize=9.5, color=INK2, zorder=6)
+            va="center", fontsize=9.5, color=TEXT_DIM, zorder=6)
 
     x = 0.0
     for width, demand in zip(inst.widths, inst.demands):
@@ -54,7 +54,7 @@ def order_png():
                 fontsize=10, color=PLAN)
         x += 8.2
     ax.text(-0.9, 0.42, "ordered", ha="right", va="center", fontsize=9.5,
-            color=INK2)
+            color=TEXT_DIM)
     save(fig, OUT / "order.png", tight=False)
 
 

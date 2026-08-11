@@ -1,8 +1,8 @@
 """Chapter 1: the region of possible plans, and the sweep that finds its best corner."""
 
 from lpduality import workshop as w
-from illuminate.draw import (INK, INK2, MUTED, OK, PLAN, PRICE, animate, chapter_dir,
-                            figure, heading, plate, readout, save, tag)
+from illuminate.draw import (TEXT, TEXT_DIM, TEXT_FAINT, OK, PLAN, PRICE, animate, chapter_dir,
+                            figure, heading, plate, margin_note, save, tag)
 from scene import (WINDOW, callout, draw_axes, draw_constraint, draw_region,
                    mark_plan, ordered_corners, profit_line)
 
@@ -23,7 +23,7 @@ def region_png():
     # each label is placed where its own line runs through empty paper, which
     # is outside the region for all three of them
     for i, lx in enumerate((7.0, 11.4, 8.7)):
-        draw_constraint(ax, w.PRIMAL, i, color=INK, lw=1.3, label_x=lx)
+        draw_constraint(ax, w.PRIMAL, i, color=TEXT, lw=1.3, label_x=lx)
     draw_region(ax, w.PRIMAL)
 
     for corner in ordered_corners(w.PRIMAL):
@@ -33,7 +33,7 @@ def region_png():
     callout(ax, f"9 tables, 4 chairs\n{w.money(w.BEST_PROFIT)}", w.PLAN,
             at=(10.2, 9.3), color=PLAN)
     tag(ax, 1.1, 3.0, "every plan in here is one\nyou could actually carry out",
-        color=INK2, size=10)
+        color=TEXT_DIM, size=10)
     save(fig, OUT / "region.png")
 
 
@@ -51,13 +51,13 @@ def sweep_gif(frames=46, fps=12):
     heading(ax, "raise the profit until the line lets go")
 
     for i in range(w.PRIMAL.m):
-        draw_constraint(ax, w.PRIMAL, i, color=INK, lw=1.1, label=False)
+        draw_constraint(ax, w.PRIMAL, i, color=TEXT, lw=1.1, label=False)
     draw_region(ax, w.PRIMAL)
 
     line = profit_line(ax, 0)
     dot, = ax.plot([], [], "o", markersize=9.5, color=PLAN, zorder=7,
                    markeredgecolor="#fffff8", markeredgewidth=2.0)
-    note = readout(fig)
+    note = margin_note(fig)
     top = float(w.BEST_PROFIT)
 
     def update(i):
@@ -74,7 +74,7 @@ def sweep_gif(frames=46, fps=12):
             dot.set_data([], [])
             note.set_text(f"every plan on this line is worth ${level:,.0f}\n"
                           "the line still crosses the region: push it further")
-            note.set_color(INK2)
+            note.set_color(TEXT_DIM)
             line.set_color(PRICE)
         return []
 

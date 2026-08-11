@@ -1,34 +1,37 @@
-# Repository root. Every topic is a self-contained folder with its own Makefile.
-# Add a new topic by creating its folder and adding its name here.
-TOPICS := lp-duality branch-and-price
+TOPICS  := lp-duality branch-and-price
+VENV    := $(CURDIR)/.venv
+PIP     := $(VENV)/bin/pip
 
-VENV := $(CURDIR)/.venv
+.PHONY: bootstrap verify render publish list $(TOPICS)
 
-.PHONY: help venv test figures docs topics
+## bootstrap  install the shared package and every topic into .venv
+bootstrap:
+	python3 -m venv $(VENV)
+	$(PIP) install -q -e ./illuminate
+	$(PIP) install -q pytest
+	$(PIP) install -q --no-deps $(TOPICS:%=-e ./%)
+
+## verify     run every topic's tests
+verify: $(TOPICS:%=verify-%)
+verify-%:
+	@echo "-- $*"
+	@$(MAKE) --no-print-directory -C $* verify
+
+## render     regenerate every figure
+render: $(TOPICS:%=render-%)
+render-%:
+	@echo "-- $*"
+	@$(MAKE) --no-print-directory -C $* render
+
+## publish    regenerate every chapter file, page and sandbox
+publish: $(TOPICS:%=publish-%)
+publish-%:
+	@echo "-- $*"
+	@$(MAKE) --no-print-directory -C $* publish
+
+## list       show the topics
+list:
+	@printf '%s\n' $(TOPICS)
 
 help:
-	@echo "make venv      create the shared .venv and install every topic"
-	@echo "make test      run the tests of every topic"
-	@echo "make figures   re-render the figures of every topic"
-	@echo "make docs      regenerate every topic's chapters, page and sandboxes"
-	@echo "make topics    list the topics in this repo"
-	@echo
-	@echo "To work on one topic:  cd lp-duality && make test"
-
-topics:
-	@for t in $(TOPICS); do echo "$$t"; done
-
-venv:
-	python3 -m venv $(VENV)
-	$(VENV)/bin/pip install -q -e ./illuminate
-	@set -e; for t in $(TOPICS); do $(VENV)/bin/pip install -q --no-deps -e "./$$t[dev]"; done
-	$(VENV)/bin/pip install -q pytest
-
-test:
-	@set -e; for t in $(TOPICS); do echo "== $$t"; $(MAKE) -C $$t test; done
-
-figures:
-	@set -e; for t in $(TOPICS); do echo "== $$t"; $(MAKE) -C $$t figures; done
-
-docs:
-	@set -e; for t in $(TOPICS); do echo "== $$t"; $(MAKE) -C $$t build; done
+	@grep -E '^## ' $(MAKEFILE_LIST) | sed 's/^## //'

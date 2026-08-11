@@ -13,8 +13,8 @@ next chapter explains why it had to.
 from fractions import Fraction
 
 from lpduality import workshop as w
-from illuminate.draw import (INK, INK2, MUTED, OK, PAPER, PLAN, PRICE, RULE,
-                            animate, chapter_dir, figure, heading, readout, tag)
+from illuminate.draw import (TEXT, TEXT_DIM, TEXT_FAINT, OK, SURFACE, PLAN, PRICE, HAIRLINE,
+                            animate, chapter_dir, figure, heading, margin_note, tag)
 from lpduality.lp import solve
 from lpduality.sensitivity import with_rhs
 from scene import WINDOW, draw_axes, draw_constraint, draw_region, mark_plan
@@ -31,15 +31,15 @@ def shadow_gif(frames=50, fps=11):
     heading(ax, "one more plank, and one more, and one more")
 
     for i in (1, 2):
-        draw_constraint(ax, w.PRIMAL, i, label=False, color=MUTED, lw=1.2)
+        draw_constraint(ax, w.PRIMAL, i, label=False, color=TEXT_FAINT, lw=1.2)
     plank_line, = ax.plot([], [], color=PRICE, linewidth=2.0, zorder=4)
     edge, = ax.plot([], [], color=PLAN, linewidth=1.8, zorder=3)
     fill = ax.fill([], [], color=PLAN, alpha=0.13, zorder=1, linewidth=0)[0]
     dot, = ax.plot([], [], "o", markersize=9, color=PLAN, zorder=7,
-                   markeredgecolor=PAPER, markeredgewidth=2)
+                   markeredgecolor=SURFACE, markeredgewidth=2)
     trail, = ax.plot([], [], color=PLAN, linewidth=1.0, alpha=0.4, zorder=5,
                      linestyle=(0, (2, 2)))
-    note = readout(fig, x=0.035, size=10.5)
+    note = margin_note(fig, x=0.035, size=10.5)
 
     from scene import ordered_corners
     seen_x, seen_y = [], []
@@ -68,7 +68,7 @@ def shadow_gif(frames=50, fps=11):
         if stock < bend:
             note.set_text(f"{stock:.1f} planks    profit ${float(best.value):,.2f}\n"
                           f"each extra plank is adding ${price:.2f}")
-            note.set_color(INK)
+            note.set_color(TEXT)
         else:
             note.set_text(f"{stock:.1f} planks    profit ${float(best.value):,.2f}\n"
                           "the saw is the problem now — extra planks add nothing")

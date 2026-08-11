@@ -1,15 +1,13 @@
-"""One lesson file per topic, turned into everything a reader sees.
+"""Renders one topic's lesson.md into chapter files, a reading page and its
+sandboxes.
 
-Each topic writes a ``lesson.md`` and a small ``build.py`` that says what its
-chapters are called and what its interactive pages do.  Everything structural
--- splitting the lesson, generating the chapter files, the page shell, the
-sandbox shell, the navigation -- lives here, so a second topic is a
-configuration rather than a copy.
+A topic supplies a `Topic` describing its chapters and interactive pages. All
+structure -- splitting the source, the page shells, navigation, the canvas
+helper -- is here, so adding a topic does not mean duplicating a build.
 
-The site is served from the repository root rather than from a ``docs`` folder.
-That means the image paths written in ``lesson.md`` are the same paths the
-published page uses: a figure has exactly one home and nothing is rewritten or
-stored twice.
+Output paths assume the site is served from the repository root. Since the
+image references in lesson.md are then already correct for the published page,
+nothing needs rewriting and no figure is stored twice.
 """
 
 from __future__ import annotations
@@ -99,17 +97,17 @@ def chapter_markdown(topic: Topic, index: int, body: str) -> str:
     chapter = topic.chapters[index]
     # images are addressed from the chapter's own folder, so drop the prefix
     body = body.replace(f"chapters/{chapter.folder}/", "")
-    nav = []
+    nav = [f"Chapter {chapter.number} of {len(topic.chapters) - 1}", ""]
     if index > 0:
         previous = topic.chapters[index - 1]
-        nav.append(f"← [{previous.title}](../{previous.folder}/README.md)")
-    nav.append("[all chapters](../..#chapters)")
+        nav.append(f"Previous: [{previous.title}](../{previous.folder}/README.md)  ")
     if index < len(topic.chapters) - 1:
         following = topic.chapters[index + 1]
-        nav.append(f"[{following.title}](../{following.folder}/README.md) →")
+        nav.append(f"Next: [{following.title}](../{following.folder}/README.md)  ")
+    nav.append(f"Contents: [{topic.slug}](../../README.md)")
     return "\n".join([
         "<!-- generated from ../../lesson.md by ../../build.py; do not edit -->",
-        "", body, "", "---", "", " · ".join(nav),
+        "", body, "", "---", "", *nav,
     ]) + "\n"
 
 
@@ -171,7 +169,7 @@ def decorate(body: str) -> str:
         lambda m: (f'<h2 id="ch{m.group(1)}"><span class="num">{m.group(1)}</span>'
                    f'{m.group(2)}</h2>'),
         body)
-    body = body.replace("<table>", '<div class="scroll"><table>')
+    body = body.replace("<table>", '<div class="overflow-x"><table>')
     body = body.replace("</table>", "</table></div>")
     body = body.replace("<blockquote>", '<blockquote class="aside">')
     return body

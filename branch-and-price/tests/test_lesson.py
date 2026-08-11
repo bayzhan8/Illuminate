@@ -1,7 +1,7 @@
-"""The page against the code, and the generated files against the generator.
+"""Consistency checks: lesson.md against bandp, and the generated files
+against their generator.
 
-Same job as the duality topic's version: catch the failures that leave the page
-reading perfectly while saying something the code no longer supports.
+Run `python build.py all` before treating any failure here as real.
 """
 
 import json
@@ -31,18 +31,18 @@ needs_node = pytest.mark.skipif(NODE is None, reason="node is not installed")
 
 # --- figures ---------------------------------------------------------------
 
-def test_every_figure_the_lesson_asks_for_exists():
+def test_lesson_image_links_all_resolve():
     assert [src for _, src in IMAGE.findall(TEXT) if not (ROOT / src).exists()] == []
 
 
-def test_every_figure_on_disk_is_used():
+def test_no_orphan_images_under_chapters():
     used = {src for _, src in IMAGE.findall(TEXT)}
     have = {str(p.relative_to(ROOT)) for p in (ROOT / "chapters").rglob("*")
             if p.suffix in {".png", ".gif"}}
     assert sorted(have - used) == []
 
 
-def test_every_figure_is_described_for_someone_who_cannot_see_it():
+def test_alt_text_is_a_real_description():
     assert [src for alt, src in IMAGE.findall(TEXT) if len(alt.strip()) < 40] == []
 
 

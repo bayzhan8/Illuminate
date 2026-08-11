@@ -15,7 +15,7 @@ quantity that cannot be negative is at most minus one.
 from fractions import Fraction
 
 from lpduality import workshop as w
-from illuminate.draw import (INK, INK2, MUTED, OK, PAPER, PLAN, PRICE, RULE,
+from illuminate.draw import (TEXT, TEXT_DIM, TEXT_FAINT, OK, SURFACE, PLAN, PRICE, HAIRLINE,
                             chapter_dir, heading, save, tag)
 from lpduality.duality import farkas_certificate, mixture, verify_farkas
 from lpduality.lp import solve
@@ -39,7 +39,7 @@ def edges_png():
              [p[1] for p in corners] + [corners[0][1]],
              color=PLAN, linewidth=1.6, zorder=3)
     xs = [0, 11.5]
-    axL.plot(xs, [2 * x - 10 for x in xs], color=INK, linewidth=1.3, zorder=2)
+    axL.plot(xs, [2 * x - 10 for x in xs], color=TEXT, linewidth=1.3, zorder=2)
     # three lines of equal profit, each labelled, marching out of the picture
     for level, alpha in ((150, 0.42), (300, 0.66), (450, 0.92)):
         axL.plot(xs, [(level - 30 * x) / 20 for x in xs], color=PRICE,
@@ -53,23 +53,23 @@ def edges_png():
             lx, ly = 0.3, (level - 30 * 0.3) / 20
         axL.text(lx, ly, f"${level}", color=PRICE, fontsize=9,
                  alpha=alpha, ha="center", va="center", zorder=5,
-                 bbox=dict(boxstyle="square,pad=0.18", facecolor=PAPER,
+                 bbox=dict(boxstyle="square,pad=0.18", facecolor=SURFACE,
                            edgecolor="none"))
     axL.annotate("", xy=(9.9, 10.4), xytext=(7.2, 6.3),
                  arrowprops=dict(arrowstyle="-|>", color=PRICE, linewidth=1.8))
     axL.text(6.9, 6.0, "and onwards,\nwith no last line", color=PRICE,
              fontsize=9.5, ha="left", va="top", zorder=6,
-             bbox=dict(boxstyle="square,pad=0.25", facecolor=PAPER,
+             bbox=dict(boxstyle="square,pad=0.25", facecolor=SURFACE,
                        edgecolor="none"))
     axL.set_xlim(0, 11.5)
     axL.set_ylim(0, 11.0)
-    axL.set_xlabel("tables", fontsize=10, color=INK2, labelpad=6)
-    axL.set_ylabel("chairs", fontsize=10, color=INK2, labelpad=6)
+    axL.set_xlabel("tables", fontsize=10, color=TEXT_DIM, labelpad=6)
+    axL.set_ylabel("chairs", fontsize=10, color=TEXT_DIM, labelpad=6)
     for s in ("top", "right"):
         axL.spines[s].set_visible(False)
-    axL.grid(True, color=RULE, linewidth=0.7, linestyle=(0, (1, 3)))
+    axL.grid(True, color=HAIRLINE, linewidth=0.7, linestyle=(0, (1, 3)))
     axL.set_axisbelow(True)
-    axL.text(6.4, 1.0, "no best plan\n→ no prices at all", color=INK2,
+    axL.text(6.4, 1.0, "no best plan\n→ no prices at all", color=TEXT_DIM,
              fontsize=10.5, va="bottom")
 
     # --- right: an order that cannot be met
@@ -79,20 +79,20 @@ def edges_png():
     axR.set_yticks([])
     for s in ("top", "right", "left"):
         axR.spines[s].set_visible(False)
-    axR.set_xlabel("tables", fontsize=10, color=INK2, labelpad=6)
-    axR.grid(True, axis="x", color=RULE, linewidth=0.7, linestyle=(0, (1, 3)))
+    axR.set_xlabel("tables", fontsize=10, color=TEXT_DIM, labelpad=6)
+    axR.grid(True, axis="x", color=HAIRLINE, linewidth=0.7, linestyle=(0, (1, 3)))
     axR.set_axisbelow(True)
 
     axR.axvspan(0, 11, ymin=0.74, ymax=0.90, color=PLAN, alpha=0.22, zorder=2)
     axR.axvspan(12, 15, ymin=0.74, ymax=0.90, color=PRICE, alpha=0.22, zorder=2)
-    axR.axvspan(11, 12, ymin=0.72, ymax=0.92, color=MUTED, alpha=0.16, zorder=1)
+    axR.axvspan(11, 12, ymin=0.72, ymax=0.92, color=TEXT_FAINT, alpha=0.16, zorder=1)
     axR.text(5.5, 0.94, "the planks reach this far", color=PLAN, fontsize=9.5,
              ha="center", va="bottom")
     axR.text(13.5, 0.94, "the order starts here", color=PRICE, fontsize=9.5,
              ha="center", va="bottom")
     axR.annotate("nothing in here", xy=(11.5, 0.72), xytext=(11.5, 0.63),
-                 color=MUTED, fontsize=9.5, ha="center", va="top",
-                 arrowprops=dict(arrowstyle="-", color=MUTED, linewidth=0.9))
+                 color=TEXT_FAINT, fontsize=9.5, ha="center", va="top",
+                 arrowprops=dict(arrowstyle="-", color=TEXT_FAINT, linewidth=0.9))
 
     # The search in duality.farkas_certificate finds *a* certificate, and for
     # this program it happens to land on the saw rule, which works but is not
@@ -111,10 +111,10 @@ def edges_png():
         "chairs cannot be negative,\n"
         "so there is no such plan"
     )
-    axR.text(0.5, 0.46, proof, color=INK, fontsize=8.8, va="top", ha="left",
+    axR.text(0.5, 0.46, proof, color=TEXT, fontsize=8.8, va="top", ha="left",
              linespacing=1.3,
-             bbox=dict(boxstyle="square,pad=0.55", facecolor=PAPER,
-                       edgecolor=INK, linewidth=1.1))
+             bbox=dict(boxstyle="square,pad=0.55", facecolor=SURFACE,
+                       edgecolor=TEXT, linewidth=1.1))
     save(fig, OUT / "edges.png", tight=False)
 
 
