@@ -39,4 +39,8 @@ sensitivity report should always be read as a range and never as a point.
 
 ---
 
-← [The price is only local](../08-the-price-breaks/README.md) · [all chapters](../..#chapters) · [Where this leads](../10-where-this-leads/README.md) →
+Chapter 9 of 10
+
+Previous: [The price is only local](../08-the-price-breaks/README.md)  
+Next: [Where this leads](../10-where-this-leads/README.md)  
+Contents: [lp-duality](../../README.md)

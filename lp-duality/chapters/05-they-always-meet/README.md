@@ -42,4 +42,8 @@ where you started, which is the sense in which neither one is the original.
 
 ---
 
-← [Every honest price list is a ceiling](../04-every-mix-is-a-ceiling/README.md) · [all chapters](../..#chapters) · [Which rules are actually holding you back](../06-who-is-binding/README.md) →
+Chapter 5 of 10
+
+Previous: [Every honest price list is a ceiling](../04-every-mix-is-a-ceiling/README.md)  
+Next: [Which rules are actually holding you back](../06-who-is-binding/README.md)  
+Contents: [lp-duality](../../README.md)

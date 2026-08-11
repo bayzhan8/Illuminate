@@ -1,136 +1,145 @@
-# How this topic is put together
+# Decision log — lp-duality
 
-Notes to myself, and to whoever writes the next topic. The rules here are not
-general truths about teaching; they are the decisions this guide made, and the
-reasons, so that the next one can make them again on purpose or break them on
-purpose.
+What was chosen, what it cost, and what broke before it was chosen. Written
+for whoever edits this next, including me.
 
-## Who it is for
+---
 
-Someone who has never met a linear program and has no reason to care about one
-yet. Not someone who is slow — someone who is busy. The test of a paragraph is
-whether a person who last did algebra at school gets through it without
-stopping, and whether someone who teaches this for a living would still call it
-correct.
+**Example: a workshop, 3 rows × 2 columns, optimum (9, 4) = $350.**
 
-## The order, and why it is that order
+Chosen by search, not taste. The requirements were: two variables so the
+feasible set is drawable; an optimum at a vertex with integer coordinates; and
+at least one row slack at that vertex. That last one is the whole reason
+chapter 6 has a picture instead of a paragraph — with every row tight,
+complementary slackness has nothing to point at.
 
-Most introductions define the dual and then prove things about it. That order
-is efficient and it is the wrong way round, because a reader who has been
-handed a definition has no idea why anyone would want it.
+Rejected: the first candidate (wood 40) gave T = 7.5. Fractional table counts
+read as a modelling error to a beginner even when they are not.
 
-So the dual is not defined until it has been made necessary. Chapter 2 spends
-its whole length establishing that no amount of searching can ever prove you
-are finished. Only then, in chapter 3, does a price list appear — as the answer
-to a question the reader now has.
+Consequence: the plank price holds only over [20, 316/7], a range of 25 units
+around a stock of 44. That narrowness was luck, and chapter 8 was built around
+it afterwards.
 
-1. **The workshop** (1) makes the problem concrete before anything is claimed.
-2. **You cannot check** (2) creates the need. Nothing else happens in it.
-3. **Charging for the ingredients** (3) invents the dual, without saying so.
-4. **Every honest price list is a ceiling** (4) is weak duality, as two
-   separate gaps with two separate reasons rather than one line of algebra.
-5. **They always meet** (5) is the theorem, plus 320 pieces of evidence and a
-   plain statement that evidence is not proof.
-6. **Who is binding** (6) and **what one more is worth** (7) are the payoff:
-   the two things practitioners actually use the dual for.
-7. **The price is only local** (8) takes the payoff back to a safe size.
-8. **When it goes wrong** (9) fences the theorem's conditions, and gets Farkas
-   in through the side door where it belongs.
-9. **Where this leads** (10) exists because this topic is the foundation of the
-   next four in this repository, and a reader who finishes should know that.
+---
 
-## Rules kept
+**Arithmetic: `fractions.Fraction`, never float.**
 
-- **No equations in the prose.** Every relation is a picture or a sentence. The
-  program itself appears once, as a table of recipes and stock, because that is
-  a shopping list rather than notation.
-- **Nothing invented stays invented.** "Plan", "price list", "ceiling" and the
-  rest all appear in the glossary against their standard names, so a reader can
-  put this down and pick up a textbook without a translation problem.
-- **Motion only where the motion is the argument.** Six figures move: the two
-  regions converging, the profit line sweeping, the price bars covering their
-  products, the two ladders closing, and the plank line sliding until its price
-  dies. Five are static charts. A moving figure that could have been a still is
-  a figure that makes the reader wait for nothing.
-- **A picture made only of words is not a picture.** The three-way comparison
-  in chapter 4 is a real chart with real lengths. The glossary and the "where
-  this leads" list are tables and bullets, because that is what they are, and
-  rendering them as images would only make them unsearchable.
-- **Every animation pauses on its conclusion.** The last frame is the one
-  carrying the answer, and it is held for three seconds before the loop
-  restarts.
-- **Do not oversell.** Chapter 5 says outright that 320 examples are not a
-  proof. Chapter 8 exists mainly to stop a reader walking away thinking a
-  shadow price is a constant. Chapter 9 names degeneracy so that a reader who
-  meets a non-unique price in the wild recognises it instead of assuming the
-  solver is broken.
+The guide's central claim is that two numbers are *equal*. In float, one of
+them arrives as 349.99999999999994 and the claim silently weakens to "equal
+within tolerance", which is a different and much less interesting statement.
+`Fraction` costs nothing at this size.
 
-## Choices in the code
+Downstream effect: `always.png` can print "largest disagreement across all 320:
+0" and mean it literally.
 
-- **Exact fractions everywhere.** The entire guide turns on two numbers being
-  equal. In floating point one of them arrives as 349.99999999999994 and the
-  central claim silently becomes a claim about a tolerance. `Fraction` costs
-  nothing at this size and makes "the gap is zero" a literal statement.
-- **Bland's rule**, which is the slow pivoting rule, because it is the one that
-  provably cannot cycle. A solver that hangs on a degenerate example is a bad
-  thing to hand a beginner, and chapter 9 is about degenerate examples.
-- **Prices are recovered by solving `Bᵀy = c_B` against untouched columns**,
-  not read out of the final tableau. The tableau accumulates sign conventions
-  and getting one backwards produces a plausible wrong answer. The test then
-  checks that number against the dual program solved from scratch, so two
-  independent routes have to agree.
-- **A brute-force corner search exists purely to disagree with the simplex
-  code.** It shares nothing with it. On two-variable problems the tests run
-  both.
-- **The value curve refuses rather than guesses.** Its bends are found by
-  sampling, and a bend almost never lands on a sample: this example bends at
-  316/7, the grid steps from 45 to 45.5, and the straddling pair reads as a
-  slope belonging to neither piece. Single-interval runs are therefore treated
-  as straddles, every bend is re-solved to confirm it, and a grid too coarse to
-  corroborate anything raises instead of returning a smooth-looking wrong
-  curve.
+---
 
-## Choices in the drawing
+**Pivoting: Bland's rule.**
 
-- **Two colours, and they mean the same thing on every page.** Blue is a plan,
-  rust is a price. They were picked by running candidates through a
-  colour-vision simulator rather than by eye; the pair stays more than twenty
-  perceptual units apart under protanopia, deuteranopia and tritanopia, in both
-  light and dark. Green is a status mark only, never a third series, and never
-  without a word or a tick next to it.
-- **The figures do not follow the page into dark mode.** They are rendered on
-  cream with black ink and matted in a plate that stays cream in both schemes.
-  Inverting them would mean re-validating the colour pair against a second
-  surface for no gain; a mat costs nothing and reads as deliberate.
-- **The typeface ships with the repository.** IBM Plex Mono is under the SIL
-  Open Font Licence and lives in `assets/fonts/`, so a clone renders the same
-  figures as this machine did instead of substituting whatever monospace it
-  finds.
-- **Tracking is done with hair spaces.** Matplotlib has no letter-spacing, and
-  the site sets these small headings at 0.12em. A plain space is a quarter em
-  and doubles the width of a heading; a hair space is about a tenth and lands
-  close.
-- **GIFs are re-encoded onto one shared palette.** Matplotlib writes
-  anti-aliased frames in full colour and the encoder then stores thousands of
-  near-identical creams. One palette sampled across the whole animation, with
-  dithering off and no disposal method set, cuts these to roughly a quarter of
-  their size with nothing visible lost. Setting a disposal method undoes all of
-  it — that makes every frame a full repaint.
+Slower than Dantzig's rule. Chosen because it provably cannot cycle, and
+chapter 9 is *about* degenerate programs. A solver that hangs on the example
+in the chapter demonstrating degeneracy would be an embarrassing way to learn
+this lesson.
 
-## What the tests are actually for
+---
 
-Three separate jobs, deliberately kept apart:
+**Duals: solved from `Bᵀy = c_B`, not read off the tableau.**
 
-- `test_lp.py` — the mathematics. Checked against a second implementation
-  wherever one is possible.
-- `test_lesson.py` — the prose against the code. Every figure in the text
-  exists and every figure on disk is used; every number typed into a sentence
-  still matches what the program produces; the generated chapter files match
-  what `build.py` would write today. These are the failures that are invisible
-  by inspection, because the page still reads perfectly while being wrong.
-- `test_sandbox.py` — the JavaScript against the Python. The interactive pages
-  re-implement the corner search, so both are run over the same inputs. Where a
-  corner is degenerate the check is that the page's prices are honest and
-  charge the same bill, not that they are the identical vector — because there
-  the prices genuinely are not unique, and demanding a match would be
-  demanding the wrong thing.
+The tableau accumulates sign conventions through phase 1, negated rows and the
+min/max flip. Getting one backwards produces a plausible wrong vector rather
+than an error. Recovering `y` from an untouched copy of the standard-form
+columns sidesteps all of it, and the test then compares that vector against the
+dual program solved as an independent LP.
+
+---
+
+**Every claim gets a second, unrelated implementation.**
+
+`vertices()` + `solve_by_enumeration()` exist only so the tests can disagree
+with the simplex code. They share nothing with it. This is the highest-value
+habit in the repository; the sibling topic's version of it caught two real
+bugs.
+
+---
+
+**The value-function reconstruction refuses rather than guesses.**
+
+Bends are found by sampling, and a bend almost never lands on a sample. This
+example bends at 316/7; a grid stepping 45 → 45.5 straddles it, and the
+straddling pair reports slope 25/14, which belongs to neither adjacent piece.
+Taken at face value that becomes a phantom fourth segment a tenth of a unit
+wide.
+
+So: a line is believed only when two consecutive intervals agree on it,
+single-interval runs are treated as straddles, and every bend is re-solved to
+confirm the value there. A grid too coarse to corroborate anything raises.
+
+This was observed before it was fixed. The first version drew four segments and
+looked entirely reasonable.
+
+---
+
+**Chapter order: need before definition.**
+
+Chapter 2 does nothing except demonstrate that search can never certify
+optimality. It produces no result and introduces no object. It exists so that
+the price list in chapter 3 arrives as an answer to a question the reader is
+already holding, rather than as a definition to be accepted on credit.
+
+The cost is one chapter of apparent stalling. Worth it.
+
+---
+
+**Prose constraints.**
+
+Relations appear as pictures or sentences; the program itself appears once, as
+a table of stock and recipes, because that is a shopping list. Every invented
+term is mapped to its standard name in a table at the end, so the reader can
+leave and read anything else. "Price" means a dual variable throughout and
+never a market price in the same passage — chapter 7 has to separate those two
+senses explicitly, which is a sign the word is working hard.
+
+---
+
+**Six figures move, five do not.**
+
+Motion is spent where the motion carries the argument: two regions converging,
+an objective line sweeping to a corner, price bars covering their products, two
+ladders closing, a capacity sliding until its price dies. Everything else is a
+chart. Nine early drafts were boxes containing words; those became tables,
+which are searchable, selectable, and legible to a screen reader.
+
+Animations hold three seconds on the final frame. The encoder folds identical
+trailing frames into one, so the pause costs no bytes.
+
+---
+
+**Figures are matted, not inverted.**
+
+They render on cream with black ink in both schemes, inside a bordered plate
+that stays cream in dark mode. Inverting would mean re-validating the
+blue/rust pair against a second surface for no reading benefit.
+
+---
+
+**Colour: two hues, chosen by simulator.**
+
+Blue is a plan, rust is a price, everywhere, in every topic. Candidates were
+run through a colour-vision validator rather than eyeballed. A third
+categorical hue kept failing — blue↔violet and rust↔green both fall under the
+separation floor — so green survives only as a status mark, always beside a
+word or a tick.
+
+---
+
+**Tests split three ways because they fail for different reasons.**
+
+`test_lp.py` is mathematics. `test_lesson.py` is prose against code, and it
+catches the class of failure that is invisible by reading, because a stale
+number leaves a page that still scans perfectly. `test_sandbox.py` is
+JavaScript against Python.
+
+Where the mathematics is genuinely non-unique — degenerate corners have several
+valid dual vectors — the sandbox test asserts the property (feasible, same
+objective) rather than the vector. Demanding an exact match there would be
+demanding something false.

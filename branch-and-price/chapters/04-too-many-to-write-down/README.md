@@ -15,13 +15,14 @@ trillion.](explosion.png)
 **3,972,952,644,549 patterns.** One variable each. You cannot write that model
 down, you cannot store it, and you certainly cannot hand it to a solver.
 
-And yet almost all of those variables are worthless. A good answer uses a
-handful of patterns; the rest sit at zero. The problem is not that there are
-too many variables — it is that you do not know *which* handful matters until
-you have solved the thing.
-
-This is the situation column generation is for.
+Almost all of those variables are worthless. A good answer uses a handful of
+patterns and leaves the rest at zero. The difficulty is not the count. It is
+that you cannot tell which handful matters until the thing is solved.
 
 ---
 
-← [One variable per pattern](../03-one-variable-per-pattern/README.md) · [all chapters](../..#chapters) · [Start with a few, and let the prices ask](../05-let-the-prices-ask/README.md) →
+Chapter 4 of 9
+
+Previous: [One variable per pattern](../03-one-variable-per-pattern/README.md)  
+Next: [Start with a few, and let the prices ask](../05-let-the-prices-ask/README.md)  
+Contents: [branch-and-price](../../README.md)

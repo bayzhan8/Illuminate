@@ -1,19 +1,17 @@
 # Ask the prices what you are missing
 
-**Column generation and branch-and-price, from nothing, with pictures that move.**
+**Column generation and branch-and-price, built from a cutting-stock order.**
 
 Here is a model with four trillion variables that fits on a napkin, and a way
 of solving it that never writes down more than a handful of them.
 
-The trick is the one from [the duality guide](../lp-duality/): a set of prices
-is a certificate. If you have prices that cover every option, you have proof
-that no plan beats your number. Turn that around and it becomes an algorithm —
-*if the prices do not cover some option, that option is exactly the one your
-model is missing.* You do not have to search for the missing variable. You can
-ask for it.
+[The duality guide](../lp-duality/) gives you the check: prices that cover
+every option prove no plan beats your number. Run that backwards and it
+generates. An option the prices fail to cover is a missing variable, and you
+can solve for it directly instead of hunting for it.
 
-Every number quoted here is computed by the code in this folder, in exact
-fractions, and re-checked by its tests.
+Numbers below come from the code in this folder, in exact rationals, asserted
+by its tests.
 
 ---
 
@@ -80,14 +78,14 @@ and the answer it gives is:
 > total length ordered ÷ board length
 > = (3×4 + 6×9 + 7×10) ÷ 25 = 136 ÷ 25 = **5.44 boards**
 
-That is a real lower bound and it is useless, because of what the relaxation
-quietly allows: it lets the leftover at the end of one board be carried over to
-the next. It is the answer you would get if boards were *liquid*. Rounding it
-up says six boards might do.
+That is a genuine lower bound and it is useless, because of what the relaxation
+quietly permits: the leftover at the end of one board carries over to the next.
+It is the answer you would get if boards were *liquid*. Round it up and six
+boards might do.
 
-Six boards will not do. The relaxation cannot see that, because the thing that
-makes it impossible — that a 10-foot piece has to sit on one board, whole — is
-precisely what got relaxed away.
+Six boards will not do. The relaxation cannot see it, because the fact that
+makes it impossible (a 10-foot piece sits on one board, whole) is precisely
+what was relaxed away.
 
 ---
 
@@ -107,19 +105,18 @@ only has to say that enough pieces come out:
 Relax *that* — allow a fractional number of boards cut with a pattern — and the
 answer is **6.5 boards.**
 
-The two relaxations describe the same order and differ enormously, and the
-reason is worth stating plainly. Integrality was not thrown away this time; it
-was **absorbed into the variables**. Every pattern is a whole-board decision
-that has already been made correctly, so relaxing the count of patterns never
-un-decides it. What is left to relax is much less damaging.
+Two relaxations of the same order, an enormous distance apart. Integrality was
+not discarded this time. It was **absorbed into the variables**: every pattern
+is a whole-board decision already made correctly, so relaxing the *count* of
+patterns cannot un-decide it. What remains to relax does far less harm.
 
 | | says you need at least | so, at least | true answer |
 |---|---|---|---|
 | the obvious model, relaxed | 5.44 boards | 6 | 7 |
 | one variable per pattern, relaxed | **6.5 boards** | **7** | 7 |
 
-The second relaxation is tight enough to settle the question on its own here.
-That is what makes the rest of this worth doing.
+Here the second relaxation settles the question by itself, which is the reason
+to put up with everything that follows.
 
 ---
 
@@ -138,12 +135,9 @@ trillion.](chapters/04-too-many-to-write-down/explosion.png)
 **3,972,952,644,549 patterns.** One variable each. You cannot write that model
 down, you cannot store it, and you certainly cannot hand it to a solver.
 
-And yet almost all of those variables are worthless. A good answer uses a
-handful of patterns; the rest sit at zero. The problem is not that there are
-too many variables — it is that you do not know *which* handful matters until
-you have solved the thing.
-
-This is the situation column generation is for.
+Almost all of those variables are worthless. A good answer uses a handful of
+patterns and leaves the rest at zero. The difficulty is not the count. It is
+that you cannot tell which handful matters until the thing is solved.
 
 ---
 
@@ -156,10 +150,10 @@ you have bothered to write down.
 
 For our order, starting with three lazy patterns, it says: **7 boards.**
 
-That is an honest upper bound (those patterns really do fill the order) but it
-is not the answer to the strong model, because the strong model has three more
-patterns we have not written down. The question is whether any of them would
-help — and answering it without adding them is exactly the trick.
+That is an honest upper bound, since those patterns really do fill the order.
+It is not the answer to the strong model, which has three more patterns nobody
+has written down. Whether any of them would help, answered without adding them,
+is the whole method.
 
 Solve the restricted master and read off its **prices**, one per ordered
 length. From the duality guide: these are what one more piece of that length
@@ -177,8 +171,8 @@ the pattern is worth adding exactly when
 
 > the pieces it yields are worth **more than one board.**
 
-That comparison is the reduced cost, and it needs nothing but the prices. A
-pattern you have never written down can be judged by it.
+That comparison is the reduced cost. It needs nothing but the prices, so a
+pattern nobody has written down can still be judged by it.
 
 **This is the same statement as dual feasibility.** The prices from the
 restricted master satisfy every dual constraint belonging to a pattern you have
@@ -192,22 +186,23 @@ the same thing seen from opposite sides.
 
 ## 6 · Asking for a pattern is a knapsack
 
-So: is there a pattern whose pieces are worth more than one board?
+The question is whether some unwritten pattern yields more than one board's
+worth at these prices.
 
-Do not search the list. *Build* the answer. Fill one 25-foot board with pieces
-so as to maximise their total value at the current prices. That is a knapsack
-problem — small, fast, and completely standard — and its answer is the single
-best pattern in existence at these prices, including the ones nobody has
-written down.
+Do not search the list. *Build* the answer. Fill one 25-foot board so as to
+maximise the total value of the pieces taken off it, at the current prices.
+That is a knapsack problem, small and standard, and its answer is the best
+pattern in existence at these prices, including every one nobody has written
+down.
 
-At the prices above, the knapsack comes back with **four 4-foot pieces and one
-9-foot piece**, worth 4×(1/6) + 1×(1/2) = **7/6**. That is more than one board.
-So that pattern is missing, and it goes into the model.
+At the prices above the knapsack returns **four 4-foot pieces and one
+9-foot piece**, worth 4×(1/6) + 1×(1/2) = **7/6**. More than one board, so
+that pattern is missing and it goes into the model.
 
-The **pricing problem** is the engine of the whole method, and note what it
-gives you: not a hint, not a heuristic, but the exact best column, or a proof
-that none exists. When the knapsack's best is worth **1 or less**, no pattern
-anywhere is worth adding, and the restricted model is optimal for the full one.
+Pricing is where the work happens, and note what it returns: the argmax over
+every column, or a proof that none is worth adding. Not a candidate list. When
+the knapsack's best is worth **1 or less**, nothing anywhere would help, and
+the restricted model is optimal for the full one.
 
 **[Try it yourself →](https://bayzhan8.github.io/Illuminate/branch-and-price/sandbox/06.html)**
 Set the three prices by hand and watch which pattern the knapsack builds.
@@ -231,16 +226,13 @@ Put the two halves together and they take turns.
 prices, and the pattern the knapsack asks for
 next.](chapters/07-the-loop/loop.gif)
 
-Watch the number come down: **7 boards**, then 6.875, then 6.5, and then the
+Watch the number come down: **7 boards**, then 6.875, then 6.5. Then the
 knapsack returns a pattern worth exactly 1 and the loop stops. Three patterns
-were added. The answer, **6.5 boards**, is optimal for a model nobody wrote
-down.
+added, and **6.5 boards** is optimal for a model nobody wrote down.
 
-Step 5 is the part that deserves suspicion, so it is worth being exact about
-what it claims. It does not say no better answer exists. It says no *column*
-exists that would improve this one — and because the knapsack searched every
-pattern implicitly rather than sampling some, that is a proof rather than a
-hope.
+Be exact about what step 5 claims. Not that no better answer exists: that no
+*column* exists which would improve this one. The knapsack searched every
+pattern implicitly rather than sampling some, so it is a proof.
 
 On a slightly bigger order — 55-foot boards, four different lengths — there are
 thirty usable patterns, and the loop settles after touching six of them:
@@ -249,7 +241,7 @@ thirty usable patterns, and the loop settles after touching six of them:
 highlighted and the rest left blank.](chapters/07-the-loop/touched.png)
 
 Twenty-four patterns were never written down and never needed to be. On the
-mill instance, the same sentence holds with four trillion in place of
+mill instance the same sentence holds with four trillion in place of
 twenty-four.
 
 **[Try it yourself →](https://bayzhan8.github.io/Illuminate/branch-and-price/sandbox/07.html)**
@@ -261,15 +253,14 @@ Step the loop one round at a time and watch the prices move.
 
 Nobody cuts half a board. The relaxation says 6.5, and 6.5 is not a plan.
 
-For this order, rounding up happens to be right, and for cutting stock it
-nearly always is — the relaxation is famously tight, so much so that instances
-where rounding up is *wrong* are rare and hard to construct. But "nearly
-always" is not a proof, and rounding gives you a number rather than a set of
-cuts. To get an answer you can take to the saw, the fractions have to be
-branched away.
+For this order rounding up happens to be right, and for cutting stock it nearly
+always is. The relaxation is famously tight; instances where rounding up is
+*wrong* are rare and awkward to construct. But "nearly always" is not a proof,
+and a rounded bound is a number rather than a set of cuts. To get something you
+can take to the saw, the fractions have to be branched away.
 
-Which gives **branch-and-price**: branch-and-bound, where the relaxation at
-every node is solved by column generation.
+Hence **branch-and-price**: branch-and-bound in which the relaxation at every
+node is itself solved by generating columns.
 
 > **At each node**
 >
@@ -284,21 +275,21 @@ relaxation needs, some marked whole, some cannot win, branching down four
 levels.](chapters/08-branch-and-price/tree.png)
 
 Each box hides a complete solve-price-add cycle. The tree stays small because
-it starts from a bound that is already nearly right — which is the payoff for
-chapter 3. **Branch-and-price is branch-and-bound with a much better
-relaxation, and a way of representing that relaxation implicitly.**
+it starts from a bound that is already nearly right, which is chapter 3 being
+repaid. Branch-and-price is branch-and-bound with a far better relaxation and a
+way of holding that relaxation implicitly.
 
 ### Two traps, both of which cost this repository real answers
 
-Writing this was where the theory bit back, and both failures looked completely
-reasonable while producing wrong numbers, so they are worth naming.
+This is where the theory bit back. Both failures produced entirely reasonable
+looking trees and entirely wrong numbers.
 
 **A branching row has a price too.** Tell a node "use this pattern at most
-zero times" and that restriction gets a dual value of its own — which inflates
-that one pattern's reduced cost. The knapsack then keeps nominating a pattern
-the master already holds and has pinned at zero. Reading that as "no improving
-column exists" stops the loop early, leaves the node's bound too high, and for
-a minimisation a bound that is too high prunes away the true optimum.
+zero times" and that restriction acquires a dual value, which inflates that one
+pattern's reduced cost. The knapsack then keeps nominating a pattern the master
+already holds and has pinned at zero. Reading that as "no improving column
+exists" stops the loop early and leaves the node's bound too high; in a
+minimisation, a bound that is too high prunes the optimum.
 
 **A restricted master can be infeasible at a node that is perfectly feasible.**
 The columns that would have met the demand simply have not been generated yet.
@@ -312,11 +303,11 @@ them. Neither bug announced itself — the trees looked sensible and the answers
 looked plausible, and only running every small instance against an independent
 brute-force solver revealed it.
 
-A last honesty note: branching on a single pattern's count, as above, is a
-*weak* rule. Real implementations use Ryan–Foster branching, which branches on
+One more admission. Branching on a single pattern's count, as above, is a
+*weak* rule. Real implementations use Ryan–Foster branching, which splits on
 whether two pieces share a board and pushes the restriction down into the
-knapsack. This guide keeps the simpler rule because it is legible, and pays for
-it with a bigger tree.
+knapsack itself. This guide keeps the simpler rule for legibility and pays for
+it in tree size.
 
 ---
 
@@ -325,26 +316,25 @@ it with a bigger tree.
 The shape of what just happened is more general than cutting boards.
 
 **Dantzig–Wolfe decomposition** is the name for what chapter 3 did. A problem
-with block structure is rewritten so that its variables are *whole feasible
-solutions of one block* rather than the block's individual variables. In our
-case the block is "one board" and its feasible solutions are the patterns. The
-new relaxation sits between the integer hull and the naive relaxation — that is
-the general reason it is tighter, and why anyone puts up with the extra
-machinery.
+with block structure is rewritten so its variables are *whole feasible
+solutions of one block* rather than the block's individual variables. Here the
+block is "one board" and its feasible solutions are the patterns. The new
+relaxation sits between the integer hull and the naive relaxation, which is the
+general reason it is tighter and why anyone tolerates the extra machinery.
 
-Column generation is then how you optimise over those solutions without listing
-them: the pricing problem generates them **on demand**, and it produces exactly
-the extreme points of the block that the prices ask for.
+Column generation is how you optimise over those solutions without listing
+them. The pricing problem generates them on demand, producing precisely the
+extreme points of the block that the current prices ask for.
 
-**Benders decomposition** is the same idea pointed the other way. Rather than
-generating columns, it generates *rows*: fix the hard decisions, solve what is
-left, and take the dual of that leftover problem as a new constraint to send
-back. Every Benders cut is a price list doing the job it did in chapter 5 —
-proving a proposal cannot be as good as it claims.
+**Benders decomposition** points the same idea the other way. It generates
+*rows* rather than columns: fix the hard decisions, solve what is left, and
+take the dual of that leftover problem as a new constraint to send back. Every
+Benders cut is a price list doing exactly the job it did in chapter 5, proving
+a proposal cannot be as good as it claims.
 
 ### When pricing is just filtering a list
 
-One case worth flagging, because it looks like the above and is not quite.
+A case that resembles the above and is not.
 
 Suppose the columns are not defined by a polyhedron but *pre-generated* — a
 fixed list of candidate driver schedules, say, computed in advance. Then there
@@ -354,9 +344,9 @@ branch-and-price machinery is unchanged.
 
 But it is no longer generating the extreme points of a block. It is
 reduced-cost filtering of a discretised approximation of one, and the bound you
-get is a bound for *that* approximation. If a schedule you needed is not on the
-list, nothing in the method will ever tell you. That is a modelling decision
-being quietly made by whatever produced the list.
+get is a bound for *that* approximation. If a schedule you needed is absent
+from the list, nothing in the method will ever say so. Whatever produced the
+list made a modelling decision on your behalf.
 
 ## What the plain words are really called
 

@@ -1,10 +1,13 @@
-"""The page and the code have to keep agreeing with each other.
+"""Consistency checks between lesson.md and the code. Not mathematics.
 
-None of this checks mathematics.  It checks the things that rot quietly: a
-number typed into a sentence that the code no longer produces, a figure that
-was renamed, a chapter file that was edited by hand after being generated.
-Those failures are invisible on the page -- it still reads perfectly, it is
-just wrong -- so they need a test or they need luck.
+A failure here means the page and the program have diverged. Regenerate with
+`python build.py all` before debugging anything; most failures in this file
+are a stale generated artefact rather than a real disagreement.
+
+The reason this file exists separately from test_lp.py: nothing it checks is
+visible by reading the page. A figure reference that no longer resolves, or a
+quoted number the solver stopped producing, leaves prose that still scans
+perfectly.
 """
 
 import re
@@ -27,20 +30,20 @@ import build  # noqa: E402
 
 # --- figures ---------------------------------------------------------------
 
-def test_every_figure_the_lesson_asks_for_exists():
+def test_lesson_image_links_all_resolve():
     missing = [src for _, src in IMAGE.findall(TEXT) if not (ROOT / src).exists()]
     assert missing == []
 
 
-def test_every_figure_on_disk_is_actually_used():
-    """A figure nobody looks at is a figure nobody re-renders."""
+def test_no_orphan_images_under_chapters():
+    """An unreferenced image means `make figures` is rebuilding dead weight."""
     used = {src for _, src in IMAGE.findall(TEXT)}
     have = {str(p.relative_to(ROOT)) for p in (ROOT / "chapters").rglob("*")
             if p.suffix in {".png", ".gif"}}
     assert sorted(have - used) == []
 
 
-def test_every_figure_is_described_for_someone_who_cannot_see_it():
+def test_alt_text_is_a_real_description():
     thin = [src for alt, src in IMAGE.findall(TEXT) if len(alt.strip()) < 40]
     assert thin == []
 

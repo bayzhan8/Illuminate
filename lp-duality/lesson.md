@@ -1,23 +1,20 @@
 # Every plan has a price tag
 
-**Linear programming duality, from nothing, with pictures that move.**
+**Linear programming duality, built from a workshop with three shelves.**
 
 There is a small trick at the centre of operations research that almost nobody
 outside the field has heard of, and it is this: *every planning problem comes
 with a second problem attached to it, about prices, and solving either one
 solves both.*
 
-That sounds like an accounting curiosity. It is not. It is the reason a solver
-can tell you not just what to do but what a resource is worth to you; it is the
-reason large problems can be broken into pieces and stitched back together; and
-it is the engine inside column generation, Benders decomposition and every
-method built on them. This guide builds the idea from a workshop with three
-shelves and two products, and never writes an equation.
+That reads like an accounting curiosity. It is why a solver can report what a
+resource is worth to you rather than only what to do with it, why large
+problems can be split up and stitched back together, and what column generation
+and Benders decomposition are made of. The whole thing is built here from a
+workshop with three shelves and two products, without an equation.
 
-Every number quoted here is computed by the code in this folder, in exact
-fractions, and re-checked by its tests. If a number in the text ever stops
-matching the number the code produces, the test suite fails. Nothing below is
-rounded, and nothing is taken on anybody's word.
+The numbers below are produced by the code in this folder and asserted by its
+tests. Exact rationals throughout, so "equal" means equal.
 
 ---
 
@@ -37,9 +34,9 @@ will go.
 The **buyer** asks: *what would I have to pay to buy the place out?* They push
 their bill as low as it will go.
 
-The two pictures have different axes. They are not the same shape. One is
-climbing and the other is falling, and neither one is allowed to look at the
-other. They stop at the same number anyway, and not approximately — exactly.
+The two pictures have different axes and are not the same shape. One climbs,
+the other falls, and neither is allowed to look at the other. They stop at the
+same number. Not close to it; on it.
 
 The rest of this guide is about why that happens, what the second picture is
 telling you that the first cannot, and where it stops being true.
@@ -65,19 +62,19 @@ region with straight edges and sharp corners, with the three limits drawn as
 straight lines.](chapters/01-the-workshop/region.png)
 
 Every point in the shaded region is a plan the workshop could really carry out.
-The edges are straight because building twice as much uses twice as much —
-that is the one assumption in this entire guide, and it is what makes the
-picture have flat sides and corners instead of curves.
+The edges are straight because building twice as much uses twice as much. That
+is the only assumption in the guide, and it is what gives the picture flat
+sides and corners rather than curves.
 
-To find the best plan, take the set of plans worth some particular amount —
-that is a straight line — and push it outwards.
+To find the best plan, take the set of plans worth some particular amount (a
+straight line) and push it outwards.
 
 ![A line of equal profit sweeping across the region until it is about to leave,
 resting finally on a single corner.](chapters/01-the-workshop/sweep.gif)
 
 The last plan the line still touches is the best one: **9 tables and 4 chairs,
-worth $350.** It is a corner, which is not a coincidence and is why every
-method in this repository spends its time looking at corners.
+worth $350.** It is a corner. That is not luck, and it is why every method in this
+repository spends its time on corners.
 
 **[Try it yourself →](https://bayzhan8.github.io/Illuminate/lp-duality/sandbox/01.html)**
 Change what a table and a chair sell for, and watch the best corner jump from
@@ -85,13 +82,13 @@ one to the next.
 
 ---
 
-## 2 · Why you cannot just check
+## 2 · A good plan cannot prove itself best
 
 You have a plan worth $350. How do you know there is nothing better?
 
-You cannot check them all. There are infinitely many plans in that region —
-7 tables and 4½ chairs is in there, and so is every plan between it and its
-neighbours. Checking them one at a time is not slow, it is impossible.
+The region is a continuum. 7 tables and 4½ chairs sits in it, and so does
+everything between that and its neighbours. Enumeration is not slow here; it is
+not defined.
 
 You could try a great many of them anyway and watch the best one you have
 found.
@@ -99,20 +96,19 @@ found.
 ![A curve showing the best profit found so far against the number of plans
 tried. It rises quickly, then flattens, and stays flat.](chapters/02-no-way-to-check/guessing.png)
 
-The curve flattens. That is exactly the problem: **a flat curve looks the same
-whether you have found the best plan or have merely stopped getting lucky.**
-Nothing in the search can tell those apart, because the search only ever
-produces plans, and a plan can only ever say *at least this much is possible*.
+The curve flattens. **A flat curve looks the same whether you have found the
+best plan or have merely stopped getting lucky**, and nothing in the search
+distinguishes those, because a plan can only ever say *at least this much is
+possible*.
 
-What is needed is a statement of the opposite kind — something that says *no
-more than this is possible*. Nothing you can build will ever say that. It has
-to come from somewhere else.
+What is needed is a statement of the opposite kind, saying *no more than this
+is possible*. No plan will ever say that. It has to come from elsewhere.
 
 ---
 
 ## 3 · Charging for the ingredients
 
-Here is where it comes from.
+It comes from the other side of the ledger.
 
 Forget building anything. Put a price on each of the three things in stock: so
 much per plank, so much per hour of work, so much per hour of saw time. Any
@@ -136,9 +132,8 @@ change.](chapters/03-mixing-the-rules/mixing.gif)
 
 Watch the left panel first. Raising the plank price alone covers tables long
 before it covers chairs, and while *either* bar is short the prices prove
-nothing at all — the ceiling is not merely weak, it does not exist. Both
-conditions have to hold, and a set of prices that satisfies one of them is
-worth exactly as much as no prices at all.
+nothing whatever. Not a weak ceiling. No ceiling. A price list satisfying one
+condition is worth as much as no price list.
 
 Then watch what happens once both are covered: there is room to trade a lower
 plank price for a higher hourly rate, stay legal the whole way, and the ceiling
@@ -155,8 +150,8 @@ before one of the products slips under its price.
 The claim in the last chapter deserves to be seen rather than asserted, because
 it is the load-bearing step and it is two ideas rather than one.
 
-Take a plan — any plan, it does not have to be a good one. Take a price list —
-any price list, as long as it covers both products. Line up three numbers.
+Take any plan; it does not have to be a good one. Take any price list that
+covers both products. Line up three numbers.
 
 ![Three bars. What the plan earns, three hundred and forty dollars. What those
 prices charge for the ingredients the plan uses, three hundred and eighty six.
@@ -170,15 +165,14 @@ shown are $7 a plank, $3 an hour and nothing for saw time. Then:
   the ingredients a plan eats are worth at least what the plan makes.
 - **$386 ≤ $398**, because a plan cannot use more of anything than there is.
 
-So $340 ≤ $398. And notice what the argument never needed: it never used the
-fact that this was a *good* plan, or that these were *cheap* prices. It works
-for every plan and every covering price list at once. **Every honest price list
-is a ceiling over every possible plan.**
+So $340 ≤ $398. Notice what the argument never used: that this was a *good*
+plan, or that these were *cheap* prices. It holds for every plan and every
+covering price list simultaneously. **Every honest price list is a ceiling over
+every possible plan.**
 
-That is a genuinely useful thing to have. If you find a plan worth $350 and a
-price list that charges $350, then no plan can be worth more than $350, and
-you have one worth exactly that. You are done, and you know you are done — and
-you knew it without checking a single other plan.
+That is the whole payoff. Find a plan worth $350 and a price list charging
+$350, and no plan can beat $350 while you are holding one that reaches it. You
+are finished, you know you are finished, and you never examined a second plan.
 
 ---
 
@@ -239,11 +233,10 @@ saw time.**
 solid and priced, and the limit it is clear of drawn dashed and priced at
 zero.](chapters/06-who-is-binding/binding.png)
 
-That is not a coincidence, and once you see it you cannot unsee it: **a
-resource with something left over is worth nothing, and a resource that is all
-used up is worth something.** Of course it is. If you have saw time spare, then
-saw time is not what is stopping you, so nobody would give you a penny for
-another hour of it.
+Spare saw time, zero saw price. Planks fully consumed, planks priced. **A
+resource with something left over is worth nothing; a resource that is all used
+up is worth something.** If saw time is not what is stopping you, nobody would
+pay you for another hour of it.
 
 The same rule runs the other way, for products rather than resources. A product
 that gets built is priced at exactly what it earns — no more. A product priced
@@ -264,8 +257,8 @@ switch on and off in response.
 
 The prices are more than a ranking. They are exact rates.
 
-The plank price is $6.25. That means: one more plank in stock is worth exactly
-$6.25 of extra profit. Not roughly — exactly, and you can watch it happen.
+The plank price is $6.25, meaning one more plank in stock is worth $6.25 of
+extra profit. To the penny, and you can watch it happen.
 
 ![The plank limit sliding outward, the region growing, and the best corner
 sliding along with it while the profit climbs at a steady rate, until the rate
@@ -274,13 +267,13 @@ suddenly stops.](chapters/07-what-one-more-is-worth/shadow.gif)
 Add a plank, the plank line moves out, the best corner slides along the hours
 line, and the profit goes up by $6.25. Again, and again.
 
-This is what a dual variable *is*, and it is why the name **shadow price**
-stuck. It is not the market price of a plank. It is what a plank is worth
-**to this workshop, given everything else it has** — and that is the number you
-want when deciding what to buy more of, what to negotiate for, and what a
-bottleneck is costing you.
+This is what a dual variable *is*, and why the name **shadow price** stuck.
+Planks might cost $3 at the yard. Here the forty-fifth one is worth $6.25,
+because of what else this workshop happens to be short of. That is the number
+you want when deciding what to buy, what to negotiate for, and what a
+bottleneck is costing.
 
-But watch the end of that animation. The rate stops.
+Watch the end of that animation, though. The rate stops.
 
 ---
 
@@ -307,10 +300,9 @@ to nothing. A shadow price without the range it holds over is close to useless,
 and quoting one without the other is the most common way this idea gets misused
 in practice.
 
-Notice also that the pieces get flatter, never steeper. That is not an accident
-of this example: more of a resource is never worth more per unit than the last
-lot was, because the easy uses get taken first. The curve is bent one way and
-one way only.
+The pieces get flatter, never steeper. Easy uses go first, so more of a
+resource is never worth more per unit than the last lot was, and the curve can
+only bend one way.
 
 **[Try it yourself →](https://bayzhan8.github.io/Illuminate/lp-duality/sandbox/08.html)**
 Slide the stock of any of the three resources and watch its own price step down.

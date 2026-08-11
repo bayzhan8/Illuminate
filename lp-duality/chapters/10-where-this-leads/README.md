@@ -26,4 +26,7 @@ under load.
 
 ---
 
-← [When it goes wrong](../09-when-it-goes-wrong/README.md) · [all chapters](../..#chapters)
+Chapter 10 of 10
+
+Previous: [When it goes wrong](../09-when-it-goes-wrong/README.md)  
+Contents: [lp-duality](../../README.md)

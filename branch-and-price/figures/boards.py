@@ -12,7 +12,7 @@ width as a number instead, which is what the reader actually needs to read.
 
 from __future__ import annotations
 
-from illuminate.draw import INK, INK2, MUTED, PAPER, PLAN, PRICE, RULE
+from illuminate.draw import TEXT, TEXT_DIM, TEXT_FAINT, SURFACE, PLAN, PRICE, HAIRLINE
 
 # The shades run light to dark with the piece width, so a wide piece looks
 # heavier than a narrow one and the eye can sort a pattern without a legend.
@@ -36,25 +36,25 @@ def draw_board(ax, y, pattern, inst, height=0.62, label=None, show_waste=True,
             if number_pieces and width >= 4:
                 ax.text(x + width / 2, y + height / 2, str(width),
                         ha="center", va="center", fontsize=8.5,
-                        color=MUTED if dim else INK,
+                        color=TEXT_FAINT if dim else TEXT,
                         alpha=0.5 if dim else 1.0, zorder=6)
             x += width
     waste = inst.width - x
     if show_waste and waste > 0:
-        ax.add_patch(_piece(x, y, waste, height, PAPER, dim, hatch="////"))
+        ax.add_patch(_piece(x, y, waste, height, SURFACE, dim, hatch="////"))
         if waste >= 4:
             ax.text(x + waste / 2, y + height / 2, "waste", ha="center",
-                    va="center", fontsize=7.5, color=MUTED, zorder=6)
+                    va="center", fontsize=7.5, color=TEXT_FAINT, zorder=6)
     if label:
         ax.text(-0.9, y + height / 2, label, ha="right", va="center",
-                fontsize=9.5, color=MUTED if dim else INK2, zorder=6)
+                fontsize=9.5, color=TEXT_FAINT if dim else TEXT_DIM, zorder=6)
     return waste
 
 
 def _piece(x, y, width, height, colour, dim, hatch=None):
     from matplotlib.patches import Rectangle
     return Rectangle((x, y), width, height, facecolor=colour,
-                     edgecolor=MUTED if dim else INK,
+                     edgecolor=TEXT_FAINT if dim else TEXT,
                      linewidth=0.9, alpha=0.45 if dim else 1.0,
                      hatch=hatch, zorder=4)
 

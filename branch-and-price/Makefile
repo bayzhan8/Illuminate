@@ -1,40 +1,25 @@
-# Run these from inside this folder: `cd branch-and-price && make test`.
-PY ?= $(CURDIR)/../.venv/bin/python
+PY      := $(CURDIR)/../.venv/bin/python
+FIGURES := $(notdir $(basename $(wildcard figures/fig*.py)))
 
-FIGURE_SCRIPTS := $(wildcard figures/fig*.py)
+.PHONY: verify render publish check $(FIGURES)
 
-.PHONY: help venv test figures build chapters page sandbox check
-
-help:
-	@echo "make test      re-check every number the lesson quotes"
-	@echo "make figures   re-render every image"
-	@echo "make build     regenerate the chapters, the page and the sandboxes"
-	@echo "make check     figures, build and test, in that order"
-
-venv:
-	python3 -m venv ../.venv
-	../.venv/bin/pip install -e ".[dev]"
-
-test:
+## verify   re-check every number lesson.md quotes
+verify:
 	$(PY) -m pytest tests/ -q
 
-figures:
-	@set -e; for f in $(FIGURE_SCRIPTS); do \
-		echo "== $$f"; (cd figures && $(PY) $$(basename $$f)); done
+## render   regenerate every figure
+render: $(FIGURES)
 
-build:
+## publish  regenerate chapters/, index.html and sandbox/
+publish:
 	$(PY) build.py all
 
-chapters:
-	$(PY) build.py chapters
+## check    render, publish, verify
+check: render publish verify
 
-page:
-	$(PY) build.py page
+# `make fig08_the_price_breaks` for one script
+$(FIGURES):
+	@cd figures && $(PY) $@.py
 
-sandbox:
-	$(PY) build.py sandbox
-
-check: figures build test
-
-fig%:
-	cd figures && $(PY) fig$*.py
+help:
+	@grep -E '^## ' $(MAKEFILE_LIST) | sed 's/^## //'

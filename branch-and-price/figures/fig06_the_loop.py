@@ -1,8 +1,8 @@
 """Chapters 6 to 8: the loop running, and how little of the list it touches."""
 
 from bandp import mill as m
-from illuminate.draw import (INK, INK2, MUTED, OK, PAPER, PLAN, PRICE, RULE,
-                             animate, chapter_dir, figure, heading, readout, save, tag)
+from illuminate.draw import (TEXT, TEXT_DIM, TEXT_FAINT, OK, SURFACE, PLAN, PRICE, HAIRLINE,
+                             animate, chapter_dir, figure, heading, margin_note, save, tag)
 from boards import board_axes, draw_board
 
 OUT_LOOP = chapter_dir("07-the-loop")
@@ -24,7 +24,7 @@ def loop_gif(fps=1.1):
     fig.subplots_adjust(left=0.20, right=0.97, top=0.80, bottom=0.30)
     heading(ax, "the loop: solve, price, add, repeat")
     board_axes(ax, inst, rows=1, row_gap=1.0)
-    note = readout(fig, x=0.045, size=10.5)
+    note = margin_note(fig, x=0.045, size=10.5)
 
     def update(i):
         i = min(i, frames - 1)
@@ -42,7 +42,7 @@ def loop_gif(fps=1.1):
                 f"master says {m.decimal(r.value)} boards\n"
                 f"prices: {prices}\n"
                 f"best pattern is worth {r.best_value} > 1 — add it and go again")
-            note.set_color(INK)
+            note.set_color(TEXT)
         else:
             note.set_text(
                 f"round {i + 1}   holding {len(r.patterns)} patterns   "
@@ -83,9 +83,9 @@ def touched_png():
                 from matplotlib.patches import Rectangle
                 ax.add_patch(Rectangle(
                     (x, y), inst.widths[i], 0.42,
-                    facecolor=PLAN if hot else PAPER,
+                    facecolor=PLAN if hot else SURFACE,
                     alpha=0.85 if hot else 1.0,
-                    edgecolor=INK if hot else "#c9c7bd",
+                    edgecolor=TEXT if hot else "#c9c7bd",
                     linewidth=1.0 if hot else 0.8, zorder=4))
                 x += inst.widths[i]
         if hot:
@@ -93,7 +93,7 @@ def touched_png():
                     va="center", fontsize=8, color=PLAN)
     tag(ax, 0, rows * 0.62 + 0.42,
         "the rest were never written down, and never needed to be",
-        color=MUTED, size=9.5)
+        color=TEXT_FAINT, size=9.5)
     save(fig, OUT_TOUCH / "touched.png", tight=False)
 
 

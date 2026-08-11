@@ -32,13 +32,13 @@ import matplotlib.font_manager as fm
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation, PillowWriter
 
-# --- the palette -----------------------------------------------------------
+# the palette
 
-PAPER = "#fffff8"     # the site's page colour
-INK = "#000000"
-INK2 = "#404040"
-MUTED = "#707070"
-RULE = "#C0BDAD"      # the site's soft border
+SURFACE = "#fffff8"     # the site's page colour
+TEXT = "#000000"
+TEXT_DIM = "#404040"
+TEXT_FAINT = "#707070"
+HAIRLINE = "#C0BDAD"      # the site's soft border
 
 PLAN = "#1B4F9C"      # blue: primal, plans, what a workshop can actually do
 PRICE = "#B4341F"     # rust: dual, prices, what a ceiling costs
@@ -72,16 +72,16 @@ FAMILY = _install_fonts()
 plt.rcParams.update({
     "font.family": FAMILY,
     "font.size": 11,
-    "figure.facecolor": PAPER,
-    "axes.facecolor": PAPER,
-    "savefig.facecolor": PAPER,
-    "text.color": INK,
-    "axes.edgecolor": INK,
-    "axes.labelcolor": INK2,
+    "figure.facecolor": SURFACE,
+    "axes.facecolor": SURFACE,
+    "savefig.facecolor": SURFACE,
+    "text.color": TEXT,
+    "axes.edgecolor": TEXT,
+    "axes.labelcolor": TEXT_DIM,
     "axes.linewidth": 1.1,
     "axes.grid": False,
-    "xtick.color": MUTED,
-    "ytick.color": MUTED,
+    "xtick.color": TEXT_FAINT,
+    "ytick.color": TEXT_FAINT,
     "xtick.labelsize": 9.5,
     "ytick.labelsize": 9.5,
     "xtick.direction": "out",
@@ -92,13 +92,14 @@ plt.rcParams.update({
 })
 
 
-# --- building blocks -------------------------------------------------------
+# building blocks
 
 def figure(width: float = 8.2, height: float = 4.6):
-    """A figure whose pixel size is even in both directions.
+    """A figure rounded to an even pixel size in both directions.
 
-    An odd pixel width comes out of the GIF encoder sheared by a pixel per
-    row, which looks like a rendering bug and is really an encoder detail.
+    Pillow's GIF writer needs even dimensions. Odd ones produce a one-pixel
+    per-row skew, so the rounding happens here rather than being remembered
+    at each call site.
     """
     dpi = plt.rcParams["figure.dpi"]
     width = round(width * dpi / 2) * 2 / dpi
@@ -109,15 +110,15 @@ def figure(width: float = 8.2, height: float = 4.6):
 def style(ax, xlabel: str = "", ylabel: str = "", grid: bool = True):
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
-    ax.spines["left"].set_color(INK)
-    ax.spines["bottom"].set_color(INK)
+    ax.spines["left"].set_color(TEXT)
+    ax.spines["bottom"].set_color(TEXT)
     if grid:
-        ax.grid(True, color=RULE, linewidth=0.7, linestyle=(0, (1, 3)), zorder=0)
+        ax.grid(True, color=HAIRLINE, linewidth=0.7, linestyle=(0, (1, 3)), zorder=0)
         ax.set_axisbelow(True)
     if xlabel:
-        ax.set_xlabel(xlabel, fontsize=10, color=INK2, labelpad=8)
+        ax.set_xlabel(xlabel, fontsize=10, color=TEXT_DIM, labelpad=8)
     if ylabel:
-        ax.set_ylabel(ylabel, fontsize=10, color=INK2, labelpad=8)
+        ax.set_ylabel(ylabel, fontsize=10, color=TEXT_DIM, labelpad=8)
     return ax
 
 
@@ -134,35 +135,34 @@ def heading(ax, text: str):
     six-word heading into something twice the width of its own panel.
     """
     ax.set_title(TRACK.join(text.upper()), loc="left", fontsize=9.5,
-                 color=MUTED, pad=12, fontweight="semibold")
+                 color=TEXT_FAINT, pad=12, fontweight="semibold")
 
 
-def tag(ax, x, y, text, color=INK, ha="left", va="center", size=10.5, weight="normal"):
+def tag(ax, x, y, text, color=TEXT, ha="left", va="center", size=10.5, weight="normal"):
     """A direct label on the mark itself, so colour is never the only cue."""
     return ax.text(x, y, text, color=color, ha=ha, va=va, fontsize=size,
                    fontweight=weight, zorder=8)
 
 
-def plate(ax, x, y, text, color=INK, ha="left", va="bottom", size=10):
+def plate(ax, x, y, text, color=TEXT, ha="left", va="bottom", size=10):
     """Text in a square-cornered box, matching the site's bordered cards."""
     return ax.text(x, y, text, color=color, ha=ha, va=va, fontsize=size, zorder=9,
-                   bbox=dict(boxstyle="square,pad=0.45", facecolor=PAPER,
+                   bbox=dict(boxstyle="square,pad=0.45", facecolor=SURFACE,
                              edgecolor=color, linewidth=1.1))
 
 
-def readout(fig, x=0.014, y=0.03, size=10.5, color=INK2, ha="left"):
-    """A live number parked in the margin under the axes.
+def margin_note(fig, x=0.014, y=0.03, size=10.5, color=TEXT_DIM, ha="left"):
+    """A text handle in the bottom margin, for values that change per frame.
 
-    Figures here are read like a caption and a plate, not like a dashboard, so
-    the changing number belongs with the caption.  Keeping it out of the axes
-    also removes any question of it landing on a line as the drawing moves.
-    Reserve the space with ``fig.subplots_adjust(bottom=...)`` before calling.
+    Needs ``fig.subplots_adjust(bottom=...)`` to have reserved the space.
+    Placing it outside the axes means it cannot collide with the drawing at
+    any frame, which is otherwise a per-figure thing to get wrong.
     """
     return fig.text(x, y, "", ha=ha, va="bottom", fontsize=size, color=color,
                     family=FAMILY, zorder=20)
 
 
-# --- output ----------------------------------------------------------------
+# output
 
 def _short(path: Path) -> str:
     """<topic>/chapters/<chapter>/<file>, however deep the repository sits."""
@@ -179,7 +179,7 @@ def save(fig, path: Path, tight: bool = True) -> Path:
     path.parent.mkdir(parents=True, exist_ok=True)
     if tight:
         fig.tight_layout()
-    fig.savefig(path, facecolor=PAPER, bbox_inches="tight", pad_inches=0.16)
+    fig.savefig(path, facecolor=SURFACE, bbox_inches="tight", pad_inches=0.16)
     plt.close(fig)
     print(f"  wrote {_short(path)}")
     return path
@@ -187,14 +187,15 @@ def save(fig, path: Path, tight: bool = True) -> Path:
 
 def animate(fig, update, frames: int, path: Path, fps: int = 12,
             hold: float = 2.5, loop_smoothly: bool = False) -> Path:
-    """Write a GIF that pauses on its conclusion before looping.
+    """Write a GIF, appending duplicate trailing frames so the last one lasts.
 
-    These animations are arguments, and an argument needs a beat at the end.
-    ``hold`` requests extra frames past the last real one; the update functions
-    clamp their index, so those come out identical and the encoder collapses
-    them into a single long-duration frame -- the pause costs nothing in file
-    size.  Pass ``loop_smoothly`` for a figure whose motion is itself the
-    content, where stopping would be the wrong reading.
+    ``hold`` is a duration in seconds. Callers must saturate their own frame
+    index (``i = min(i, frames - 1)``) or the extra frames will index past the
+    end. Because they render identically, the encoder folds them into one
+    long-duration frame and the pause is free.
+
+    ``loop_smoothly=True`` suppresses the hold, for cyclic motion where a pause
+    would read as a stutter.
     """
     path.parent.mkdir(parents=True, exist_ok=True)
     extra = 0 if loop_smoothly else max(1, round(fps * hold))
@@ -203,7 +204,7 @@ def animate(fig, update, frames: int, path: Path, fps: int = 12,
     # GIF has no interframe compression worth the name, so rendering resolution
     # is file size. 92dpi keeps the type crisp at the width these are shown at.
     anim.save(path, writer=PillowWriter(fps=fps), dpi=92,
-              savefig_kwargs={"facecolor": PAPER})
+              savefig_kwargs={"facecolor": SURFACE})
     plt.close(fig)
     shrink_gif(path)
     print(f"  wrote {_short(path)} ({path.stat().st_size / 1024:.0f} kB)")
@@ -211,15 +212,16 @@ def animate(fig, update, frames: int, path: Path, fps: int = 12,
 
 
 def shrink_gif(path: Path, colours: int = 48) -> None:
-    """Re-encode onto one shared palette, which is most of the file size.
+    """Re-encode the whole animation onto a single quantised palette.
 
-    Matplotlib writes anti-aliased frames in full colour, so the encoder builds
-    a fresh palette per frame and stores thousands of near-identical creams.
-    These drawings only really contain a handful of colours, so one palette
-    sampled across the whole animation covers every frame; dithering is turned
-    off because it invents noise in flat areas, and noise is exactly what does
-    not compress.  Typically about a quarter of the original size, with no
-    visible difference on flat-colour line art.
+    Matplotlib emits anti-aliased 24-bit frames; the default encoder then
+    derives a palette per frame and spends most of the file on thousands of
+    almost-identical background tones. Sampling one palette across the
+    animation and mapping every frame onto it cuts these to roughly a quarter,
+    with no visible change on flat-colour line art.
+
+    Dithering is disabled: it introduces high-frequency noise into flat regions,
+    which is the worst possible input for LZW.
     """
     from PIL import Image, ImageSequence
 

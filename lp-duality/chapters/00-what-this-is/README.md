@@ -16,13 +16,16 @@ will go.
 The **buyer** asks: *what would I have to pay to buy the place out?* They push
 their bill as low as it will go.
 
-The two pictures have different axes. They are not the same shape. One is
-climbing and the other is falling, and neither one is allowed to look at the
-other. They stop at the same number anyway, and not approximately — exactly.
+The two pictures have different axes and are not the same shape. One climbs,
+the other falls, and neither is allowed to look at the other. They stop at the
+same number. Not close to it; on it.
 
 The rest of this guide is about why that happens, what the second picture is
 telling you that the first cannot, and where it stops being true.
 
 ---
 
-[all chapters](../..#chapters) · [The workshop](../01-the-workshop/README.md) →
+Chapter 0 of 10
+
+Next: [The workshop](../01-the-workshop/README.md)  
+Contents: [lp-duality](../../README.md)

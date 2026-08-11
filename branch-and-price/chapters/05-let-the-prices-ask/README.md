@@ -9,10 +9,10 @@ you have bothered to write down.
 
 For our order, starting with three lazy patterns, it says: **7 boards.**
 
-That is an honest upper bound (those patterns really do fill the order) but it
-is not the answer to the strong model, because the strong model has three more
-patterns we have not written down. The question is whether any of them would
-help — and answering it without adding them is exactly the trick.
+That is an honest upper bound, since those patterns really do fill the order.
+It is not the answer to the strong model, which has three more patterns nobody
+has written down. Whether any of them would help, answered without adding them,
+is the whole method.
 
 Solve the restricted master and read off its **prices**, one per ordered
 length. From the duality guide: these are what one more piece of that length
@@ -30,8 +30,8 @@ the pattern is worth adding exactly when
 
 > the pieces it yields are worth **more than one board.**
 
-That comparison is the reduced cost, and it needs nothing but the prices. A
-pattern you have never written down can be judged by it.
+That comparison is the reduced cost. It needs nothing but the prices, so a
+pattern nobody has written down can still be judged by it.
 
 **This is the same statement as dual feasibility.** The prices from the
 restricted master satisfy every dual constraint belonging to a pattern you have
@@ -43,4 +43,8 @@ the same thing seen from opposite sides.
 
 ---
 
-← [Too many to write down](../04-too-many-to-write-down/README.md) · [all chapters](../..#chapters) · [Asking for a pattern is a knapsack](../06-a-knapsack/README.md) →
+Chapter 5 of 9
+
+Previous: [Too many to write down](../04-too-many-to-write-down/README.md)  
+Next: [Asking for a pattern is a knapsack](../06-a-knapsack/README.md)  
+Contents: [branch-and-price](../../README.md)

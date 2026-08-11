@@ -114,9 +114,9 @@ Import the house style from `illuminate.draw`. Never set a colour by hand.
   should be static
 - **every animation pauses on its conclusion** — `animate(..., hold=3.0)`,
   which the encoder collapses to one long frame at no cost in bytes
-- **a picture made only of words is not a picture.** Boxes containing labels
-  belong in the prose as a table, where they are searchable and readable by a
-  screen reader. Only figures with real graphical content stay images
+- **a diagram of labelled boxes is not a diagram.** If the graphical content is
+  zero, render it as a table: searchable, selectable, legible to a screen
+  reader, and no re-render needed when a word changes
 - **direct-label the marks.** Colour is never the only cue
 - figures render on cream and are matted in a bordered plate that stays cream
   in dark mode. They do not invert
@@ -134,16 +134,16 @@ to run the code.
 
 Rules that have earned their place:
 
-- **no equations in the prose.** Every relation is a picture or a sentence. A
-  model may appear once as a table of quantities, because that is a shopping
-  list rather than notation
+- **keep algebra out of the running text.** State relations as a drawing or
+  as a sentence. The model itself may appear once as a table of quantities,
+  which reads as a shopping list rather than as notation
 - **every invented phrase gets its real name**, in a glossary table at the end,
   so a reader can put the guide down and pick up a textbook
 - **one word, one meaning.** If "price" means a dual variable, it never also
   means a market price in the same passage
-- **do not oversell.** If a figure shows 320 examples of a theorem, say in the
-  text that examples are not a proof. Fence off what the result does not say —
-  a whole chapter on it is not too much
+- **state the strength of the evidence.** A figure showing 320 instances of a
+  theorem is not a proof, and the text has to say so. Budget a full chapter for
+  what the result does not claim
 - **write up the bugs.** When a subtle failure cost real answers, put it in the
   lesson. It is the most valuable content on the page and it is the part no
   textbook includes
@@ -191,7 +191,7 @@ Then add the topic to `TOPICS` in the root `Makefile`, to the table in the root
 root, commit, push. GitHub Pages serves from the repository root, so images
 have one home and the paths in `lesson.md` are the paths the site uses.
 
-## Voice
+## Register
 
 Write like a person who knows the subject and is explaining it to a colleague
 over a table, not like an explainer. Concretely:
@@ -214,7 +214,7 @@ over a table, not like an explainer. Concretely:
 
 - do not hand-edit anything under `chapters/`, `index.html`, or `sandbox/` —
   they are generated, and a test will fail
-- do not add a figure that is a diagram of words
+- do not ship a figure whose content is entirely typography
 - do not quote a number you have not computed
 - do not claim a phenomenon you have not found an instance of
 - do not introduce a third and fourth data colour; use shading, position or

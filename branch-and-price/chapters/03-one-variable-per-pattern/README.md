@@ -16,20 +16,23 @@ only has to say that enough pieces come out:
 Relax *that* — allow a fractional number of boards cut with a pattern — and the
 answer is **6.5 boards.**
 
-The two relaxations describe the same order and differ enormously, and the
-reason is worth stating plainly. Integrality was not thrown away this time; it
-was **absorbed into the variables**. Every pattern is a whole-board decision
-that has already been made correctly, so relaxing the count of patterns never
-un-decides it. What is left to relax is much less damaging.
+Two relaxations of the same order, an enormous distance apart. Integrality was
+not discarded this time. It was **absorbed into the variables**: every pattern
+is a whole-board decision already made correctly, so relaxing the *count* of
+patterns cannot un-decide it. What remains to relax does far less harm.
 
 | | says you need at least | so, at least | true answer |
 |---|---|---|---|
 | the obvious model, relaxed | 5.44 boards | 6 | 7 |
 | one variable per pattern, relaxed | **6.5 boards** | **7** | 7 |
 
-The second relaxation is tight enough to settle the question on its own here.
-That is what makes the rest of this worth doing.
+Here the second relaxation settles the question by itself, which is the reason
+to put up with everything that follows.
 
 ---
 
-← [The obvious model, and why it is too weak](../02-the-obvious-model/README.md) · [all chapters](../..#chapters) · [Too many to write down](../04-too-many-to-write-down/README.md) →
+Chapter 3 of 9
+
+Previous: [The obvious model, and why it is too weak](../02-the-obvious-model/README.md)  
+Next: [Too many to write down](../04-too-many-to-write-down/README.md)  
+Contents: [branch-and-price](../../README.md)

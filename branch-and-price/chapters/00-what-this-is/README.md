@@ -22,4 +22,7 @@ so much stronger, and how it gets solved without ever being written down.
 
 ---
 
-[all chapters](../..#chapters) · [The order](../01-the-order/README.md) →
+Chapter 0 of 9
+
+Next: [The order](../01-the-order/README.md)  
+Contents: [branch-and-price](../../README.md)

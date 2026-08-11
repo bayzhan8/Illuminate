@@ -11,7 +11,7 @@ lists is a claim the reader has to take on trust.
 """
 
 from lpduality import workshop as w
-from illuminate.draw import (INK, INK2, MUTED, OK, PAPER, PLAN, PRICE, chapter_dir,
+from illuminate.draw import (TEXT, TEXT_DIM, TEXT_FAINT, OK, SURFACE, PLAN, PRICE, chapter_dir,
                             figure, heading, save, tag)
 from scene import (callout, draw_axes, draw_constraint, draw_region, mark_plan)
 
@@ -31,7 +31,7 @@ def binding_png():
     for i in range(w.PRIMAL.m):
         is_tight = i in tight
         draw_constraint(ax, w.PRIMAL, i, label=False,
-                        color=PRICE if is_tight else MUTED,
+                        color=PRICE if is_tight else TEXT_FAINT,
                         lw=2.2 if is_tight else 1.2,
                         dashes=None if is_tight else (5, 4))
     draw_region(ax, w.PRIMAL)
@@ -41,14 +41,14 @@ def binding_png():
     for i, (lx, ly) in enumerate(((6.15, 9.05), (12.05, 1.85), (8.5, 6.6))):
         price = w.PRICES[i]
         is_tight = i in tight
-        colour = PRICE if is_tight else MUTED
+        colour = PRICE if is_tight else TEXT_FAINT
         spare = w.PRIMAL.slack(i, w.PLAN)
         text = (f"{w.PRIMAL.row_names[i]}\nnone spare\n{w.money(price)} each"
                 if is_tight else
                 f"{w.PRIMAL.row_names[i]}\n{w.number(spare)} spare\n{w.money(price)}")
         ax.text(lx, ly, text, color=colour, fontsize=9.5, ha="center",
                 va="center", zorder=7,
-                bbox=dict(boxstyle="square,pad=0.34", facecolor=PAPER,
+                bbox=dict(boxstyle="square,pad=0.34", facecolor=SURFACE,
                           edgecolor=colour, linewidth=1.0))
 
     callout(ax, f"9 tables, 4 chairs\n{w.money(w.BEST_PROFIT)}", w.PLAN,
@@ -56,7 +56,7 @@ def binding_png():
     tag(ax, 0.35, 1.0,
         "a rule with something left over\ncannot be what is holding you back,\n"
         "so nobody would pay for more of it",
-        color=INK2, size=10)
+        color=TEXT_DIM, size=10)
     save(fig, OUT / "binding.png")
 
 

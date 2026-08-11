@@ -13,7 +13,7 @@ so a bend drawn in the wrong place would fail rather than look plausible.
 """
 
 from lpduality import workshop as w
-from illuminate.draw import (INK, INK2, MUTED, OK, PAPER, PLAN, PRICE, RULE,
+from illuminate.draw import (TEXT, TEXT_DIM, TEXT_FAINT, OK, SURFACE, PLAN, PRICE, HAIRLINE,
                             chapter_dir, figure, heading, save, tag)
 
 OUT = chapter_dir("08-the-price-breaks")
@@ -34,36 +34,36 @@ def curve_png():
         # steep enough that a plain offset still leaves the line running
         # through the words
         ax.text(mid + 3.0, float(seg.value((seg.start + seg.end) / 2)) - 34,
-                f"${float(seg.slope):.2f} a plank", color=INK2, fontsize=10,
+                f"${float(seg.slope):.2f} a plank", color=TEXT_DIM, fontsize=10,
                 ha="center", va="top", zorder=6,
-                bbox=dict(boxstyle="square,pad=0.28", facecolor=PAPER,
+                bbox=dict(boxstyle="square,pad=0.28", facecolor=SURFACE,
                           edgecolor="none"))
 
     for seg in segments[:-1]:
         bx = float(seg.end)
         by = float(seg.value(seg.end))
         ax.plot([bx], [by], "o", markersize=7, color=PRICE, zorder=7,
-                markeredgecolor=PAPER, markeredgewidth=1.8)
+                markeredgecolor=SURFACE, markeredgewidth=1.8)
         ax.plot([bx, bx], [0, by], color=PRICE, linewidth=0.9,
                 linestyle=(0, (3, 3)), zorder=3)
 
     here = float(w.PRIMAL.b[w.WOOD])
     ax.plot([here], [float(w.BEST_PROFIT)], "o", markersize=9, color=PLAN,
-            zorder=8, markeredgecolor=PAPER, markeredgewidth=2)
+            zorder=8, markeredgecolor=SURFACE, markeredgewidth=2)
 
     ax.set_xlim(0, 60)
     ax.set_ylim(0, 430)
-    ax.set_xlabel("planks in stock", fontsize=10, color=INK2, labelpad=7)
-    ax.set_ylabel("best profit", fontsize=10, color=INK2, labelpad=7)
+    ax.set_xlabel("planks in stock", fontsize=10, color=TEXT_DIM, labelpad=7)
+    ax.set_ylabel("best profit", fontsize=10, color=TEXT_DIM, labelpad=7)
     for s in ("top", "right"):
         ax.spines[s].set_visible(False)
-    ax.grid(True, color=RULE, linewidth=0.7, linestyle=(0, (1, 3)))
+    ax.grid(True, color=HAIRLINE, linewidth=0.7, linestyle=(0, (1, 3)))
     ax.set_axisbelow(True)
     ax.set_xticks([0, 10, 20, 30, 40, 50, 60])
 
     ax.annotate("the workshop today\n44 planks, $350", xy=(here, float(w.BEST_PROFIT)),
                 xytext=(30.5, 128), color=PLAN, fontsize=10, ha="center",
-                bbox=dict(boxstyle="square,pad=0.45", facecolor=PAPER,
+                bbox=dict(boxstyle="square,pad=0.45", facecolor=SURFACE,
                           edgecolor=PLAN, linewidth=1.1),
                 arrowprops=dict(arrowstyle="-", color=PLAN, linewidth=0.9,
                                 shrinkA=6, shrinkB=8), zorder=9)

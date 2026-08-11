@@ -29,4 +29,8 @@ to learn on. Chapter 4 is where that stops being true.
 
 ---
 
-← [What this is](../00-what-this-is/README.md) · [all chapters](../..#chapters) · [The obvious model, and why it is too weak](../02-the-obvious-model/README.md) →
+Chapter 1 of 9
+
+Previous: [What this is](../00-what-this-is/README.md)  
+Next: [The obvious model, and why it is too weak](../02-the-obvious-model/README.md)  
+Contents: [branch-and-price](../../README.md)

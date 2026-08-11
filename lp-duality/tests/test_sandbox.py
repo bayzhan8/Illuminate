@@ -1,13 +1,12 @@
-"""The pages you can play with must compute what the Python computes.
+"""Cross-checks the canvas pages' JavaScript against `lpduality`.
 
-The sandbox pages re-implement the corner search, the prices and the ceiling
-in JavaScript, because they run in a browser with no server behind them.  Two
-implementations of the same formula drift apart the moment one of them is
-edited alone, so these tests run the page's own JavaScript through node and
-compare it against `lpduality` at a spread of inputs.
+The sandbox pages carry their own copy of the corner search, the prices and the
+ceiling, since they run client-side with nothing behind them. Requires `node`;
+without it only the HTML structure assertions execute.
 
-If node is not installed the comparison is skipped, and the structural checks
-still run.
+The comparison is deliberately over many inputs rather than one, because the
+failure being guarded against is a divergence that only shows up away from the
+default slider positions.
 """
 
 import json

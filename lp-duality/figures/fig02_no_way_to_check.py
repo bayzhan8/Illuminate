@@ -3,7 +3,7 @@
 import random
 
 from lpduality import workshop as w
-from illuminate.draw import (INK, INK2, MUTED, PLAN, PRICE, RULE, chapter_dir,
+from illuminate.draw import (TEXT, TEXT_DIM, TEXT_FAINT, PLAN, PRICE, HAIRLINE, chapter_dir,
                             figure, heading, save, style, tag)
 
 OUT = chapter_dir("02-no-way-to-check")
@@ -35,19 +35,19 @@ def guessing_png(trials=600, seed=11):
     heading(ax, "searching, without ever being told to stop")
 
     ax.plot(range(1, trials + 1), best_curve, color=PLAN, linewidth=2.0, zorder=4)
-    ax.axhline(float(w.BEST_PROFIT), color=MUTED, linewidth=1.0,
+    ax.axhline(float(w.BEST_PROFIT), color=TEXT_FAINT, linewidth=1.0,
                linestyle=(0, (4, 4)), zorder=2)
     ax.set_ylim(0, 400)
     ax.set_xlim(0, trials)
 
     tag(ax, trials * 0.985, float(w.BEST_PROFIT) + 9,
         "the best there is — but nothing in the search says so",
-        color=MUTED, ha="right", size=9.5)
+        color=TEXT_FAINT, ha="right", size=9.5)
     tag(ax, trials * 0.5, best_curve[trials // 2] - 60,
         f"after {trials} plans the best found is "
         f"${best_curve[-1]:,.2f}\nit has not moved in a long time\n"
         "is that because it cannot, or because\nthe next plan was never tried?",
-        color=INK2, size=10.5, va="top")
+        color=TEXT_DIM, size=10.5, va="top")
     save(fig, OUT / "guessing.png")
 
 

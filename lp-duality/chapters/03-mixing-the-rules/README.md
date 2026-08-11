@@ -2,7 +2,7 @@
 
 ## 3 · Charging for the ingredients
 
-Here is where it comes from.
+It comes from the other side of the ledger.
 
 Forget building anything. Put a price on each of the three things in stock: so
 much per plank, so much per hour of work, so much per hour of saw time. Any
@@ -26,9 +26,8 @@ change.](mixing.gif)
 
 Watch the left panel first. Raising the plank price alone covers tables long
 before it covers chairs, and while *either* bar is short the prices prove
-nothing at all — the ceiling is not merely weak, it does not exist. Both
-conditions have to hold, and a set of prices that satisfies one of them is
-worth exactly as much as no prices at all.
+nothing whatever. Not a weak ceiling. No ceiling. A price list satisfying one
+condition is worth as much as no price list.
 
 Then watch what happens once both are covered: there is room to trade a lower
 plank price for a higher hourly rate, stay legal the whole way, and the ceiling
@@ -40,4 +39,8 @@ before one of the products slips under its price.
 
 ---
 
-← [Why you cannot just check](../02-no-way-to-check/README.md) · [all chapters](../..#chapters) · [Every honest price list is a ceiling](../04-every-mix-is-a-ceiling/README.md) →
+Chapter 3 of 10
+
+Previous: [Why you cannot just check](../02-no-way-to-check/README.md)  
+Next: [Every honest price list is a ceiling](../04-every-mix-is-a-ceiling/README.md)  
+Contents: [lp-duality](../../README.md)

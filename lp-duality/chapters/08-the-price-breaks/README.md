@@ -23,14 +23,17 @@ to nothing. A shadow price without the range it holds over is close to useless,
 and quoting one without the other is the most common way this idea gets misused
 in practice.
 
-Notice also that the pieces get flatter, never steeper. That is not an accident
-of this example: more of a resource is never worth more per unit than the last
-lot was, because the easy uses get taken first. The curve is bent one way and
-one way only.
+The pieces get flatter, never steeper. Easy uses go first, so more of a
+resource is never worth more per unit than the last lot was, and the curve can
+only bend one way.
 
 **[Try it yourself →](https://bayzhan8.github.io/Illuminate/lp-duality/sandbox/08.html)**
 Slide the stock of any of the three resources and watch its own price step down.
 
 ---
 
-← [What one more plank is worth](../07-what-one-more-is-worth/README.md) · [all chapters](../..#chapters) · [When it goes wrong](../09-when-it-goes-wrong/README.md) →
+Chapter 8 of 10
+
+Previous: [What one more plank is worth](../07-what-one-more-is-worth/README.md)  
+Next: [When it goes wrong](../09-when-it-goes-wrong/README.md)  
+Contents: [lp-duality](../../README.md)

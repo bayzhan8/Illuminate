@@ -18,7 +18,7 @@ applies to all of them at once.
 """
 
 from lpduality import workshop as w
-from illuminate.draw import (INK, INK2, MUTED, PAPER, PLAN, PRICE, RULE,
+from illuminate.draw import (TEXT, TEXT_DIM, TEXT_FAINT, SURFACE, PLAN, PRICE, HAIRLINE,
                             chapter_dir, figure, heading, save, tag)
 
 OUT = chapter_dir("04-every-mix-is-a-ceiling")
@@ -41,24 +41,24 @@ def chain_png():
               "what these prices charge\nfor what it uses",
               "what these prices charge\nfor the whole workshop"]
     values = [earns, charged_for_used, charged_for_all]
-    colors = [PLAN, INK2, PRICE]
+    colors = [PLAN, TEXT_DIM, PRICE]
 
     ys = [2, 1, 0]
     ax.barh(ys, values, height=0.44, color=colors, zorder=4,
-            edgecolor=PAPER, linewidth=2)
+            edgecolor=SURFACE, linewidth=2)
     for y, v, col in zip(ys, values, colors):
         ax.text(v + 7, y, f"${v:,.0f}", va="center", ha="left", color=col,
                 fontsize=11.5, fontweight="semibold", zorder=6)
 
     ax.set_yticks(ys)
-    ax.set_yticklabels(labels, fontsize=10, color=INK2)
+    ax.set_yticklabels(labels, fontsize=10, color=TEXT_DIM)
     ax.set_xlim(0, 660)
     ax.set_ylim(-0.6, 2.9)
-    ax.set_xlabel("dollars", fontsize=10, color=INK2, labelpad=7)
+    ax.set_xlabel("dollars", fontsize=10, color=TEXT_DIM, labelpad=7)
     for s in ("top", "right", "left"):
         ax.spines[s].set_visible(False)
     ax.tick_params(axis="y", length=0)
-    ax.grid(True, axis="x", color=RULE, linewidth=0.7, linestyle=(0, (1, 3)))
+    ax.grid(True, axis="x", color=HAIRLINE, linewidth=0.7, linestyle=(0, (1, 3)))
     ax.set_axisbelow(True)
 
     # the two reasons, each drawn against the gap it explains
@@ -69,14 +69,14 @@ def chain_png():
             (2, 1, "every product is priced\nat least what it earns"),
             (1, 0, "a plan cannot use more\nof anything than there is")):
         ax.annotate("", xy=(gutter, y_top), xytext=(gutter, y_bot),
-                    arrowprops=dict(arrowstyle="<->", color=MUTED, linewidth=1.0))
+                    arrowprops=dict(arrowstyle="<->", color=TEXT_FAINT, linewidth=1.0))
         ax.text(gutter + 14, (y_top + y_bot) / 2, text, va="center", ha="left",
-                color=MUTED, fontsize=9.5)
+                color=TEXT_FAINT, fontsize=9.5)
 
     tag(ax, 8, 2.66,
         f"a plan: {PLAN_SHOWN[0]} tables and {PLAN_SHOWN[1]} chairs — not the best one\n"
         f"some prices: $7 a plank, $3 an hour, $0 of saw time — not the cheapest",
-        color=INK2, size=9.5)
+        color=TEXT_DIM, size=9.5)
     save(fig, OUT / "chain.png")
 
 

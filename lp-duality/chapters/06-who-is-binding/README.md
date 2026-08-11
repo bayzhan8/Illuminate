@@ -15,11 +15,10 @@ saw time.**
 solid and priced, and the limit it is clear of drawn dashed and priced at
 zero.](binding.png)
 
-That is not a coincidence, and once you see it you cannot unsee it: **a
-resource with something left over is worth nothing, and a resource that is all
-used up is worth something.** Of course it is. If you have saw time spare, then
-saw time is not what is stopping you, so nobody would give you a penny for
-another hour of it.
+Spare saw time, zero saw price. Planks fully consumed, planks priced. **A
+resource with something left over is worth nothing; a resource that is all used
+up is worth something.** If saw time is not what is stopping you, nobody would
+pay you for another hour of it.
 
 The same rule runs the other way, for products rather than resources. A product
 that gets built is priced at exactly what it earns — no more. A product priced
@@ -36,4 +35,8 @@ switch on and off in response.
 
 ---
 
-← [They always meet](../05-they-always-meet/README.md) · [all chapters](../..#chapters) · [What one more plank is worth](../07-what-one-more-is-worth/README.md) →
+Chapter 6 of 10
+
+Previous: [They always meet](../05-they-always-meet/README.md)  
+Next: [What one more plank is worth](../07-what-one-more-is-worth/README.md)  
+Contents: [lp-duality](../../README.md)

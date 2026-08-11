@@ -5,26 +5,25 @@
 The shape of what just happened is more general than cutting boards.
 
 **Dantzig–Wolfe decomposition** is the name for what chapter 3 did. A problem
-with block structure is rewritten so that its variables are *whole feasible
-solutions of one block* rather than the block's individual variables. In our
-case the block is "one board" and its feasible solutions are the patterns. The
-new relaxation sits between the integer hull and the naive relaxation — that is
-the general reason it is tighter, and why anyone puts up with the extra
-machinery.
+with block structure is rewritten so its variables are *whole feasible
+solutions of one block* rather than the block's individual variables. Here the
+block is "one board" and its feasible solutions are the patterns. The new
+relaxation sits between the integer hull and the naive relaxation, which is the
+general reason it is tighter and why anyone tolerates the extra machinery.
 
-Column generation is then how you optimise over those solutions without listing
-them: the pricing problem generates them **on demand**, and it produces exactly
-the extreme points of the block that the prices ask for.
+Column generation is how you optimise over those solutions without listing
+them. The pricing problem generates them on demand, producing precisely the
+extreme points of the block that the current prices ask for.
 
-**Benders decomposition** is the same idea pointed the other way. Rather than
-generating columns, it generates *rows*: fix the hard decisions, solve what is
-left, and take the dual of that leftover problem as a new constraint to send
-back. Every Benders cut is a price list doing the job it did in chapter 5 —
-proving a proposal cannot be as good as it claims.
+**Benders decomposition** points the same idea the other way. It generates
+*rows* rather than columns: fix the hard decisions, solve what is left, and
+take the dual of that leftover problem as a new constraint to send back. Every
+Benders cut is a price list doing exactly the job it did in chapter 5, proving
+a proposal cannot be as good as it claims.
 
 ### When pricing is just filtering a list
 
-One case worth flagging, because it looks like the above and is not quite.
+A case that resembles the above and is not.
 
 Suppose the columns are not defined by a polyhedron but *pre-generated* — a
 fixed list of candidate driver schedules, say, computed in advance. Then there
@@ -34,9 +33,9 @@ branch-and-price machinery is unchanged.
 
 But it is no longer generating the extreme points of a block. It is
 reduced-cost filtering of a discretised approximation of one, and the bound you
-get is a bound for *that* approximation. If a schedule you needed is not on the
-list, nothing in the method will ever tell you. That is a modelling decision
-being quietly made by whatever produced the list.
+get is a bound for *that* approximation. If a schedule you needed is absent
+from the list, nothing in the method will ever say so. Whatever produced the
+list made a modelling decision on your behalf.
 
 ## What the plain words are really called
 
@@ -75,4 +74,7 @@ enumerates every pattern.
 
 ---
 
-← [Branching, when the answer is 6.5 boards](../08-branch-and-price/README.md) · [all chapters](../..#chapters)
+Chapter 9 of 9
+
+Previous: [Branching, when the answer is 6.5 boards](../08-branch-and-price/README.md)  
+Contents: [branch-and-price](../../README.md)
