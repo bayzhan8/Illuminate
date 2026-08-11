@@ -32,7 +32,13 @@ Sparse matrix work asks 0.17 operations per byte, so only bandwidth is
 reachable; simplex is the wrong shape for that, and the method that is the
 right shape fails until one term is changed.
 
-Queued: simplex against interior point · branch and bound and branch and cut ·
+**[corners-vs-centre](corners-vs-centre/)** · [read](https://bayzhan8.github.io/Illuminate/corners-vs-centre/) · [play](https://bayzhan8.github.io/Illuminate/corners-vs-centre/sandbox/)
+Two methods, thirty-seven years apart. Klee and Minty's cube costs Dantzig's
+rule 2^n - 1 pivots and Bland's exactly 2 Fib(n+1) - 1, so the exponent belongs
+to the pivot rule rather than the method; the barrier answer to it never lands
+on a corner at all.
+
+Queued: branch and bound and branch and cut ·
 Benders decomposition · what solvers actually do (and why presolve is where the
 gap opens) · LP on the GPU.
 
