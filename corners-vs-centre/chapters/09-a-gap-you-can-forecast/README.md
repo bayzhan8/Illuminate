@@ -20,6 +20,25 @@ workshop has five walls (three rules and two floors), so the bound is 5μ:
 | 0.1 | 9.004, 3.984 | $349.80 | $0.50 | $0.20 |
 | 0.01 | 9.000, 3.998 | $349.98 | $0.05 | $0.02 |
 
+Where does a bound like that come from? Two ingredients, one of which this
+guide can show you and one of which it is going to quote.
+
+The first is a fact about the path. Each wall pushes the plan away from itself,
+and at a point on the central path the strength of that push is μ divided by
+the slack in that rule: get twice as close and the wall shoves twice as hard.
+That push is a price in exactly the sense of [the duality
+guide](../lp-duality/): what one more unit of that resource would be worth. Now
+multiply a wall's price by the slack left in that rule. The slack cancels, and
+what remains is μ. Every wall, the same μ, exactly.
+
+The second ingredient is the one being quoted rather than derived: duality says
+that the amount a plan is leaving on the table is the sum, over the rules, of
+each rule's price times the slack left in it. The duality guide builds that
+sum, and at a true optimum every term in it is zero, which is why a resource
+with something to spare is worth nothing. The central path is that same picture
+with the zeros replaced by μ. Five walls, one μ apiece, and the total you might
+still be missing is 5μ.
+
 Divide μ by ten and you divide your remaining ignorance by ten. Before running
 anything, you can say how many more rounds buy how many more digits.
 

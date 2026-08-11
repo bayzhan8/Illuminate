@@ -15,10 +15,12 @@ standing on a corner of the feasible region, so it is a plan you could actually
 carry out at every step. A first-order iterate approaches feasibility from
 *outside*. Ten iterations in, this one proposes a plan overrunning a shelf by
 0.84 planks and claims to be worth **$352.44**, more than the true optimum,
-because it is cheating.
+because it is cheating. It is worth more than any legal plan for the plain
+reason that it is not one: it is spending planks the workshop does not have.
 
-That is not a rounding error, it is a category difference. Stopping early gives
-you a number that is not an answer to your question.
+That is not a rounding error, it is a category difference. Stopping simplex
+early gives you a legal plan that might not be the best. Stopping this early
+gives you a number that is not an answer to your question at all.
 
 **And it does not return a corner.** Take a problem where a whole edge is
 optimal, every point on it equally good. The exact method returns one of the

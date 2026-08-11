@@ -6,15 +6,20 @@
 violently between zero and eight hundred without ever settling. The other rises
 smoothly and stops on three hundred and fifty.](hero.gif)
 
-Two methods, on the same small problem, with the same step sizes. They differ
-by one term in one line.
+Each curve is what one method thinks its current plan is worth, plotted against
+how many iterations it has run. The problem behind them is a workshop with
+three shelves of raw material and two things it can build, and it is small
+enough that the right answer is known exactly.
 
 The red one never settles. It is still swinging between $0 and $753 after four
 thousand iterations, and it will do that forever.
 
 The blue one stops on $350, which happens to be exactly right.
 
-That single term is most of this guide.
+Neither is a bug, and neither is badly tuned. The two updates differ by one
+term in one line, and most of this guide is about that term: where it comes
+from, why anyone would want a method built this way, and what it still cannot
+do.
 
 > **In one sentence.** A method that can use parallel hardware is available,
 > but only just, and the difference between it working and not is very small.

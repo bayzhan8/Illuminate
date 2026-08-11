@@ -21,7 +21,8 @@ in progress has a lead time of 6/12 = half a week. Raise the limit to 18 "so
 nobody is blocked" and throughput does not move, being set by the bottleneck
 rather than by how much you shove in, so the lead time becomes 18/12, a week
 and a half. It tripled, and nothing else about the team changed. This is the entire
-theoretical content of a kanban limit, and of CONWIP before it.
+theoretical content of a kanban limit, and of CONWIP, the older
+constant-work-in-progress rule it descends from.
 
 **Safety stock is measured in time, whether you like it or not.** A distributor
 moving $100,000 of goods a day and holding $9M of inventory has, by Little's

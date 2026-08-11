@@ -13,6 +13,11 @@ Three quantities, and it matters which is which:
 | **W** | how long a person is here, on average | the person |
 | **λ** | how many people arrive per hour | the door |
 
+Two of those have ordinary names. The third is written **λ**, the Greek letter
+lambda, and it is the only Greek letter in this guide. It is not hiding
+anything: λ is the arrival rate, the number of people coming through the door
+per hour. Read it as "arrivals per hour" every time it appears.
+
 These are averages of different things, and that is the point.
 
 `L` averages over *time*. Take a photograph at random moments and count heads.

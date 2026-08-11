@@ -17,12 +17,26 @@ was also *fast*. That combination was new, and it restarted the argument.
 
 The idea that ended up mattering most is not the projective transformation
 Karmarkar originally used but the reformulation the field settled on shortly
-after. Add to the objective a penalty that blows up at every wall:
+after. Add to the objective a term that blows up at every wall.
 
-> maximise **profit**, minus **μ** × (sum of the logs of the slack in each rule)
+One word first. The **slack** in a rule, for a particular plan, is how much of
+that rule is still going spare. The workshop has 44 planks; a plan that
+consumes 40 of them has 4 planks of slack. Every rule has its own slack, and so
+does each of the two floors, since you cannot build a negative number of
+chairs. Slack is positive everywhere inside the region and exactly zero on the
+walls, which is what makes it the right thing to build a penalty out of.
 
-The logarithm is infinite at a wall, so no minimiser of that expression can
-touch one. Every solution of the penalised problem is strictly inside.
+So score a plan not by its profit but by this:
+
+> **profit** + **μ** × (sum of the logs of the slack in each rule)
+
+and hunt for the best score. The second term is the whole idea. A logarithm of
+a number smaller than one is negative, and it has no floor at all: halve
+the slack and the log drops by a fixed amount, halve it again and it drops by
+that same amount again, and nothing ever stops it. Slack of a thousandth, a
+millionth, a billionth, and the log is still marching downwards. A plan pressed
+against a wall therefore scores minus infinity. Whatever plan wins is strictly
+inside, with room left in every rule at once.
 
 Now vary μ:
 

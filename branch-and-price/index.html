@@ -124,10 +124,18 @@ and the answer it gives is:</p>
 <p>total length ordered ÷ board length
 = (3×4 + 6×9 + 7×10) ÷ 25 = 136 ÷ 25 = <strong>5.44 boards</strong></p>
 </blockquote>
-<p>That is a genuine lower bound and it is useless, because of what the relaxation
-quietly permits: the leftover at the end of one board carries over to the next.
-It is the answer you would get if boards were <em>liquid</em>. Round it up and six
-boards might do.</p>
+<p>Why that particular ratio? Because once a piece may be sawn anywhere and its
+two halves counted against two different boards, nothing can be stranded. A
+board with 6 feet spare no longer wastes them: the next piece simply starts
+there and finishes on the board after. Every constraint about fitting has
+dissolved, and the only thing the model still has to respect is material. The
+order asks for 136 feet of wood. Each board supplies 25 feet of it, none of
+which need go to waste. So fewer than 136 ÷ 25 boards cannot supply the wood,
+and 136 ÷ 25 boards can. The bound is the ratio because the relaxation removed
+every other obstacle.</p>
+<p>It is a genuine lower bound and it is useless, for the reason just given: this
+is the answer you would get if boards were <em>liquid</em>, and the leftover at the
+end of one board carries over to the next. Round it up and six boards might do.</p>
 <p>Six boards will not do. The relaxation cannot see it, because the fact that
 makes it impossible — a 10-foot piece sits on one board, whole — is precisely
 what was relaxed away.</p>
@@ -148,6 +156,26 @@ all patterns <strong>cover the order</strong>.</p>
 </blockquote>
 <p>Relax <em>that</em>, allowing a fractional number of boards cut with a pattern, and
 the answer is <strong>6.5 boards.</strong></p>
+<p>Where does the half come from? Look back at the six patterns drawn in chapter 1
+and take two of them. Cut six boards into a 4, a 9 and a 10, which uses 23 of
+the 25 feet available. Then cut half a board into a 4 and two 10s, the one
+pattern on that page that gets two 10-foot pieces out of a single board.</p>
+<p>Count what comes out. Nine-foot pieces: one from each of the six boards, so
+six, and six were ordered. Ten-foot pieces: six from those boards, and a half
+board that would have given two gives one, so seven, and seven were ordered.
+Four-foot pieces: six and a half of them where three were ordered, so three and
+a half are surplus and go in the bin. Every order is met, and the boards used
+add up to 6 + 1/2.</p>
+<p>Nothing does better, and you can see why without solving anything. Call a piece
+<em>long</em> if it is 9 feet or 10. Three long pieces never fit on one board, since
+the three shortest are 9 + 9 + 9 = 27 feet and a board is 25. So a board
+carries at most two of them however it is cut, which the six drawings bear out.
+Cutting half a board with a pattern yields half of each of its pieces, so that
+ceiling survives the relaxation: two long pieces per board of cutting, whole
+boards or not.</p>
+<p>The order wants 6 nines and 7 tens. Thirteen long pieces at two to a board
+needs 13/2 boards, and 13/2 is 6.5. The mix above sits exactly on that ceiling,
+which is why it cannot be beaten.</p>
 <p>Two relaxations of the same order, an enormous distance apart. Integrality was
 not discarded this time. It was absorbed into the variables: every pattern
 is a whole-board decision already made correctly, so relaxing the <em>count</em> of
@@ -206,15 +234,23 @@ irrelevant, but you cannot tell which part until you have solved it.</p>
 <p>Take a few patterns — say the lazy ones, each board cut into copies of a single
 length — and solve <em>that</em>. This is the <strong>restricted master</strong>: the real model,
 restricted to the columns someone has bothered to write down.</p>
-<p>For our order, starting with three lazy patterns, it says: 7 boards. That is an
-answer to a smaller question than the one we asked.</p>
+<p>Our order has three lazy patterns: a board cut into six 4-foot pieces, a board
+cut into two 9s, a board cut into two 10s. With only those three on the table
+there is nothing to decide, because each ordered length has exactly one source.
+Three 4-foot pieces, six to a board, is half a board of cutting. Six 9-foot
+pieces, two to a board, is three boards. Seven 10-foot pieces, two to a board,
+is three and a half. Add them up: 7 boards, which answers a smaller question
+than the one we asked.</p>
 <p>That is an honest upper bound, since those patterns really do fill the order.
 It is not the answer to the strong model, which has three more patterns nobody
 has written down. Whether any of them would help, answered without adding them,
 is the whole method.</p>
 <p>Solve the restricted master and read off its <strong>prices</strong>, one per ordered
-length. From the duality guide: these are what one more piece of that length
-would be worth. At the first round they come out as</p>
+length. A price answers one specific question. Suppose the customer rang up and
+asked for one more 9-foot piece: how much extra cutting would that cost, in
+boards? That number is the price of a 9-foot piece. The duality guide is where
+these come from and why they exist for every ordered length at once. At the
+first round they come out as</p>
 <div class="overflow-x"><table>
 <thead>
 <tr>
@@ -237,21 +273,46 @@ would be worth. At the first round they come out as</p>
 </tr>
 </tbody>
 </table></div>
+<p>Each one is readable straight off the lazy pattern that supplies it. The only
+source of 4-foot pieces here is a board cut into six, so one more of them costs
+a sixth of a board. The only source of 9-foot pieces is a board cut into two,
+so one more costs half a board. The 10s the same, for the same reason. These
+are not the prices of the real problem. They are what this impoverished
+three-pattern model currently believes, and they will move as better patterns
+arrive.</p>
 <p>Now take <em>any</em> pattern, written down or not.</p>
 <p>Cutting a board with it costs one board. The pieces that come off it are worth,
 at these prices, some amount. So the pattern is worth adding exactly when</p>
 <blockquote class="aside">
 <p>the pieces it yields are worth <strong>more than one board.</strong></p>
 </blockquote>
-<p>That comparison is the reduced cost. It needs nothing but the prices, so a
-pattern nobody has written down can still be judged by it.</p>
-<p><strong>This is the same statement as dual feasibility.</strong> The prices from the
-restricted master satisfy every dual constraint belonging to a pattern you have
-got. If they satisfy the constraints of all the patterns you <em>have not</em> got
-too, they are feasible for the full problem's dual, and the restricted answer
-is the full answer, proved without ever building the full model. A pattern that
-violates its dual constraint is a missing column. The two statements are one
-statement seen from opposite sides.</p>
+<p>Try it on the three patterns the model already holds. Six 4-foot pieces at 1/6
+each: worth exactly 1. Two 9s at 1/2 each: exactly 1. Two 10s: exactly 1. Not a
+surprise and not a help. A pattern the model is already leaning on cannot be
+worth more than the board it eats, or the prices would not have come out of
+that model in the first place.</p>
+<p>One board in, pieces worth some amount out. The difference between the two is
+what everyone else calls the pattern's <strong>reduced cost</strong>: below zero when the
+pieces beat the board, which is when the pattern is worth having, and zero for
+the three just checked. What the name buys you is small compared with what the
+comparison buys you: it uses the prices and the pattern's own contents and
+nothing else, so a pattern nobody has written down can still be judged by it.</p>
+<p>There is a second way to say all of this, and it is worth carrying both.</p>
+<p>Duality puts a rule on what a price list is allowed to be. Prices are legal
+only when no board anywhere can be cut into pieces worth more than the board
+costs. A list that fails that test is promising value out of nowhere, and it
+can be used to argue for anything. The rule has a name, <strong>dual feasibility</strong>,
+and it is one condition per pattern: one for each way of cutting a board.</p>
+<p>The prices we just read off pass the test for every pattern in the restricted
+master. Solving that model is what forced them to. What is open is the patterns
+left out of it, because a price list has no way of knowing which patterns
+exist. If it passes for those too, it is legal for the full model, and then the
+duality guide's check applies: the number the restricted master reported is the
+full model's number, proved without the full model ever being built.</p>
+<p>If some unwritten pattern fails the test, the prices were only legal because
+that pattern was missing. Writing it down is exactly what will force them to
+move. Hunting for a pattern worth more than a board and hunting for a broken
+dual condition are one search, seen from the two sides.</p>
 <blockquote class="takeaway">
 <p><strong>In one sentence.</strong> The prices from a small model can judge a pattern that
 model has never seen, which turns &quot;is anything missing&quot; into arithmetic.</p>

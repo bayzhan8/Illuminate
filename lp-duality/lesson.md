@@ -2,7 +2,18 @@
 
 **Linear programming duality, built from a workshop with three shelves.**
 
-Here is a claim that sounds like an accounting curiosity and is not.
+A workshop has 44 planks, 30 hours of labour and 32 hours of saw time, and it
+makes tables and chairs out of them. The most money it can pull out of that
+stock is $350.
+
+Half of that claim is easy. Find a plan worth $350, add up the takings, and
+there it is. The other half is knowing that nothing does better, and that half
+is genuinely hard, because the plans cannot be checked one at a time. There are
+infinitely many of them.
+
+What settles it is a second question about the same workshop, one that never
+mentions a plan. It asks what the contents of the building are worth. Its
+answer is $350 as well.
 
 *Every planning problem has a second problem hiding inside it, about prices.
 Solving either one solves both.*
@@ -256,10 +267,35 @@ happens when the conditions fail.
 This is the theorem the subject rests on, and it is called **strong duality**.
 
 Two problems, then. The one about plans is the **primal**; the one about prices
-is the **dual**. Each is built from the other by turning it inside out. Rows
-become variables, variables become rows, the objective and the stock levels
-trade places, and the inequalities reverse. Do it twice and you are back where
-you started, which is the sense in which neither one is the original.
+is the **dual**. Each is built from the other by turning it inside out, and the
+little table from chapter 1 is the place to watch that happen.
+
+The plans problem reads that table **across**. The first row says a table takes
+4 planks, 2 hours and 3 of saw time; the unknowns are how many tables and how
+many chairs.
+
+The prices problem reads the same table **down**. The planks column says planks
+go out 4 to a table and 2 to a chair; the unknowns are what to charge for a
+plank, an hour of work and an hour of saw time.
+
+That single change of reading direction is the whole swap. Piece by piece, on
+these numbers:
+
+- The workshop had three limits, one per shelf. The prices problem has three
+  unknowns, one price per shelf. Rows became variables.
+- The workshop had two unknowns, tables and chairs. The prices problem has two
+  rules, one per product: a table's ingredients must be charged at $30 or more,
+  a chair's at $20 or more. Variables became rows.
+- $30 and $20 were the thing the workshop pushed up. They are now the floors
+  those two rules have to clear.
+- 44, 30 and 32 were the limits the workshop pushed against. They are now the
+  thing being pushed down, since the bill for the whole building is 44 plank
+  prices plus 30 hourly rates plus 32 saw rates.
+- Every *at most* turned into an *at least*, and looking for the largest number
+  turned into looking for the smallest.
+
+Do that swap twice and you are back where you started, which is the sense in
+which neither one is the original.
 
 > **In one sentence.** The best plan and the cheapest honest price list always
 > agree exactly, which is what makes the second problem worth solving.
@@ -319,6 +355,28 @@ suddenly stops.](chapters/07-what-one-more-is-worth/shadow.gif)
 Add a plank. The plank line moves out, the best corner slides along the hours
 line, and the profit goes up by $6.25. Add another. Same again.
 
+So where does $6.25 come from? Not from a plank being worth that. It comes from
+what the extra plank lets the workshop rearrange. The best plan is pressed
+against two rules at once, planks and hours, and hours are still just as
+scarce as before, so the plan cannot simply grow. It has to trade one product
+for the other along the hours line.
+
+Every plank that arrives buys the same trade, in the same proportions, so the
+easiest way to see the rate is to scale the trade up until it comes out in
+whole furniture. At that size it reads: 3 more tables, 2 fewer chairs, 8 more
+planks. Check it against the recipes in the chapter 1 table:
+
+- **Planks.** The 3 new tables need 12. The 2 dropped chairs give back 4. Net
+  cost, 8 planks, which is exactly what arrived.
+- **Hours.** The 3 tables need 6. The 2 chairs give back 6. Net zero, so the
+  hours are as full after the trade as before, and the plan is still legal.
+- **Money.** 3 tables at $30 is $90 in. 2 chairs at $20 is $40 out. The trade
+  is worth $50.
+
+Fifty dollars for eight planks. That is $6.25 a plank, and it is where the
+number comes from. How far you can keep making that trade is a separate
+question, and chapter 8 answers it.
+
 This is what a dual variable *is*, and why the name **shadow price** stuck.
 
 It is worth being careful about what kind of number that is. Planks might cost
@@ -352,6 +410,29 @@ the piece you happen to be standing on*:
 | under 20 | $10.00 | so few planks that tables are not worth building at all |
 | 20 to 45 ⅐ | **$6.25** | where this workshop actually is |
 | over 45 ⅐ | $0.00 | the saw is the binding rule now; planks pile up |
+
+Both bends have a reason, and the odd-looking one has the better reason.
+
+**The first bend, at 20 planks.** Compare the two products by what they get out
+of a plank. A chair uses 2 planks and earns $20, which is $10 a plank. A table
+uses 4 planks and earns $30, which is $7.50. So while planks are the only thing
+running out, the workshop should build chairs and nothing else, and every extra
+plank is half a chair, worth $10. That lasts until the chairs run into a
+different shelf. Ten chairs take 30 hours of work, and 30 hours is all there
+is; ten chairs also take exactly 20 planks. Twenty planks is the point where
+the hours run out and the cheap ride ends.
+
+**The second bend, at 45 ⅐ planks.** Past 20 planks, extra planks have to buy
+their way in through the trade from chapter 7: eight planks in, three tables up,
+two chairs down. That trade leaves the hours alone. It does not leave the saw
+alone. Three more tables want 9 hours of saw time, two fewer chairs give back
+2, so every swap of eight planks eats 7 hours of saw time.
+
+The workshop has 1 hour of saw time spare, the one from chapter 6. One spare
+hour against 7 per swap buys one seventh of a swap, and one seventh of eight
+planks is 1 ⅐ planks. That is the whole of the ⅐. It is one spare saw-hour
+divided by the seven the trade consumes. After that the saw is empty, no
+further tables can be built, and arriving planks have nowhere to go.
 
 The workshop has 44 planks. It is 1 ⅐ planks away from its price collapsing to
 nothing.
@@ -388,19 +469,44 @@ The two failures come as a pair: *the plan side runs away precisely when the
 price side has nothing to offer.*
 
 **A plan that cannot exist.** Suppose an order arrives for 12 tables.
-Forty-four planks make eleven tables, so the order cannot be met. The
-impossibility has a *short proof*, and the proof is arithmetic rather than an
-exhausted search:
+Forty-four planks make eleven tables, so the order cannot be met. Nothing about
+that is surprising. What is worth watching is *how* it gets settled: by
+arithmetic you can check by hand, rather than by a search that eventually gives
+up.
 
-> Take a quarter of the plank rule, and all of the order.
-> Add them together, and they say: half of the chairs, at most −1.
-> A count of chairs cannot be negative. So there is no such plan.
+Two rules do all the work here. Written out flat, with no symbols:
 
-Four lines, checkable by anyone, and it settles the question forever. This is
-the same idea as a price list wearing different clothes: a weighted mixture of
-the rules that adds up to something plainly absurd. It is called a **Farkas
-certificate**, and the fact that one always exists when a system is impossible
-is the fact strong duality is built on.
+> **The plank rule.** Each table takes 4 planks and each chair takes 2, and
+> there are 44 planks in the building. So four times the number of tables, plus
+> twice the number of chairs, comes to 44 at most.
+>
+> **The order.** The number of tables must be 12 or more.
+
+Now take a quarter of the plank rule. Cutting every number in it to a quarter
+of itself leaves it just as true, so four times the tables becomes plain
+tables, twice the chairs becomes half the chairs, and 44 becomes 11.
+
+> **A quarter of the plank rule.** The number of tables, plus half the number
+> of chairs, comes to 11 at most.
+
+Hold that against the order. Tables plus half the chairs come to 11 at most,
+while the tables on their own are already 12 or more. Take the tables away from
+both of those. What is left on one side is half the chairs, and what is left on
+the other is 11 minus 12:
+
+> **half of the chairs, at most −1.**
+
+Chairs get counted, and counts do not go below zero. Even building no chairs at
+all gives 0, and 0 is bigger than −1. So the two rules describe no pair of
+numbers whatsoever, and there is no plan to find. That is short enough to check
+in a minute, and it settles the question for every plan at once, forever.
+
+Look again at what that proof was made of: a quarter of one rule, plus all of
+another, added together. A weighted mixture of the rules, exactly like the
+price lists of chapter 3, except that this mixture lands on something absurd
+instead of on a ceiling. It is called a **Farkas certificate**, and the fact
+that one always exists when a system is impossible is the fact strong duality
+is built on.
 
 One more case, so it does not surprise you. At a bend in the curve from chapter
 8 the price is not unique. Standing exactly at 45 ⅐ planks, one more plank is

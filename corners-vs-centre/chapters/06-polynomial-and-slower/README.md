@@ -27,15 +27,23 @@ which it could.
 
 Ask it to find a plan worth at least $349 in the workshop and it takes **29
 cuts**. The walk in chapter 2 reached the exact optimum of $350 in three hops.
-Worse, the ellipsoid grinds at a fixed rate that follows directly from that
-0.7698: shrinking a distance tenfold means shrinking an area a hundredfold,
-which is **17.6 cuts per decimal digit**, forever. And it never produces an
-exact answer at all.
 
-That is the shape of the disappointment. Polynomial is a statement about how
-the cost grows, not about how large it is, and a method can be polynomial and
-still lose to an exponential one on every instance anybody runs. Khachiyan's
-result reframed the theory of the subject and changed nobody's software.
+Worse than merely slow, it is slow at a rate you can calculate in advance, and
+the rate falls straight out of that 0.7698. One more decimal digit of accuracy
+means pinning the answer down ten times more tightly than before. But the
+ellipsoid does not shrink distances, it shrinks area, and area goes as the
+square of distance, so pinning down ten times tighter costs a hundredfold cut
+in area. The question is therefore how many multiplications by 0.7698 it takes
+to reduce an area to a hundredth of itself. Ten of them leave about a
+fourteenth, which is nowhere near enough. Another seven or so finish the job.
+The count works out at **17.6 cuts per decimal digit**, and it stays 17.6
+forever: the hundredth digit costs exactly what the first one did. And it never
+produces an exact answer at all.
+
+Polynomial is a statement about how the cost grows, not about how large it is,
+and a method can be polynomial and still lose to an exponential one on every
+instance anybody runs. Khachiyan's result reframed the theory of the subject
+and changed nobody's software.
 
 > **In one sentence.** The first polynomial method took its worst case on every
 > input, which is exactly why its worst case was provable.

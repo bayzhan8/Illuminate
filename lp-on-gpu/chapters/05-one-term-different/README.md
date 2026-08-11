@@ -8,9 +8,20 @@ When the prices react, do not show them the plan's current position. Show them
 where the plan is *heading*: the new plan, plus the step it has just taken,
 again.
 
-If the plan moved from `x` to `x′`, the prices are shown `2x′ − x`. That is the
-cheapest imaginable guess at the next position: assume it keeps going the way
-it was going.
+If the plan moved from `x` to `x′`, the prices are shown `2x′ − x`, which is
+`x′` plus the change `x′ − x` a second time. That is the cheapest imaginable
+guess at where the plan will be next: assume it keeps going the way it was
+going. On the toy problem the second line becomes
+
+```
+new price  =  price − 0.2 × (2 × new plan − plan − 3)
+```
+
+and nothing else changes. First step from a plan of 2 and a price of 2: the
+plan still moves to 2.4, but the price is now shown 2×2.4 − 2 = 2.8 instead of
+2. Still short of 3, so the price still rises, but to 2.04 rather than 2.2. The
+correction is smaller because it arrives less late, and that is the entire
+repair.
 
 ![The same trajectory in the same plane, now winding inward toward the answer
 in a tightening spiral.](inward.png)

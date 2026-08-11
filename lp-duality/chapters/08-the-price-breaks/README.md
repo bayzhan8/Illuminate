@@ -18,6 +18,29 @@ the piece you happen to be standing on*:
 | 20 to 45 ⅐ | **$6.25** | where this workshop actually is |
 | over 45 ⅐ | $0.00 | the saw is the binding rule now; planks pile up |
 
+Both bends have a reason, and the odd-looking one has the better reason.
+
+**The first bend, at 20 planks.** Compare the two products by what they get out
+of a plank. A chair uses 2 planks and earns $20, which is $10 a plank. A table
+uses 4 planks and earns $30, which is $7.50. So while planks are the only thing
+running out, the workshop should build chairs and nothing else, and every extra
+plank is half a chair, worth $10. That lasts until the chairs run into a
+different shelf. Ten chairs take 30 hours of work, and 30 hours is all there
+is; ten chairs also take exactly 20 planks. Twenty planks is the point where
+the hours run out and the cheap ride ends.
+
+**The second bend, at 45 ⅐ planks.** Past 20 planks, extra planks have to buy
+their way in through the trade from chapter 7: eight planks in, three tables up,
+two chairs down. That trade leaves the hours alone. It does not leave the saw
+alone. Three more tables want 9 hours of saw time, two fewer chairs give back
+2, so every swap of eight planks eats 7 hours of saw time.
+
+The workshop has 1 hour of saw time spare, the one from chapter 6. One spare
+hour against 7 per swap buys one seventh of a swap, and one seventh of eight
+planks is 1 ⅐ planks. That is the whole of the ⅐. It is one spare saw-hour
+divided by the seven the trade consumes. After that the saw is empty, no
+further tables can be built, and arriving planks have nowhere to go.
+
 The workshop has 44 planks. It is 1 ⅐ planks away from its price collapsing to
 nothing.
 

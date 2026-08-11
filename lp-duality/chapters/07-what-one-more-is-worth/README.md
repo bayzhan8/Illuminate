@@ -14,6 +14,28 @@ suddenly stops.](shadow.gif)
 Add a plank. The plank line moves out, the best corner slides along the hours
 line, and the profit goes up by $6.25. Add another. Same again.
 
+So where does $6.25 come from? Not from a plank being worth that. It comes from
+what the extra plank lets the workshop rearrange. The best plan is pressed
+against two rules at once, planks and hours, and hours are still just as
+scarce as before, so the plan cannot simply grow. It has to trade one product
+for the other along the hours line.
+
+Every plank that arrives buys the same trade, in the same proportions, so the
+easiest way to see the rate is to scale the trade up until it comes out in
+whole furniture. At that size it reads: 3 more tables, 2 fewer chairs, 8 more
+planks. Check it against the recipes in the chapter 1 table:
+
+- **Planks.** The 3 new tables need 12. The 2 dropped chairs give back 4. Net
+  cost, 8 planks, which is exactly what arrived.
+- **Hours.** The 3 tables need 6. The 2 chairs give back 6. Net zero, so the
+  hours are as full after the trade as before, and the plan is still legal.
+- **Money.** 3 tables at $30 is $90 in. 2 chairs at $20 is $40 out. The trade
+  is worth $50.
+
+Fifty dollars for eight planks. That is $6.25 a plank, and it is where the
+number comes from. How far you can keep making that trade is a separate
+question, and chapter 8 answers it.
+
 This is what a dual variable *is*, and why the name **shadow price** stuck.
 
 It is worth being careful about what kind of number that is. Planks might cost

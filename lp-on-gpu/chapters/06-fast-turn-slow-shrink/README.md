@@ -4,16 +4,26 @@
 
 The spiral converges. The trouble is how.
 
-On the small problem the iteration is exactly a linear map, so it can be taken
-apart completely. Its eigenvalues are a conjugate pair, and a conjugate pair
-means the step is a rotation combined with a shrink. Both have closed forms.
-With a step size of 0.2:
+Look at what one step of the inward spiral does. It carries the point some way
+*around* the answer, and it brings it a little way *in*. A turn and a shrink,
+over and over, and not only in the drawing. On the toy problem there is no clamping and no case analysis, so if you measure the state
+as an offset from the answer, one iteration is exactly "multiply that offset by
+a fixed two-by-two matrix", and it is the same matrix every time.
+
+A matrix that turns everything has no direction it merely stretches, so it has
+no real eigenvalues. What it has instead is a conjugate pair of complex ones,
+and a complex number carries exactly two pieces of information, which here are
+the two things the spiral is doing: the angle of the pair is how far one step
+turns, and the size of the pair is what one step multiplies the distance by.
+Both come out in closed form. With a step size of 0.2:
 
 - it turns **11.5°** per iteration, so a full revolution takes **31.2** steps
 - it shrinks the distance to the answer by **2.0%** per iteration
 
-Those two numbers are the whole difficulty. It is spinning quickly and closing
-in barely at all.
+Put them together and the difficulty is plain. Thirty-one steps of shaving 2%
+off a distance leave you about half as far away as you began, so one full
+revolution of that spiral buys you one halving. It is spinning quickly and
+closing in barely at all.
 
 And you cannot fix it by taking bigger steps, because the two are locked
 together.

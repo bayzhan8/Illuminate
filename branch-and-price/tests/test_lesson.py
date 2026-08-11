@@ -253,3 +253,33 @@ def test_the_pages_list_the_same_patterns_the_python_does():
         capture_output=True, text=True, timeout=60)
     assert result.returncode == 0, result.stderr
     assert sorted(json.loads(result.stdout)) == sorted(list(p) for p in m.PATTERNS)
+
+
+def test_the_derivation_of_six_and_a_half_in_chapter_three():
+    """Chapter 3 shows where 6.5 comes from instead of asserting it. Both
+    halves of that argument are checked here: the mix that reaches 13/2, and
+    the counting argument that nothing beats it."""
+    flat = " ".join(TEXT.split())
+    whole, half = (1, 1, 1), (1, 0, 2)        # a 4/9/10 board, and a 4/10/10
+    assert whole in m.PATTERNS and half in m.PATTERNS
+
+    # the offcut the prose quotes for the pattern it cuts six boards with
+    assert sum(n * w for n, w in zip(whole, m.BOARDS.widths)) == 23
+    assert "which uses 23 of the 25 feet available" in flat
+
+    # and the claim that only one pattern yields two 10-foot pieces
+    assert [p for p in m.PATTERNS if p[2] >= 2] == [half]
+
+    # six of the first and half of the second cover the order, for 13/2 boards
+    made = [6 * a + Fraction(1, 2) * b for a, b in zip(whole, half)]
+    assert made == [Fraction(13, 2), 6, 7]
+    assert all(q >= d for q, d in zip(made, m.BOARDS.demands))
+    assert 6 + Fraction(1, 2) == m.DW_BOUND
+
+    # the lower bound: three pieces of 9ft or more never fit on a 25ft board,
+    # so 13 such pieces need at least 13/2 boards, fractional cutting included
+    longs = [i for i, w in enumerate(m.BOARDS.widths) if w >= 9]
+    assert 3 * min(m.BOARDS.widths[i] for i in longs) > m.BOARDS.width
+    assert max(sum(p[i] for i in longs) for p in m.PATTERNS) == 2
+    assert sum(m.BOARDS.demands[i] for i in longs) == 13
+    assert Fraction(13, 2) == m.DW_BOUND

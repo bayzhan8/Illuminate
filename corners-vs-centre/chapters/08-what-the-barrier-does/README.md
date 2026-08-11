@@ -8,7 +8,10 @@ middle. In the second the bowl has tilted and its minimum has slid towards the
 best corner. In the third the contours are compressed against that corner.](the-landscape.png)
 
 The path is the trail of minima. The surface is what produces them, and it
-explains why this works at all.
+explains why this works at all. (Solvers flip every sign and hunt for the
+smallest score rather than the largest, which is why these are pictures of
+bowls with a bottom rather than hills with a peak. Same problem, drawn upside
+down.)
 
 At μ = 100 the penalty dominates and the surface is a broad bowl sitting in the
 middle of the region. Its minimum is worth **$194**, which is nowhere near
@@ -17,11 +20,22 @@ and its bottom has slid to a point worth **$325**. At μ = 1 the contours are
 crushed into the corner and the minimum is worth **$348**.
 
 At every stage there is exactly one minimum and the surface around it is
-smooth and curved. That is the whole trick. A smooth bowl with one bottom is
-what Newton's method is for: build the local quadratic model, jump to its
-minimum, repeat. It converges in a handful of steps, and the number of steps
-does not depend on how many corners the region has, because nothing in the
-computation ever mentions a corner.
+smooth and curved. That is the whole trick, because a smooth bowl with one
+bottom is precisely what Newton's method is for.
+
+Newton's method goes like this. Stand anywhere on the surface and measure two
+things about the ground under your feet: which way it slopes, and how fast that
+slope is changing. Those two measurements are enough to fit a parabola through
+where you stand, or in two variables a bowl, and the bottom of a fitted bowl is
+something you can solve for directly. Jump to it. You have not arrived, since
+the fitted bowl was only a local likeness of the real surface, but you are
+nearer than you were, so measure again where you land and fit a fresh one. The
+likeness improves as you close in, and near the bottom each step roughly
+doubles the number of correct digits. A handful of steps is usually the whole
+story.
+
+The number of steps does not depend on how many corners the region has, because
+nothing in the computation ever mentions a corner.
 
 The one safeguard that matters is damping. A full Newton step will cheerfully
 walk through a wall, where the objective is not merely worse but undefined, so

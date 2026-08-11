@@ -2,7 +2,8 @@
 
 ## 5 · It is not the utilisation, it is the variability
 
-Here is the part that changes what you would actually do.
+So far everything has said the wait comes from how busy the clerk is. That is
+half of it, and the smaller half.
 
 Take the desk at 90% busy, where people wait 54 minutes. Change nothing about
 the speed: the clerk still averages six minutes a customer, still serves ten an
@@ -31,17 +32,51 @@ in the other direction:
 Same clerk. Same average service time. Same 90% utilisation. A **twenty-six
 fold** spread in how long people wait.
 
-The reason is worth knowing, because it is not obvious. When you arrive and
-someone is already being served, you wait out the *remainder* of their job.
-A random moment is more likely to land inside a long job than a short one,
-simply because long jobs occupy more of the timeline. So the job you are stuck
-behind is not an average job. It is biased toward the long ones, and the
-strength of that bias is exactly the variability of the service times.
+The reason is not obvious, and the smallest possible example makes it obvious.
+
+Give this clerk two kinds of job and nothing else. Nine customers out of every
+ten need two minutes. The tenth needs forty-two. Nothing about the desk has
+changed: (9 × 2 + 42) / 10 = 60 / 10 = 6, so the average job is still six
+minutes and the clerk is still 90% busy.
+
+Now walk in at a random moment and find the clerk mid-job. Which job is it?
+Those ten customers occupy the clerk for 9 × 2 = 18 minutes of short work and
+42 minutes of long work, 60 minutes in total. Forty-two of those sixty minutes
+are inside the long job. So seven times out of ten you have walked in on the
+forty-two-minute customer, even though only one customer in ten is one.
+
+That is the inspection paradox, and it has nothing to do with queues. Sample a
+timeline by picking a moment rather than by picking an item, and long items get
+picked in proportion to how long they are. The clock is not counting customers.
+It is counting minutes, and the long customer brought more of them.
+
+So average the job you land in the way the clock weights it, not the way the
+customer list does:
+
+> (18/60) × 2 + (42/60) × 42 = 0.6 + 29.4 = 30 minutes
+
+Thirty. Five times the six-minute average job. You arrive somewhere in the
+middle of it, so what is left to run when you sit down is about fifteen
+minutes, against the three minutes you would have guessed by halving the
+average job and stopping there.
+
+Run that same weighting on the exponential clerk and the leftover comes to six
+minutes. On the perfectly regular clerk, where every job is six minutes and
+there is nothing for the clock to be biased toward, it is three. Three, six,
+fifteen. Now look back at the ladder: 27, 54, 135. Every wait in it is nine
+times the leftover, and the nine is the busy fraction over the idle fraction,
+0.9 / 0.1, which is the only place utilisation gets in. Three, six and fifteen
+minutes of leftover give 27, 54 and 135, and the two-minute-and-forty-two
+clerk is the fourth row exactly: 9 × 15 = 135. The two rows I skipped work the
+same way.
 
 Which gives three separate dials, and it is a genuine design choice which to
 turn:
 
 > **wait = (utilisation dial) × (variability dial) × (how long the job takes)**
+
+The last two multiplied together are the leftover we just computed, and the
+first is the 0.9 / 0.1. Nothing else is in there.
 
 Cutting variability in half does the same thing as a large capacity increase,
 and is frequently cheaper. "Reduce variation" sounds like a slogan. It is

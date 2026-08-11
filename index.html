@@ -99,11 +99,11 @@
       <div class="guide-body">
         <p class="meta">04 · First-order methods · 11 chapters</p>
         <h2><a href="lp-on-gpu/">The machine got wider, not faster</a></h2>
-        <p>Sparse matrix work asks for 0.17 operations per byte, so the only
-        speedup a wide machine offers is its bandwidth ratio. Simplex is the
-        wrong shape for that. The method that is the right shape cycles
-        forever until one term is changed, and then converges to the same
-        answer the exact solver gives.</p>
+        <p>Two runs on the same small problem, from the same start, with the
+        same step sizes, differing by one term in one line. One lands on the
+        right answer. The other swings between $0 and $753 forever. Why
+        linear programming had to change algorithms when machines started
+        getting wider instead of faster.</p>
         <p class="guide-links">
           <a href="lp-on-gpu/">Read</a>
           <a href="lp-on-gpu/sandbox/">Play</a>
@@ -118,11 +118,12 @@
       <div class="guide-body">
         <p class="meta">05 · Simplex and interior point · 11 chapters</p>
         <h2><a href="corners-vs-centre/">Along the edge, or through the middle</a></h2>
-        <p>Klee and Minty's cube makes the simplex method visit every one of
-        its 2<sup>n</sup> corners, but only under one pivot rule: swap the rule
-        and the same code takes a golden-ratio climb, or a single pivot. The
-        method that answered the cube starts in the middle instead, and never
-        arrives at all.</p>
+        <p>In 1972 two mathematicians built a shape to embarrass the standard
+        method for linear programming, and it works: on a squashed cube in ten
+        dimensions the method stops at all 1024 corners. In seventy years of
+        real models nobody has ever met one. Why the bad case is real, why it
+        never happens, and why the method built to dodge it never lands on a
+        corner at all.</p>
         <p class="guide-links">
           <a href="corners-vs-centre/">Read</a>
           <a href="corners-vs-centre/sandbox/">Play</a>

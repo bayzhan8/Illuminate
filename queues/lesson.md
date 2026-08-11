@@ -6,11 +6,13 @@ A clerk who serves a customer in six minutes will, at some point, hand someone
 a wait of an hour. Nothing about the clerk changed. Nothing about the job
 changed. This guide is about what did.
 
-Two ideas carry the whole thing. The first is an accounting identity so plain
-it looks like it cannot be worth stating, and so general it applies to
-warehouses, hospitals and software teams that contain no queue at all. The
-second is that the thing which actually generates waiting is not how busy you
-are. It is how *irregular* you are, and those are different dials.
+Two ideas carry the whole thing. One is an accounting identity so plain it
+looks like it cannot be worth stating, and so general it applies to warehouses,
+hospitals and software teams that contain no queue at all. The other is that
+what generates waiting is not how busy you are. It is how *irregular* you are,
+and those are separate dials. Same clerk, same six minutes on average, same 90%
+busy: make every job take exactly six minutes and the wait is 27 minutes; let a
+few of them run long and it is 702.
 
 **The plan.** Chapter 2 proves the identity, with a picture and no
 probability. Chapter 3 lists what it does not need, which is nearly everything.
@@ -54,6 +56,11 @@ Three quantities, and it matters which is which:
 | **L** | how many people are here, on average | someone glancing at the room |
 | **W** | how long a person is here, on average | the person |
 | **λ** | how many people arrive per hour | the door |
+
+Two of those have ordinary names. The third is written **λ**, the Greek letter
+lambda, and it is the only Greek letter in this guide. It is not hiding
+anything: λ is the arrival rate, the number of people coming through the door
+per hour. Read it as "arrivals per hour" every time it appears.
 
 These are averages of different things, and that is the point.
 
@@ -169,14 +176,53 @@ And everyone who enters has to eventually leave.
 ## 4 · The wait explodes long before the clerk is full
 
 Little's law relates the averages. It does not say how big they are. For that
-you need to know something about the randomness, and with random arrivals and
-random service times the answer is:
+you have to know something about the randomness, and here the guide stops
+proving things and starts quoting one:
 
 > **wait = service time × 1/(fraction of time idle)**
+
+That line deserves a warning label. Chapter 2 needed no assumptions at all;
+this one needs three, and they are the ones chapter 3 spent a page celebrating the
+absence of: customers arrive at random with no rhythm to them, service times
+are random in the particular way where knowing a job has already run five
+minutes tells you nothing about how much longer it has to go, and there is
+exactly one clerk. Queueing theory calls that combination M/M/1. Getting from
+those assumptions to that line takes probability this guide does not assume, so
+the line is quoted rather than earned.
+
+What can be shown without any probability is why the *idle* fraction ends up
+underneath.
+
+Stop watching the queue and watch the backlog. The clerk is 90% busy, which is
+another way of saying work walks in at nine tenths of the speed the clerk can
+clear it. Serve one customer: six minutes. During those six minutes, more work
+arrived: nine tenths of six minutes of it, which is 5.4 minutes. Serve that,
+and during those 5.4 minutes another 4.86 minutes walks in. Serve that. Each
+round of serving drags in a smaller round of arrivals, and the clerk does not
+get to sit down until the whole chain runs out:
+
+> 6 + 5.4 + 4.86 + ... = 6 / (1 − 0.9) = 60 minutes
+
+That is a geometric series. Every term is nine tenths of the one before it, and
+a series like that totals the first term divided by whatever is left when you
+subtract the ratio from one. The leftover here is the idle fraction. At 90% busy
+the chain runs to ten times the original six minutes; at 99% busy, to a hundred
+times. Nothing in that calculation is about the clerk's speed. The speed is the
+6 at the front. The idle fraction is the multiplier, and it is doing all the
+damage.
+
+Strictly, the number that series computes is the length of one unbroken busy
+stretch, not one customer's wait. But the 1/(idle fraction) sits in both, and
+it is there for the same reason, and for one clerk with random arrivals the two
+happen to land on the same sixty minutes.
 
 ![The average wait against utilisation: barely moving up to about 70%, then
 bending sharply and going vertical as the idle fraction approaches
 zero.](chapters/04-the-wait-explodes/explode.png)
+
+Sixty minutes is the whole visit, service included. The table below reports the
+wait *before* service starts, so it is the same formula with the six minutes of
+actual service taken back off: 60 − 6 = 54. Every row is that subtraction.
 
 | arrivals per hour | busy | people present | wait before service |
 |---|---|---|---|
@@ -197,18 +243,24 @@ The multiplier is one over the *idle* fraction, so what is being consumed as
 you approach saturation is not capacity but slack. At 99% busy, the last one
 percent of the clerk's time is carrying all of the queue.
 
+The middle column is chapter 2 again, quietly checking the work. Nine arrivals
+an hour, an hour in the building each, so `L = λW` says nine people should be
+standing there on average. They are.
+
 This is also why a dashboard that reports utilisation and calls 97% green is
 reporting the one number that cannot go bad. Utilisation is bounded above by
 one. The wait is bounded by nothing.
 
-> **In one sentence.** The wait is the service time divided by the *idle*
-> fraction, so the last sliver of spare capacity carries the whole queue.
+> **In one sentence.** This one is quoted, not proved: time in the building is
+> the service time divided by the *idle* fraction, so the last sliver of spare
+> capacity carries the whole queue.
 
 ---
 
 ## 5 · It is not the utilisation, it is the variability
 
-Here is the part that changes what you would actually do.
+So far everything has said the wait comes from how busy the clerk is. That is
+half of it, and the smaller half.
 
 Take the desk at 90% busy, where people wait 54 minutes. Change nothing about
 the speed: the clerk still averages six minutes a customer, still serves ten an
@@ -237,17 +289,51 @@ in the other direction:
 Same clerk. Same average service time. Same 90% utilisation. A **twenty-six
 fold** spread in how long people wait.
 
-The reason is worth knowing, because it is not obvious. When you arrive and
-someone is already being served, you wait out the *remainder* of their job.
-A random moment is more likely to land inside a long job than a short one,
-simply because long jobs occupy more of the timeline. So the job you are stuck
-behind is not an average job. It is biased toward the long ones, and the
-strength of that bias is exactly the variability of the service times.
+The reason is not obvious, and the smallest possible example makes it obvious.
+
+Give this clerk two kinds of job and nothing else. Nine customers out of every
+ten need two minutes. The tenth needs forty-two. Nothing about the desk has
+changed: (9 × 2 + 42) / 10 = 60 / 10 = 6, so the average job is still six
+minutes and the clerk is still 90% busy.
+
+Now walk in at a random moment and find the clerk mid-job. Which job is it?
+Those ten customers occupy the clerk for 9 × 2 = 18 minutes of short work and
+42 minutes of long work, 60 minutes in total. Forty-two of those sixty minutes
+are inside the long job. So seven times out of ten you have walked in on the
+forty-two-minute customer, even though only one customer in ten is one.
+
+That is the inspection paradox, and it has nothing to do with queues. Sample a
+timeline by picking a moment rather than by picking an item, and long items get
+picked in proportion to how long they are. The clock is not counting customers.
+It is counting minutes, and the long customer brought more of them.
+
+So average the job you land in the way the clock weights it, not the way the
+customer list does:
+
+> (18/60) × 2 + (42/60) × 42 = 0.6 + 29.4 = 30 minutes
+
+Thirty. Five times the six-minute average job. You arrive somewhere in the
+middle of it, so what is left to run when you sit down is about fifteen
+minutes, against the three minutes you would have guessed by halving the
+average job and stopping there.
+
+Run that same weighting on the exponential clerk and the leftover comes to six
+minutes. On the perfectly regular clerk, where every job is six minutes and
+there is nothing for the clock to be biased toward, it is three. Three, six,
+fifteen. Now look back at the ladder: 27, 54, 135. Every wait in it is nine
+times the leftover, and the nine is the busy fraction over the idle fraction,
+0.9 / 0.1, which is the only place utilisation gets in. Three, six and fifteen
+minutes of leftover give 27, 54 and 135, and the two-minute-and-forty-two
+clerk is the fourth row exactly: 9 × 15 = 135. The two rows I skipped work the
+same way.
 
 Which gives three separate dials, and it is a genuine design choice which to
 turn:
 
 > **wait = (utilisation dial) × (variability dial) × (how long the job takes)**
+
+The last two multiplied together are the leftover we just computed, and the
+first is the 0.9 / 0.1. Nothing else is in there.
 
 Cutting variability in half does the same thing as a large capacity increase,
 and is frequently cheaper. "Reduce variation" sounds like a slogan. It is
@@ -352,8 +438,8 @@ check.
 Then the part that should worry anyone who has ever reported a simulation
 result. Take the ordinary 95% confidence interval, the one every statistics course
 teaches, the standard deviation over the square root of the sample size, and
-apply it to a million measured waits. Repeat the whole experiment three
-hundred times.
+apply it to two hundred thousand measured waits. Repeat the whole experiment
+three hundred times.
 
 It contains the true answer **9% of the time**. It is about twenty times
 too narrow.
@@ -361,11 +447,24 @@ too narrow.
 The reason is that consecutive waits in a queue are not independent
 observations, and it is not close. One long wait makes the next one long.
 
-At 90% busy, roughly four hundred consecutive customers behave as a single
-observation. So a million measurements are worth about two and a half thousand.
+You can measure how long that memory lasts, and the code in this folder does.
+Simulate six hundred thousand waits in a row. Take each wait and the one after
+it and see how strongly the two move together; do the same at a gap of two
+customers, and three, and ten, and keep adding those up until the agreement
+dies away and the queue has forgotten. The total is how many customers it takes
+before you have genuinely learned something new.
 
-The square root of four hundred is twenty, which is exactly the factor by which
-the interval is wrong.
+At 90% busy, roughly four hundred consecutive customers behave as a single
+observation. So two hundred thousand measurements are worth about five hundred.
+
+Roughly is the honest word: run the measurement again on different random
+numbers and the answer moves by a hundred either way. But the size is not in
+doubt, and note what it was measured from. That number came out of the waits
+themselves, with no reference to any confidence interval. The coverage came out
+of running the experiment three hundred times and counting. So the square root
+of four hundred being twenty, the same factor by which the interval is too
+narrow, is two separate measurements landing in the same place rather than one
+of them restated.
 
 Cutting the run into ten large blocks and treating the block averages as the
 observations restores it: **96% coverage**, with an honest interval more than twenty
@@ -401,7 +500,8 @@ in progress has a lead time of 6/12 = half a week. Raise the limit to 18 "so
 nobody is blocked" and throughput does not move, being set by the bottleneck
 rather than by how much you shove in, so the lead time becomes 18/12, a week
 and a half. It tripled, and nothing else about the team changed. This is the entire
-theoretical content of a kanban limit, and of CONWIP before it.
+theoretical content of a kanban limit, and of CONWIP, the older
+constant-work-in-progress rule it descends from.
 
 **Safety stock is measured in time, whether you like it or not.** A distributor
 moving $100,000 of goods a day and holding $9M of inventory has, by Little's

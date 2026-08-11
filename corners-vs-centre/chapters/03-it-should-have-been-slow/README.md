@@ -11,8 +11,15 @@ Here is the arithmetic that should have killed the method in its first week.
 
 A corner is where enough rules run out at once: with *n* variables, pick *n* of
 the rules and solve them as simultaneous equations. Every corner arises that
-way. So with *n* variables and 2*n* rules there are at most C(2n, n) of them,
-and that number is brutal. At 30 variables it is about **1.18 × 10¹⁷**.
+way, so counting corners is really counting the ways of choosing which rules
+run out.
+
+Take a problem with 30 variables and twice as many rules. A corner is then a
+choice of 30 rules out of the 60 available, and the number of corners cannot
+exceed the number of such choices: how many different committees of 30 you can
+pick from 60 candidates. That count has a name and a notation, C(60, 30), read
+aloud as "sixty choose thirty". At 30 variables it is about **1.18 × 10¹⁷**. A
+hundred million billion, near enough.
 
 Thirty variables is a toy. Real models have millions. If the walk had to see
 any appreciable fraction of the corners, the method would be useless at any

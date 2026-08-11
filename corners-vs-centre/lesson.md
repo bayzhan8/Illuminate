@@ -2,26 +2,35 @@
 
 **Two ways to solve a linear program, and the forty years of argument between them.**
 
-There are two serious methods for linear programming. One walks along the
-boundary of the region of legal plans, corner to corner, never stepping inside.
-The other starts in the middle and stays there, following a curve that
-approaches the answer without ever reaching it.
+In 1972 two mathematicians published a shape built to embarrass an algorithm.
+It is a cube, squashed so that its faces tilt a little instead of meeting
+square, and in ten dimensions it has 1024 corners. Turn the standard method for
+linear programming loose on it and the method stops at every one of them: 1023
+hops to cross a shape that a better-chosen rule crosses in a single hop.
 
-They were invented thirty-seven years apart, for different reasons, by people
-answering different questions. Neither replaced the other. Every serious solver
-shipping today contains both, and choosing between them is still a decision
-somebody has to make.
+The method they were embarrassing was twenty-five years old at the time and was
+already drawing up refinery schedules and air force logistics. It still is. And
+in all those years, on the models people actually solve, it has never once
+behaved the way it behaves on that cube. The hop count keeps coming out at a
+small multiple of the number of rules in the problem, which is a number you can
+afford. A proven catastrophe that nobody ever meets. It took until 2004 for
+anybody to explain why.
 
-This guide is about why there are two, which means it is partly about history.
-The second method exists because of a specific proof published in 1972 that
-made the first one look, on paper, like a bad idea. That the first one is
-nonetheless excellent in practice is a fact nobody could explain until 2004.
+That gap, between what the theory promised and what everyone could see, is
+where the second method comes from. It refuses corners altogether: it starts in
+the middle of the region of legal plans and creeps towards the answer along a
+curve, never touching a wall. The two were invented thirty-seven years apart,
+for different reasons, by people answering different questions, and they have
+been argued over ever since. Chapter 10 is where the argument ends up, and the
+ending is that they were never really rivals. A large solve today runs one of
+them and finishes with the other.
 
 **The plan.** Chapters 1 to 3 build the walk and then show why it should be
-hopeless. Chapters 4 and 5 are the proof that it is hopeless, and the precise
-sense in which that proof is narrower than it sounds. Chapter 6 is the method
-that was polynomial first and lost anyway. Chapters 7 to 9 are the one that
-won a share. Chapter 10 is where that leaves you.
+hopeless, which is partly a matter of history. Chapters 4 and 5 are the proof
+that it is hopeless, and the precise sense in which that proof is narrower than
+it sounds. Chapter 6 is the method that was polynomial first and lost anyway.
+Chapters 7 to 9 are the one that won a share. Chapter 10 is the division of
+labour the two of them settled into.
 
 Every number below is computed by the code in this folder, in exact rational
 arithmetic wherever the arithmetic is exact, and asserted by a test. Historical
@@ -163,8 +172,15 @@ Here is the arithmetic that should have killed the method in its first week.
 
 A corner is where enough rules run out at once: with *n* variables, pick *n* of
 the rules and solve them as simultaneous equations. Every corner arises that
-way. So with *n* variables and 2*n* rules there are at most C(2n, n) of them,
-and that number is brutal. At 30 variables it is about **1.18 × 10¹⁷**.
+way, so counting corners is really counting the ways of choosing which rules
+run out.
+
+Take a problem with 30 variables and twice as many rules. A corner is then a
+choice of 30 rules out of the 60 available, and the number of corners cannot
+exceed the number of such choices: how many different committees of 30 you can
+pick from 60 candidates. That count has a name and a notation, C(60, 30), read
+aloud as "sixty choose thirty". At 30 variables it is about **1.18 × 10¹⁷**. A
+hundred million billion, near enough.
 
 Thirty variables is a toy. Real models have millions. If the walk had to see
 any appreciable fraction of the corners, the method would be useless at any
@@ -229,7 +245,7 @@ against a shape built to punish greed.
 doubles with each dimension. A second straight line climbs more gently. A third
 is flat at one pivot for every size.](chapters/05-not-the-rule/by-rule.png)
 
-Here is what the cube does and does not prove.
+The cube proves less than it looks as though it proves.
 
 The three lines above come from the same simplex code on the same cubes. One
 function differs: which improving column to enter. That single substitution
@@ -241,11 +257,23 @@ moves the count from doubling, to a gentler climb, to a single pivot.
 - **Steepest edge**, which measures improvement per unit of *movement* rather
   than per unit of variable, takes **one pivot**, at every size.
 
+That middle formula needs unpacking, since it arrives out of nowhere. The
+Fibonacci numbers are what you get by starting with 1 and 1 and making every
+term the sum of the two before it: 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, and on
+up. Bland's count on the cube of dimension *n* is the term at position *n* + 1,
+doubled, less one. At n = 10 the term is 89, so the count is 177.
+
 Bland's rule deserves a moment, because it is easy to draw the wrong lesson
 from it. Its guarantee is that it cannot cycle: it will always terminate. That
 is a real and useful property, and it is why the other guides in this
-repository use it. But look at the growth. 3, 5, 9, 15, 25, 41, 67, 109, 177:
-the ratio settles on the golden ratio, about 1.618. It is still exponential,
+repository use it. But look at the growth. 3, 5, 9, 15, 25, 41, 67, 109, 177.
+Divide each of those by the one before it and watch the quotients. 5 over 3 is
+one and two thirds; 9 over 5 is 1.8; 15 over 9 is back to one and two thirds.
+They bounce about at first. Then they settle: by 109 over 67 they have almost
+stopped moving, and 177 over 109 sits a whisker above 1.6 and is still edging
+down. What they are closing in on is the golden ratio, about 1.618, which is
+what ratios of consecutive Fibonacci numbers always do. So each extra dimension multiplies Bland's pivot count by
+about 1.618, where Dantzig's rule multiplies by 2. It is still exponential,
 just with a smaller base. Avis and Chvátal established this in 1978. **Not
 cycling is not the same as being fast**, and the cube shows the difference
 rather than merely asserting it.
@@ -304,15 +332,23 @@ which it could.
 
 Ask it to find a plan worth at least $349 in the workshop and it takes **29
 cuts**. The walk in chapter 2 reached the exact optimum of $350 in three hops.
-Worse, the ellipsoid grinds at a fixed rate that follows directly from that
-0.7698: shrinking a distance tenfold means shrinking an area a hundredfold,
-which is **17.6 cuts per decimal digit**, forever. And it never produces an
-exact answer at all.
 
-That is the shape of the disappointment. Polynomial is a statement about how
-the cost grows, not about how large it is, and a method can be polynomial and
-still lose to an exponential one on every instance anybody runs. Khachiyan's
-result reframed the theory of the subject and changed nobody's software.
+Worse than merely slow, it is slow at a rate you can calculate in advance, and
+the rate falls straight out of that 0.7698. One more decimal digit of accuracy
+means pinning the answer down ten times more tightly than before. But the
+ellipsoid does not shrink distances, it shrinks area, and area goes as the
+square of distance, so pinning down ten times tighter costs a hundredfold cut
+in area. The question is therefore how many multiplications by 0.7698 it takes
+to reduce an area to a hundredth of itself. Ten of them leave about a
+fourteenth, which is nowhere near enough. Another seven or so finish the job.
+The count works out at **17.6 cuts per decimal digit**, and it stays 17.6
+forever: the hundredth digit costs exactly what the first one did. And it never
+produces an exact answer at all.
+
+Polynomial is a statement about how the cost grows, not about how large it is,
+and a method can be polynomial and still lose to an exponential one on every
+instance anybody runs. Khachiyan's result reframed the theory of the subject
+and changed nobody's software.
 
 > **In one sentence.** The first polynomial method took its worst case on every
 > input, which is exactly why its worst case was provable.
@@ -336,12 +372,26 @@ was also *fast*. That combination was new, and it restarted the argument.
 
 The idea that ended up mattering most is not the projective transformation
 Karmarkar originally used but the reformulation the field settled on shortly
-after. Add to the objective a penalty that blows up at every wall:
+after. Add to the objective a term that blows up at every wall.
 
-> maximise **profit**, minus **μ** × (sum of the logs of the slack in each rule)
+One word first. The **slack** in a rule, for a particular plan, is how much of
+that rule is still going spare. The workshop has 44 planks; a plan that
+consumes 40 of them has 4 planks of slack. Every rule has its own slack, and so
+does each of the two floors, since you cannot build a negative number of
+chairs. Slack is positive everywhere inside the region and exactly zero on the
+walls, which is what makes it the right thing to build a penalty out of.
 
-The logarithm is infinite at a wall, so no minimiser of that expression can
-touch one. Every solution of the penalised problem is strictly inside.
+So score a plan not by its profit but by this:
+
+> **profit** + **μ** × (sum of the logs of the slack in each rule)
+
+and hunt for the best score. The second term is the whole idea. A logarithm of
+a number smaller than one is negative, and it has no floor at all: halve
+the slack and the log drops by a fixed amount, halve it again and it drops by
+that same amount again, and nothing ever stops it. Slack of a thousandth, a
+millionth, a billionth, and the log is still marching downwards. A plan pressed
+against a wall therefore scores minus infinity. Whatever plan wins is strictly
+inside, with room left in every rule at once.
 
 Now vary μ:
 
@@ -380,7 +430,10 @@ middle. In the second the bowl has tilted and its minimum has slid towards the
 best corner. In the third the contours are compressed against that corner.](chapters/08-what-the-barrier-does/the-landscape.png)
 
 The path is the trail of minima. The surface is what produces them, and it
-explains why this works at all.
+explains why this works at all. (Solvers flip every sign and hunt for the
+smallest score rather than the largest, which is why these are pictures of
+bowls with a bottom rather than hills with a peak. Same problem, drawn upside
+down.)
 
 At μ = 100 the penalty dominates and the surface is a broad bowl sitting in the
 middle of the region. Its minimum is worth **$194**, which is nowhere near
@@ -389,11 +442,22 @@ and its bottom has slid to a point worth **$325**. At μ = 1 the contours are
 crushed into the corner and the minimum is worth **$348**.
 
 At every stage there is exactly one minimum and the surface around it is
-smooth and curved. That is the whole trick. A smooth bowl with one bottom is
-what Newton's method is for: build the local quadratic model, jump to its
-minimum, repeat. It converges in a handful of steps, and the number of steps
-does not depend on how many corners the region has, because nothing in the
-computation ever mentions a corner.
+smooth and curved. That is the whole trick, because a smooth bowl with one
+bottom is precisely what Newton's method is for.
+
+Newton's method goes like this. Stand anywhere on the surface and measure two
+things about the ground under your feet: which way it slopes, and how fast that
+slope is changing. Those two measurements are enough to fit a parabola through
+where you stand, or in two variables a bowl, and the bottom of a fitted bowl is
+something you can solve for directly. Jump to it. You have not arrived, since
+the fitted bowl was only a local likeness of the real surface, but you are
+nearer than you were, so measure again where you land and fit a fresh one. The
+likeness improves as you close in, and near the bottom each step roughly
+doubles the number of correct digits. A handful of steps is usually the whole
+story.
+
+The number of steps does not depend on how many corners the region has, because
+nothing in the computation ever mentions a corner.
 
 The one safeguard that matters is damping. A full Newton step will cheerfully
 walk through a wall, where the objective is not merely worse but undefined, so
@@ -430,6 +494,25 @@ workshop has five walls (three rules and two floors), so the bound is 5μ:
 | 1 | 9.019, 3.870 | $347.96 | $5.00 | $2.04 |
 | 0.1 | 9.004, 3.984 | $349.80 | $0.50 | $0.20 |
 | 0.01 | 9.000, 3.998 | $349.98 | $0.05 | $0.02 |
+
+Where does a bound like that come from? Two ingredients, one of which this
+guide can show you and one of which it is going to quote.
+
+The first is a fact about the path. Each wall pushes the plan away from itself,
+and at a point on the central path the strength of that push is μ divided by
+the slack in that rule: get twice as close and the wall shoves twice as hard.
+That push is a price in exactly the sense of [the duality
+guide](../lp-duality/): what one more unit of that resource would be worth. Now
+multiply a wall's price by the slack left in that rule. The slack cancels, and
+what remains is μ. Every wall, the same μ, exactly.
+
+The second ingredient is the one being quoted rather than derived: duality says
+that the amount a plan is leaving on the table is the sum, over the rules, of
+each rule's price times the slack left in it. The duality guide builds that
+sum, and at a true optimum every term in it is zero, which is why a resource
+with something to spare is worth nothing. The central path is that same picture
+with the zeros replaced by μ. Five walls, one μ apiece, and the total you might
+still be missing is 5μ.
 
 Divide μ by ten and you divide your remaining ignorance by ten. Before running
 anything, you can say how many more rounds buy how many more digits.
