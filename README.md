@@ -21,7 +21,8 @@ Column generation asks the prices which variable is missing rather than
 searching for it; branch-and-price puts that loop inside a search tree.
 
 Queued: simplex against interior point · branch and bound and branch and cut ·
-Benders decomposition · LP on the GPU · queues and Little's law.
+Benders decomposition · what solvers actually do (and why presolve is where the
+gap opens) · LP on the GPU · queues and Little's law.
 
 ## Repository map
 
