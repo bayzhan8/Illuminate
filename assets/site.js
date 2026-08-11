@@ -49,6 +49,29 @@
     }
   });
 
+  /* A hairline along the bottom of the bar showing how far through the
+     reading the page is scrolled. Only on pages long enough to warrant one. */
+  document.addEventListener("DOMContentLoaded", function () {
+    var prose = document.querySelector(".prose");
+    var bar = document.querySelector(".bar");
+    if (!prose || !bar || prose.offsetHeight < 2000) return;
+    var line = document.createElement("div");
+    line.className = "progress";
+    bar.appendChild(line);
+    var draw = function () {
+      var total = document.body.scrollHeight - window.innerHeight;
+      var done = total > 0 ? window.scrollY / total : 0;
+      line.style.width = Math.max(0, Math.min(1, done)) * 100 + "%";
+    };
+    var pending = false;
+    window.addEventListener("scroll", function () {
+      if (pending) return;
+      pending = true;
+      requestAnimationFrame(function () { draw(); pending = false; });
+    }, { passive: true });
+    draw();
+  });
+
   document.addEventListener("DOMContentLoaded", function () {
     var button = document.getElementById("theme");
     if (!button) return;
