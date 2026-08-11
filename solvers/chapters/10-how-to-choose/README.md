@@ -9,6 +9,7 @@ The short version, in the order the questions actually arrive.
 | you are learning, or the model is small | **HiGHS**, through a modelling layer |
 | it is a pure LP, at almost any size | **HiGHS**; reach for a commercial solver or a first-order method only when it stops finishing |
 | the model is scheduling, rostering or assignment | try **CP-SAT** before anything LP-based |
+| it is convex but not linear: squares, norms, risk terms | **CVXPY**, which will pick Clarabel or SCS for you |
 | it is a hard MIP and the answer is worth money | benchmark **Gurobi**, **COPT** and **Xpress** on your own instances |
 | you want to hack the search itself | **SCIP** |
 | it is enormous, sparse, and a rough answer is fine | a first-order method: **PDLP**, or **cuOpt** on a GPU |

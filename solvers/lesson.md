@@ -330,6 +330,7 @@ Every one of them has a free size-limited or academic tier.
 | **CBC** and **Clp** | The old COIN-OR pair. Still everywhere, largely because everything already depends on them | EPL |
 | **GLPK** | Small, old, GNU. Fine for teaching, slow for work | GPL |
 | **cuOpt** | NVIDIA's GPU engine for LP, MIP and routing | Apache 2.0 |
+| **Clarabel**, **SCS**, **OSQP** | Conic and quadratic. What the convex problems of chapter 7 get sent to | Apache 2.0 / MIT |
 
 Two changes here matter more than any benchmark. SCIP moved from an academic
 licence to **Apache 2.0** at version 8.0.3, which turned it from something you
@@ -359,6 +360,39 @@ engines: Pyomo, PuLP and python-mip in Python, JuMP in Julia, and the commercial
 languages AMPL and GAMS. Switching solvers becomes a one-line change, which is
 the strongest practical argument for using one: it makes the solver decision
 reversible.
+
+**CVXPY** is a layer too, and a different animal, because it is not aimed at
+linear and integer models at all. It is for **convex** optimisation, the larger
+family that linear programming sits inside. Write a portfolio problem with a
+risk term that squares, or a fitting problem with a penalty on the size of the
+answer, and none of that is linear, all of it is convex, and none of the
+solvers named so far will take it.
+
+What makes CVXPY worth singling out is that it will not let you write nonsense.
+It carries a rule system, **disciplined convex programming**, which checks that
+what you typed is *provably* convex by construction rather than hoping. A
+squared error is convex, so it passes. Multiply two variables together and it
+refuses, because that expression is not convex and no amount of solver effort
+would make the answer trustworthy. Most modelling layers accept whatever you
+type and let something downstream fail later, usually by returning a local
+answer with no warning that it is local. CVXPY stops at the door.
+
+That is the same instinct as the presolve loop in this guide raising rather
+than returning a half-reduced model, and it is the right instinct. A refusal
+you can read beats a number you cannot check.
+
+Underneath, CVXPY rewrites your problem into a standard **conic** form and
+hands it to a solver built for that, which is a different set of names again:
+**Clarabel**, **SCS** and **OSQP** among the open ones, MOSEK among the
+commercial. It has used Clarabel as its default since version 1.5, having
+replaced ECOS, which had been the default for years and had known trouble with
+numerical stability at the edges. It will also drive HiGHS when what you wrote
+turns out to be an ordinary linear program.
+
+The limit is the same as the strength. CVXPY wants convexity. If your problem
+genuinely is not convex, or its difficulty lives in whole-number decisions
+rather than in curvature, this is the wrong tool and a MIP solver is the right
+one.
 
 **Google OR-Tools** is where this gets misread. OR-Tools is a toolkit, not a
 solver. Inside it are Google's own engines, **GLOP** for linear programming and
@@ -483,6 +517,7 @@ The short version, in the order the questions actually arrive.
 | you are learning, or the model is small | **HiGHS**, through a modelling layer |
 | it is a pure LP, at almost any size | **HiGHS**; reach for a commercial solver or a first-order method only when it stops finishing |
 | the model is scheduling, rostering or assignment | try **CP-SAT** before anything LP-based |
+| it is convex but not linear: squares, norms, risk terms | **CVXPY**, which will pick Clarabel or SCS for you |
 | it is a hard MIP and the answer is worth money | benchmark **Gurobi**, **COPT** and **Xpress** on your own instances |
 | you want to hack the search itself | **SCIP** |
 | it is enormous, sparse, and a rough answer is fine | a first-order method: **PDLP**, or **cuOpt** on a GPU |
@@ -527,6 +562,8 @@ Apache 2.0. The one durable move is to not be welded to any of it.
 | the yes/no switch times a big number | a **big-M** constraint |
 | the ratio of largest to smallest coefficient | the **numerical range** |
 | write once, send to any solver | a **modelling layer** or algebraic modelling language |
+| the rule system that refuses non-convex input | **disciplined convex programming**, DCP |
+| the standard form CVXPY rewrites into | a **conic** program |
 
 ## Further reading
 

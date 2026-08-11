@@ -13,6 +13,39 @@ languages AMPL and GAMS. Switching solvers becomes a one-line change, which is
 the strongest practical argument for using one: it makes the solver decision
 reversible.
 
+**CVXPY** is a layer too, and a different animal, because it is not aimed at
+linear and integer models at all. It is for **convex** optimisation, the larger
+family that linear programming sits inside. Write a portfolio problem with a
+risk term that squares, or a fitting problem with a penalty on the size of the
+answer, and none of that is linear, all of it is convex, and none of the
+solvers named so far will take it.
+
+What makes CVXPY worth singling out is that it will not let you write nonsense.
+It carries a rule system, **disciplined convex programming**, which checks that
+what you typed is *provably* convex by construction rather than hoping. A
+squared error is convex, so it passes. Multiply two variables together and it
+refuses, because that expression is not convex and no amount of solver effort
+would make the answer trustworthy. Most modelling layers accept whatever you
+type and let something downstream fail later, usually by returning a local
+answer with no warning that it is local. CVXPY stops at the door.
+
+That is the same instinct as the presolve loop in this guide raising rather
+than returning a half-reduced model, and it is the right instinct. A refusal
+you can read beats a number you cannot check.
+
+Underneath, CVXPY rewrites your problem into a standard **conic** form and
+hands it to a solver built for that, which is a different set of names again:
+**Clarabel**, **SCS** and **OSQP** among the open ones, MOSEK among the
+commercial. It has used Clarabel as its default since version 1.5, having
+replaced ECOS, which had been the default for years and had known trouble with
+numerical stability at the edges. It will also drive HiGHS when what you wrote
+turns out to be an ordinary linear program.
+
+The limit is the same as the strength. CVXPY wants convexity. If your problem
+genuinely is not convex, or its difficulty lives in whole-number decisions
+rather than in curvature, this is the wrong tool and a MIP solver is the right
+one.
+
 **Google OR-Tools** is where this gets misread. OR-Tools is a toolkit, not a
 solver. Inside it are Google's own engines, **GLOP** for linear programming and
 **PDLP** for very large ones, alongside wrappers that let it drive SCIP, HiGHS

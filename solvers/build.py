@@ -69,7 +69,10 @@ function draw() {
   const p = Plot(cv, 0, 120, 0, 1.35, { l: 62, r: 22, t: 20, b: 42 });
   p.clear();
   p.grid(20, 0.25);
-  p.axes("units demanded", "lower bound on the switch", 20, 0.25);
+  // ticks every half, not every quarter: the shared formatter derives its
+  // decimal places from the step, and a step of 0.25 prints 0.25 as "0.3",
+  // which is the one number on this page that has to be exact
+  p.axes("units demanded", "lower bound on the switch", 20, 0.5);
 
   // the fractional bound demand/M, and the whole-number bound above it
   p.ctx.beginPath();
@@ -93,7 +96,12 @@ function draw() {
   const whole = Math.min(forcedOpen(d, M), 1.3);
   p.dot(d, frac, p.P.muted);
   p.dot(d, whole, p.P.plan);
-  p.label(d, whole, "  forced to " + forcedOpen(d, M), p.P.plan);
+  // both labels sit clear of their dots, and flip side near the right edge
+  const side = d > 88 ? "right" : "left";
+  const nudge = d > 88 ? -3 : 3;
+  p.label(d + nudge, whole + 0.10, "forced to " + forcedOpen(d, M), p.P.plan, side);
+  p.label(d + nudge, Math.max(frac - 0.09, 0.04),
+          impliedOpen(d, M).toFixed(2) + " before rounding", p.P.muted, side, 11);
 
   out.textContent =
     "production must reach " + d + ", so the switch must reach " +

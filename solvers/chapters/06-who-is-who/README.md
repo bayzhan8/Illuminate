@@ -20,6 +20,7 @@ Every one of them has a free size-limited or academic tier.
 | **CBC** and **Clp** | The old COIN-OR pair. Still everywhere, largely because everything already depends on them | EPL |
 | **GLPK** | Small, old, GNU. Fine for teaching, slow for work | GPL |
 | **cuOpt** | NVIDIA's GPU engine for LP, MIP and routing | Apache 2.0 |
+| **Clarabel**, **SCS**, **OSQP** | Conic and quadratic. What the convex problems of chapter 7 get sent to | Apache 2.0 / MIT |
 
 Two changes here matter more than any benchmark. SCIP moved from an academic
 licence to **Apache 2.0** at version 8.0.3, which turned it from something you
