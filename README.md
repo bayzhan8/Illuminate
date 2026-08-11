@@ -26,6 +26,12 @@ hour without ever slowing down. Little's law as one region measured twice, why
 variability rather than utilisation does the damage, and a 95% confidence
 interval that covers 9%.
 
+**[lp-on-gpu](lp-on-gpu/)** · [read](https://bayzhan8.github.io/Illuminate/lp-on-gpu/) · [play](https://bayzhan8.github.io/Illuminate/lp-on-gpu/sandbox/)
+Why linear programming had to change algorithms to use parallel hardware.
+Sparse matrix work asks 0.17 operations per byte, so only bandwidth is
+reachable; simplex is the wrong shape for that, and the method that is the
+right shape fails until one term is changed.
+
 Queued: simplex against interior point · branch and bound and branch and cut ·
 Benders decomposition · what solvers actually do (and why presolve is where the
 gap opens) · LP on the GPU.

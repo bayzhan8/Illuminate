@@ -92,14 +92,34 @@
         </p>
       </div>
     </li>
+    <li class="guide">
+      <a class="guide-figure" href="lp-on-gpu/" tabindex="-1" aria-hidden="true">
+        <img src="assets/preview-lp-on-gpu.png" alt="" loading="lazy">
+      </a>
+      <div class="guide-body">
+        <p class="meta">04 · First-order methods · 11 chapters</p>
+        <h2><a href="lp-on-gpu/">The machine got wider, not faster</a></h2>
+        <p>Sparse matrix work asks for 0.17 operations per byte, so the only
+        speedup a wide machine offers is its bandwidth ratio. Simplex is the
+        wrong shape for that. The method that is the right shape cycles
+        forever until one term is changed, and then converges to the same
+        answer the exact solver gives.</p>
+        <p class="guide-links">
+          <a href="lp-on-gpu/">Read</a>
+          <a href="lp-on-gpu/sandbox/">Play</a>
+          <a href="https://github.com/bayzhan8/Illuminate/tree/main/lp-on-gpu">Source</a>
+        </p>
+      </div>
+    </li>
   </ol>
 
   <section class="queue">
     <h2 class="section-label">In the queue</h2>
     <dl>
       <dt>Simplex against interior point</dt>
-      <dd>Walking the corners against cutting through the middle, and why the
-      worst case for one is not the worst case for the other.</dd>
+      <dd>Walking the corners against cutting through the middle, why the worst
+      case for one is not the worst case for the other, and why the third
+      guide's argument does not rescue either of them.</dd>
 
       <dt>Branch and bound, branch and cut</dt>
       <dd>The tree, and what pruning actually prunes.</dd>
@@ -107,10 +127,6 @@
       <dt>What solvers actually do</dt>
       <dd>Gurobi against HiGHS against cuOpt, the modelling layer sitting above
       them, and why presolve is where the gap opens.</dd>
-
-      <dt>Linear programming on the GPU</dt>
-      <dd>Why simplex resists parallel hardware, what first-order methods
-      changed, and the accuracy you trade for the speed.</dd>
 
       <dt>Benders decomposition</dt>
       <dd>Column generation pointed the other way, producing rows instead of

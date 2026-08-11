@@ -88,6 +88,16 @@ def test_the_spare_saw_time_the_prose_claims_is_the_real_amount():
     assert "31 of the 32 hours of saw time" in FLAT
 
 
+def test_the_ingredient_arithmetic_in_chapter_three():
+    """$7 a plank and $3 an hour price a table at $34 and a chair at $23."""
+    prices = (7, 3, 0)
+    table = sum(p * w.PRIMAL.A[i][0] for i, p in enumerate(prices))
+    chair = sum(p * w.PRIMAL.A[i][1] for i, p in enumerate(prices))
+    assert (table, chair) == (34, 23)
+    assert table > w.PRIMAL.c[0] and chair > w.PRIMAL.c[1]   # both covered
+    assert "4×7 + 2×3 = $34" in FLAT and "2×7 + 3×3 = $23" in FLAT
+
+
 def test_the_weak_duality_worked_example_adds_up():
     """Chapter 4 quotes three numbers; all three come from the program."""
     plan, prices = (10, 2), (7, 3, 0)
