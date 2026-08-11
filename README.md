@@ -20,9 +20,15 @@ A cutting-stock model with four trillion variables that fits on a napkin.
 Column generation asks the prices which variable is missing rather than
 searching for it; branch-and-price puts that loop inside a search tree.
 
+**[queues](queues/)** · [read](https://bayzhan8.github.io/Illuminate/queues/) · [play](https://bayzhan8.github.io/Illuminate/queues/sandbox/)
+A clerk who serves a customer in six minutes will hand someone a wait of an
+hour without ever slowing down. Little's law as one region measured twice, why
+variability rather than utilisation does the damage, and a 95% confidence
+interval that covers 9%.
+
 Queued: simplex against interior point · branch and bound and branch and cut ·
 Benders decomposition · what solvers actually do (and why presolve is where the
-gap opens) · LP on the GPU · queues and Little's law.
+gap opens) · LP on the GPU.
 
 ## Repository map
 

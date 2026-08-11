@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en" data-page="sandbox">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turn the three dials — Illuminate</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/site.css">
+<script>
+  try {
+    var t = localStorage.getItem("illuminate-theme");
+    document.documentElement.dataset.theme = t ||
+      (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  } catch (e) {}
+</script>
+</head>
+<body>
+<header class="bar">
+  <a class="brand" href="../../">ILLUMINATE</a>
+  <button class="toggle" id="theme" type="button" aria-label="Switch colour scheme">DARK</button>
+</header>
+<main class="sandbox">
+  <a class="back" href="../index.html#ch5">← back to chapter 5</a>
+  <h1>Turn the three dials</h1>
+  <p class="lede">The wait, as utilisation and service variability move independently. The clerk&#x27;s average speed never changes.</p>
+  <p class="try"><strong>Try this.</strong> Set the variability to zero and push utilisation up to 95%. Then put utilisation back to 85% and raise the variability instead. The second one hurts more.</p>
+  <canvas id="c" width="660" height="380"></canvas>
+  <div class="controls"><div class="row"><label for="busy">fraction of time busy</label><input type="range" id="busy" min="5" max="97" step="1" value="90"><output class="val" id="busyv"></output></div><div class="row"><label for="cv2">how variable the service is</label><input type="range" id="cv2" min="0" max="25" step="1" value="1"><output class="val" id="cv2v"></output></div></div>
+  <pre class="out" id="out"></pre>
+  <p class="note">The grey curve never moves: it is the same desk with textbook variability. Everything the blue curve does differently was bought or sold with variance, not with capacity.</p>
+  <nav class="pager"><a href="index.html">all 2</a> · <a href="06.html">One line or several →</a></nav>
+</main>
+<script src="../../assets/site.js"></script>
+<script>
+
+// One clerk, six minutes a job. Rates are per hour throughout.
+const SERVICE_RATE = 10;
+
+// Random arrivals, random service: the wait is the service time multiplied
+// by one over the idle fraction.
+function waitRandom(rate) {
+  const load = rate / SERVICE_RATE;
+  return load / (SERVICE_RATE - rate);          // hours
+}
+
+// Any service distribution, via Pollaczek-Khinchine written in the form that
+// separates the three dials: utilisation, variability, and job length.
+function waitWithSpread(rate, cv2) {
+  const meanService = 1 / SERVICE_RATE;
+  const load = rate * meanService;
+  return (load / (1 - load)) * ((1 + cv2) / 2) * meanService;
+}
+
+// The chance every clerk is busy, by the Erlang B recursion, which never
+// forms a^c or c! and so does not overflow.
+function allBusy(servers, offered) {
+  const load = offered / servers;
+  let b = 1.0;
+  for (let k = 1; k <= servers; k++) b = offered * b / (k + offered * b);
+  return b / (1 - load * (1 - b));
+}
+
+function waitPooled(rate, servers) {
+  const offered = rate / SERVICE_RATE;
+  return allBusy(servers, offered) / (servers * SERVICE_RATE - rate);
+}
+
+function minutes(hours) { return hours * 60; }
+
+
+// --- a very small drawing helper, in the site's colours -------------------
+function palette() {
+  const dark = document.documentElement.dataset.theme === "dark";
+  return dark
+    ? { paper: "#1a1816", ink: "#e8e6e0", ink2: "#a8a599", muted: "#787366",
+        rule: "#4a4540", plan: "#4A87CC", price: "#C25A42", ok: "#4E8F55" }
+    : { paper: "#fffff8", ink: "#000000", ink2: "#404040", muted: "#707070",
+        rule: "#C0BDAD", plan: "#1B4F9C", price: "#B4341F", ok: "#2E6B33" };
+}
+
+function Plot(canvas, xlo, xhi, ylo, yhi, pad) {
+  const dpr = window.devicePixelRatio || 1;
+  const cssW = canvas.clientWidth || 660, cssH = canvas.clientHeight || 380;
+  canvas.width = Math.round(cssW * dpr);
+  canvas.height = Math.round(cssH * dpr);
+  const ctx = canvas.getContext("2d");
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  pad = pad || { l: 54, r: 22, t: 18, b: 42 };
+  const P = palette();
+  const X = x => pad.l + (x - xlo) / (xhi - xlo) * (cssW - pad.l - pad.r);
+  const Y = y => cssH - pad.b - (y - ylo) / (yhi - ylo) * (cssH - pad.t - pad.b);
+  const font = n => `${n}px "IBM Plex Mono", ui-monospace, monospace`;
+  return {
+    ctx, X, Y, P, W: cssW, H: cssH, pad, font,
+    clear() { ctx.clearRect(0, 0, cssW, cssH); },
+    grid(stepX, stepY) {
+      ctx.strokeStyle = P.rule; ctx.lineWidth = 1; ctx.setLineDash([1, 4]);
+      for (let x = xlo; x <= xhi + 1e-9; x += stepX) {
+        ctx.beginPath(); ctx.moveTo(X(x), pad.t); ctx.lineTo(X(x), cssH - pad.b); ctx.stroke();
+      }
+      for (let y = ylo; y <= yhi + 1e-9; y += stepY) {
+        ctx.beginPath(); ctx.moveTo(pad.l, Y(y)); ctx.lineTo(cssW - pad.r, Y(y)); ctx.stroke();
+      }
+      ctx.setLineDash([]);
+    },
+    axes(xlabel, ylabel, stepX, stepY) {
+      ctx.strokeStyle = P.ink; ctx.lineWidth = 1.2;
+      ctx.beginPath(); ctx.moveTo(pad.l, pad.t); ctx.lineTo(pad.l, cssH - pad.b);
+      ctx.lineTo(cssW - pad.r, cssH - pad.b); ctx.stroke();
+      ctx.fillStyle = P.muted; ctx.font = font(11); ctx.textAlign = "center";
+      if (stepX) for (let x = xlo; x <= xhi + 1e-9; x += stepX)
+        ctx.fillText(String(Math.round(x)), X(x), cssH - pad.b + 17);
+      ctx.textAlign = "right";
+      if (stepY) for (let y = ylo; y <= yhi + 1e-9; y += stepY)
+        ctx.fillText(String(Math.round(y)), pad.l - 9, Y(y) + 4);
+      ctx.fillStyle = P.ink2; ctx.font = font(12); ctx.textAlign = "center";
+      if (xlabel) ctx.fillText(xlabel, (pad.l + cssW - pad.r) / 2, cssH - 8);
+      if (ylabel) { ctx.save(); ctx.translate(14, (pad.t + cssH - pad.b) / 2);
+        ctx.rotate(-Math.PI / 2); ctx.fillText(ylabel, 0, 0); ctx.restore(); }
+    },
+    polygon(pts, fill, stroke) {
+      if (!pts.length) return;
+      ctx.beginPath(); ctx.moveTo(X(pts[0][0]), Y(pts[0][1]));
+      for (const p of pts.slice(1)) ctx.lineTo(X(p[0]), Y(p[1]));
+      ctx.closePath();
+      if (fill) { ctx.globalAlpha = 0.14; ctx.fillStyle = fill; ctx.fill(); ctx.globalAlpha = 1; }
+      if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = 1.8; ctx.stroke(); }
+    },
+    rect(x0, y0, x1, y1, fill, alpha) {
+      ctx.save(); ctx.globalAlpha = alpha === undefined ? 1 : alpha;
+      ctx.fillStyle = fill;
+      ctx.fillRect(X(x0), Y(y1), X(x1) - X(x0), Y(y0) - Y(y1));
+      ctx.restore();
+    },
+    line(x0, y0, x1, y1, color, width, dash) {
+      ctx.save(); ctx.strokeStyle = color; ctx.lineWidth = width || 1.4;
+      if (dash) ctx.setLineDash(dash);
+      ctx.beginPath(); ctx.moveTo(X(x0), Y(y0)); ctx.lineTo(X(x1), Y(y1));
+      ctx.stroke(); ctx.restore();
+    },
+    dot(x, y, color, r) {
+      ctx.beginPath(); ctx.arc(X(x), Y(y), r || 6, 0, 7);
+      ctx.fillStyle = color; ctx.fill();
+      ctx.lineWidth = 2; ctx.strokeStyle = P.paper; ctx.stroke();
+    },
+    label(x, y, text, color, align, size) {
+      ctx.fillStyle = color; ctx.font = font(size || 12);
+      ctx.textAlign = align || "left"; ctx.fillText(text, X(x), Y(y));
+    }
+  };
+}
+
+function sortRound(pts) {
+  if (!pts.length) return pts;
+  const cx = pts.reduce((s, p) => s + p[0], 0) / pts.length;
+  const cy = pts.reduce((s, p) => s + p[1], 0) / pts.length;
+  return pts.slice().sort((a, b) =>
+    Math.atan2(a[1] - cy, a[0] - cx) - Math.atan2(b[1] - cy, b[0] - cx));
+}
+
+
+const cv = document.getElementById("c"), out = document.getElementById("out");
+const busy = document.getElementById("busy"), cv2El = document.getElementById("cv2");
+function draw() {
+  const rho = +busy.value / 100, cv2 = +cv2El.value;
+  document.getElementById("busyv").textContent = (100 * rho).toFixed(0) + "%";
+  document.getElementById("cv2v").textContent = cv2.toFixed(0);
+  const p = Plot(cv, 0, 1, 0, 240, { l: 60, r: 22, t: 20, b: 42 });
+  p.clear(); p.grid(0.1, 40); p.axes("fraction of the time busy", "wait, minutes", 0.2, 40);
+
+  // the curve at the chosen variability, and the textbook one for reference
+  for (const [c2, colour, width] of [[1, p.P.muted, 1.4], [cv2, p.P.plan, 2.4]]) {
+    p.ctx.beginPath(); p.ctx.strokeStyle = colour; p.ctx.lineWidth = width;
+    for (let k = 0; k <= 400; k++) {
+      const r = 0.005 + 0.985 * k / 400;
+      const w = Math.min(minutes(waitWithSpread(r * SERVICE_RATE, c2)), 250);
+      if (k === 0) p.ctx.moveTo(p.X(r), p.Y(w)); else p.ctx.lineTo(p.X(r), p.Y(w));
+    }
+    p.ctx.stroke();
+  }
+  const wait = minutes(waitWithSpread(rho * SERVICE_RATE, cv2));
+  if (wait < 238) p.dot(rho, wait, p.P.plan, 7);
+  p.label(0.02, 224, "grey: the textbook case, variability 1", p.P.muted, "left", 11);
+  out.textContent =
+    "busy            " + (100 * rho).toFixed(0) + "%\n" +
+    "variability     " + cv2.toFixed(0) + "\n" +
+    "average wait    " + (wait > 1e4 ? "off the scale" : wait.toFixed(1) + " min") + "\n\n" +
+    "the clerk still averages six minutes a customer";
+}
+busy.addEventListener("input", draw); cv2El.addEventListener("input", draw);
+window.addEventListener("resize", draw);
+document.addEventListener("themechange", draw);
+draw();
+
+</script>
+</body>
+</html>
