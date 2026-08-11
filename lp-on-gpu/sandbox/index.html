@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en" data-page="sandbox-index">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Things to play with — Illuminate</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/site.css">
+<script>
+  try {
+    var t = localStorage.getItem("illuminate-theme");
+    document.documentElement.dataset.theme = t ||
+      (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  } catch (e) {}
+</script>
+</head>
+<body>
+<header class="bar">
+  <a class="brand" href="../../">ILLUMINATE</a>
+  <button class="toggle" id="theme" type="button" aria-label="Switch colour scheme">DARK</button>
+</header>
+<main class="prose">
+<h1>Things to play with</h1>
+<p>2 pages from this guide, each one a chapter you can push around. They
+run entirely in the page.</p>
+<ul class="chapters"><li><a href="05.html"><span class="num">5</span>One term, on or off</a><span class="sub">The two methods of chapters 4 and 5, on the workshop, with the extrapolation you can switch off.</span></li>
+<li><a href="07.html"><span class="num">7</span>Restart it</a><span class="sub">The same iteration, with the averaging of chapter 7. The cost per step is identical either way.</span></li></ul>
+<p><a href="../index.html">← back to the guide</a></p>
+</main>
+<script src="../../assets/site.js"></script>
+</body>
+</html>

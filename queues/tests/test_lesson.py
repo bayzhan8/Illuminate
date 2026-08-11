@@ -90,6 +90,19 @@ def test_the_three_step_ups_in_the_prose_are_the_real_ratios():
     assert round(float(last / nearer)) == 5 and "**five times**" in FLAT
 
 
+def test_the_percentage_increases_between_rows_are_right():
+    """The prose quotes how much more work each step up is."""
+    from fractions import Fraction as F
+    def more(a, b):
+        return float((b - a) / a * 100)
+    assert f"{more(F(9), F(19, 2)):.1f}" == "5.6"
+    assert f"{more(F(19, 2), F(99, 10)):.1f}" == "4.2"
+    assert f"{more(F(5), F(9)):.0f}" == "80"
+    assert "added 80% more work" in FLAT
+    assert "added 5.6% more work" in FLAT
+    assert "added 4.2% more work" in FLAT
+
+
 def test_constant_service_halves_it_and_the_prose_says_the_number():
     assert d.STEADY_BUSY * 2 == d.BUSY.time_waiting
     assert d.minutes(d.STEADY_BUSY) == "27 min"

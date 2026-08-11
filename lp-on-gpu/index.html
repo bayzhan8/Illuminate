@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="en" data-page="lesson">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The machine got wider, not faster — first-order LP</title>
+<meta name="description" content="Why linear programming had to change algorithms to use a GPU, built from one workshop and checked against an exact solver.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>
+  try {
+    var t = localStorage.getItem("illuminate-theme");
+    document.documentElement.dataset.theme = t ||
+      (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  } catch (e) {}
+</script>
+</head>
+<body>
+<header class="bar">
+  <a class="brand" href="../">ILLUMINATE</a>
+  <button class="toggle" id="theme" type="button" aria-label="Switch colour scheme">DARK</button>
+</header>
+<main class="prose">
+<h1>The machine got wider, not faster</h1>
+<p><strong>Why linear programming had to change algorithms to use a GPU.</strong></p>
+<p>For thirty years the way to solve a linear program faster was to buy a quicker
+processor. That stopped working, and what replaced it was not a quicker
+processor but a much wider one: thousands of arithmetic units, fed by a memory
+system that did not get thousands of times faster.</p>
+<p>The simplex method cannot use a machine like that. Not because nobody has
+tried, but because of what it <em>is</em>: a chain of decisions where each one depends
+on the last.</p>
+<p>So the interesting question is not how to parallelise simplex. It is what a
+method would have to look like to use the hardware at all, and what you give up
+by using it.</p>
+<p><strong>The plan.</strong> Chapter 1 is about the hardware and why it changes which
+algorithms are worth having. Chapter 2 is why simplex is the wrong shape.
+Chapters 3 to 7 build a method that is the right shape, starting from the
+version that does not work. Chapters 8 and 9 are whether it gets the right
+answer and what it costs.</p>
+<p>Every number below is computed by the code in this folder. The answers it is
+checked against come from the exact rational simplex in
+<a href="../lp-duality/">the duality guide</a>, which shares no line of code with anything
+here.</p>
+<h2 id="ch0"><span class="num">0</span>What this is</h2>
+<figure class="plate"><img src="chapters/00-what-this-is/hero.gif" alt="Two curves against iteration count on the same workshop. One oscillates
+violently between zero and eight hundred without ever settling. The other rises
+smoothly and stops on three hundred and fifty." loading="lazy"></figure>
+<p>Two methods, on the same small problem, with the same step sizes. They differ
+by one term in one line.</p>
+<p>The red one never settles. It is still swinging between $0 and $753 after four
+thousand iterations, and it will do that forever.</p>
+<p>The blue one stops on $350, which happens to be exactly right.</p>
+<p>That single term is most of this guide.</p>
+<blockquote class="takeaway">
+<p><strong>In one sentence.</strong> A method that can use parallel hardware is available,
+but only just, and the difference between it working and not is very small.</p>
+</blockquote>
+<h2 id="ch1"><span class="num">1</span>Wider, not faster</h2>
+<p>Start with the hardware, because it determines which algorithms are worth
+having.</p>
+<p>A modern accelerator has enormously more arithmetic capability than a server
+processor. It does not have proportionally more memory bandwidth. Roughly: a
+hundred times the arithmetic, but only about fifteen times the rate at which it
+can fetch numbers to do arithmetic <em>on</em>.</p>
+<p>That matters only if you know how much arithmetic your work does per byte it
+reads. So count it.</p>
+<p>Multiplying a sparse matrix by a vector, the way solvers store matrices, costs
+about <strong>12 bytes per stored entry</strong>: eight for the value and four to record
+which column it sits in. And it performs <strong>2 operations</strong>: one multiply, one
+add.</p>
+<p>Two operations per twelve bytes. <strong>0.17 operations per byte.</strong></p>
+<p>Now put that against the machines.</p>
+<figure class="plate"><img src="chapters/01-wider-not-faster/roofline.png" alt="A log-log chart of achievable rate against arithmetic intensity, with a
+ceiling line for each of two machines. At the intensity of a sparse
+matrix-vector product, one machine reaches nine percent of its arithmetic and
+the other one point three percent, while their absolute rates differ by the
+ratio of their bandwidths." loading="lazy"></figure>
+<p>The accelerator can perform <strong>13 operations for every byte</strong> it delivers. Give
+it work that asks for 0.17 and almost all of that arithmetic sits idle: it
+reaches <strong>1.3%</strong> of what it could do. The server processor, which can perform
+1.9 operations per byte, reaches <strong>9%</strong> of its own.</p>
+<p>And yet the accelerator is still the faster machine here, by <strong>14.5×</strong>, which
+is precisely the ratio of their <em>bandwidths</em>, not the ratio of their
+arithmetic, which is about a hundred.</p>
+<p>That is the sentence to carry forward. For this kind of work, buying a machine
+with more arithmetic buys you nothing. Buying one with more bandwidth buys you
+exactly what it says.</p>
+<p>Which tells you what a good algorithm looks like: one whose entire inner loop
+is streaming over the matrix, and which does no other kind of work at all.</p>
+<blockquote class="takeaway">
+<p><strong>In one sentence.</strong> Sparse matrix work is limited by memory bandwidth, not
+arithmetic, so the only speedup available is the bandwidth ratio.</p>
+</blockquote>
+<h2 id="ch2"><span class="num">2</span>Why simplex is the wrong shape</h2>
+<p>The simplex method walks from corner to corner of the feasible region, and each
+step is a chain:</p>
+<ol>
+<li>Work out which product would improve the plan if you started making it.</li>
+<li>Work out how much of it you can make before some rule binds.</li>
+<li>Update the plan, and update the bookkeeping that made step 1 answerable.</li>
+</ol>
+<p>You cannot start step 1 of the next iteration until step 3 of this one has
+finished, because step 3 is what changes the answer to step 1. The dependency
+is not incidental to the implementation; it <em>is</em> the method. Each corner is
+chosen using the information produced at the previous corner.</p>
+<p>There is a second problem underneath. The bookkeeping in step 3 is a
+factorisation of the current basis, maintained incrementally, and solving with
+it is a triangular solve: a sequence of substitutions where each one needs the
+previous result. Sparse triangular solves have very little parallelism in them
+by construction.</p>
+<p>None of this makes simplex a bad method. It is an extremely good method, and on
+most problems it is still the one to use. It is simply the wrong shape for a
+machine whose advantage is doing ten thousand independent things at once.</p>
+<p><em>(The natural follow-up, why interior point methods are a different shape
+again and where each one wins, is its own guide and is coming.)</em></p>
+<blockquote class="takeaway">
+<p><strong>In one sentence.</strong> Simplex is a chain of dependent decisions, so its speed
+comes from taking few steps rather than from taking them in parallel.</p>
+</blockquote>
+<h2 id="ch3"><span class="num">3</span>A method made of one operation</h2>
+<p>So ask for the opposite. What would a method look like if the <em>only</em> thing it
+ever did was multiply by the matrix?</p>
+<p>Here is the setup. The workshop from the duality guide: three shelves, two
+products, and the question of what to build. Written for a machine, it is</p>
+<blockquote class="aside">
+<p>choose a plan <code>x</code>, at least zero in every entry,
+so that <code>Ax</code> stays under the shelf limits <code>b</code>,
+making the profit as large as possible.</p>
+</blockquote>
+<p>The duality guide's second idea gives the other half. Attach a price to each
+shelf, collect them in <code>y</code>, and consider</p>
+<blockquote class="aside">
+<p><code>L(x, y)</code> = what the plan costs, plus the prices times how much the plan
+overruns each shelf.</p>
+</blockquote>
+<p>The plan wants this small. The prices want it large: if a shelf is overrun,
+raising its price punishes the plan for it. The answer is the standstill where
+neither side can improve by moving: the plan is the best one, and the prices
+are the shadow prices of chapter 7 over there.</p>
+<p>Now the point. To move the plan you need <code>A</code> transposed times <code>y</code>. To move the
+prices you need <code>A</code> times <code>x</code>. And then you clamp anything that went negative
+back to zero.</p>
+<p>That is the whole vocabulary. Two matrix-vector products, some vector
+addition, and a clamp. <strong>No factorisation, no basis, no pivoting, no ordering,
+nothing sequential.</strong></p>
+<p>It is exactly the shape chapter 1 asked for. The only question left is whether
+it works.</p>
+<blockquote class="takeaway">
+<p><strong>In one sentence.</strong> Treating the plan and the prices as two players lets you
+build a method out of nothing but matrix-vector products.</p>
+</blockquote>
+<h2 id="ch4"><span class="num">4</span>The obvious version does not work</h2>
+<p>The obvious thing is to move both at once. Push the plan down a little, push
+the prices up a little, repeat.</p>
+<p>To see what happens, shrink the problem until the whole state fits on a page:
+one variable, one rule, <code>x = 3</code>. Then the state is a plan and a price, two
+numbers, and the path they trace is a curve in a plane.</p>
+<figure class="plate"><img src="chapters/04-the-obvious-version/outward.png" alt="A trajectory in the plane of plan against price, starting near the answer and
+winding steadily outward in a widening spiral." loading="lazy"></figure>
+<p>It winds outward. It starts 2.2 away from the answer and after 90 steps it is
+13.1 away, and it keeps going.</p>
+<p>The reason is visible in the update itself. The prices are told to react to the
+plan <code>x</code>. But by the time they react, the plan has already moved on, so each
+side is always responding to where the other one just <em>was</em>. Two players who are
+each a step behind the other will circle each other forever, and the circling
+grows.</p>
+<p>On the real workshop the failure looks different but is no better. There the
+clamp at zero keeps the numbers from running away, and instead the method
+settles into an exact <strong>repeating cycle of period 10</strong>: the plan climbs to
+about 17 tables, the prices spike, the plan is slammed to nothing, the prices
+decay, and it begins again. The value it reports swings between <strong>$0 and
+$753</strong>, and it never once sits at $350.</p>
+<p>It does not diverge. It does not converge. It just keeps going.</p>
+<blockquote class="takeaway">
+<p><strong>In one sentence.</strong> Two players each reacting to the other's previous move
+circle forever instead of settling.</p>
+</blockquote>
+<h2 id="ch5"><span class="num">5</span>One term different</h2>
+<p>Here is the fix, and it is almost nothing.</p>
+<p>When the prices react, do not show them the plan's current position. Show them
+where the plan is <em>heading</em>: the new plan, plus the step it has just taken,
+again.</p>
+<p>If the plan moved from <code>x</code> to <code>x′</code>, the prices are shown <code>2x′ − x</code>. That is the
+cheapest imaginable guess at the next position: assume it keeps going the way
+it was going.</p>
+<figure class="plate"><img src="chapters/05-one-term-different/inward.png" alt="The same trajectory in the same plane, now winding inward toward the answer
+in a tightening spiral." loading="lazy"></figure>
+<p>Same problem, same step sizes, same starting point, one changed term. The
+spiral reverses. After 90 steps it is 0.36 away instead of 13.1.</p>
+<p>Side by side, from the same start, it is not a subtle difference:</p>
+<figure class="plate"><img src="chapters/05-one-term-different/spiral.gif" alt="Two planes side by side, each tracing a path from the same starting point.
+On the left the path winds outward and leaves the frame. On the right it winds
+inward and settles on the answer." loading="lazy"></figure>
+<p>This is the <strong>primal-dual hybrid gradient</strong> method, and it is the algorithm
+underneath the first-order LP solvers that run on GPUs.</p>
+<p>Its per-iteration cost is unchanged: still two matrix-vector products, still no
+factorisation. It has not become a more expensive method. It has become a
+convergent one.</p>
+<blockquote class="takeaway">
+<p><strong>In one sentence.</strong> Letting the prices anticipate the plan's next move
+rather than react to its last one turns the spiral inward, at no extra cost.</p>
+</blockquote>
+<h2 id="ch6"><span class="num">6</span>It turns fast and shrinks slowly</h2>
+<p>The spiral converges. The trouble is how.</p>
+<p>On the small problem the iteration is exactly a linear map, so it can be taken
+apart completely. Its eigenvalues are a conjugate pair, and a conjugate pair
+means the step is a rotation combined with a shrink. Both have closed forms.
+With a step size of 0.2:</p>
+<ul>
+<li>it turns <strong>11.5°</strong> per iteration, so a full revolution takes <strong>31.2</strong> steps</li>
+<li>it shrinks the distance to the answer by <strong>2.0%</strong> per iteration</li>
+</ul>
+<p>Those two numbers are the whole difficulty. It is spinning quickly and closing
+in barely at all.</p>
+<p>And you cannot fix it by taking bigger steps, because the two are locked
+together.</p>
+<figure class="plate"><img src="chapters/06-fast-turn-slow-shrink/anatomy.png" alt="Two curves against step size on shared axes: degrees turned per iteration
+rising steeply, and percent closer per iteration rising with
+it." loading="lazy"></figure>
+<p>Raising the step size does make it contract faster. It also makes it rotate
+faster, and past a threshold the method stops converging at all. The setting
+that keeps it stable is the setting that makes it crawl.</p>
+<p>So most of the work is going into going round, and only a sliver into going in.</p>
+<blockquote class="takeaway">
+<p><strong>In one sentence.</strong> The iteration rotates far more than it contracts, and
+the step size cannot fix that because it drives both.</p>
+</blockquote>
+<h2 id="ch7"><span class="num">7</span>Cancel the rotation</h2>
+<p>If the problem is rotation, remove the rotation.</p>
+<p>Averaging is the tool. Average the iterates over a full revolution and the
+turning cancels, because points on opposite sides of the circle pull in
+opposite directions, while the inward drift does not. Then throw away the state, start
+again from the average, and do it once more.</p>
+<figure class="plate"><img src="chapters/07-cancel-the-rotation/restarts.png" alt="Two convergence curves on a logarithmic scale, one decaying slowly and the
+other dropping by six orders of magnitude over the same number of
+iterations." loading="lazy"></figure>
+<p>Same iteration. Same two matrix products per step. Same step sizes. Restarting
+every 40 iterations leaves it, after 600 iterations, about <strong>a million times</strong>
+closer to the answer.</p>
+<p>Nothing was added to the inner loop. The averaging is vector work, invisible
+next to the matrix products. It is very close to a free improvement of six
+orders of magnitude, and it is why practical first-order LP solvers all restart.</p>
+<p><em>(Real solvers choose the restart moment adaptively rather than on a fixed
+schedule, and there are stronger variants than plain averaging. The mechanism
+is the one above.)</em></p>
+<blockquote class="takeaway">
+<p><strong>In one sentence.</strong> Averaging over a revolution cancels the rotation and
+keeps the drift, which costs nothing and is worth orders of magnitude.</p>
+</blockquote>
+<h2 id="ch8"><span class="num">8</span>Does it get the right answer?</h2>
+<p>It should be checked against something that cannot be wrong.</p>
+<p>The duality guide solved this workshop in exact rational arithmetic with a
+simplex method: <strong>9 tables and 4 chairs, worth $350</strong>, with shadow prices of
+<strong>$6.25</strong> a plank, <strong>$2.50</strong> an hour and <strong>nothing</strong> for saw time.</p>
+<figure class="plate"><img src="chapters/08-the-same-answer/agree.png" alt="A logarithmic convergence curve falling from tens to below ten to the
+fifteenth over about a thousand iterations." loading="lazy"></figure>
+<p>The first-order method finds the same plan, to fifteen decimal places.</p>
+<p>It also finds the same prices. That is worth pausing on, because it is not an
+extra: the prices are half of what the method is, so it produces the shadow
+prices without being asked. The duality guide's second problem is not something
+this method solves afterwards. It is the thing it was solving all along.</p>
+<blockquote class="takeaway">
+<p><strong>In one sentence.</strong> It converges to the same plan and the same shadow prices
+as the exact method, because the prices were half the algorithm.</p>
+</blockquote>
+<h2 id="ch9"><span class="num">9</span>What it costs</h2>
+<p>Two costs, and they are the reason this has not replaced anything.</p>
+<figure class="plate"><img src="chapters/09-what-it-costs/cost.png" alt="Two panels. On the left, the worst rule violation falling from about a plank
+to zero over a few thousand iterations, against a line marking that every
+simplex iterate is exactly legal. On the right, a tied optimum where the exact
+method returns a corner and the first-order method returns the
+midpoint." loading="lazy"></figure>
+<p><strong>The plan is not legal until it has converged.</strong> A simplex iterate is always
+standing on a corner of the feasible region, so it is a plan you could actually
+carry out at every step. A first-order iterate approaches feasibility from
+<em>outside</em>. Ten iterations in, this one proposes a plan overrunning a shelf by
+0.84 planks and claims to be worth <strong>$352.44</strong>, more than the true optimum,
+because it is cheating.</p>
+<p>That is not a rounding error, it is a category difference. Stopping early gives
+you a number that is not an answer to your question.</p>
+<p><strong>And it does not return a corner.</strong> Take a problem where a whole edge is
+optimal, every point on it equally good. The exact method returns one of the
+two corners. The first-order method returns the middle.</p>
+<p>Both are optimal, so for reporting a number it makes no difference. But branch
+and bound needs a corner: it needs a <em>basis</em> to warm-start the next node from,
+and a point in the middle of an edge does not give it one. Which is why
+first-order methods have transformed how very large linear programs get solved,
+and have so far changed integer programming much less.</p>
+<blockquote class="takeaway">
+<p><strong>In one sentence.</strong> You trade a legal answer at every step, and a corner at
+the end, for an inner loop that a wide machine can actually feed.</p>
+</blockquote>
+<h2 id="ch10"><span class="num">10</span>Where this leaves things</h2>
+<p>The honest summary is narrow and worth stating precisely.</p>
+<p>For linear programs large enough that forming and storing a factorisation is
+the binding constraint, a method whose entire inner loop is matrix-vector
+products is a genuinely different proposition, and hardware built for bandwidth
+suits it. That is a real and important class of problem, and it was previously
+not solvable at all.</p>
+<p>For everything else, the established methods remain established for good
+reasons: problems where a factorisation fits comfortably, problems needing
+high accuracy, problems that are really integer programs wanting a basis at
+every node. The chapters above are most of those reasons.</p>
+<p>What has actually changed is that the answer to &quot;which algorithm&quot; now depends
+on the machine, in a way it did not for thirty years.</p>
+<p>The specific benchmark numbers in this area move quickly and I have not quoted
+any, because a guide that dates in six months is worse than one that does not
+try. The primary sources, if you want the current state: the PDLP paper by
+Applegate and co-authors, the cuPDLP line of work, and Mittelmann's benchmark
+pages, which are updated continuously.</p>
+<h2>What the plain words are really called</h2>
+<div class="overflow-x"><table>
+<thead>
+<tr>
+<th>this guide says</th>
+<th>everyone else says</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>operations per byte fetched</td>
+<td>arithmetic intensity</td>
+</tr>
+<tr>
+<td>the chart of what a machine can reach</td>
+<td>a <strong>roofline</strong> model</td>
+</tr>
+<tr>
+<td>a method made only of matrix products</td>
+<td>a <strong>first-order</strong> method</td>
+</tr>
+<tr>
+<td>the plan and the prices as two players</td>
+<td>the <strong>saddle point</strong> / Lagrangian formulation</td>
+</tr>
+<tr>
+<td>showing the prices where the plan is heading</td>
+<td>extrapolation</td>
+</tr>
+<tr>
+<td>the method of chapter 5</td>
+<td><strong>PDHG</strong>, primal-dual hybrid gradient</td>
+</tr>
+<tr>
+<td>the LP solver built on it</td>
+<td><strong>PDLP</strong></td>
+</tr>
+<tr>
+<td>average and start again</td>
+<td><strong>restarting</strong></td>
+</tr>
+<tr>
+<td>a plan that breaks a rule</td>
+<td>primal infeasibility</td>
+</tr>
+<tr>
+<td>a corner of the region</td>
+<td>a <strong>basic</strong> solution</td>
+</tr>
+</tbody>
+</table></div>
+<h2>Running the code</h2>
+<pre><code class="language-bash">make bootstrap    # once, from the repository root
+cd lp-on-gpu &amp;&amp; make verify
+</code></pre>
+<p>There is no GPU in this repository and none is needed. Everything here is about
+the <em>shape</em> of the iteration, which is what determines whether a wide machine
+can be used at all, and that is visible at three variables as clearly as at
+three million. The tests check every claim above against the exact rational
+solver from the duality guide.</p>
+
+</main>
+<footer class="foot">
+  <a href="https://bayzhan8.github.io/Illuminate">Illuminate</a> ·
+  <a href="https://github.com/bayzhan8/Illuminate/tree/main/lp-on-gpu">source and tests</a>
+</footer>
+<script src="../assets/site.js"></script>
+</body>
+</html>
