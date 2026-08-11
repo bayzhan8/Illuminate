@@ -56,6 +56,7 @@ body {
   color: var(--ink);
   background: var(--paper);
   -webkit-font-smoothing: antialiased;
+  overflow-wrap: break-word;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -112,13 +113,27 @@ main { flex: 1 0 auto; }
 .withtoc {
   flex: 1 0 auto;
   display: grid;
-  grid-template-columns: 14rem minmax(0, 42rem);
+  /* min(42rem, 100%), not minmax(0, 42rem): a track whose maximum is a fixed
+     length does not shrink to fit a smaller container, it overflows it. That
+     is what made narrow viewports -- and so browser zoom -- scroll sideways
+     instead of reflowing. */
+  grid-template-columns: 14rem min(42rem, 100%);
   gap: 3.5rem;
   justify-content: center;
   align-items: start;
   padding: 0 1.5rem;
 }
-.withtoc .prose { padding-left: 0; padding-right: 0; max-width: none; }
+/* A grid item defaults to min-width:auto, which means it refuses to shrink
+   below its own content -- so one wide table or code block sets a floor for
+   the whole page and the layout jams instead of reflowing. Overriding it is
+   what lets narrow viewports, and therefore browser zoom, work at all. */
+.withtoc > * { min-width: 0; }
+/* max-width:100% rather than none. The column already gets its width from the
+   grid track, so `none` looks harmless -- but it lets a child that cannot wrap
+   (a code block is `white-space: pre`) push the column out to the width of its
+   longest line and drag the page sideways with it. Capping at the track width
+   makes the code block scroll inside itself, which is what it is for. */
+.withtoc .prose { padding-left: 0; padding-right: 0; max-width: 100%; }
 
 .toc {
   position: sticky;
@@ -162,7 +177,7 @@ main { flex: 1 0 auto; }
 .toc a.current .toc-num { color: var(--plan); }
 
 @media (max-width: 1060px) {
-  .withtoc { grid-template-columns: minmax(0, 42rem); }
+  .withtoc { grid-template-columns: min(42rem, 100%); }
   .toc { display: none; }
 }
 
@@ -483,6 +498,7 @@ select {
 
 .guides { list-style: none; margin: 0; padding: 0; }
 
+.guide > * { min-width: 0; }
 .guide {
   display: grid;
   grid-template-columns: minmax(0, 21rem) minmax(0, 1fr);
