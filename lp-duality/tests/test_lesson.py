@@ -1,0 +1,166 @@
+"""The page and the code have to keep agreeing with each other.
+
+None of this checks mathematics.  It checks the things that rot quietly: a
+number typed into a sentence that the code no longer produces, a figure that
+was renamed, a chapter file that was edited by hand after being generated.
+Those failures are invisible on the page -- it still reads perfectly, it is
+just wrong -- so they need a test or they need luck.
+"""
+
+import re
+import subprocess
+import sys
+from pathlib import Path
+
+import pytest
+
+from lpduality import workshop as w
+
+ROOT = Path(__file__).resolve().parents[1]
+LESSON = ROOT / "lesson.md"
+TEXT = LESSON.read_text()
+IMAGE = re.compile(r"!\[([^\]]*)\]\(([^)]+)\)")
+
+sys.path.insert(0, str(ROOT))
+import build  # noqa: E402
+
+
+# --- figures ---------------------------------------------------------------
+
+def test_every_figure_the_lesson_asks_for_exists():
+    missing = [src for _, src in IMAGE.findall(TEXT) if not (ROOT / src).exists()]
+    assert missing == []
+
+
+def test_every_figure_on_disk_is_actually_used():
+    """A figure nobody looks at is a figure nobody re-renders."""
+    used = {src for _, src in IMAGE.findall(TEXT)}
+    have = {str(p.relative_to(ROOT)) for p in (ROOT / "chapters").rglob("*")
+            if p.suffix in {".png", ".gif"}}
+    assert sorted(have - used) == []
+
+
+def test_every_figure_is_described_for_someone_who_cannot_see_it():
+    thin = [src for alt, src in IMAGE.findall(TEXT) if len(alt.strip()) < 40]
+    assert thin == []
+
+
+# --- the numbers in the prose ----------------------------------------------
+
+def test_the_headline_numbers_are_the_computed_ones():
+    assert w.money(w.BEST_PROFIT) == "$350"
+    assert f"{w.PLAN[0]} tables and {w.PLAN[1]} chairs" == "9 tables and 4 chairs"
+    assert "9 tables and 4 chairs" in TEXT
+    assert "$350" in TEXT
+
+
+def test_the_prices_in_the_prose_are_the_computed_ones():
+    plank, hour, saw = (w.money(p) for p in w.PRICES)
+    assert (plank, hour, saw) == ("$6.25", "$2.50", "$0")
+    assert "$6.25 a plank" in TEXT
+    assert "$2.50 an hour" in TEXT
+
+
+def test_the_stock_table_matches_the_program():
+    for resource in w.RESOURCES:
+        assert resource in TEXT
+    row = "| **in stock** | **44** | **30** | **32** | |"
+    assert row in TEXT
+    assert [int(v) for v in w.PRIMAL.b] == [44, 30, 32]
+
+
+def test_the_recipes_in_the_table_match_the_program():
+    assert w.RECIPE["tables"] == (4, 2, 3)
+    assert w.RECIPE["chairs"] == (2, 3, 1)
+    assert "| a table | 4 | 2 | 3 | $30 |" in TEXT
+    assert "| a chair | 2 | 3 | 1 | $20 |" in TEXT
+
+
+def test_the_spare_saw_time_the_prose_claims_is_the_real_amount():
+    spare = w.PRIMAL.slack(w.SAW, w.PLAN)
+    assert spare == 1
+    assert "31 of the 32 hours of saw time" in TEXT
+
+
+def test_the_weak_duality_worked_example_adds_up():
+    """Chapter 4 quotes three numbers; all three come from the program."""
+    plan, prices = (10, 2), (7, 3, 0)
+    earns = w.PRIMAL.objective(plan)
+    used = sum(p * w.PRIMAL.row_value(i, plan) for i, p in enumerate(prices))
+    whole = sum(p * b for p, b in zip(prices, w.PRIMAL.b))
+    assert (earns, used, whole) == (340, 386, 398)
+    assert earns <= used <= whole
+    for number in ("$340", "$386", "$398"):
+        assert number in TEXT
+
+
+def test_the_price_range_in_the_prose_is_the_computed_one():
+    from fractions import Fraction
+    assert (w.WOOD_FROM, w.WOOD_TO) == (Fraction(20), Fraction(316, 7))
+    assert "20 to 45 ⅐" in TEXT
+    headroom = w.WOOD_TO - w.PRIMAL.b[w.WOOD]
+    assert headroom == Fraction(8, 7)
+    assert "1 ⅐ planks away" in TEXT
+
+
+def test_the_three_slopes_quoted_in_the_table_are_the_computed_ones():
+    """The chapter 8 table shows a column of figures, so it keeps its cents."""
+    slopes = [w.money(s.slope, cents=True) for s in w.WOOD_CURVE]
+    assert slopes == ["$10.00", "$6.25", "$0.00"]
+    plain = TEXT.replace("**", "")   # the middle cell is bold, being the live one
+    for cell in slopes:
+        assert f"| {cell} |" in plain
+
+
+def test_the_impossible_order_is_the_size_the_prose_says():
+    assert "order arrives for 12 tables" in TEXT
+    assert int(w.PRIMAL.b[w.WOOD] / w.RECIPE["tables"][0]) == 11
+    assert "make eleven tables" in TEXT
+
+
+def test_the_random_sample_size_matches_the_figure():
+    import inspect
+
+    import fig05_they_always_meet as fig
+    default = inspect.signature(fig.always_png).parameters["count"].default
+    assert default == 320
+    assert f"{default} more" in TEXT
+    assert f"across all {default}" in TEXT
+
+
+# --- structure -------------------------------------------------------------
+
+def test_the_lesson_splits_into_the_chapters_build_expects():
+    front, chapters, tail = build.split_lesson()
+    assert len(chapters) == len(build.CHAPTERS) == 11
+    assert front.startswith("# Every plan has a price tag")
+    assert tail
+
+
+def test_the_generated_chapter_files_are_up_to_date():
+    """These files are generated. A hand edit is a bug, not a change."""
+    _, chapters, _ = build.split_lesson()
+    stale = []
+    for index, body in enumerate(chapters):
+        path = ROOT / "chapters" / build.CHAPTERS[index][1] / "README.md"
+        if not path.exists() or path.read_text() != build.chapter_markdown(index, body):
+            stale.append(build.CHAPTERS[index][1])
+    assert stale == [], "run: python build.py chapters"
+
+
+def test_every_chapter_folder_has_its_file():
+    for _, folder, _ in build.CHAPTERS:
+        assert (ROOT / "chapters" / folder / "README.md").exists()
+
+
+def test_every_invented_phrase_has_its_real_name():
+    """The glossary is what lets a reader leave and read anything else."""
+    for standard in ("primal", "dual", "weak duality", "strong duality",
+                     "complementary slackness", "shadow price",
+                     "Farkas certificate", "unbounded", "degeneracy"):
+        assert standard in TEXT, f"{standard} is never named"
+
+
+def test_the_lesson_does_not_oversell_the_evidence():
+    """Chapter 5 shows 320 examples of a theorem. It has to say so."""
+    assert "It is not a proof." in TEXT
