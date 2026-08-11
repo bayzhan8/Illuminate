@@ -27,23 +27,23 @@ after the third edit, and it is what lets a reader take the numbers seriously.
 ### 1. Find the example before writing a word
 
 The example is the topic. Pick it by computation, not by taste, and do it
-first — writing prose around an example that turns out not to demonstrate the
-point is the single most expensive mistake available here.
+first. Writing prose around an example that turns out not to demonstrate the
+point is the most expensive mistake available here.
 
 Search for an instance that satisfies every property the story needs, and
 verify it in a throwaway script before committing to it. Things worth
 requiring:
 
-- **small enough to draw** — two variables if there is a region to show, or few
+- **small enough to draw.** Two variables if there is a region to show, or few
   enough rows to print in full
-- **not symmetric** — asymmetry is what gives a phenomenon something to say.
+- **not symmetric.** Asymmetry is what gives a phenomenon something to say.
   The duality topic needs one constraint with slack at the optimum, or
   complementary slackness is a sentence with no picture
-- **the numbers land** — the answer should be exact and quotable, and
-  intermediate quantities should be fractions a reader can hold
-- **the phenomenon actually occurs** — if the chapter claims a bound is too
-  weak, find an instance where rounding the weak bound really does give the
-  wrong answer. Do not assert a gap you have not computed
+- **the numbers land.** The answer should be exact and quotable, with
+  intermediate quantities a reader can hold in their head
+- **the phenomenon actually occurs.** If the chapter claims a bound is too
+  weak, find an instance where rounding it really does give the wrong answer.
+  Never assert a gap you have not computed
 
 Worked precedent: the branch-and-price topic needed an instance where the
 naive relaxation cannot rule out an answer the pattern relaxation can. A search
@@ -58,7 +58,7 @@ you never solve at all if you need to quote a number like "four trillion".
 
 `notes/design.md`, before `lesson.md`. Decide and write down:
 
-- **who it is for** — assume no background and full intelligence. The test of a
+- **who it is for.** Assume no background and full intelligence. The test of a
   paragraph is whether a busy person who last did algebra at school gets
   through it without stopping, and whether a specialist would still call it
   correct
@@ -73,7 +73,7 @@ you never solve at all if you need to quote a number like "four trillion".
 
 ### 3. Write the code, with a second opinion built in
 
-Exact arithmetic throughout — `fractions.Fraction`, never floats. The guides
+Exact arithmetic throughout: `fractions.Fraction`, never floats. The guides
 turn on quantities being *equal*, and in floating point "the gap is zero"
 silently becomes "the gap is under a tolerance", which is a different and much
 weaker sentence.
@@ -106,14 +106,14 @@ Import the house style from `illuminate.draw`. Never set a colour by hand.
 - **blue is a plan / primal, rust is a price / dual**, on every page of every
   topic. That pair was validated with a colour-vision simulator and holds up
   over 20 perceptual units apart under all three common CVD types in both
-  light and dark. Green is a *status* mark only — never a third data series,
+  light and dark. Green is a *status* mark only. Never a third data series,
   and never without a word or tick beside it
 - **animate only where the motion carries the argument.** A converging gap, a
   sweeping objective line, a capacity sliding until its price dies. If a still
   would say the same thing, make a still. Roughly half of each topic's figures
   should be static
-- **every animation pauses on its conclusion** — `animate(..., hold=3.0)`,
-  which the encoder collapses to one long frame at no cost in bytes
+- **every animation pauses on its conclusion.** `animate(..., hold=3.0)`; the
+  encoder collapses the repeats into one long frame at no cost in bytes
 - **a diagram of labelled boxes is not a diagram.** If the graphical content is
   zero, render it as a table: searchable, selectable, legible to a screen
   reader, and no re-render needed when a word changes
@@ -193,22 +193,24 @@ have one home and the paths in `lesson.md` are the paths the site uses.
 
 ## Register
 
-Write like a person who knows the subject and is explaining it to a colleague
-over a table, not like an explainer. Concretely:
+Write like someone who knows the subject explaining it to a colleague across a
+table. Concretely:
 
 - **vary sentence length a lot.** Uniform rhythm is the loudest tell of
   machine-written prose. Follow a long qualified sentence with a three-word one
 - **no formulaic connectives.** Not "Moreover", "Furthermore", "It's worth
   noting that", "Let's dive in", "In conclusion"
-- **avoid the "not just X — it's Y" construction** and the rule-of-three list.
+- **avoid the "not just X, it's Y" construction** and the rule-of-three list.
   Both are addictive and both read as generated
 - **cut sentences that restate the previous sentence.** One idea, said once
 - **be specific rather than enthusiastic.** "It bends at 316/7" beats "the
   results are quite striking"
 - **let the reader draw the conclusion** where the picture already made it
-- **admit things.** "This rule is weak and here is what practice uses instead"
+- **admit things.** "This rule is weak, here is what practice uses instead"
   is worth more than a confident summary
-- watch em-dash density. A few per page, not a few per paragraph
+- **watch em-dash density.** Target under 3 per thousand words. The published
+  lessons run at 0; the first drafts ran at 8. Convert most to full stops, a
+  few to colons or parentheses
 
 ## What not to do
 
