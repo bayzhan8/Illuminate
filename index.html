@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en" data-page="home">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Illuminate — operations research, with pictures that move</title>
+<meta name="description" content="Operations research explained from nothing: animated, interactive, and with every number checked by code you can run.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css">
+<script>
+  /* set before first paint, so a dark-mode reader never sees a cream flash */
+  try {
+    var t = localStorage.getItem("illuminate-theme");
+    document.documentElement.dataset.theme = t ||
+      (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  } catch (e) {}
+</script>
+</head>
+<body>
+<header class="bar">
+  <a class="brand" href="./">ILLUMINATE</a>
+  <button class="toggle" id="theme" type="button" aria-label="Switch colour scheme">DARK</button>
+</header>
+
+<main class="prose">
+  <section class="hero">
+    <p class="kicker">Operations research, from nothing</p>
+    <h1>The good ideas in this field are pictures.<br>They are almost never taught that way.</h1>
+    <p>Optimisation is full of ideas that are genuinely simple once you can see
+    them, and that are usually introduced as a page of algebra with a
+    <em>hence</em> in the middle. This is an attempt to do it the other way
+    round: build the picture first, move it around until it is obvious, and
+    only then say what everyone else calls it.</p>
+    <p>Every number on every page is computed by code in this repository, in
+    exact arithmetic, and re-checked by its tests. Nothing is rounded and
+    nothing is taken on my word — <code>make test</code> and see.</p>
+  </section>
+
+  <section class="topic">
+    <p class="meta">01 · Linear programming duality</p>
+    <h2><a href="lp-duality/">Every plan has a price tag</a></h2>
+    <p>Every planning problem has a second problem hiding inside it, about
+    prices, and solving either one solves both. Eleven chapters, six animations
+    and four things to push around, built from a workshop with three shelves
+    and two products. It ends with what a bottleneck is actually costing you,
+    and why that number has an expiry date.</p>
+    <div class="links">
+      <a href="lp-duality/">Read it</a>
+      <a href="lp-duality/sandbox/">Play with it</a>
+      <a href="https://github.com/bayzhan8/Illuminate/tree/main/lp-duality">Source and tests</a>
+    </div>
+  </section>
+
+  <section class="topic soon">
+    <p class="meta">Next</p>
+    <h2>Coming</h2>
+    <p>Each of these is the duality chapter under load, which is why that one
+    came first.</p>
+    <ul>
+      <li><strong>Simplex against interior point</strong> — walking the corners
+        against cutting through the middle, and why the worst case for one is
+        not the worst case for the other.</li>
+      <li><strong>Branch and bound</strong> — the tree, and what pruning
+        actually prunes.</li>
+      <li><strong>Column generation</strong> — too many options to write down,
+        so let the prices ask for the one you are missing.</li>
+      <li><strong>Dantzig–Wolfe and Benders</strong> — the same idea pointed in
+        the two opposite directions.</li>
+      <li><strong>Branch and cut, branch and price</strong> — what happens when
+        the pieces have to come out whole.</li>
+      <li><strong>Queues and Little's law</strong> — why the wait explodes long
+        before the servers are full.</li>
+    </ul>
+  </section>
+</main>
+
+<footer class="foot">
+  Built by <a href="https://www.bayzhan.com/">Bayzhan Mukatay</a> ·
+  <a href="https://github.com/bayzhan8/Illuminate">github.com/bayzhan8/Illuminate</a>
+</footer>
+<script src="assets/site.js"></script>
+</body>
+</html>
