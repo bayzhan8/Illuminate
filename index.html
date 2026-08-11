@@ -32,6 +32,9 @@
     first and name it afterwards. Each one is a worked example you can drag
     around, and every number in the prose is produced by the code beside it, in
     exact rational arithmetic, checked by tests.</p>
+    <p class="standfirst">They are numbered in the order they build on each
+    other. The first five are one chain and are best read in sequence; the
+    last stands on its own.</p>
   </section>
 
   <ol class="guides">
@@ -53,70 +56,12 @@
         </p>
       </div>
     </li>
-
-    <li class="guide">
-      <a class="guide-figure" href="branch-and-price/" tabindex="-1" aria-hidden="true">
-        <img src="assets/preview-branch-and-price.png" alt="" loading="lazy">
-      </a>
-      <div class="guide-body">
-        <p class="meta">02 · Column generation · 10 chapters</p>
-        <h2><a href="branch-and-price/">Solving a model you never wrote down</a></h2>
-        <p>A cutting-stock model with four trillion variables that fits on a
-        napkin. An option the prices fail to cover is a missing variable, so it
-        can be solved for rather than searched for. Ends on branch-and-price,
-        and the two bugs that produced 476 confident wrong answers before the
-        tests found them.</p>
-        <p class="guide-links">
-          <a href="branch-and-price/">Read</a>
-          <a href="branch-and-price/sandbox/">Play</a>
-          <a href="https://github.com/bayzhan8/Illuminate/tree/main/branch-and-price">Source</a>
-        </p>
-      </div>
-    </li>
-    <li class="guide">
-      <a class="guide-figure" href="queues/" tabindex="-1" aria-hidden="true">
-        <img src="assets/preview-queues.png" alt="" loading="lazy">
-      </a>
-      <div class="guide-body">
-        <p class="meta">03 · Queues and Little's law · 9 chapters</p>
-        <h2><a href="queues/">The wait is not about the speed</a></h2>
-        <p>A clerk who serves a customer in six minutes will hand someone a
-        wait of an hour without ever slowing down. Little's law as one region
-        measured twice, why variability rather than utilisation does the
-        damage, and a 95% confidence interval that contains the true answer 9%
-        of the time.</p>
-        <p class="guide-links">
-          <a href="queues/">Read</a>
-          <a href="queues/sandbox/">Play</a>
-          <a href="https://github.com/bayzhan8/Illuminate/tree/main/queues">Source</a>
-        </p>
-      </div>
-    </li>
-    <li class="guide">
-      <a class="guide-figure" href="lp-on-gpu/" tabindex="-1" aria-hidden="true">
-        <img src="assets/preview-lp-on-gpu.png" alt="" loading="lazy">
-      </a>
-      <div class="guide-body">
-        <p class="meta">04 · First-order methods · 11 chapters</p>
-        <h2><a href="lp-on-gpu/">The machine got wider, not faster</a></h2>
-        <p>Two runs on the same small problem, from the same start, with the
-        same step sizes, differing by one term in one line. One lands on the
-        right answer. The other swings between $0 and $753 forever. Why
-        linear programming had to change algorithms when machines started
-        getting wider instead of faster.</p>
-        <p class="guide-links">
-          <a href="lp-on-gpu/">Read</a>
-          <a href="lp-on-gpu/sandbox/">Play</a>
-          <a href="https://github.com/bayzhan8/Illuminate/tree/main/lp-on-gpu">Source</a>
-        </p>
-      </div>
-    </li>
     <li class="guide">
       <a class="guide-figure" href="corners-vs-centre/" tabindex="-1" aria-hidden="true">
         <img src="assets/preview-corners-vs-centre.png" alt="" loading="lazy">
       </a>
       <div class="guide-body">
-        <p class="meta">05 · Simplex and interior point · 11 chapters</p>
+        <p class="meta">02 · Simplex and interior point · 11 chapters</p>
         <h2><a href="corners-vs-centre/">Along the edge, or through the middle</a></h2>
         <p>In 1972 two mathematicians built a shape to embarrass the standard
         method for linear programming, and it works: on a squashed cube in ten
@@ -131,6 +76,82 @@
         </p>
       </div>
     </li>
+    <li class="guide">
+      <a class="guide-figure" href="lp-on-gpu/" tabindex="-1" aria-hidden="true">
+        <img src="assets/preview-lp-on-gpu.png" alt="" loading="lazy">
+      </a>
+      <div class="guide-body">
+        <p class="meta">03 · First-order methods · 11 chapters</p>
+        <h2><a href="lp-on-gpu/">The machine got wider, not faster</a></h2>
+        <p>Two runs on the same small problem, from the same start, with the
+        same step sizes, differing by one term in one line. One lands on the
+        right answer. The other swings between $0 and $753 forever. Why
+        linear programming had to change algorithms when machines started
+        getting wider instead of faster.</p>
+        <p class="guide-links">
+          <a href="lp-on-gpu/">Read</a>
+          <a href="lp-on-gpu/sandbox/">Play</a>
+          <a href="https://github.com/bayzhan8/Illuminate/tree/main/lp-on-gpu">Source</a>
+        </p>
+      </div>
+    </li>
+    <li class="guide">
+      <a class="guide-figure" href="branch-and-price/" tabindex="-1" aria-hidden="true">
+        <img src="assets/preview-branch-and-price.png" alt="" loading="lazy">
+      </a>
+      <div class="guide-body">
+        <p class="meta">04 · Column generation · 10 chapters</p>
+        <h2><a href="branch-and-price/">Solving a model you never wrote down</a></h2>
+        <p>A cutting-stock model with four trillion variables that fits on a
+        napkin. An option the prices fail to cover is a missing variable, so it
+        can be solved for rather than searched for. Ends on branch-and-price,
+        and the two bugs that produced 476 confident wrong answers before the
+        tests found them.</p>
+        <p class="guide-links">
+          <a href="branch-and-price/">Read</a>
+          <a href="branch-and-price/sandbox/">Play</a>
+          <a href="https://github.com/bayzhan8/Illuminate/tree/main/branch-and-price">Source</a>
+        </p>
+      </div>
+    </li>
+    <li class="guide">
+      <a class="guide-figure" href="solvers/" tabindex="-1" aria-hidden="true">
+        <img src="assets/preview-solvers.png" alt="" loading="lazy">
+      </a>
+      <div class="guide-body">
+        <p class="meta">05 · What is inside a solver · 11 chapters</p>
+        <h2><a href="solvers/">What solvers actually do</a></h2>
+        <p>Hand a solver a twenty-row model and it deletes thirteen of the rows
+        before any algorithm runs, and settles one of the decisions by
+        arithmetic rather than by searching. What presolve is, why it is where
+        the gap opens, and which solvers you can actually deploy without a
+        licence server ruining your week.</p>
+        <p class="guide-links">
+          <a href="solvers/">Read</a>
+          <a href="solvers/sandbox/">Play</a>
+          <a href="https://github.com/bayzhan8/Illuminate/tree/main/solvers">Source</a>
+        </p>
+      </div>
+    </li>
+    <li class="guide">
+      <a class="guide-figure" href="queues/" tabindex="-1" aria-hidden="true">
+        <img src="assets/preview-queues.png" alt="" loading="lazy">
+      </a>
+      <div class="guide-body">
+        <p class="meta">06 · Queues and Little's law · 9 chapters · standalone</p>
+        <h2><a href="queues/">The wait is not about the speed</a></h2>
+        <p>A clerk who serves a customer in six minutes will hand someone a
+        wait of an hour without ever slowing down. Little's law as one region
+        measured twice, why variability rather than utilisation does the
+        damage, and a 95% confidence interval that contains the true answer 9%
+        of the time.</p>
+        <p class="guide-links">
+          <a href="queues/">Read</a>
+          <a href="queues/sandbox/">Play</a>
+          <a href="https://github.com/bayzhan8/Illuminate/tree/main/queues">Source</a>
+        </p>
+      </div>
+    </li>
   </ol>
 
   <section class="queue">
@@ -138,10 +159,6 @@
     <dl>
       <dt>Branch and bound, branch and cut</dt>
       <dd>The tree, and what pruning actually prunes.</dd>
-
-      <dt>What solvers actually do</dt>
-      <dd>Gurobi against HiGHS against cuOpt, the modelling layer sitting above
-      them, and why presolve is where the gap opens.</dd>
 
       <dt>Benders decomposition</dt>
       <dd>Column generation pointed the other way, producing rows instead of

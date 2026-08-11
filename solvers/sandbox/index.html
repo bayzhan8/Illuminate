@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en" data-page="sandbox-index">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Things to play with — Illuminate</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/site.css">
+<script>
+  try {
+    var t = localStorage.getItem("illuminate-theme");
+    document.documentElement.dataset.theme = t ||
+      (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  } catch (e) {}
+</script>
+</head>
+<body>
+<header class="bar">
+  <a class="brand" href="../../">ILLUMINATE</a>
+  <button class="toggle" id="theme" type="button" aria-label="Switch colour scheme">DARK</button>
+</header>
+<main class="prose">
+<h1>Things to play with</h1>
+<p>1 pages from this guide, each one a chapter you can push around. They
+run entirely in the page.</p>
+<ul class="chapters"><li><a href="03.html"><span class="num">3</span>Watch a decision get made without a search</a><span class="sub">The link row says production cannot exceed the big-M constant times the setup switch. Demand pushes production up from below. Somewhere in between, the switch stops being a decision.</span></li></ul>
+<p><a href="../index.html">← back to the guide</a></p>
+</main>
+<script src="../../assets/site.js"></script>
+</body>
+</html>

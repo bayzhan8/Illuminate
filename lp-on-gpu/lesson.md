@@ -152,8 +152,8 @@ None of this makes simplex a bad method. It is an extremely good method, and on
 most problems it is still the one to use. It is simply the wrong shape for a
 machine whose advantage is doing ten thousand independent things at once.
 
-*(The natural follow-up, why interior point methods are a different shape
-again and where each one wins, is its own guide and is coming.)*
+*(Why interior point methods are a different shape again, and where each one
+wins, is [the guide before this one](../corners-vs-centre/).)*
 
 > **In one sentence.** Simplex is a chain of dependent decisions, so its speed
 > comes from taking few steps rather than from taking them in parallel.
