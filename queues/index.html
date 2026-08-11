@@ -1,0 +1,514 @@
+<!doctype html>
+<html lang="en" data-page="lesson">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The wait is not about the speed — queues and Little&#x27;s law</title>
+<meta name="description" content="Queueing theory and Little&#x27;s law built from one clerk and a six-minute job, with every number checked by code.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>
+  try {
+    var t = localStorage.getItem("illuminate-theme");
+    document.documentElement.dataset.theme = t ||
+      (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  } catch (e) {}
+</script>
+</head>
+<body>
+<header class="bar">
+  <a class="brand" href="../">ILLUMINATE</a>
+  <button class="toggle" id="theme" type="button" aria-label="Switch colour scheme">DARK</button>
+</header>
+<main class="prose">
+<h1>The wait is not about the speed</h1>
+<p><strong>Queues and Little's law, built from one clerk and a six-minute job.</strong></p>
+<p>A clerk who serves a customer in six minutes will, at some point, hand someone
+a wait of an hour. Nothing about the clerk changed. Nothing about the job
+changed. This guide is about what did.</p>
+<p>Two ideas carry the whole thing. The first is an accounting identity so plain
+it looks like it cannot be worth stating, and so general it applies to
+warehouses, hospitals and software teams that contain no queue at all. The
+second is that the thing which actually generates waiting is not how busy you
+are. It is how <em>irregular</em> you are, and those are different dials.</p>
+<p>The numbers below come from the code in this folder, in exact rationals,
+asserted by its tests.</p>
+<h2 id="ch0"><span class="num">0</span>What this is</h2>
+<figure class="plate"><img src="chapters/00-what-this-is/hero.gif" alt="The average wait climbing as the clerk gets busier: flat and unremarkable
+most of the way, then bending upward and running off the top of the frame as
+the busy fraction approaches one." loading="lazy"></figure>
+<p>One clerk. Six minutes a customer, always. The only thing changing is how
+often people arrive.</p>
+<p>At half busy, the wait is six minutes. At 90% busy, it is 54 minutes. At 99%
+busy, it is very nearly ten hours.</p>
+<p>The clerk has not slowed down at any point. What ran out was idleness, and
+idleness turns out to be the thing that was absorbing all the irregularity.</p>
+<h2 id="ch1"><span class="num">1</span>The desk</h2>
+<p>One clerk, serving on average ten customers an hour, so <strong>six minutes</strong> a
+customer. People arrive at random.</p>
+<p>Three quantities, and it matters which is which:</p>
+<div class="overflow-x"><table>
+<thead>
+<tr>
+<th></th>
+<th>what it means</th>
+<th>who would notice</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>L</strong></td>
+<td>how many people are here, on average</td>
+<td>someone glancing at the room</td>
+</tr>
+<tr>
+<td><strong>W</strong></td>
+<td>how long a person is here, on average</td>
+<td>the person</td>
+</tr>
+<tr>
+<td><strong>λ</strong></td>
+<td>how many people arrive per hour</td>
+<td>the door</td>
+</tr>
+</tbody>
+</table></div>
+<p>These are averages of different things. <code>L</code> averages over <em>time</em>: take a
+photograph at random moments and count heads. <code>W</code> averages over <em>people</em>: ask
+each one how long they were there. Nobody computing <code>L</code> ever asks anyone a
+question, and nobody computing <code>W</code> ever looks at a clock on the wall.</p>
+<p>One more quantity worth naming now, because it turns out to be the same idea:
+<strong>utilisation</strong>, the fraction of the time the clerk is busy. At ten customers
+an hour arriving and six minutes each, the clerk is busy 90% of the time.</p>
+<h2 id="ch2"><span class="num">2</span>Draw a box</h2>
+<p>Here is the whole theorem, and it contains no probability.</p>
+<p>Draw two staircases. One steps up whenever somebody arrives. The other steps
+up whenever somebody leaves. The gap between them, at any moment, is the number
+of people in the room.</p>
+<figure class="plate"><img src="chapters/02-draw-a-box/region.png" alt="Two staircases, arrivals above and departures below, with the region between
+them shaded. Dashed rectangles show that the region is also exactly tiled by
+one horizontal bar per customer." loading="lazy"></figure>
+<p>Now measure the shaded region between them, twice.</p>
+<p><strong>Slice it vertically.</strong> Each thin strip is <em>how many people were here</em> during
+a moment, so adding the strips up gives person-hours as the manager would
+count them: heads, repeatedly, over time.</p>
+<p><strong>Slice it horizontally.</strong> Each bar is one customer, running from their arrival
+to their departure, so its length is <em>how long that person stayed</em>. Adding the
+bars up gives person-hours as the customers would count them: one number each,
+no clock.</p>
+<figure class="plate"><img src="chapters/02-draw-a-box/two-counts.gif" alt="The same region filled first by vertical strips and then rebuilt from
+horizontal bars, with a running total that lands on the same number both
+times." loading="lazy"></figure>
+<p>Same region. Both totals are <strong>11.60 person-hours</strong> for the eight customers
+drawn. They are not close. They are the same number, because it is the same
+shape measured two ways.</p>
+<p>Divide that shared area by the elapsed time and you get the average number
+present. Divide it by the number of customers and you get the average time each
+one spent. So the two averages differ by exactly the factor of customers per
+unit time, which is the arrival rate:</p>
+<blockquote class="aside">
+<p><strong>L = λW</strong></p>
+</blockquote>
+<p>That is <strong>Little's law</strong>. It is an identity about a shaded region, and the
+argument above is the entire proof.</p>
+<p>It also applies to any box you care to draw. Draw the box around the <em>waiting
+line only</em>, excluding the clerk, and it says the number of people queueing
+equals the arrival rate times the time spent queueing. Draw the box around the
+<em>clerk alone</em>, a box holding zero people or one, and its average occupancy is
+the fraction of time the clerk is busy. So:</p>
+<blockquote class="aside">
+<p><strong>utilisation = arrival rate × service time</strong></p>
+</blockquote>
+<p>Utilisation is not a separate concept. It is Little's law applied to the
+smallest interesting box in the building.</p>
+<h2 id="ch3"><span class="num">3</span>What the law does not need</h2>
+<p>The proof used a picture of eight customers. It did not use a distribution, so
+the list of things Little's law does not require is unusually long, and worth
+having explicitly:</p>
+<ul>
+<li><strong>No distributional assumptions.</strong> Not Poisson arrivals, not exponential
+service, not anything. The staircases were drawn by hand.</li>
+<li><strong>No independence.</strong> Arrivals may be correlated with each other and with how
+long service takes.</li>
+<li><strong>No queue discipline.</strong> First come first served, last come first served,
+priority, random: the horizontal bars can be reordered freely and the region
+is unchanged. <em>(The figure above serves in order only so that the bars tile
+the region visibly; the identity does not care.)</em></li>
+<li><strong>No steady state.</strong> No stationarity, no equilibrium, no Markov property.
+Only the long-run averages need to settle.</li>
+<li><strong>No single server, and no server at all.</strong> The box may contain a hundred
+clerks, or a warehouse, or an entire hospital.</li>
+</ul>
+<p>What it <em>does</em> need is small and mostly about bookkeeping. λ has to count
+entries to <em>the box you drew</em>. If people give up and leave the line, they are
+not arrivals to the part of the system you are measuring. <code>W</code> has to be
+measured across the same boundary as <code>L</code>; mixing &quot;time spent queueing&quot; with
+&quot;number of people in the building&quot; is the most common way to get a wrong answer
+from a correct theorem. And everyone who enters has to eventually leave.</p>
+<h2 id="ch4"><span class="num">4</span>The wait explodes long before the clerk is full</h2>
+<p>Little's law relates the averages. It does not say how big they are. For that
+you need to know something about the randomness, and with random arrivals and
+random service times the answer is:</p>
+<blockquote class="aside">
+<p><strong>wait = service time × 1/(fraction of time idle)</strong></p>
+</blockquote>
+<figure class="plate"><img src="chapters/04-the-wait-explodes/explode.png" alt="The average wait against utilisation: barely moving up to about 70%, then
+bending sharply and going vertical as the idle fraction approaches
+zero." loading="lazy"></figure>
+<div class="overflow-x"><table>
+<thead>
+<tr>
+<th>arrivals per hour</th>
+<th>busy</th>
+<th>people present</th>
+<th>wait before service</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>5</td>
+<td>50%</td>
+<td>1</td>
+<td><strong>6 min</strong></td>
+</tr>
+<tr>
+<td>8</td>
+<td>80%</td>
+<td>4</td>
+<td>24 min</td>
+</tr>
+<tr>
+<td>9</td>
+<td>90%</td>
+<td>9</td>
+<td><strong>54 min</strong></td>
+</tr>
+<tr>
+<td>9.5</td>
+<td>95%</td>
+<td>19</td>
+<td>114 min</td>
+</tr>
+<tr>
+<td>9.9</td>
+<td>99%</td>
+<td>99</td>
+<td><strong>594 min</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>Read the arithmetic between the rows, because it is the whole point:</p>
+<ul>
+<li><strong>5 to 9 customers an hour.</strong> You added 80% more work. The wait went up
+<strong>nine times</strong>.</li>
+<li><strong>9 to 9.5.</strong> You added 5.6% more work. The wait <strong>doubled</strong>.</li>
+<li><strong>9.5 to 9.9.</strong> You added 4.2% more work. The wait went up <strong>five times</strong>.</li>
+</ul>
+<p>The multiplier is one over the <em>idle</em> fraction, so what is being consumed as
+you approach saturation is not capacity but slack. At 99% busy, the last one
+percent of the clerk's time is carrying all of the queue.</p>
+<p>This is also why a dashboard that reports utilisation and calls 97% green is
+reporting the one number that cannot go bad. Utilisation is bounded above by
+one. The wait is bounded by nothing.</p>
+<h2 id="ch5"><span class="num">5</span>It is not the utilisation, it is the variability</h2>
+<p>Here is the part that changes what you would actually do.</p>
+<p>Take the desk at 90% busy, where people wait 54 minutes. Change nothing about
+the speed: the clerk still averages six minutes a customer, still serves ten an
+hour, still busy exactly 90% of the time. Only make the six minutes <em>reliable</em>
+so that every customer takes exactly six minutes, no more and no less.</p>
+<p>The wait falls to <strong>27 minutes</strong>. Exactly half.</p>
+<figure class="plate"><img src="chapters/05-variance-not-utilisation/variance.png" alt="Left, the wait at 90% busy for five different levels of service variability,
+from 27 minutes when every job is identical to 702 minutes when a few are
+enormously longer. Right, two curves against utilisation, the constant-service
+one exactly half the variable one at every
+point." loading="lazy"></figure>
+<p>Not roughly half. Half at every utilisation, exactly. And the ladder continues
+in the other direction:</p>
+<div class="overflow-x"><table>
+<thead>
+<tr>
+<th>service times are</th>
+<th>wait at 90% busy</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>always exactly 6 minutes</td>
+<td><strong>27 min</strong></td>
+</tr>
+<tr>
+<td>mildly variable</td>
+<td>40.5 min</td>
+</tr>
+<tr>
+<td>exponential (the textbook case)</td>
+<td><strong>54 min</strong></td>
+</tr>
+<tr>
+<td>some customers much longer</td>
+<td>135 min</td>
+</tr>
+<tr>
+<td>a few enormously longer</td>
+<td><strong>702 min</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>Same clerk. Same average service time. Same 90% utilisation. A <strong>twenty-six
+fold</strong> spread in how long people wait.</p>
+<p>The reason is worth knowing, because it is not obvious. When you arrive and
+someone is already being served, you wait out the <em>remainder</em> of their job.
+A random moment is more likely to land inside a long job than a short one,
+simply because long jobs occupy more of the timeline. So the job you are stuck
+behind is not an average job. It is biased toward the long ones, and the
+strength of that bias is exactly the variability of the service times.</p>
+<p>Which gives three separate dials, and it is a genuine design choice which to
+turn:</p>
+<blockquote class="aside">
+<p><strong>wait = (utilisation dial) × (variability dial) × (how long the job takes)</strong></p>
+</blockquote>
+<p>Cutting variability in half does the same thing as a large capacity increase,
+and is frequently cheaper. &quot;Reduce variation&quot; sounds like a slogan. It is
+arithmetic.</p>
+<p><strong><a href="https://bayzhan8.github.io/Illuminate/queues/sandbox/05.html">Try it yourself →</a></strong>
+Move utilisation and variability independently and watch which one costs more.</p>
+<h2 id="ch6"><span class="num">6</span>Two clerks, arranged two ways</h2>
+<p>Two clerks, the same total work. Either two separate lines, one per clerk, or a
+single line feeding whichever clerk frees up first. Identical staff, identical
+capacity, identical utilisation.</p>
+<figure class="plate"><img src="chapters/06-two-clerks/pooling.png" alt="Left, how many times shorter the single-line wait is, as a function of how
+busy the clerks are: over three times better when quiet, falling toward twice
+as good when busy. Right, a case where dedicating a desk to each job type beats
+pooling by a factor of 1.5." loading="lazy"></figure>
+<p>At 90% busy: <strong>54 minutes</strong> in separate lines, <strong>25.6 minutes</strong> in one line.
+Twice as good, for free.</p>
+<p>At 45% busy: <strong>4.9 minutes</strong> against <strong>1.5 minutes</strong>. Over three times better.</p>
+<p>Note which way round that goes, because most people guess the opposite.
+<strong>Pooling helps most when you are quiet</strong>, and its advantage shrinks toward a
+factor of two as you get busy. The mechanism is not extra capacity; there
+isn't any. It is the elimination of the situation where one clerk sits idle
+while somebody waits in the other line. When you are nearly saturated, that
+situation is rare anyway, so there is less of it to eliminate.</p>
+<h3>When pooling is the wrong answer</h3>
+<p>Suppose the work is not all alike. Quick jobs take an hour and arrive often;
+slow jobs take ten hours and arrive rarely. Give each type its own desk, and
+each desk runs at 80% busy. Or pool them into one line served by a desk of
+double speed, at identical total capacity and identical utilisation.</p>
+<div class="overflow-x"><table>
+<thead>
+<tr>
+<th></th>
+<th>average wait</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>a desk for quick jobs, a desk for slow ones</td>
+<td><strong>3.64 hours</strong></td>
+</tr>
+<tr>
+<td>one line, one desk of double speed</td>
+<td><strong>5.50 hours</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>Pooling is <strong>1.5 times worse</strong>. Nothing was taken away; the arrangement
+alone did it. Putting everything in one line means a one-hour job can arrive behind a
+ten-hour job and wait for it, and chapter 5 already told us what happens when
+you increase the variability of what people are stuck behind.</p>
+<p>Pooling raises the number of servers, which helps, and raises the variability
+of the queue everyone is standing in, which hurts. Usually the first wins. When
+the jobs are wildly different sizes, the second does, which is why hospitals
+have a separate minor injuries stream and supermarkets have a basket-only till.</p>
+<p><strong><a href="https://bayzhan8.github.io/Illuminate/queues/sandbox/06.html">Try it yourself →</a></strong>
+Add clerks and watch the single line pull ahead, then make them busier and
+watch the gap close again.</p>
+<h2 id="ch7"><span class="num">7</span>Measuring it is harder than computing it</h2>
+<p>If you did not believe any of the above, the obvious move is to measure your
+own queue. This chapter is about why that is much harder than it looks.</p>
+<p>Run a simulated desk at 90% busy and track both averages as they accumulate:
+counting heads over time and dividing by the arrival rate, against asking each
+customer and averaging.</p>
+<figure class="plate"><img src="chapters/07-measuring-is-harder/measuring.png" alt="Left, two estimates of the average time in the system as a run proceeds, one
+riding exactly on top of the other, both wandering between 44 and 60 minutes
+over three hundred thousand customers. Right, a nominal 95% confidence interval
+covering the true answer 9% of the time when it assumes independence, and 96%
+when it does not." loading="lazy"></figure>
+<p>Two things in that picture, and they point in opposite directions.</p>
+<p><strong>Little's law is satisfied from almost the first customer.</strong> The two curves
+sit on top of each other the whole way. That is the identity of chapter 2
+doing its work: over a window that starts and ends with an empty room, the
+agreement is exact to fourteen decimal places, with no assumptions and no limit
+taken.</p>
+<p><strong>And both of them are wrong for a very long time.</strong> After three hundred
+thousand customers the estimate is still wandering around in the fifties for a
+true answer of sixty. Your simulation satisfying <code>L = λW</code> tells you nothing
+whatsoever about whether it has converged. It was never going to fail that
+check.</p>
+<p>Then the part that should worry anyone who has ever reported a simulation
+result. Take the ordinary 95% confidence interval, the one every statistics course
+teaches, the standard deviation over the square root of the sample size, and
+apply it to a million measured waits. Repeat the whole experiment three
+hundred times.</p>
+<p>It contains the true answer <strong>9% of the time</strong>. It is about twenty times
+too narrow.</p>
+<p>The reason is that consecutive waits in a queue are not independent
+observations, and it is not close. One long wait makes the next one long, and
+at 90% busy roughly four hundred consecutive customers behave as a single
+observation. A million measurements are worth about two and a half thousand.
+The square root of four hundred is twenty, which is exactly the factor by which
+the interval is wrong.</p>
+<p>Cutting the run into ten large blocks and treating the block averages as the
+observations restores it: <strong>96% coverage</strong>, with an honest interval more than twenty
+times wider than the confident, wrong one.</p>
+<p>The moral is not that simulation is useless. It is that near saturation, the
+formula is not the approximation. The measurement is.</p>
+<h2 id="ch8"><span class="num">8</span>The same law somewhere else entirely</h2>
+<p>Little's law says nothing about queues. It says something about boxes with
+things going in and out. Rename the three letters:</p>
+<div class="overflow-x"><table>
+<thead>
+<tr>
+<th></th>
+<th>L</th>
+<th>λ</th>
+<th>W</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>a queue</td>
+<td>customers present</td>
+<td>arrivals per hour</td>
+<td>time in the system</td>
+</tr>
+<tr>
+<td><strong>inventory</strong></td>
+<td>stock on hand</td>
+<td>throughput</td>
+<td>days of supply</td>
+</tr>
+<tr>
+<td><strong>a factory</strong></td>
+<td>work in progress</td>
+<td>production rate</td>
+<td>cycle time</td>
+</tr>
+<tr>
+<td><strong>a kanban board</strong></td>
+<td>items in progress</td>
+<td>delivery rate</td>
+<td>lead time</td>
+</tr>
+<tr>
+<td><strong>a hospital ward</strong></td>
+<td>occupied beds</td>
+<td>admissions per day</td>
+<td>length of stay</td>
+</tr>
+<tr>
+<td><strong>a company</strong></td>
+<td>employees</td>
+<td>hires per year</td>
+<td>average tenure</td>
+</tr>
+</tbody>
+</table></div>
+<p>Each row is the same theorem. Two are worth spelling out.</p>
+<p><strong>A WIP limit is a lead-time limit.</strong> A team finishing 12 items a week with 6
+in progress has a lead time of 6/12 = half a week. Raise the limit to 18 &quot;so
+nobody is blocked&quot; and throughput does not move, being set by the bottleneck
+rather than by how much you shove in, so the lead time becomes 18/12, a week
+and a half. It tripled, and nothing else about the team changed. This is the entire
+theoretical content of a kanban limit, and of CONWIP before it.</p>
+<p><strong>Safety stock is measured in time, whether you like it or not.</strong> A distributor
+moving $100,000 of goods a day and holding $9M of inventory has, by Little's
+law, 90 days of supply. Add $3M of stock to improve service and you have not
+bought service; you have bought 30 more days of age on every unit. Obsolescence
+and markdown scale with <code>W</code>, and you just increased it by a third.</p>
+<p>Neither of those needed a demand distribution, a lead-time model, or an
+independence assumption. That is why this particular result survives contact
+with reality when most inventory theory does not.</p>
+<h2>What the plain words are really called</h2>
+<div class="overflow-x"><table>
+<thead>
+<tr>
+<th>this guide says</th>
+<th>everyone else says</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>how many are here, on average</td>
+<td><strong>L</strong>, the time-average number in system</td>
+</tr>
+<tr>
+<td>how long a person is here</td>
+<td><strong>W</strong>, the customer-average sojourn time</td>
+</tr>
+<tr>
+<td>L = λW</td>
+<td><strong>Little's law</strong></td>
+</tr>
+<tr>
+<td>fraction of time the clerk is busy</td>
+<td>utilisation, <strong>ρ</strong></td>
+</tr>
+<tr>
+<td>one over the idle fraction</td>
+<td>the congestion multiplier, 1/(1−ρ)</td>
+</tr>
+<tr>
+<td>random arrivals, random service, one clerk</td>
+<td><strong>M/M/1</strong></td>
+</tr>
+<tr>
+<td>every job takes exactly the same time</td>
+<td><strong>M/D/1</strong></td>
+</tr>
+<tr>
+<td>the variability dial</td>
+<td>the squared coefficient of variation, <strong>c²</strong></td>
+</tr>
+<tr>
+<td>the wait formula for any service distribution</td>
+<td>the <strong>Pollaczek–Khinchine</strong> formula</td>
+</tr>
+<tr>
+<td>the three-dial version</td>
+<td><strong>Kingman's</strong> approximation</td>
+</tr>
+<tr>
+<td>one line, several clerks</td>
+<td><strong>M/M/c</strong>; the wait probability is <strong>Erlang C</strong></td>
+</tr>
+<tr>
+<td>cutting a run into blocks to get an honest interval</td>
+<td>the <strong>batch means</strong> method</td>
+</tr>
+</tbody>
+</table></div>
+<h2>Further reading</h2>
+<p>Ross's <em>Introduction to Probability Models</em> for the derivations, Harchol-Balter's
+<em>Performance Modeling and Design of Computer Systems</em> for the many-server and
+job-size-variability material, and Little's own 50th-anniversary retrospective
+for how far the identity reaches. The sample-path proof in chapter 2 follows
+Stidham's 1974 version, which is the one that needs no probability.</p>
+<h2>Running the code</h2>
+<pre><code class="language-bash">make bootstrap    # once, from the repository root
+cd queues &amp;&amp; make verify
+</code></pre>
+<p>The formulas are exact rationals, so &quot;exactly half&quot; in chapter 5 means exactly
+half. The simulation shares no code with the formulas, which is what lets the
+tests use each to check the other.</p>
+
+</main>
+<footer class="foot">
+  <a href="https://bayzhan8.github.io/Illuminate">Illuminate</a> ·
+  <a href="https://github.com/bayzhan8/Illuminate/tree/main/queues">source and tests</a>
+</footer>
+<script src="../assets/site.js"></script>
+</body>
+</html>
