@@ -33,6 +33,10 @@ Neither of those needed a demand distribution, a lead-time model, or an
 independence assumption. That is why this particular result survives contact
 with reality when most inventory theory does not.
 
+> **In one sentence.** Anything with a boundary, an inflow and an outflow obeys
+> the same identity, which is why a WIP limit and a days-of-supply figure are
+> the same statement twice.
+
 ## What the plain words are really called
 
 | this guide says | everyone else says |

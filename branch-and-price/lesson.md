@@ -10,6 +10,11 @@ every option prove no plan beats your number. Run that backwards and it
 generates. An option the prices fail to cover is a missing variable, and you
 can solve for it directly instead of hunting for it.
 
+**The plan.** Chapters 1 to 3 set up cutting stock and show that the obvious
+model is too weak while the good model is too big to write down. Chapters 5 to
+7 are the loop that solves it anyway. Chapter 8 puts the loop inside a search
+tree, and confesses to two bugs that cost this repository real answers.
+
 Numbers below come from the code in this folder, in exact rationals, asserted
 by its tests.
 
@@ -21,19 +26,22 @@ by its tests.
 blue bar pushes past six to six and a half, and the answer lands on
 seven.](chapters/00-what-this-is/hero.gif)
 
-An order has to be cut from standard boards, and the question is how many
-boards it takes.
+An order has to be cut from standard boards. How many boards does it take?
 
-The obvious model, relaxed, proves you need at least **5.44** boards. So six
-might be enough; the model cannot say otherwise.
+Model it the obvious way, relax it, and it proves you need at least **5.44**
+boards. So six might be enough. The model cannot say otherwise.
 
-A different model of the *same order*, relaxed the same way, proves you need at
-least **6.5**. Six is now impossible. And seven boards can be cut, so seven is
-the answer, proved.
+Now model the *same order* differently, relax it the same way, and it proves
+you need at least **6.5**. Six is now impossible.
 
-The second model has one variable for every way of cutting a board, which for a
-real order is a few trillion variables. This guide is about why that model is
+Seven boards can be cut. So seven is the answer, proved.
+
+The second model has one variable for every way of cutting a board, which for
+a real order is a few trillion variables. This guide is about why that model is
 so much stronger, and how it gets solved without ever being written down.
+
+> **In one sentence.** Two models of the same order, both relaxed the same way,
+> and only one of them can rule out six boards.
 
 ---
 
@@ -64,6 +72,9 @@ foot pieces, with the wasted end hatched.](chapters/01-the-order/patterns.png)
 Six is a small enough number to print, which is exactly why this is the order
 to learn on. Chapter 4 is where that stops being true.
 
+> **In one sentence.** A pattern is one way of cutting one board, and the
+> decision to be made is how many boards to cut with each.
+
 ---
 
 ## 2 · The obvious model, and why it is too weak
@@ -84,8 +95,11 @@ It is the answer you would get if boards were *liquid*. Round it up and six
 boards might do.
 
 Six boards will not do. The relaxation cannot see it, because the fact that
-makes it impossible (a 10-foot piece sits on one board, whole) is precisely
+makes it impossible — a 10-foot piece sits on one board, whole — is precisely
 what was relaxed away.
+
+> **In one sentence.** Relaxing the obvious model throws away the very thing
+> that makes the problem hard, so its bound is far too low.
 
 ---
 
@@ -118,6 +132,12 @@ patterns cannot un-decide it. What remains to relax does far less harm.
 Here the second relaxation settles the question by itself, which is the reason
 to put up with everything that follows.
 
+*(The standard name for this reformulation is **Dantzig–Wolfe decomposition**.
+Chapter 9 comes back to it; for now the idea is all you need.)*
+
+> **In one sentence.** Deciding in whole patterns rather than in individual
+> pieces absorbs the integrality, so relaxing what is left costs much less.
+
 ---
 
 ## 4 · Too many to write down
@@ -139,16 +159,21 @@ Almost all of those variables are worthless. A good answer uses a handful of
 patterns and leaves the rest at zero. The difficulty is not the count. It is
 that you cannot tell which handful matters until the thing is solved.
 
+> **In one sentence.** The strong model is unwritable, and almost all of it is
+> irrelevant, but you cannot tell which part until you have solved it.
+
 ---
 
 ## 5 · Start with a few, and let the prices ask for more
 
-Start with a model that is obviously too small. Take a few patterns, say the
-lazy ones with each board cut into copies of a single length, and solve *that*.
-This is the **restricted master**: the real model, restricted to the columns
-someone has bothered to write down.
+Start with a model that is obviously too small.
 
-For our order, starting with three lazy patterns, it says: 7 boards.
+Take a few patterns — say the lazy ones, each board cut into copies of a single
+length — and solve *that*. This is the **restricted master**: the real model,
+restricted to the columns someone has bothered to write down.
+
+For our order, starting with three lazy patterns, it says: 7 boards. That is an
+answer to a smaller question than the one we asked.
 
 That is an honest upper bound, since those patterns really do fill the order.
 It is not the answer to the strong model, which has three more patterns nobody
@@ -165,9 +190,10 @@ would be worth. At the first round they come out as
 | 9 ft | 1/2 |
 | 10 ft | 1/2 |
 
-Now take *any* pattern, written down or not. Cutting a board with it costs one
-board. The pieces that come off it are worth, at these prices, some amount. So
-the pattern is worth adding exactly when
+Now take *any* pattern, written down or not.
+
+Cutting a board with it costs one board. The pieces that come off it are worth,
+at these prices, some amount. So the pattern is worth adding exactly when
 
 > the pieces it yields are worth **more than one board.**
 
@@ -182,6 +208,9 @@ is the full answer, proved without ever building the full model. A pattern that
 violates its dual constraint is a missing column. The two statements are one
 statement seen from opposite sides.
 
+> **In one sentence.** The prices from a small model can judge a pattern that
+> model has never seen, which turns "is anything missing" into arithmetic.
+
 ---
 
 ## 6 · Asking for a pattern is a knapsack
@@ -189,11 +218,12 @@ statement seen from opposite sides.
 The question is whether some unwritten pattern yields more than one board's
 worth at these prices.
 
-Do not search the list. *Build* the answer. Fill one 25-foot board so as to
-maximise the total value of the pieces taken off it, at the current prices.
-That is a knapsack problem, small and standard, and its answer is the best
-pattern in existence at these prices, including every one nobody has written
-down.
+Do not search the list. *Build* the answer.
+
+Fill one 25-foot board so as to maximise the total value of the pieces taken
+off it, at the current prices. That is a knapsack problem: small, fast,
+entirely standard. And its answer is the best pattern in existence at these
+prices, including every one nobody has written down.
 
 At the prices above the knapsack returns **four 4-foot pieces and one
 9-foot piece**, worth 4×(1/6) + 1×(1/2) = **7/6**. More than one board, so
@@ -206,6 +236,9 @@ the restricted model is optimal for the full one.
 
 **[Try it yourself →](https://bayzhan8.github.io/Illuminate/branch-and-price/sandbox/06.html)**
 Set the three prices by hand and watch which pattern the knapsack builds.
+
+> **In one sentence.** Finding the missing column is a knapsack, and it returns
+> the best pattern in existence or a proof that none would help.
 
 ---
 
@@ -246,6 +279,9 @@ twenty-four.
 
 **[Try it yourself →](https://bayzhan8.github.io/Illuminate/branch-and-price/sandbox/07.html)**
 Step the loop one round at a time and watch the prices move.
+
+> **In one sentence.** Alternating between a small model and a knapsack solves
+> a model nobody wrote down, and the last round is the one that proves it.
 
 ---
 
@@ -308,6 +344,10 @@ One more admission. Branching on a single pattern's count, as above, is a
 whether two pieces share a board and pushes the restriction down into the
 knapsack itself. This guide keeps the simpler rule for legibility and pays for
 it in tree size.
+
+> **In one sentence.** Branch-and-price is branch-and-bound whose relaxation is
+> generated rather than written down, and the traps are all in the interaction
+> between the two.
 
 ---
 

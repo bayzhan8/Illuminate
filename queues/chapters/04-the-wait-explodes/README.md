@@ -35,6 +35,9 @@ This is also why a dashboard that reports utilisation and calls 97% green is
 reporting the one number that cannot go bad. Utilisation is bounded above by
 one. The wait is bounded by nothing.
 
+> **In one sentence.** The wait is the service time divided by the *idle*
+> fraction, so the last sliver of spare capacity carries the whole queue.
+
 ---
 
 Chapter 4 of 8

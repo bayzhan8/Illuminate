@@ -49,6 +49,10 @@ have a separate minor injuries stream and supermarkets have a basket-only till.
 Add clerks and watch the single line pull ahead, then make them busier and
 watch the gap close again.
 
+> **In one sentence.** One line for many clerks usually wins, by removing idle
+> servers rather than by adding capacity, and it loses when the jobs are wildly
+> different sizes.
+
 ---
 
 Chapter 6 of 8

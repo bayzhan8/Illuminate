@@ -47,6 +47,13 @@ Cutting variability in half does the same thing as a large capacity increase,
 and is frequently cheaper. "Reduce variation" sounds like a slogan. It is
 arithmetic.
 
+*(The exact version of this is the **Pollaczek–Khinchine** formula, and the
+general approximation is **Kingman's**. You can forget both names; the three
+dials are the content.)*
+
+> **In one sentence.** At fixed speed and fixed utilisation, how irregular the
+> work is can change the wait by a factor of twenty-six.
+
 **[Try it yourself →](https://bayzhan8.github.io/Illuminate/queues/sandbox/05.html)**
 Move utilisation and variability independently and watch which one costs more.
 

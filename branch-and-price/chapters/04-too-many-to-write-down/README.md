@@ -19,6 +19,9 @@ Almost all of those variables are worthless. A good answer uses a handful of
 patterns and leaves the rest at zero. The difficulty is not the count. It is
 that you cannot tell which handful matters until the thing is solved.
 
+> **In one sentence.** The strong model is unwritable, and almost all of it is
+> irrelevant, but you cannot tell which part until you have solved it.
+
 ---
 
 Chapter 4 of 9

@@ -7,21 +7,21 @@ profit line climbing until it rests on a corner. On the right the buyer's
 possible prices, with a cost line falling until it rests on a corner. Both stop
 at three hundred and fifty dollars.](hero.gif)
 
-Two different questions, asked by two different people, about the same
-workshop.
+Watch the two panels. They are not the same picture.
 
-The owner asks: *what should I build?* They push their profit as high as it
-will go.
+The left one is a workshop owner asking *what should I build?* They push their
+profit as high as it will go.
 
-The buyer asks: *what would I have to pay to buy the place out?* They push
-their bill as low as it will go.
+The right one is a buyer asking *what would I have to pay to buy this place
+out?* They push their bill as low as it will go.
 
-The two pictures have different axes and are not the same shape. One climbs,
-the other falls, and neither is allowed to look at the other. They stop at the
-same number. Not close to it; on it.
+Different axes. Different shapes. One climbing, one falling. Neither is allowed
+to look at the other.
 
-The rest of this guide is about why that happens, what the second picture is
-telling you that the first cannot, and where it stops being true.
+They stop at the same number. Not close to it. On it.
+
+> **In one sentence.** Two unrelated-looking questions about the same workshop
+> have the same answer, and the rest of this guide is about why.
 
 ---
 

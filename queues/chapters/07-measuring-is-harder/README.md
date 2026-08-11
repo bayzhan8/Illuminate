@@ -15,7 +15,7 @@ over three hundred thousand customers. Right, a nominal 95% confidence interval
 covering the true answer 9% of the time when it assumes independence, and 96%
 when it does not.](measuring.png)
 
-Two things in that picture, and they point in opposite directions.
+Two things are in that picture, and they point in opposite directions.
 
 **Little's law is satisfied from almost the first customer.** The two curves
 sit on top of each other the whole way. That is the identity of chapter 2
@@ -39,9 +39,11 @@ It contains the true answer **9% of the time**. It is about twenty times
 too narrow.
 
 The reason is that consecutive waits in a queue are not independent
-observations, and it is not close. One long wait makes the next one long, and
-at 90% busy roughly four hundred consecutive customers behave as a single
-observation. A million measurements are worth about two and a half thousand.
+observations, and it is not close. One long wait makes the next one long.
+
+At 90% busy, roughly four hundred consecutive customers behave as a single
+observation. So a million measurements are worth about two and a half thousand.
+
 The square root of four hundred is twenty, which is exactly the factor by which
 the interval is wrong.
 
@@ -51,6 +53,10 @@ times wider than the confident, wrong one.
 
 The moral is not that simulation is useless. It is that near saturation, the
 formula is not the approximation. The measurement is.
+
+> **In one sentence.** Little's law being satisfied is not evidence that your
+> measurement has converged, and the ordinary confidence interval is twenty
+> times too narrow.
 
 ---
 

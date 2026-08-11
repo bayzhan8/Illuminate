@@ -18,10 +18,12 @@ the piece you happen to be standing on*:
 | 20 to 45 ⅐ | **$6.25** | where this workshop actually is |
 | over 45 ⅐ | $0.00 | the saw is the binding rule now; planks pile up |
 
-The workshop has 44 planks. It is 1 ⅐ planks away from its price collapsing
-to nothing. A shadow price without the range it holds over is close to useless,
-and quoting one without the other is the most common way this idea gets misused
-in practice.
+The workshop has 44 planks. It is 1 ⅐ planks away from its price collapsing to
+nothing.
+
+That is a narrow shelf to be standing on, and it is the most common way this
+idea gets misused. A shadow price quoted without the range over which it holds
+is close to useless.
 
 The pieces get flatter, never steeper. Easy uses go first, so more of a
 resource is never worth more per unit than the last lot was, and the curve can
@@ -29,6 +31,9 @@ only bend one way.
 
 **[Try it yourself →](https://bayzhan8.github.io/Illuminate/lp-duality/sandbox/08.html)**
 Slide the stock of any of the three resources and watch its own price step down.
+
+> **In one sentence.** A shadow price is a local slope with an expiry date, so
+> it always has to be quoted with the range over which it holds.
 
 ---
 

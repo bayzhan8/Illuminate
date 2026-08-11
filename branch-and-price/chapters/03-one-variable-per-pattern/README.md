@@ -29,6 +29,12 @@ patterns cannot un-decide it. What remains to relax does far less harm.
 Here the second relaxation settles the question by itself, which is the reason
 to put up with everything that follows.
 
+*(The standard name for this reformulation is **Dantzig–Wolfe decomposition**.
+Chapter 9 comes back to it; for now the idea is all you need.)*
+
+> **In one sentence.** Deciding in whole patterns rather than in individual
+> pieces absorbs the integrality, so relaxing what is left costs much less.
+
 ---
 
 Chapter 3 of 9

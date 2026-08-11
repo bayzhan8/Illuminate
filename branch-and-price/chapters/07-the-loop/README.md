@@ -38,6 +38,9 @@ twenty-four.
 **[Try it yourself →](https://bayzhan8.github.io/Illuminate/branch-and-price/sandbox/07.html)**
 Step the loop one round at a time and watch the prices move.
 
+> **In one sentence.** Alternating between a small model and a knapsack solves
+> a model nobody wrote down, and the last round is the one that proves it.
+
 ---
 
 Chapter 7 of 9

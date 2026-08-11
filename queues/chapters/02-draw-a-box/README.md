@@ -52,6 +52,9 @@ the fraction of time the clerk is busy. So:
 Utilisation is not a separate concept. It is Little's law applied to the
 smallest interesting box in the building.
 
+> **In one sentence.** One region measured two ways gives `L = λW`, and the
+> proof is the picture.
+
 ---
 
 Chapter 2 of 8

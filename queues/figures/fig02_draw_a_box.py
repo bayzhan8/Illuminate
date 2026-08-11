@@ -70,15 +70,19 @@ def setup(ax, title):
     ax.set_axisbelow(True)
 
 
-def two_counts_gif(fps=11):
+def two_counts_gif(fps=14):
     """Fill the region with vertical strips, then rebuild it from horizontal bars."""
     import matplotlib.pyplot as plt
     from matplotlib.patches import Rectangle
 
-    strips = 60
+    # The sweep is repetitive once the reader has the idea, so it goes quickly.
+    # The bars are the payoff and each one has to land separately, so they get
+    # half a second each.
+    strips = 40
     bars = len(ARRIVALS)
-    hold_between = 14
-    frames = strips + hold_between + bars * 5 + 12
+    hold_between = 10
+    frames_per_bar = 7
+    frames = strips + hold_between + bars * frames_per_bar + 10
 
     fig, ax = figure(8.4, 4.6)
     fig.subplots_adjust(bottom=0.26, top=0.84)
@@ -127,7 +131,7 @@ def two_counts_gif(fps=11):
             note.set_color(TEXT)
 
         else:                                # --- horizontal: one bar per person
-            k = min(bars, (i - strips - hold_between) // 5 + 1)
+            k = min(bars, (i - strips - hold_between) // frames_per_bar + 1)
             order = np.argsort(ARRIVALS)
             covered = 0.0
             for level, person in enumerate(order[:k]):
@@ -143,7 +147,7 @@ def two_counts_gif(fps=11):
             note.set_color(OK if k == bars else PRICE)
         return []
 
-    animate(fig, update, frames, OUT / "two-counts.gif", fps=fps, hold=3.6)
+    animate(fig, update, frames, OUT / "two-counts.gif", fps=fps, hold=3.2)
 
 
 def region_png():

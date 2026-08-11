@@ -13,14 +13,22 @@ Three quantities, and it matters which is which:
 | **W** | how long a person is here, on average | the person |
 | **λ** | how many people arrive per hour | the door |
 
-These are averages of different things. `L` averages over *time*: take a
-photograph at random moments and count heads. `W` averages over *people*: ask
-each one how long they were there. Nobody computing `L` ever asks anyone a
-question, and nobody computing `W` ever looks at a clock on the wall.
+These are averages of different things, and that is the point.
 
-One more quantity worth naming now, because it turns out to be the same idea:
-**utilisation**, the fraction of the time the clerk is busy. At ten customers
-an hour arriving and six minutes each, the clerk is busy 90% of the time.
+`L` averages over *time*. Take a photograph at random moments and count heads.
+
+`W` averages over *people*. Ask each one how long they were there.
+
+Nobody computing `L` ever asks anyone a question, and nobody computing `W` ever
+looks at a clock on the wall. They are not two views of one measurement; they
+are two measurements.
+
+One more quantity, because it turns out to be the same idea: **utilisation**,
+the fraction of the time the clerk is busy. At ten customers an hour arriving
+and six minutes each, the clerk is busy 90% of the time.
+
+> **In one sentence.** `L` is counted off the clock and `W` off the customers,
+> and nothing so far connects them.
 
 ---
 

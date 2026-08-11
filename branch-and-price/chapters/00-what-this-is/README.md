@@ -6,19 +6,22 @@
 blue bar pushes past six to six and a half, and the answer lands on
 seven.](hero.gif)
 
-An order has to be cut from standard boards, and the question is how many
-boards it takes.
+An order has to be cut from standard boards. How many boards does it take?
 
-The obvious model, relaxed, proves you need at least **5.44** boards. So six
-might be enough; the model cannot say otherwise.
+Model it the obvious way, relax it, and it proves you need at least **5.44**
+boards. So six might be enough. The model cannot say otherwise.
 
-A different model of the *same order*, relaxed the same way, proves you need at
-least **6.5**. Six is now impossible. And seven boards can be cut, so seven is
-the answer, proved.
+Now model the *same order* differently, relax it the same way, and it proves
+you need at least **6.5**. Six is now impossible.
 
-The second model has one variable for every way of cutting a board, which for a
-real order is a few trillion variables. This guide is about why that model is
+Seven boards can be cut. So seven is the answer, proved.
+
+The second model has one variable for every way of cutting a board, which for
+a real order is a few trillion variables. This guide is about why that model is
 so much stronger, and how it gets solved without ever being written down.
+
+> **In one sentence.** Two models of the same order, both relaxed the same way,
+> and only one of them can rule out six boards.
 
 ---
 

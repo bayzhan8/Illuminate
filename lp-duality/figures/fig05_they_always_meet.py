@@ -26,12 +26,18 @@ from lpduality.lp import LP, solve
 OUT = chapter_dir("05-the-gap-closes")
 
 
+# Frames held per rung. At 11 fps this is a beat of just over a second, which
+# is what a two-line readout and a shrinking band need; the earlier six frames
+# gave half that and the band moved before the numbers registered.
+FRAMES_PER_RUNG = 12
+
+
 def meet_gif(fps=11):
     """The two ladders, one rung at a time, on a single scale of dollars."""
     floors = [(float(w.PRIMAL.objective(plan)), why) for plan, why in w.ASCENT]
     ceilings = [(float(ceiling_from(w.PRIMAL, y)), why) for y, why in w.DESCENT]
     steps = max(len(floors), len(ceilings))
-    frames = steps * 6
+    frames = steps * FRAMES_PER_RUNG
 
     fig, ax = figure(8.6, 4.2)
     fig.subplots_adjust(bottom=0.30, top=0.82)
@@ -58,7 +64,7 @@ def meet_gif(fps=11):
 
     def update(i):
         i = min(i, frames - 1)
-        k = min(steps, i // 6 + 1)
+        k = min(steps, i // FRAMES_PER_RUNG + 1)
         fl = floors[:k]
         ce = ceilings[:k]
         floor_dots.set_data([v for v, _ in fl], [0.45] * len(fl))
@@ -79,7 +85,7 @@ def meet_gif(fps=11):
             note.set_color(TEXT_DIM)
         return []
 
-    animate(fig, update, frames, OUT / "meet.gif", fps=fps, hold=3.2)
+    animate(fig, update, frames, OUT / "meet.gif", fps=fps, hold=3.0)
 
 
 def always_png(count=320, seed=7):

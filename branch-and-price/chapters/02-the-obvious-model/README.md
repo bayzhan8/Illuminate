@@ -18,8 +18,11 @@ It is the answer you would get if boards were *liquid*. Round it up and six
 boards might do.
 
 Six boards will not do. The relaxation cannot see it, because the fact that
-makes it impossible (a 10-foot piece sits on one board, whole) is precisely
+makes it impossible — a 10-foot piece sits on one board, whole — is precisely
 what was relaxed away.
+
+> **In one sentence.** Relaxing the obvious model throws away the very thing
+> that makes the problem hard, so its bound is far too low.
 
 ---
 

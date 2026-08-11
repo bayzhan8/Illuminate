@@ -15,6 +15,9 @@ busy, it is very nearly ten hours.
 The clerk has not slowed down at any point. What ran out was idleness, and
 idleness turns out to be the thing that was absorbing all the irregularity.
 
+> **In one sentence.** The wait is not set by how fast the clerk works; it is
+> set by how little slack is left.
+
 ---
 
 Chapter 0 of 8

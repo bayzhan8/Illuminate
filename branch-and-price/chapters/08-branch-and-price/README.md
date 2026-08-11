@@ -60,6 +60,10 @@ whether two pieces share a board and pushes the restriction down into the
 knapsack itself. This guide keeps the simpler rule for legibility and pays for
 it in tree size.
 
+> **In one sentence.** Branch-and-price is branch-and-bound whose relaxation is
+> generated rather than written down, and the traps are all in the interaction
+> between the two.
+
 ---
 
 Chapter 8 of 9

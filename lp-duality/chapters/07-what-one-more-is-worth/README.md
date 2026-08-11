@@ -11,16 +11,22 @@ extra profit. To the penny, and you can watch it happen.
 sliding along with it while the profit climbs at a steady rate, until the rate
 suddenly stops.](shadow.gif)
 
-Add a plank, the plank line moves out, the best corner slides along the hours
-line, and the profit goes up by $6.25. Again, and again.
+Add a plank. The plank line moves out, the best corner slides along the hours
+line, and the profit goes up by $6.25. Add another. Same again.
 
 This is what a dual variable *is*, and why the name **shadow price** stuck.
-Planks might cost $3 at the yard. Here the forty-fifth one is worth $6.25,
-because of what else this workshop happens to be short of. That is the number
-you want when deciding what to buy, what to negotiate for, and what a
-bottleneck is costing.
+
+It is worth being careful about what kind of number that is. Planks might cost
+$3 at the yard. Here the forty-fifth one is worth $6.25, because of what else
+this workshop happens to be short of. It is not a market price. It is a price
+*to this workshop, given everything else it has*, and that is the number you
+want when deciding what to buy, what to negotiate for, and what a bottleneck is
+costing.
 
 Watch the end of that animation, though. The rate stops.
+
+> **In one sentence.** A dual variable is the exact rate at which the answer
+> improves per extra unit of that resource.
 
 ---
 

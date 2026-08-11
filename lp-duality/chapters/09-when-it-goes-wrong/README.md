@@ -15,26 +15,30 @@ every plan, and no such number exists, so there are no honest prices either.
 The two failures come as a pair: *the plan side runs away precisely when the
 price side has nothing to offer.*
 
-**A plan that cannot exist.** Suppose an order arrives for 12 tables. Forty-four
-planks make eleven tables, so the order cannot be met. The impossibility has a
-*short proof*, and the proof is arithmetic rather than an exhausted search:
+**A plan that cannot exist.** Suppose an order arrives for 12 tables.
+Forty-four planks make eleven tables, so the order cannot be met. The
+impossibility has a *short proof*, and the proof is arithmetic rather than an
+exhausted search:
 
 > Take a quarter of the plank rule, and all of the order.
 > Add them together, and they say: half of the chairs, at most −1.
 > A count of chairs cannot be negative. So there is no such plan.
 
 Four lines, checkable by anyone, and it settles the question forever. This is
-the same idea as a price list, wearing different clothes: a weighted mixture of
+the same idea as a price list wearing different clothes: a weighted mixture of
 the rules that adds up to something plainly absurd. It is called a **Farkas
 certificate**, and the fact that one always exists when a system is impossible
-is the fact that strong duality is built on.
+is the fact strong duality is built on.
 
 One more case, so it does not surprise you. At a bend in the curve from chapter
-8 the price is not unique. Standing exactly
-at 45 ⅐ planks, one more plank is worth nothing and one fewer costs $6.25, and
-both numbers are legitimate prices. A solver will hand you one of them without
-mentioning the other. This is called **degeneracy**, and it is why a
-sensitivity report should always be read as a range and never as a point.
+8 the price is not unique. Standing exactly at 45 ⅐ planks, one more plank is
+worth nothing and one fewer costs $6.25, and both numbers are legitimate
+prices. A solver will hand you one of them without mentioning the other. This
+is called **degeneracy**, and it is why a sensitivity report should be read as
+a range and never as a point.
+
+> **In one sentence.** Unbounded on one side means infeasible on the other, and
+> impossibility always has a short arithmetic proof.
 
 ---
 

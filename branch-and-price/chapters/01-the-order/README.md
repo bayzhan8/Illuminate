@@ -27,6 +27,9 @@ foot pieces, with the wasted end hatched.](patterns.png)
 Six is a small enough number to print, which is exactly why this is the order
 to learn on. Chapter 4 is where that stops being true.
 
+> **In one sentence.** A pattern is one way of cutting one board, and the
+> decision to be made is how many boards to cut with each.
+
 ---
 
 Chapter 1 of 9
