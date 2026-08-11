@@ -14,7 +14,7 @@ from illuminate.draw import (HAIRLINE, OK, PLAN, PRICE, SURFACE, TEXT, TEXT_DIM,
 from twopaths.barrier import Region, analytic_centre, central_path, centre_for
 from twopaths.simplex import dantzig, solve
 
-OUT = chapter_dir("02-two-routes")
+OUT = chapter_dir("00-what-this-is")
 
 A = [[4, 2], [2, 3], [3, 1]]
 B = [44, 30, 32]
@@ -53,37 +53,6 @@ def routes():
     path = central_path(REGION, START, mu_from=8000.0, mu_to=1e-9, points=110)
     return vertices, path
 
-
-def two_routes_png():
-    vertices, path = routes()
-    fig, ax = figure(7.6, 5.2)
-    fig.subplots_adjust(top=0.86, bottom=0.13, left=0.11, right=0.97)
-    heading(ax, "along the edge, and through the middle")
-    draw_region(ax)
-
-    ax.plot(path[:, 0], path[:, 1], color=PRICE, linewidth=2.2, zorder=6)
-    ax.plot(vertices[:, 0], vertices[:, 1], color=PLAN, linewidth=2.2,
-            zorder=7, marker="o", markersize=7, markeredgecolor=SURFACE,
-            markeredgewidth=1.8)
-
-    centre = analytic_centre(REGION, START)
-    ax.plot([centre[0]], [centre[1]], "o", color=PRICE, markersize=6, zorder=8,
-            markeredgecolor=SURFACE, markeredgewidth=1.6)
-
-    ax.text(0.45, 6.9, f"{len(vertices) - 1} hops along the boundary,\n"
-            "every one of them a corner", color=PLAN, fontsize=9.5, zorder=9,
-            bbox=dict(boxstyle="square,pad=0.3", facecolor=SURFACE, edgecolor="none"))
-    ax.text(3.4, 1.1, "a smooth curve through the inside,\n"
-            "never touching a wall", color=PRICE, fontsize=9.5, zorder=9,
-            bbox=dict(boxstyle="square,pad=0.3", facecolor=SURFACE, edgecolor="none"))
-    ax.text(0.45, 2.55, "it starts here, the point\nfurthest from every wall",
-            color=PRICE, fontsize=8.5, zorder=9,
-            bbox=dict(boxstyle="square,pad=0.28", facecolor=SURFACE, edgecolor="none"))
-    ax.annotate("both stop here", xy=(9, 4), xytext=(10.4, 6.6), fontsize=9.5,
-                color=OK, ha="center",
-                arrowprops=dict(arrowstyle="-", color=OK, linewidth=0.9,
-                                shrinkA=4, shrinkB=8), zorder=9)
-    save(fig, OUT / "two-routes.png", tight=False)
 
 
 def two_routes_gif(fps=11):
@@ -124,5 +93,4 @@ def two_routes_gif(fps=11):
 
 
 if __name__ == "__main__":
-    two_routes_png()
     two_routes_gif()
