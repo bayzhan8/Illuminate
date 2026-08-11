@@ -18,16 +18,16 @@ matching what the code produces, `make test` fails.
 | Topic | What it is about | |
 |---|---|---|
 | [lp-duality](lp-duality/) | Every planning problem has a second problem hiding inside it, about prices, and solving either one solves both. It is where shadow prices come from, and it is the engine inside most of the methods below. | [read](https://bayzhan8.github.io/Illuminate/lp-duality/) · [play](https://bayzhan8.github.io/Illuminate/lp-duality/sandbox/) |
+| [branch-and-price](branch-and-price/) | A model with four trillion variables that fits on a napkin. Column generation asks the prices which variable is missing instead of searching for it; branch-and-price puts that loop inside a search tree. | [read](https://bayzhan8.github.io/Illuminate/branch-and-price/) · [play](https://bayzhan8.github.io/Illuminate/branch-and-price/sandbox/) |
 
 ### Planned
 
 Each of these leans on duality, which is why that one came first.
 
 - **Simplex against interior point** — walking the corners against cutting through the middle
-- **Branch and bound** — the tree, and what pruning actually prunes
-- **Column generation** — too many options to write down, so let the prices ask for the missing one
-- **Dantzig–Wolfe** and **Benders** — the same idea pointed in opposite directions
-- **Branch and cut**, **branch and price** — when the pieces have to come out whole
+- **Branch and bound** and **branch and cut** — the tree, and what pruning actually prunes
+- **Benders decomposition** — generating rows instead of columns
+- **LP on the GPU** — why simplex resists parallel hardware, and what first-order methods changed
 - **Queues and Little's law** — why the wait explodes long before the servers are full
 
 ## How a topic is laid out
@@ -45,7 +45,12 @@ Each of these leans on duality, which is why that one came first.
   notes/         why it is built the way it is
 ```
 
-Two things live at the root because they have to. `index.html` and `assets/`
+`illuminate/` is a small shared package: the house style for every figure, the
+typeface, and the machinery that turns a `lesson.md` into chapter files, a web
+page and its sandboxes. A topic supplies configuration, not a copy of the
+build.
+
+Two more things live at the root because they have to. `index.html` and `assets/`
 are the published site — GitHub Pages serves this repository from its root,
 which means a figure has exactly one home and the image paths in `lesson.md`
 are the same paths the published page uses. `.venv/` is one shared virtualenv
@@ -99,5 +104,5 @@ and where they would only have been decoration there is a chart instead.
 ## Licence
 
 Code and prose: MIT. The vendored copy of IBM Plex Mono in
-`lp-duality/assets/fonts/` is under the SIL Open Font Licence 1.1, included
-alongside it.
+`illuminate/src/illuminate/fonts/` is under the SIL Open Font Licence 1.1,
+included alongside it.

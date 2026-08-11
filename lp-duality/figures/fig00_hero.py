@@ -15,7 +15,7 @@ through the answer.
 from fractions import Fraction
 
 from lpduality import workshop as w
-from lpduality.draw import (INK, INK2, MUTED, PAPER, PLAN, PRICE, RULE, animate,
+from illuminate.draw import (INK, INK2, MUTED, PAPER, PLAN, PRICE, RULE, animate,
                             chapter_dir, figure, heading, readout, tag)
 from lpduality.lp import LP
 from scene import clipped_corners, draw_constraint, draw_region, ordered_corners

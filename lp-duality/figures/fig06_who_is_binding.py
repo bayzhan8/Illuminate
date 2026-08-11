@@ -11,7 +11,7 @@ lists is a claim the reader has to take on trust.
 """
 
 from lpduality import workshop as w
-from lpduality.draw import (INK, INK2, MUTED, OK, PAPER, PLAN, PRICE, chapter_dir,
+from illuminate.draw import (INK, INK2, MUTED, OK, PAPER, PLAN, PRICE, chapter_dir,
                             figure, heading, save, tag)
 from scene import (callout, draw_axes, draw_constraint, draw_region, mark_plan)
 

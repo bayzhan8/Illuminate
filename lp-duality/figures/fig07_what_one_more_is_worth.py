@@ -13,7 +13,7 @@ next chapter explains why it had to.
 from fractions import Fraction
 
 from lpduality import workshop as w
-from lpduality.draw import (INK, INK2, MUTED, OK, PAPER, PLAN, PRICE, RULE,
+from illuminate.draw import (INK, INK2, MUTED, OK, PAPER, PLAN, PRICE, RULE,
                             animate, chapter_dir, figure, heading, readout, tag)
 from lpduality.lp import solve
 from lpduality.sensitivity import with_rhs

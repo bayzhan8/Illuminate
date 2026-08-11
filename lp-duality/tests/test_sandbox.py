@@ -12,6 +12,7 @@ still run.
 
 import json
 import random
+import re
 import shutil
 import subprocess
 import sys
@@ -44,8 +45,8 @@ def run_js(snippet: str):
 # --- structure -------------------------------------------------------------
 
 def test_a_page_exists_for_every_sandbox():
-    for number, *_ in build.SANDBOXES:
-        assert (SANDBOX / f"{number:02d}.html").exists()
+    for box in build.SANDBOXES:
+        assert (SANDBOX / f"{box.chapter:02d}.html").exists()
     assert (SANDBOX / "index.html").exists()
 
 
@@ -56,20 +57,20 @@ def test_the_pages_carry_their_own_logic():
         text = page.read_text()
         for forbidden in ("fetch(", "XMLHttpRequest", "WebSocket", "cdn."):
             assert forbidden not in text, f"{page.name} reaches out via {forbidden}"
-        for script in build.re.findall(r'<script src="([^"]+)"', text):
+        for script in re.findall(r'<script src="([^"]+)"', text):
             assert script.startswith("../../assets/"), script
 
 
 def test_every_sandbox_is_linked_from_the_chapter_it_belongs_to():
     lesson = (ROOT / "lesson.md").read_text()
-    for number, *_ in build.SANDBOXES:
-        assert f"sandbox/{number:02d}.html" in lesson, \
-            f"sandbox {number:02d} is not reachable from the lesson"
+    for box in build.SANDBOXES:
+        assert f"sandbox/{box.chapter:02d}.html" in lesson, \
+            f"sandbox {box.chapter:02d} is not reachable from the lesson"
 
 
 def test_every_sandbox_number_is_a_real_chapter():
-    chapters = {n for n, _, _ in build.CHAPTERS}
-    assert {n for n, *_ in build.SANDBOXES} <= chapters
+    chapters = {c.number for c in build.CHAPTERS}
+    assert {b.chapter for b in build.SANDBOXES} <= chapters
 
 
 # --- the two implementations -----------------------------------------------

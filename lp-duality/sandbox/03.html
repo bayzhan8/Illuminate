@@ -30,7 +30,7 @@
   <div class="controls"><div class="row"><label for="y0">price of a plank</label><input type="range" id="y0" min="0" max="12" step="0.25" value="3"><output class="val" id="y0v"></output></div><div class="row"><label for="y1">price of an hour</label><input type="range" id="y1" min="0" max="12" step="0.25" value="1"><output class="val" id="y1v"></output></div><div class="row"><label for="y2">price of an hour of saw time</label><input type="range" id="y2" min="0" max="12" step="0.25" value="0"><output class="val" id="y2v"></output></div></div>
   <pre class="out" id="out"></pre>
   <p class="note">A ceiling is only as good as its worst product. Under-price either one and the number this page would have printed is not a weak claim, it is no claim at all.</p>
-  <nav class="pager"><a href="01.html">← Move the money</a> · <a href="index.html">all four</a> · <a href="06.html">Change the shelves →</a></nav>
+  <nav class="pager"><a href="01.html">← Move the money</a> · <a href="index.html">all 4</a> · <a href="06.html">Change the shelves →</a></nav>
 </main>
 <script src="../../assets/site.js"></script>
 <script>
@@ -149,7 +149,7 @@ function Plot(canvas, xlo, xhi, ylo, yhi, pad) {
   const Y = y => cssH - pad.b - (y - ylo) / (yhi - ylo) * (cssH - pad.t - pad.b);
   const font = n => `${n}px "IBM Plex Mono", ui-monospace, monospace`;
   return {
-    ctx, X, Y, P, W: cssW, H: cssH, pad,
+    ctx, X, Y, P, W: cssW, H: cssH, pad, font,
     clear() { ctx.clearRect(0, 0, cssW, cssH); },
     grid(stepX, stepY) {
       ctx.strokeStyle = P.rule; ctx.lineWidth = 1; ctx.setLineDash([1, 4]);
@@ -166,10 +166,10 @@ function Plot(canvas, xlo, xhi, ylo, yhi, pad) {
       ctx.beginPath(); ctx.moveTo(pad.l, pad.t); ctx.lineTo(pad.l, cssH - pad.b);
       ctx.lineTo(cssW - pad.r, cssH - pad.b); ctx.stroke();
       ctx.fillStyle = P.muted; ctx.font = font(11); ctx.textAlign = "center";
-      for (let x = xlo; x <= xhi + 1e-9; x += stepX)
+      if (stepX) for (let x = xlo; x <= xhi + 1e-9; x += stepX)
         ctx.fillText(String(Math.round(x)), X(x), cssH - pad.b + 17);
       ctx.textAlign = "right";
-      for (let y = ylo; y <= yhi + 1e-9; y += stepY)
+      if (stepY) for (let y = ylo; y <= yhi + 1e-9; y += stepY)
         ctx.fillText(String(Math.round(y)), pad.l - 9, Y(y) + 4);
       ctx.fillStyle = P.ink2; ctx.font = font(12); ctx.textAlign = "center";
       if (xlabel) ctx.fillText(xlabel, (pad.l + cssW - pad.r) / 2, cssH - 8);
@@ -184,6 +184,12 @@ function Plot(canvas, xlo, xhi, ylo, yhi, pad) {
       if (fill) { ctx.globalAlpha = 0.14; ctx.fillStyle = fill; ctx.fill(); ctx.globalAlpha = 1; }
       if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = 1.8; ctx.stroke(); }
     },
+    rect(x0, y0, x1, y1, fill, alpha) {
+      ctx.save(); ctx.globalAlpha = alpha === undefined ? 1 : alpha;
+      ctx.fillStyle = fill;
+      ctx.fillRect(X(x0), Y(y1), X(x1) - X(x0), Y(y0) - Y(y1));
+      ctx.restore();
+    },
     line(x0, y0, x1, y1, color, width, dash) {
       ctx.save(); ctx.strokeStyle = color; ctx.lineWidth = width || 1.4;
       if (dash) ctx.setLineDash(dash);
@@ -195,8 +201,8 @@ function Plot(canvas, xlo, xhi, ylo, yhi, pad) {
       ctx.fillStyle = color; ctx.fill();
       ctx.lineWidth = 2; ctx.strokeStyle = P.paper; ctx.stroke();
     },
-    label(x, y, text, color, align) {
-      ctx.fillStyle = color; ctx.font = font(12);
+    label(x, y, text, color, align, size) {
+      ctx.fillStyle = color; ctx.font = font(size || 12);
       ctx.textAlign = align || "left"; ctx.fillText(text, X(x), Y(y));
     }
   };

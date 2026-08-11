@@ -1,7 +1,7 @@
 """Chapter 1: the region of possible plans, and the sweep that finds its best corner."""
 
 from lpduality import workshop as w
-from lpduality.draw import (INK, INK2, MUTED, OK, PLAN, PRICE, animate, chapter_dir,
+from illuminate.draw import (INK, INK2, MUTED, OK, PLAN, PRICE, animate, chapter_dir,
                             figure, heading, plate, readout, save, tag)
 from scene import (WINDOW, callout, draw_axes, draw_constraint, draw_region,
                    mark_plan, ordered_corners, profit_line)
