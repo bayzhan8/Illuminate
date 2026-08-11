@@ -1,10 +1,8 @@
-"""Chapter 7: the relation is satisfied long before either side is right.
+"""Chapter 12: the relation is satisfied long before either side is right.
 
-Two panels, because there are two separate things to believe.
-
-Left: run one queue and track both averages as they go. They agree with each
-other from almost the first customer, and neither is close to the truth for a
-very long time. Little's law converging tells you nothing about whether your
+Run one queue and track both averages as they go. They agree with each other
+from almost the first customer, and neither is close to the truth for a very
+long time. Little's law converging tells you nothing about whether your
 measurement has.
 
 Right: what a nominally 95% confident interval actually covers when it assumes
@@ -20,7 +18,7 @@ from queues import desk as d
 from queues.simulate import (batch_interval, correlation_length, lindley,
                              naive_interval, run_queue)
 
-OUT = chapter_dir("07-measuring-is-harder")
+OUT = chapter_dir("11-measuring-is-harder")
 
 TRIALS = 300
 RUN_LENGTH = 200_000
@@ -49,9 +47,8 @@ def coverage_study():
 def measuring_png():
     import matplotlib.pyplot as plt
 
-    fig, (axL, axR) = plt.subplots(1, 2, figsize=(10.0, 4.5),
-                                   gridspec_kw={"width_ratios": [1.3, 1]})
-    fig.subplots_adjust(left=0.09, right=0.97, bottom=0.16, top=0.84, wspace=0.30)
+    fig, axL = plt.subplots(1, 1, figsize=(7.4, 4.5))
+    fig.subplots_adjust(left=0.12, right=0.97, bottom=0.16, top=0.84)
 
     # --- left: both averages, tracking each other, both wrong
     heading(axL, "both averages, as one run proceeds")
@@ -97,35 +94,8 @@ def measuring_png():
         "neither is close to 60 for a very long time.",
         color=TEXT_DIM, size=9.5)
 
-    # --- right: coverage
-    naive_pct, batch_pct, naive_w, batch_w, _ = coverage_study()
-    heading(axR, "does a 95% interval contain the answer?")
-    bars = axR.bar([0, 1], [naive_pct, batch_pct], width=0.5,
-                   color=[PRICE, OK], zorder=4, edgecolor=SURFACE, linewidth=2)
-    axR.axhline(95, color=TEXT_FAINT, linewidth=1.1, linestyle=(0, (4, 4)), zorder=3)
-    axR.text(-0.5, 97, "95%, as promised", color=TEXT_FAINT, fontsize=9)
-    for x, pct, width in ((0, naive_pct, naive_w), (1, batch_pct, batch_w)):
-        axR.text(x, pct + 4, f"{pct:.0f}%", ha="center", fontsize=13,
-                 color=TEXT, fontweight="semibold", zorder=6)
-        # a short bar has no room inside it for the width label
-        inside = pct > 25
-        axR.text(x, pct / 2 if inside else pct + 13,
-                 f"±{width:.2f} min", ha="center", va="center",
-                 fontsize=9, color=SURFACE if inside else TEXT_FAINT, zorder=6)
-    axR.set_xticks([0, 1])
-    axR.set_xticklabels(["assuming the waits\nare independent",
-                         "batch means,\nwhich does not"], fontsize=9, color=TEXT_DIM)
-    axR.set_ylim(0, 112)
-    axR.set_xlim(-0.55, 1.55)
-    axR.set_ylabel("runs containing the true answer", fontsize=10,
-                   color=TEXT_DIM, labelpad=6)
-    for side in ("top", "right"):
-        axR.spines[side].set_visible(False)
-    axR.grid(True, axis="y", color=HAIRLINE, linewidth=0.7, linestyle=(0, (1, 3)))
-    axR.set_axisbelow(True)
     save(fig, OUT / "measuring.png", tight=False)
-    return naive_pct, batch_pct, naive_w, batch_w
 
 
 if __name__ == "__main__":
-    print("  coverage:", measuring_png())
+    measuring_png()

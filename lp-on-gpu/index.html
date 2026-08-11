@@ -27,16 +27,19 @@
   <p class="toc-label">Contents</p>
   <ol>
     <li><a href="#ch0"><span class="toc-num">0</span><span class="toc-title">What this is</span></a></li>
-    <li><a href="#ch1"><span class="toc-num">1</span><span class="toc-title">Wider, not faster</span></a></li>
-    <li><a href="#ch2"><span class="toc-num">2</span><span class="toc-title">Why simplex is the wrong shape</span></a></li>
-    <li><a href="#ch3"><span class="toc-num">3</span><span class="toc-title">A method made of one operation</span></a></li>
-    <li><a href="#ch4"><span class="toc-num">4</span><span class="toc-title">The obvious version does not work</span></a></li>
-    <li><a href="#ch5"><span class="toc-num">5</span><span class="toc-title">One term different</span></a></li>
-    <li><a href="#ch6"><span class="toc-num">6</span><span class="toc-title">It turns fast and shrinks slowly</span></a></li>
-    <li><a href="#ch7"><span class="toc-num">7</span><span class="toc-title">Cancel the rotation</span></a></li>
-    <li><a href="#ch8"><span class="toc-num">8</span><span class="toc-title">Does it get the right answer?</span></a></li>
-    <li><a href="#ch9"><span class="toc-num">9</span><span class="toc-title">What it costs</span></a></li>
-    <li><a href="#ch10"><span class="toc-num">10</span><span class="toc-title">Where this leaves things</span></a></li>
+    <li><a href="#ch1"><span class="toc-num">1</span><span class="toc-title">How much arithmetic per byte</span></a></li>
+    <li><a href="#ch2"><span class="toc-num">2</span><span class="toc-title">The roofline</span></a></li>
+    <li><a href="#ch3"><span class="toc-num">3</span><span class="toc-title">Why simplex is the wrong shape</span></a></li>
+    <li><a href="#ch4"><span class="toc-num">4</span><span class="toc-title">Reading the table two ways</span></a></li>
+    <li><a href="#ch5"><span class="toc-num">5</span><span class="toc-title">Two players, one score</span></a></li>
+    <li><a href="#ch6"><span class="toc-num">6</span><span class="toc-title">A method made of one operation</span></a></li>
+    <li><a href="#ch7"><span class="toc-num">7</span><span class="toc-title">The obvious version does not work</span></a></li>
+    <li><a href="#ch8"><span class="toc-num">8</span><span class="toc-title">One term different</span></a></li>
+    <li><a href="#ch9"><span class="toc-num">9</span><span class="toc-title">It turns fast and shrinks slowly</span></a></li>
+    <li><a href="#ch10"><span class="toc-num">10</span><span class="toc-title">Cancel the rotation</span></a></li>
+    <li><a href="#ch11"><span class="toc-num">11</span><span class="toc-title">Does it get the right answer?</span></a></li>
+    <li><a href="#ch12"><span class="toc-num">12</span><span class="toc-title">What it costs</span></a></li>
+    <li><a href="#ch13"><span class="toc-num">13</span><span class="toc-title">Where this leaves things</span></a></li>
   </ol>
 </nav>
 <main class="prose">
@@ -60,11 +63,11 @@ on the last.</p>
 <p>So the interesting question is not how to parallelise simplex. It is what a
 method would have to look like to use the hardware at all, and what you give up
 by using it. The delicate one is the answer.</p>
-<p><strong>The plan.</strong> Chapter 1 is about the hardware and why it changes which
-algorithms are worth having. Chapter 2 is why simplex is the wrong shape.
-Chapters 3 to 7 build a method that is the right shape, starting from the
-version that does not work. Chapters 8 and 9 are whether it gets the right
-answer and what it costs.</p>
+<p><strong>The plan.</strong> Chapters 1 and 2 are about the hardware and why it changes
+which algorithms are worth having. Chapter 3 is why simplex is the wrong
+shape. Chapters 4 to 10 build a method that is the right shape, starting
+from the version that does not work. Chapters 11 and 12 are whether it gets
+the right answer and what it costs.</p>
 <p>Every number below is computed by the code in this folder. The answers it is
 checked against come from the exact rational simplex in
 <a href="../lp-duality/">the duality guide</a>, which shares no line of code with anything
@@ -88,57 +91,76 @@ do.</p>
 <p><strong>In one sentence.</strong> A method that can use parallel hardware is available,
 but only just, and the difference between it working and not is very small.</p>
 </blockquote>
-<h2 id="ch1"><span class="num">1</span>Wider, not faster</h2>
+<h2 id="ch1"><span class="num">1</span>How much arithmetic per byte</h2>
 <p>Start with the hardware, because it determines which algorithms are worth
 having.</p>
 <p>A modern accelerator has enormously more arithmetic capability than a server
 processor. It does not have proportionally more memory bandwidth. Roughly: a
 hundred times the arithmetic, but only about fifteen times the rate at which it
 can fetch numbers to do arithmetic <em>on</em>.</p>
-<p>Which of those two numbers you get depends on your work, and there is a single
-question that decides it. <strong>How much arithmetic do you get to do for every byte
-you had to fetch to do it?</strong> Multiply two dense matrices and the answer is
-enormous: every number you load is used hundreds of times over. Add two long
-lists of numbers and the answer is dismal: load sixteen bytes, do one addition,
-move on. Everyone calls this ratio <em>arithmetic intensity</em>, and it is the only
-property of a computation the next chart cares about.</p>
-<p>So count it for the operation this guide is about. Multiplying a sparse matrix
-by a vector, the way solvers store matrices, costs about <strong>12 bytes per stored
-entry</strong>: eight for the value and four to record which column it sits in. Having
-fetched that entry, you do <strong>2 operations</strong> with it: one multiply, one add. Then
-you never look at it again.</p>
-<p>Two operations per twelve bytes. <strong>0.17 operations per byte.</strong> About as poor
-as it gets.</p>
-<p>Now put that against the machines.</p>
-<figure class="plate"><img src="chapters/01-wider-not-faster/roofline.png" alt="A log-log chart of achievable rate against arithmetic intensity, with a
+<p>So a machine has two speeds, and which one you get is a property of your work
+rather than of the machine. There is a single question that decides it.</p>
+<blockquote class="aside">
+<p><strong>How much arithmetic do you get to do for every byte you had to fetch to do
+it?</strong></p>
+</blockquote>
+<p>Multiply two dense matrices and the answer is enormous: every number you load is
+used hundreds of times over, so the arithmetic is the thing you are waiting for.
+Add two long lists of numbers and the answer is dismal: load sixteen bytes, do
+one addition, move on, and the arithmetic units spend almost all of their time
+waiting for the next delivery. Everyone calls this ratio <em>arithmetic intensity</em>.</p>
+<p>Now count it for the operation this whole guide is about.</p>
+<p>Multiplying a sparse matrix by a vector, the way solvers store matrices, costs
+about <strong>12 bytes per stored entry</strong>: eight for the value and four to record
+which column it sits in. Having fetched that entry, you do <strong>2 operations</strong> with
+it: one multiply, one add. Then you never look at it again — there is no reuse
+anywhere in the operation, which is exactly what &quot;sparse&quot; costs you.</p>
+<p>Two operations per twelve bytes. <strong>0.17 operations per byte.</strong></p>
+<p>That is about as poor as a number of this kind gets, and everything in the next
+chapter follows from it.</p>
+<blockquote class="takeaway">
+<p><strong>In one sentence.</strong> A sparse matrix-vector product does one sixth of an
+operation per byte it fetches, and nothing about how it is written can change
+that.</p>
+</blockquote>
+<h2 id="ch2"><span class="num">2</span>The roofline</h2>
+<p>Put 0.17 against the machines and the picture resolves.</p>
+<figure class="plate"><img src="chapters/02-the-roofline/roofline.png" alt="A log-log chart of achievable rate against arithmetic intensity, with a
 ceiling line for each of two machines. At the intensity of a sparse
 matrix-vector product, one machine reaches nine percent of its arithmetic and
 the other one point three percent, while their absolute rates differ by the
 ratio of their bandwidths." loading="lazy"></figure>
-<p>A machine has an intensity of its own: divide its arithmetic rate by its
-bandwidth and you get the number of operations it can perform in the time it
-takes to deliver one byte. Below that number the arithmetic is starved; above
-it, fed. Feed it work above that number and its memory system keeps up and the
-arithmetic runs flat out. Feed it work below, and the arithmetic waits.</p>
+<p>A machine has an intensity of its own, and it is the break-even point: divide
+its arithmetic rate by its bandwidth and you get the number of operations it can
+perform in the time it takes to deliver one byte. Feed it work above that
+number and its memory system keeps up and the arithmetic runs flat out. Feed it
+work below, and the arithmetic waits.</p>
+<p>That is what the chart draws. Each machine's ceiling rises with intensity until
+it hits the flat roof of its own arithmetic, and the two regimes meet at that
+break-even point.</p>
 <p>The accelerator can perform <strong>13 operations for every byte</strong> it delivers. Give
 it work that asks for 0.17 and almost all of that arithmetic sits idle: it
 reaches <strong>1.3%</strong> of what it could do, because 0.17 divided by 13 is about a
 hundredth. The server processor, which can perform 1.9 operations per byte,
-reaches <strong>9%</strong> of its own, by the same division. The chart says only this much: each machine's ceiling rises with intensity until it hits the flat
-roof of its own arithmetic, and our work sits far to the left of both roofs.</p>
-<p>And yet the accelerator is still the faster machine here, by <strong>14.5×</strong>, which
-is precisely the ratio of their <em>bandwidths</em>, not the ratio of their
-arithmetic, which is about a hundred. Both machines are being starved; the one
-with the fatter pipe is starved less.</p>
-<p>For this kind of work, buying a machine with more arithmetic buys you nothing.
-Buying one with more bandwidth buys you exactly what it says.</p>
-<p>Which tells you what a good algorithm looks like: one whose entire inner loop
-is streaming over the matrix, and which does no other kind of work at all.</p>
+reaches <strong>9%</strong> of its own, by the same division. Our work sits far to the left
+of both roofs.</p>
+<p>Now the consequence, which is the reason this chapter exists. The accelerator
+is still the faster machine here, by <strong>14.5×</strong> — and 14.5 is precisely the
+ratio of their <em>bandwidths</em>, not the ratio of their arithmetic, which is about
+a hundred. Both machines are being starved. The one with the fatter pipe is
+starved less, and by exactly the ratio of the pipes.</p>
+<p>So for this kind of work, buying a machine with more arithmetic buys you
+nothing. Buying one with more bandwidth buys you exactly what it says on the
+label, no more and no less.</p>
+<p>Which tells you what a good algorithm looks like on hardware like this: one
+whose entire inner loop is streaming over the matrix, and which does no other
+kind of work at all.</p>
 <blockquote class="takeaway">
 <p><strong>In one sentence.</strong> Sparse matrix work is limited by memory bandwidth, not
-arithmetic, so the only speedup available is the bandwidth ratio.</p>
+arithmetic, so the only speedup a wider machine can offer is its bandwidth
+ratio.</p>
 </blockquote>
-<h2 id="ch2"><span class="num">2</span>Why simplex is the wrong shape</h2>
+<h2 id="ch3"><span class="num">3</span>Why simplex is the wrong shape</h2>
 <p>The simplex method walks from corner to corner of the feasible region, and each
 step is a chain:</p>
 <ol>
@@ -164,13 +186,15 @@ wins, is <a href="../corners-vs-centre/">the guide before this one</a>.)</em></p
 <p><strong>In one sentence.</strong> Simplex is a chain of dependent decisions, so its speed
 comes from taking few steps rather than from taking them in parallel.</p>
 </blockquote>
-<h2 id="ch3"><span class="num">3</span>A method made of one operation</h2>
-<p>So ask for the opposite. What would a method look like if the <em>only</em> thing it
-ever did was multiply by the matrix?</p>
-<p>To answer that, this chapter has to write down what the matrix <em>is</em>, so the
-rest of the guide can talk about it. The problem is the workshop from the
-duality guide, which builds tables and chairs out of three things it has a
-limited amount of:</p>
+<h2 id="ch4"><span class="num">4</span>Reading the table two ways</h2>
+<p>So ask for the opposite of chapter 3. What would a method look like if the
+<em>only</em> thing it ever did was multiply by the matrix?</p>
+<p>Answering that needs some notation, and this chapter spends all of it. Four
+symbols, <code>A</code>, <code>x</code>, <code>b</code> and <code>y</code>, and one mark on top of the first. Nothing else
+in this guide is written in symbols at all, so if you get through this chapter
+the rest is English.</p>
+<p>The problem is the workshop from the duality guide, which builds tables and
+chairs out of three things it has a limited amount of:</p>
 <div class="overflow-x"><table>
 <thead>
 <tr>
@@ -207,72 +231,108 @@ limited amount of:</p>
 </table></div>
 <p>Call the six recipe numbers <code>A</code>: three rows, one per shelf, and two columns,
 one per product. A plan is two numbers, how many tables and how many chairs,
-and it is called <code>x</code>. Then <code>Ax</code> means &quot;run the plan through the recipes and
-report what it consumes&quot;. Build 5 tables and 2 chairs and the plank row gives
-4×5 + 2×2 = 24 planks; the other two rows give the hours and the saw time. So
-<code>Ax</code> is a shopping list, one entry per shelf, and the stock levels are another
-such list called <code>b</code>. The workshop's question, written for a machine, is</p>
+and it is called <code>x</code>. The stock levels, 44, 30 and 32, are a list called <code>b</code>.</p>
+<p><strong>Read the table across, and you get <code>Ax</code>.</strong> A row of <code>A</code> is a shelf, and it
+tells you which products drain it. So <code>Ax</code> means &quot;run the plan through the
+recipes and report what it consumes&quot;. Build 5 tables and 2 chairs and the plank
+row gives 4×5 + 2×2 = 24 planks; the other two rows give the hours and the saw
+time. <code>Ax</code> is a shopping list, one entry per shelf, and it is the thing that
+has to stay under <code>b</code>.</p>
+<p>So the workshop's question, written for a machine, is:</p>
 <blockquote class="aside">
 <p>choose a plan <code>x</code>, at least zero in every entry,
 so that <code>Ax</code> stays under the shelf limits <code>b</code>,
 making the profit as large as possible.</p>
 </blockquote>
-<p>The duality guide's second idea gives the other half: put a price on each
-shelf, so much per plank, so much per hour of work, so much per hour of saw
-time, and collect the three prices in a list called <code>y</code>.</p>
-<p>Prices need the same table read the other way. A row of <code>A</code> is a shelf and
-tells you which products drain it. A <em>column</em> of <code>A</code> is a product and tells you
-what that product is made of: a table is 4 planks, 2 hours and 3 of saw time.
-Multiply a column by the prices and add up, and you have what one table's
-ingredients cost. Doing that for every column at once is what <code>A</code> transposed
-times <code>y</code> means, written <code>Aᵀy</code>. Transposing is not an operation performed on
-anything; it is a decision to read the same six numbers down instead of across.
-<code>A</code> turns a plan into a bill for shelves. <code>Aᵀ</code> turns shelf prices into a price
+<p><strong>Read the table down, and you get <code>Aᵀy</code>.</strong> The duality guide's second idea
+gives the other half: put a price on each shelf, so much per plank, so much per
+hour of work, so much per hour of saw time, and collect the three prices in a
+list called <code>y</code>. Now a <em>column</em> of <code>A</code> is a product, and it tells you what that
+product is made of: a table is 4 planks, 2 hours and 3 of saw time. Multiply a
+column by the prices and add up, and you have what one table's ingredients cost.
+Doing that for every column at once is what <code>A</code> transposed times <code>y</code> means,
+written <code>Aᵀy</code>.</p>
+<p>Transposing is not an operation performed on anything. It is a decision to read
+the same six numbers down instead of across. That is the whole content of the
+little mark, and it is worth insisting on, because it is the reason the method
+in this guide costs what it does: the two directions share one copy of the
+matrix, so streaming over it serves both.</p>
+<p><code>A</code> turns a plan into a bill for shelves. <code>Aᵀ</code> turns shelf prices into a price
 per product.</p>
-<p>One worked case, using the prices that turn out to be right in chapter 8,
-$6.25 a plank, $2.50 an hour, nothing for the saw: a table's ingredients cost
-4×6.25 + 2×2.50 + 3×0 = $30, which is exactly what a table sells for. At those
-prices, building a table breaks even to the penny. No coincidence, and the
-duality guide is where it comes from.</p>
-<p>Now score any pair of plan and prices with a single number:</p>
+<p>One worked case you can check on the back of an envelope, using the prices that
+turn out to be right in chapter 11 — $6.25 a plank, $2.50 an hour, nothing for
+the saw. A table's ingredients cost</p>
 <blockquote class="aside">
-<p><code>L(x, y)</code> = what the plan costs, plus the prices times how much the plan
-overruns each shelf.</p>
+<p>4×6.25 + 2×2.50 + 3×0 = 25 + 5 + 0 = $30</p>
 </blockquote>
-<p>The first half is the plan's own score, with profit counted as a negative cost
-so that a workshop trying to earn the most is a plan trying to cost the least.
-The second half is a fine. Overrun the plank shelf by three planks with planks
-priced at $6.25 and you are charged $18.75 for it. Leave planks spare and the
-term goes the other way, which is the prices saying they would rather be zero
-on a shelf nobody is fighting over.</p>
-<p>The plan wants this small. The prices want it large: if a shelf is overrun,
-raising its price punishes the plan for it. The answer is the standstill where
-neither side can improve by moving: the plan is the best one, and the prices
-are the shadow prices of chapter 7 over there.</p>
-<p>Now the point. To improve the plan you need to know, at the current prices,
-whether a product earns more than its ingredients cost, and that comparison is
-the profit against <code>Aᵀy</code>. To improve the prices you need to know which shelves
-are overdrawn, and that is <code>Ax</code> against <code>b</code>. Two questions, two readings of the
-same table, one matrix-vector product each. Then you clamp anything that went
-negative back to zero, because there are no negative chairs and no negative
-prices.</p>
-<p>That is the whole vocabulary. Two matrix-vector products, some vector
-addition, and a clamp. <strong>No factorisation, no basis, no pivoting, no ordering,
-nothing sequential.</strong></p>
-<p>It is exactly the shape chapter 1 asked for. The only question left is whether
-it works.</p>
+<p>which is exactly what a table sells for. At those prices, building a table
+breaks even to the penny. That is no coincidence, and the duality guide is where
+it comes from.</p>
 <blockquote class="takeaway">
-<p><strong>In one sentence.</strong> Treating the plan and the prices as two players lets you
-build a method out of nothing but matrix-vector products.</p>
+<p><strong>In one sentence.</strong> One table of six numbers, read across, turns a plan into
+a bill; read down, it turns prices into a cost per product.</p>
 </blockquote>
-<h2 id="ch4"><span class="num">4</span>The obvious version does not work</h2>
+<h2 id="ch5"><span class="num">5</span>Two players, one score</h2>
+<p>Two readings, two half-answers. To get a method they have to be pushed against
+each other, and that needs a single number they can disagree about.</p>
+<p>Score any pair of plan and prices like this:</p>
+<blockquote class="aside">
+<p>what the plan costs, plus the prices times how much the plan overruns each
+shelf.</p>
+</blockquote>
+<p>The first half is the plan's own score, with profit counted as a negative cost,
+so that a workshop trying to earn the most becomes a plan trying to cost the
+least. The second half is a fine. Overrun the plank shelf by three planks with
+planks priced at $6.25 and you are charged $18.75 for it. Leave planks spare
+and the term goes the other way, which is the prices admitting they would rather
+be zero on a shelf nobody is fighting over.</p>
+<p>Now notice that the two sides want opposite things from that one number.</p>
+<p><strong>The plan wants it small.</strong> It will happily overrun a shelf if the profit
+exceeds the fine, so it leans on whichever shelf is currently cheap.</p>
+<p><strong>The prices want it large.</strong> If a shelf is overrun, raising its price punishes
+the plan for exactly that, so prices climb on whatever is being abused.</p>
+<p>Neither side is trying to find the answer. Each is only trying to beat the
+other. And the place they come to rest — where the plan cannot improve by
+moving and the prices cannot improve by moving either — is the answer to both
+problems at once: the plan is the best one, and the prices are the shadow prices
+of the duality guide.</p>
+<p>That is the trick worth carrying out of this chapter. The optimum has been
+turned from something to search for into a standstill between two greedy
+parties.</p>
+<blockquote class="takeaway">
+<p><strong>In one sentence.</strong> One score that the plan pushes down and the prices push
+up turns &quot;find the best plan&quot; into &quot;find where two opponents stop moving&quot;.</p>
+</blockquote>
+<h2 id="ch6"><span class="num">6</span>A method made of one operation</h2>
+<p>Now the payoff, and it is why the last two chapters were worth the trouble.</p>
+<p>To improve the plan you need to know, at the current prices, whether a product
+earns more than its ingredients cost. That comparison is the profit against
+<code>Aᵀy</code>.</p>
+<p>To improve the prices you need to know which shelves are overdrawn. That is
+<code>Ax</code> against <code>b</code>.</p>
+<p>Two questions, two readings of the same table, one matrix-vector product each.
+Then you clamp anything that went negative back to zero, because there are no
+negative chairs and no negative prices.</p>
+<p>That is the entire vocabulary of the method. Two matrix-vector products, some
+vector addition, and a clamp. <strong>No factorisation, no basis, no pivoting, no
+ordering, nothing sequential.</strong></p>
+<p>Look back at what chapter 3 said simplex could not avoid — a chain of dependent
+decisions and a triangular solve — and then at what chapter 2 said the hardware
+wants: an inner loop that does nothing but stream over the matrix. This is that
+loop and nothing else.</p>
+<p>The only question left is whether it works.</p>
+<blockquote class="takeaway">
+<p><strong>In one sentence.</strong> Letting the plan and the prices take turns gives a method
+whose whole inner loop is two passes over the matrix.</p>
+</blockquote>
+<h2 id="ch7"><span class="num">7</span>The obvious version does not work</h2>
 <p>The obvious thing is to move both at once. Push the plan down a little, push
 the prices up a little, repeat.</p>
 <p>To see what happens, shrink the problem until the whole state fits on a page:
 one variable, one rule, <code>x = 3</code>. Nothing to maximise, one shelf, one product,
 and the plan simply has to hit 3. Then the state is a plan and a price, two
 numbers, and the path they trace is a curve in a plane.</p>
-<p>With one of each, both matrix-vector products of chapter 3 collapse to a single
+<p>With one of each, both matrix-vector products of chapter 6 collapse to a single
 multiplication, and the whole method is two lines. Take the step size to be 0.2
 on both sides. Each iteration does:</p>
 <pre><code>new plan   =  plan  + 0.2 × price
@@ -288,7 +348,7 @@ the plan reaches 2.84 and the price 2.32. The plan crosses 3 on the third step
 and the price <em>is still rising</em>, because the plan it is being shown is the one
 from before the crossing. By the time the price notices and turns around, the
 plan is at 3.77 and sailing away.</p>
-<figure class="plate"><img src="chapters/04-the-obvious-version/outward.png" alt="A trajectory in the plane of plan against price, starting near the answer and
+<figure class="plate"><img src="chapters/07-the-obvious-version/outward.png" alt="A trajectory in the plane of plan against price, starting near the answer and
 winding steadily outward in a widening spiral." loading="lazy"></figure>
 <p>It winds outward. It starts 2.2 away from the answer and after 90 steps it is
 13.1 away, and it keeps going.</p>
@@ -308,7 +368,7 @@ $753</strong>, and it never once sits at $350.</p>
 <p><strong>In one sentence.</strong> Two players each reacting to the other's previous move
 circle forever instead of settling.</p>
 </blockquote>
-<h2 id="ch5"><span class="num">5</span>One term different</h2>
+<h2 id="ch8"><span class="num">8</span>One term different</h2>
 <p>Here is the fix, and it is almost nothing.</p>
 <p>When the prices react, do not show them the plan's current position. Show them
 where the plan is <em>heading</em>: the new plan, plus the step it has just taken,
@@ -324,12 +384,12 @@ plan still moves to 2.4, but the price is now shown 2×2.4 − 2 = 2.8 instead o
 2. Still short of 3, so the price still rises, but to 2.04 rather than 2.2. The
 correction is smaller because it arrives less late, and that is the entire
 repair.</p>
-<figure class="plate"><img src="chapters/05-one-term-different/inward.png" alt="The same trajectory in the same plane, now winding inward toward the answer
+<figure class="plate"><img src="chapters/08-one-term-different/inward.png" alt="The same trajectory in the same plane, now winding inward toward the answer
 in a tightening spiral." loading="lazy"></figure>
 <p>Same problem, same step sizes, same starting point, one changed term. The
 spiral reverses. After 90 steps it is 0.36 away instead of 13.1.</p>
 <p>Side by side, from the same start, it is not a subtle difference:</p>
-<figure class="plate"><img src="chapters/05-one-term-different/spiral.gif" alt="Two planes side by side, each tracing a path from the same starting point.
+<figure class="plate"><img src="chapters/08-one-term-different/spiral.gif" alt="Two planes side by side, each tracing a path from the same starting point.
 On the left the path winds outward and leaves the frame. On the right it winds
 inward and settles on the answer." loading="lazy"></figure>
 <p>This is the <strong>primal-dual hybrid gradient</strong> method, and it is the algorithm
@@ -337,11 +397,14 @@ underneath the first-order LP solvers that run on GPUs.</p>
 <p>Its per-iteration cost is unchanged: still two matrix-vector products, still no
 factorisation. It has not become a more expensive method. It has become a
 convergent one.</p>
+<p><strong><a href="https://bayzhan8.github.io/Illuminate/lp-on-gpu/sandbox/08.html">Try it yourself →</a></strong>
+Switch the anticipation off and watch the same code start cycling, then turn it
+back on and raise the step size until even that stops working.</p>
 <blockquote class="takeaway">
 <p><strong>In one sentence.</strong> Letting the prices anticipate the plan's next move
 rather than react to its last one turns the spiral inward, at no extra cost.</p>
 </blockquote>
-<h2 id="ch6"><span class="num">6</span>It turns fast and shrinks slowly</h2>
+<h2 id="ch9"><span class="num">9</span>It turns fast and shrinks slowly</h2>
 <p>The spiral converges. The trouble is how.</p>
 <p>Look at what one step of the inward spiral does. It carries the point some way
 <em>around</em> the answer, and it brings it a little way <em>in</em>. A turn and a shrink,
@@ -364,7 +427,7 @@ revolution of that spiral buys you one halving. It is spinning quickly and
 closing in barely at all.</p>
 <p>And you cannot fix it by taking bigger steps, because the two are locked
 together.</p>
-<figure class="plate"><img src="chapters/06-fast-turn-slow-shrink/anatomy.png" alt="Two curves against step size on shared axes: degrees turned per iteration
+<figure class="plate"><img src="chapters/09-fast-turn-slow-shrink/anatomy.png" alt="Two curves against step size on shared axes: degrees turned per iteration
 rising steeply, and percent closer per iteration rising with
 it." loading="lazy"></figure>
 <p>Raising the step size does make it contract faster. It also makes it rotate
@@ -375,7 +438,7 @@ that keeps it stable is the setting that makes it crawl.</p>
 <p><strong>In one sentence.</strong> The iteration rotates far more than it contracts, and
 the step size cannot fix that because it drives both.</p>
 </blockquote>
-<h2 id="ch7"><span class="num">7</span>Cancel the rotation</h2>
+<h2 id="ch10"><span class="num">10</span>Cancel the rotation</h2>
 <p>If the problem is rotation, remove the rotation.</p>
 <p>Averaging is the tool. Average the iterates over a full revolution and the
 turning cancels, because points on opposite sides of the circle pull in
@@ -390,7 +453,7 @@ the one a full turn before it, and no later point ever undoes it. Average the
 batch and you are left with the ring's centre and the progress inward, which is
 the part you wanted. Then throw away the state, start again from the average,
 and do it once more.</p>
-<figure class="plate"><img src="chapters/07-cancel-the-rotation/restarts.png" alt="Two convergence curves on a logarithmic scale, one decaying slowly and the
+<figure class="plate"><img src="chapters/10-cancel-the-rotation/restarts.png" alt="Two convergence curves on a logarithmic scale, one decaying slowly and the
 other dropping by six orders of magnitude over the same number of
 iterations." loading="lazy"></figure>
 <p>Same iteration. Same two matrix products per step. Same step sizes. Restarting
@@ -402,16 +465,19 @@ orders of magnitude, and it is why practical first-order LP solvers all restart.
 <p><em>(Real solvers choose the restart moment adaptively rather than on a fixed
 schedule, and there are stronger variants than plain averaging. The mechanism
 is the one above.)</em></p>
+<p><strong><a href="https://bayzhan8.github.io/Illuminate/lp-on-gpu/sandbox/10.html">Try it yourself →</a></strong>
+Sweep the restart period and find the best one, then check it against the length
+of one revolution from the chapter before.</p>
 <blockquote class="takeaway">
 <p><strong>In one sentence.</strong> Averaging over a revolution cancels the rotation and
 keeps the drift, which costs nothing and is worth orders of magnitude.</p>
 </blockquote>
-<h2 id="ch8"><span class="num">8</span>Does it get the right answer?</h2>
+<h2 id="ch11"><span class="num">11</span>Does it get the right answer?</h2>
 <p>It should be checked against something that cannot be wrong.</p>
 <p>The duality guide solved this workshop in exact rational arithmetic with a
 simplex method: <strong>9 tables and 4 chairs, worth $350</strong>, with shadow prices of
 <strong>$6.25</strong> a plank, <strong>$2.50</strong> an hour and <strong>nothing</strong> for saw time.</p>
-<figure class="plate"><img src="chapters/08-the-same-answer/agree.png" alt="A logarithmic convergence curve falling from tens to below ten to the
+<figure class="plate"><img src="chapters/11-the-same-answer/agree.png" alt="A logarithmic convergence curve falling from tens to below ten to the
 fifteenth over about a thousand iterations." loading="lazy"></figure>
 <p>The first-order method finds the same plan, to fifteen decimal places.</p>
 <p>It also finds the same prices. That is worth pausing on, because it is not an
@@ -422,9 +488,9 @@ this method solves afterwards. It is the thing it was solving all along.</p>
 <p><strong>In one sentence.</strong> It converges to the same plan and the same shadow prices
 as the exact method, because the prices were half the algorithm.</p>
 </blockquote>
-<h2 id="ch9"><span class="num">9</span>What it costs</h2>
+<h2 id="ch12"><span class="num">12</span>What it costs</h2>
 <p>Two costs, and they are the reason this has not replaced anything.</p>
-<figure class="plate"><img src="chapters/09-what-it-costs/cost.png" alt="Two panels. On the left, the worst rule violation falling from about a plank
+<figure class="plate"><img src="chapters/12-what-it-costs/cost.png" alt="Two panels. On the left, the worst rule violation falling from about a plank
 to zero over a few thousand iterations, against a line marking that every
 simplex iterate is exactly legal. On the right, a tied optimum where the exact
 method returns a corner and the first-order method returns the
@@ -451,7 +517,7 @@ and have so far changed integer programming much less.</p>
 <p><strong>In one sentence.</strong> You trade a legal answer at every step, and a corner at
 the end, for an inner loop that a wide machine can actually feed.</p>
 </blockquote>
-<h2 id="ch10"><span class="num">10</span>Where this leaves things</h2>
+<h2 id="ch13"><span class="num">13</span>Where this leaves things</h2>
 <p>The honest summary is narrow and worth stating precisely.</p>
 <p>For linear programs large enough that forming and storing a factorisation is
 the binding constraint, a method whose entire inner loop is matrix-vector
@@ -464,8 +530,8 @@ high accuracy, problems that are really integer programs wanting a basis at
 every node. The chapters above are most of those reasons.</p>
 <p>What has actually changed is that the answer to &quot;which algorithm&quot; now depends
 on the machine, in a way it did not for thirty years.</p>
-<p>The specific benchmark numbers in this area move quickly and I have not quoted
-any, because a guide that dates in six months is worse than one that does not
+<p>The specific benchmark numbers in this area move quickly, and none are quoted
+here, because a guide that dates in six months is worse than one that does not
 try. The primary sources, if you want the current state: the PDLP paper by
 Applegate and co-authors, the cuPDLP line of work, and Mittelmann's benchmark
 pages, which are updated continuously.</p>
@@ -499,7 +565,7 @@ pages, which are updated continuously.</p>
 <td>extrapolation</td>
 </tr>
 <tr>
-<td>the method of chapter 5</td>
+<td>the method of chapter 8</td>
 <td><strong>PDHG</strong>, primal-dual hybrid gradient</td>
 </tr>
 <tr>

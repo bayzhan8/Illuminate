@@ -18,8 +18,8 @@ from illuminate.draw import (HAIRLINE, OK, PLAN, PRICE, SURFACE, TEXT, TEXT_DIM,
                              TEXT_FAINT, animate, chapter_dir, figure, heading,
                              margin_note, save, tag)
 
-OUT_GDA = chapter_dir("04-the-obvious-version")
-OUT_PDHG = chapter_dir("05-one-term-different")
+OUT_GDA = chapter_dir("07-the-obvious-version")
+OUT_PDHG = chapter_dir("08-one-term-different")
 
 # a single equality x = 3, so the state is (plan, price) and lives in a plane
 STEP = 0.2

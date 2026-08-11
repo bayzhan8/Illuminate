@@ -14,7 +14,7 @@ from illuminate.draw import (HAIRLINE, OK, PLAN, PRICE, SURFACE, TEXT, TEXT_DIM,
                              margin_note, plate, save, tag)
 from twopaths.barrier import Region, analytic_centre, central_path, centre_for
 
-OUT = chapter_dir("07-through-the-middle")
+OUT = chapter_dir("11-the-central-path")
 
 A = [[4, 2], [2, 3], [3, 1]]
 B = [44, 30, 32]

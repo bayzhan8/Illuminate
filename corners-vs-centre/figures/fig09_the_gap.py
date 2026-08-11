@@ -18,7 +18,7 @@ from illuminate.draw import (HAIRLINE, OK, PLAN, PRICE, SURFACE, TEXT, TEXT_DIM,
 from twopaths.barrier import Region, centre_for, duality_gap
 from twopaths.simplex import dantzig, solve
 
-OUT = chapter_dir("09-a-gap-you-can-forecast")
+OUT = chapter_dir("13-a-gap-you-can-forecast")
 
 A = [[4, 2], [2, 3], [3, 1]]
 B = [44, 30, 32]

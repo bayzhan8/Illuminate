@@ -7,8 +7,8 @@ from firstorder.methods import pdhg, spiral_anatomy
 from illuminate.draw import (HAIRLINE, OK, PLAN, PRICE, SURFACE, TEXT, TEXT_DIM,
                              TEXT_FAINT, chapter_dir, figure, heading, save, tag)
 
-OUT_ANATOMY = chapter_dir("06-fast-turn-slow-shrink")
-OUT_RESTART = chapter_dir("07-cancel-the-rotation")
+OUT_ANATOMY = chapter_dir("09-fast-turn-slow-shrink")
+OUT_RESTART = chapter_dir("10-cancel-the-rotation")
 
 
 def anatomy_png():

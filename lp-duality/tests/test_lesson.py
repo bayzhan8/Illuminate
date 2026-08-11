@@ -148,7 +148,7 @@ def test_the_random_sample_size_matches_the_figure():
 
 def test_the_lesson_splits_into_the_chapters_build_expects():
     front, chapters, tail = build.split_lesson(build.TOPIC)
-    assert len(chapters) == len(build.CHAPTERS) == 11
+    assert len(chapters) == len(build.CHAPTERS) == 12
     assert front.startswith(build.TOPIC.heading)
     assert tail
 
@@ -182,3 +182,13 @@ def test_every_invented_phrase_has_its_real_name():
 def test_the_lesson_does_not_oversell_the_evidence():
     """Chapter 5 shows 320 examples of a theorem. It has to say so."""
     assert "It is not a proof." in FLAT
+
+def test_the_readme_chapter_table_matches_the_chapters():
+    """The topic README is hand-written, so nothing else catches it going stale
+    when a chapter is split. Every link must resolve and be in build order."""
+    readme = (ROOT / "README.md").read_text()
+    linked = re.findall(r"\]\(chapters/([^)/]+)/\)", readme)
+    assert linked == [c.folder for c in build.CHAPTERS], \
+        "run the chapter table in README.md past build.CHAPTERS again"
+    for folder in linked:
+        assert (ROOT / "chapters" / folder).is_dir(), folder

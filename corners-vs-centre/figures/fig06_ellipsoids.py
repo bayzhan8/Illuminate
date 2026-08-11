@@ -13,7 +13,7 @@ from illuminate.draw import (HAIRLINE, OK, PLAN, PRICE, SURFACE, TEXT, TEXT_DIM,
                              margin_note, save, tag)
 from twopaths.ellipsoid import run, shrink_factor
 
-OUT = chapter_dir("06-polynomial-and-slower")
+OUT = chapter_dir("09-polynomial-and-slower")
 
 A = np.array([[4.0, 2.0], [2.0, 3.0], [3.0, 1.0]])
 B = np.array([44.0, 30.0, 32.0])

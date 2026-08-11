@@ -443,7 +443,7 @@ def test_every_figure_script_has_a_chapter_to_live_in():
 
 def test_the_lesson_splits_into_the_chapters_build_expects():
     front, chapters, tail = build.split_lesson(build.TOPIC)
-    assert len(chapters) == len(build.CHAPTERS) == 11
+    assert len(chapters) == len(build.CHAPTERS) == 15
     assert front.startswith(build.TOPIC.heading)
     assert tail
 
@@ -548,3 +548,13 @@ def test_the_page_never_leaves_the_region():
     assert got["worst"] > 0
     assert got["x"] == pytest.approx([9.0, 4.0], abs=1e-5)
     assert got["worth"] == pytest.approx(350.0, abs=1e-4)
+
+def test_the_readme_chapter_table_matches_the_chapters():
+    """The topic README is hand-written, so nothing else catches it going stale
+    when a chapter is split. Every link must resolve and be in build order."""
+    readme = (ROOT / "README.md").read_text()
+    linked = re.findall(r"\]\(chapters/([^)/]+)/\)", readme)
+    assert linked == [c.folder for c in build.CHAPTERS], \
+        "run the chapter table in README.md past build.CHAPTERS again"
+    for folder in linked:
+        assert (ROOT / "chapters" / folder).is_dir(), folder

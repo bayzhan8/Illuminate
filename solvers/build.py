@@ -18,13 +18,17 @@ CHAPTERS = [
     Chapter(1, "01-not-an-algorithm", "A solver is not an algorithm"),
     Chapter(2, "02-what-it-removes", "What presolve takes out"),
     Chapter(3, "03-the-cascade", "The cascade, and where the gap opens"),
-    Chapter(4, "04-what-it-costs", "What it costs you"),
-    Chapter(5, "05-the-rest-of-the-machine", "The rest of the machine"),
-    Chapter(6, "06-who-is-who", "Who is who"),
-    Chapter(7, "07-a-layer-not-a-solver", "A layer is not a solver"),
-    Chapter(8, "08-the-benchmarks", "Why the benchmarks cannot be read straight"),
-    Chapter(9, "09-the-licence", "The licence is the deployment problem"),
-    Chapter(10, "10-how-to-choose", "How to choose"),
+    Chapter(4, "04-a-decision-by-arithmetic", "A decision made by arithmetic"),
+    Chapter(5, "05-what-it-costs", "What it costs you"),
+    Chapter(6, "06-the-rest-of-the-machine", "The rest of the machine"),
+    Chapter(7, "07-who-is-who", "Who is who"),
+    Chapter(8, "08-a-layer-not-a-solver", "A layer is not a solver"),
+    Chapter(9, "09-not-linear", "When the problem is not linear"),
+    Chapter(10, "10-a-toolkit-is-not-a-solver", "A toolkit is not a solver either"),
+    Chapter(11, "11-the-benchmarks", "Why the benchmarks cannot be read straight"),
+    Chapter(12, "12-measure-your-own", "Measure on your own models"),
+    Chapter(13, "13-the-licence", "The licence is the deployment problem"),
+    Chapter(14, "14-how-to-choose", "How to choose"),
 ]
 
 # The bound-tightening chain from chapter 3, in JavaScript so the page needs no
@@ -47,7 +51,7 @@ function verdict(demand, bigM) {
 
 SANDBOXES = [
     Sandbox(
-        3, "Watch a decision get made without a search",
+        4, "Watch a decision get made without a search",
         "The link row says production cannot exceed the big-M constant times "
         "the setup switch. Demand pushes production up from below. Somewhere "
         "in between, the switch stops being a decision.",

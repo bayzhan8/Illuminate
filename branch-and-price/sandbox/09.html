@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Restart it — Illuminate</title>
+<title>Run the loop — Illuminate</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
@@ -22,75 +22,63 @@
   <button class="toggle" id="theme" type="button" aria-label="Switch colour scheme">DARK</button>
 </header>
 <main class="sandbox">
-  <a class="back" href="../index.html#ch7">← back to chapter 7</a>
-  <h1>Restart it</h1>
-  <p class="lede">The same iteration, with the averaging of chapter 7. The cost per step is identical either way.</p>
-  <p class="try"><strong>Try this.</strong> Sweep the restart period. There is a best value near the length of one revolution of the spiral, and it beats never restarting by orders of magnitude.</p>
+  <a class="back" href="../index.html#ch9">← back to chapter 9</a>
+  <h1>Run the loop</h1>
+  <p class="lede">Column generation on the 25-foot order, one round at a time: solve, read the prices, ask the knapsack, add.</p>
+  <p class="try"><strong>Try this.</strong> Step to the end. Three patterns get added, the number falls from 7 to 6.5, and the last round is the one that proves there is nothing left.</p>
   <canvas id="c" width="660" height="380"></canvas>
-  <div class="controls"><div class="row"><label for="period">restart every</label><input type="range" id="period" min="0" max="120" step="5" value="40"><output class="val" id="periodv"></output></div></div>
+  <div class="controls"><div class="row"><label for="step">round</label><input type="range" id="step" min="0" max="3" step="1" value="0"><output class="val" id="stepv"></output></div></div>
   <pre class="out" id="out"></pre>
-  <p class="note">Restarting far too often is worse than not restarting: averaging over a fraction of a turn does not cancel the rotation, it just discards progress.</p>
-  <nav class="pager"><a href="05.html">← One term, on or off</a> · <a href="index.html">all 2</a></nav>
+  <p class="note">The last round is not wasted work. It is the round that proves the previous answer was already optimal, and without it you would only have a good number rather than the right one.</p>
+  <nav class="pager"><a href="08.html">← Ask for a pattern</a> · <a href="index.html">all 2</a></nav>
 </main>
 <script src="../../assets/site.js"></script>
 <script>
 
-// the workshop: three shelves, two products
-const A = [[4, 2], [2, 3], [3, 1]];
-const B = [44, 30, 32];
-const PROFIT = [30, 20];
+const BOARD = 25;
+const WIDTHS = [4, 9, 10];
+const DEMANDS = [3, 6, 7];
 
-function matvec(M, v) { return M.map(r => r.reduce((s, a, j) => s + a * v[j], 0)); }
-function matTvec(M, v) {
-  const out = new Array(M[0].length).fill(0);
-  for (let i = 0; i < M.length; i++)
-    for (let j = 0; j < M[i].length; j++) out[j] += M[i][j] * v[i];
+// every maximal way to cut one board: nothing more would fit in the leftover
+function allPatterns(board, widths) {
+  const out = [];
+  (function extend(i, left, sofar) {
+    if (i === widths.length) {
+      if (sofar.some(v => v > 0) && left < Math.min(...widths)) out.push(sofar.slice());
+      return;
+    }
+    for (let k = 0; k <= Math.floor(left / widths[i]); k++)
+      extend(i + 1, left - k * widths[i], sofar.concat([k]));
+  })(0, board, []);
   return out;
 }
-function clamp(v) { return v.map(t => Math.max(t, 0)); }
 
-// largest stretch of A, by power iteration: sets the safe step size
-function norm2(M) {
-  let v = new Array(M[0].length).fill(1);
-  for (let k = 0; k < 200; k++) {
-    const w = matTvec(M, matvec(M, v));
-    const n = Math.hypot(...w);
-    v = w.map(t => t / n);
-  }
-  return Math.sqrt(Math.hypot(...matvec(M, v)) ** 2 / (Math.hypot(...v) ** 2));
+function waste(pattern, board, widths) {
+  return board - pattern.reduce((s, n, i) => s + n * widths[i], 0);
 }
 
-// One sweep of either method. `extrapolate` is the single differing term:
-// with it the prices see where the plan is heading, without it where it was.
-function step(x, y, tau, sigma, extrapolate) {
-  const grad = matTvec(A, y).map((t, j) => -PROFIT[j] + t);
-  const xn = clamp(x.map((t, j) => t - tau * grad[j]));
-  const lead = extrapolate ? xn.map((t, j) => 2 * t - x[j]) : x;
-  const resid = matvec(A, lead).map((t, i) => t - B[i]);
-  const yn = clamp(y.map((t, i) => t + sigma * resid[i]));
-  return [xn, yn];
+function describe(pattern, widths) {
+  const parts = [];
+  for (let i = 0; i < widths.length; i++)
+    if (pattern[i]) parts.push(pattern[i] + "×" + widths[i]);
+  return parts.length ? parts.join(" + ") : "nothing";
 }
 
-function run(iterations, stepSize, extrapolate, restartEvery) {
-  let x = [0, 0], y = [0, 0, 0];
-  const path = [[x.slice(), y.slice()]];
-  let sx = [0, 0], sy = [0, 0, 0], seen = 0;
-  for (let k = 1; k <= iterations; k++) {
-    [x, y] = step(x, y, stepSize, stepSize, extrapolate);
-    sx = sx.map((t, j) => t + x[j]); sy = sy.map((t, i) => t + y[i]); seen++;
-    if (restartEvery && seen === restartEvery) {
-      x = sx.map(t => t / seen); y = sy.map(t => t / seen);
-      sx = [0, 0]; sy = [0, 0, 0]; seen = 0;
-    }
-    path.push([x.slice(), y.slice()]);
-  }
-  return path;
-}
-
-function value(x) { return PROFIT[0] * x[0] + PROFIT[1] * x[1]; }
-function violation(x) {
-  const over = matvec(A, x).map((t, i) => t - B[i]);
-  return Math.max(0, ...over, ...x.map(t => -t));
+// Fill one board to maximise the value of the pieces taken off it: an
+// unbounded knapsack, solved exactly by working up from an empty board.
+function knapsack(prices, board, widths) {
+  const best = new Array(board + 1).fill(0);
+  const took = new Array(board + 1).fill(-1);
+  for (let cap = 1; cap <= board; cap++)
+    for (let i = 0; i < widths.length; i++)
+      if (widths[i] <= cap && best[cap - widths[i]] + prices[i] > best[cap] + 1e-12) {
+        best[cap] = best[cap - widths[i]] + prices[i];
+        took[cap] = i;
+      }
+  const pattern = new Array(widths.length).fill(0);
+  let cap = board;
+  while (took[cap] >= 0) { pattern[took[cap]]++; cap -= widths[took[cap]]; }
+  return { value: best[board], pattern: pattern };
 }
 
 
@@ -191,41 +179,35 @@ function sortRound(pts) {
 
 
 const cv = document.getElementById("c"), out = document.getElementById("out");
-const period = document.getElementById("period");
-const TRUE_X = [9, 4], TRUE_Y = [6.25, 2.5, 0], SHOWN = 600;
-function far(state) {
-  const [x, y] = state;
-  return Math.hypot(x[0] - TRUE_X[0], x[1] - TRUE_X[1],
-                    y[0] - TRUE_Y[0], y[1] - TRUE_Y[1], y[2] - TRUE_Y[2]);
-}
+const step = document.getElementById("step");
+// the rounds as the Python produced them; tests/test_sandbox.py checks these
+// against a live run rather than trusting the numbers pasted here
+const ROUNDS = [{"held": 3, "value": 7.0, "duals": ["1/6", "1/2", "1/2"], "best": "4\u00d74 + 1\u00d79", "bestValue": 1.1666666666666667, "added": true}, {"held": 4, "value": 6.875, "duals": ["1/8", "1/2", "1/2"], "best": "1\u00d74 + 2\u00d79", "bestValue": 1.125, "added": true}, {"held": 5, "value": 6.5, "duals": ["1/7", "3/7", "1/2"], "best": "1\u00d74 + 2\u00d710", "bestValue": 1.1428571428571428, "added": true}, {"held": 6, "value": 6.5, "duals": ["0", "1/2", "1/2"], "best": "1\u00d74 + 2\u00d79", "bestValue": 1.0, "added": false}];
 function draw() {
-  const every = +period.value;
-  document.getElementById("periodv").textContent = every === 0 ? "never" : every;
-  const tau = 0.9 / norm2(A);
-  const plain = run(SHOWN, tau, true, 0).map(far);
-  const fixed = run(SHOWN, tau, true, every).map(far);
-  const p = Plot(cv, 0, SHOWN, -16, 2, { l: 58, r: 22, t: 20, b: 42 });
-  p.clear(); p.grid(100, 2); p.axes("iterations", "log10 distance", 200, 4);
-  for (const [series, colour, width] of [[plain, p.P.muted, 1.6],
-                                         [fixed, p.P.plan, 2.2]]) {
-    p.ctx.beginPath(); p.ctx.strokeStyle = colour; p.ctx.lineWidth = width;
-    series.forEach((d, k) => {
-      const L = Math.max(-16, Math.log10(Math.max(d, 1e-16)));
-      if (k === 0) p.ctx.moveTo(p.X(k), p.Y(L)); else p.ctx.lineTo(p.X(k), p.Y(L));
-    });
-    p.ctx.stroke();
-  }
-  p.label(SHOWN - 6, -1.4, "never restarted", p.P.muted, "right", 11);
-  const gain = plain[SHOWN] / Math.max(fixed[SHOWN], 1e-16);
+  const k = +step.value, r = ROUNDS[k];
+  document.getElementById("stepv").textContent = (k + 1) + " of " + ROUNDS.length;
+  const p = Plot(cv, 0, 4, 6.2, 7.2, { l: 54, r: 22, t: 22, b: 40 });
+  p.clear(); p.grid(1, 0.2); p.axes("round", "boards needed", 1, 0.2);
+  const xs = ROUNDS.map((_, i) => i);
+  p.ctx.beginPath(); p.ctx.strokeStyle = p.P.plan; p.ctx.lineWidth = 2.4;
+  ROUNDS.forEach((rr, i) => {
+    if (i <= k) { const X = p.X(i), Y = p.Y(rr.value);
+      if (i === 0) p.ctx.moveTo(X, Y); else p.ctx.lineTo(X, Y); }
+  });
+  p.ctx.stroke();
+  ROUNDS.forEach((rr, i) => { if (i <= k) p.dot(i, rr.value, p.P.plan, 6); });
+  p.line(0, 6.5, 4, 6.5, p.P.muted, 1, [4, 4]);
+  p.label(3.9, 6.54, "6.5", p.P.muted, "right", 11);
+  const prices = r.duals.map((d, i) => WIDTHS[i] + "ft " + d).join("   ");
   out.textContent =
-    "after " + SHOWN + " iterations\n" +
-    "  never restarted   " + plain[SHOWN].toExponential(2) + " away\n" +
-    "  restarted         " + fixed[SHOWN].toExponential(2) + " away\n\n" +
-    (every === 0 ? "restarting is off"
-                 : "restarting is " + gain.toExponential(1) + " times closer, " +
-                   "for the same number of matrix products");
+    "holding " + r.held + " patterns   master needs " + r.value.toFixed(4) + " boards\n" +
+    "prices   " + prices + "\n\n" +
+    "knapsack builds  " + r.best + "\n" +
+    "worth            " + r.bestValue.toFixed(4) + "\n" +
+    (r.added ? "more than one board — add it, go again"
+             : "exactly one board — nothing is missing, stop");
 }
-period.addEventListener("input", draw);
+step.addEventListener("input", draw);
 window.addEventListener("resize", draw);
 document.addEventListener("themechange", draw);
 draw();

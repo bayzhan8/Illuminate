@@ -35,8 +35,9 @@
     <li><a href="#ch6"><span class="toc-num">6</span><span class="toc-title">Which rules are actually holding you back</span></a></li>
     <li><a href="#ch7"><span class="toc-num">7</span><span class="toc-title">What one more plank is worth</span></a></li>
     <li><a href="#ch8"><span class="toc-num">8</span><span class="toc-title">The price is only local</span></a></li>
-    <li><a href="#ch9"><span class="toc-num">9</span><span class="toc-title">When it goes wrong</span></a></li>
-    <li><a href="#ch10"><span class="toc-num">10</span><span class="toc-title">Where this leads</span></a></li>
+    <li><a href="#ch9"><span class="toc-num">9</span><span class="toc-title">Profit that runs away</span></a></li>
+    <li><a href="#ch10"><span class="toc-num">10</span><span class="toc-title">A plan that cannot exist</span></a></li>
+    <li><a href="#ch11"><span class="toc-num">11</span><span class="toc-title">Where this leads</span></a></li>
   </ol>
 </nav>
 <main class="prose">
@@ -63,7 +64,7 @@ products, and never writes an equation.</p>
 <p><strong>The plan.</strong> Chapters 1 and 2 set up the problem and show why it cannot be
 solved by trying things. Chapter 3 invents the second problem, and chapters 4
 and 5 are the two halves of the theorem. Chapters 6 to 8 are what practitioners
-actually use it for. Chapter 9 fences off what it does not say.</p>
+actually use it for. Chapters 9 and 10 fence off what it does not say.</p>
 <p>The numbers below are produced by the code in this folder and asserted by its
 tests. Exact rationals throughout, so &quot;equal&quot; means equal.</p>
 <h2 id="ch0"><span class="num">0</span>What this is</h2>
@@ -197,8 +198,8 @@ the right, the ceiling those prices prove, falling as the prices
 change." loading="lazy"></figure>
 <p>Watch the left panel first. Raising the plank price alone covers tables long
 before it covers chairs. While either bar is short, the prices prove nothing
-whatever. Not a weak ceiling. No ceiling. A price list satisfying one condition
-is worth as much as no price list.</p>
+whatever. A price list that covers one product and not the other proves no
+upper limit at all, which makes it worth exactly as much as no price list.</p>
 <p>Then watch what happens once both are covered. There is room to trade a lower
 plank price for a higher hourly rate, stay legal the whole way, and bring the
 ceiling down.</p>
@@ -429,22 +430,38 @@ Slide the stock of any of the three resources and watch its own price step down.
 <p><strong>In one sentence.</strong> A shadow price is a local slope with an expiry date, so
 it always has to be quoted with the range over which it holds.</p>
 </blockquote>
-<h2 id="ch9"><span class="num">9</span>When it goes wrong</h2>
-<p>Two things can go wrong, and the dual has something to say about both.</p>
-<figure class="plate"><img src="chapters/09-when-it-goes-wrong/edges.png" alt="Two panels. On the left, a region with no upper limit and profit lines
-marching off it forever. On the right, a scale of tables showing that the planks
-reach eleven and the order starts at twelve, with nothing in
-between." loading="lazy"></figure>
-<p><strong>Profit that runs away.</strong> If the rules leave a direction the workshop can go
-forever, there is no best plan. A ceiling would have to be a number bigger than
-every plan, and no such number exists, so there are no honest prices either.
-The two failures come as a pair: <em>the plan side runs away precisely when the
-price side has nothing to offer.</em></p>
-<p><strong>A plan that cannot exist.</strong> Suppose an order arrives for 12 tables.
+<h2 id="ch9"><span class="num">9</span>Profit that runs away</h2>
+<p>Two things can go wrong, and the dual has something to say about both. Here is
+the first.</p>
+<figure class="plate"><img src="chapters/09-profit-runs-away/edges.png" alt="A region with no upper limit and profit lines marching off it
+forever." loading="lazy"></figure>
+<p>If the rules leave a direction the workshop can go forever, there is no best
+plan. Nothing is stopping it, so the profit is unbounded and there is no number
+to report.</p>
+<p>Now ask what the price side makes of that. An honest price list has to be a
+ceiling over every plan at once, which is chapter 4. But a ceiling would have to
+be a number bigger than every plan, and no such number exists. So there is no
+honest price list either — not a bad one, not a loose one, none at all.</p>
+<p>The two failures come as a pair, and it is worth stating the pairing plainly
+because it is the shape the whole theory keeps taking: <em>the plan side runs away
+precisely when the price side has nothing to offer.</em></p>
+<p>Which is also how a solver tells you. Hand it a model with a direction of escape
+and it does not search forever and give up. It finds the direction, reports
+unbounded, and the thing it hands back as evidence is a fact about the prices.</p>
+<blockquote class="takeaway">
+<p><strong>In one sentence.</strong> Profit running away on one side is exactly the same event
+as no honest price list existing on the other.</p>
+</blockquote>
+<h2 id="ch10"><span class="num">10</span>A plan that cannot exist</h2>
+<p>The second failure is the more interesting one, because of <em>how</em> it gets
+settled.</p>
+<figure class="plate"><img src="chapters/10-no-such-plan/no-such-plan.png" alt="A scale of tables showing that the planks reach eleven and the order starts at
+twelve, with nothing in between." loading="lazy"></figure>
+<p>Suppose an order arrives for 12 tables.
 Forty-four planks make eleven tables, so the order cannot be met. Nothing about
-that is surprising. What is worth watching is <em>how</em> it gets settled: by
-arithmetic you can check by hand, rather than by a search that eventually gives
-up.</p>
+that is surprising. What is worth watching is that it gets settled by
+arithmetic you can do on the back of an envelope, rather than by a search that
+eventually gives up.</p>
 <p>Two rules do all the work here. Written out flat, with no symbols:</p>
 <blockquote class="aside">
 <p><strong>The plank rule.</strong> Each table takes 4 planks and each chair takes 2, and
@@ -476,17 +493,18 @@ price lists of chapter 3, except that this mixture lands on something absurd
 instead of on a ceiling. It is called a <strong>Farkas certificate</strong>, and the fact
 that one always exists when a system is impossible is the fact strong duality
 is built on.</p>
-<p>One more case, so it does not surprise you. At a bend in the curve from chapter
-8 the price is not unique. Standing exactly at 45 ⅐ planks, one more plank is
+<p>One footnote to chapter 8 before leaving the subject, because it is the way
+this bites people in practice. At a bend in that curve the price is not
+unique. Standing exactly at 45 ⅐ planks, one more plank is
 worth nothing and one fewer costs $6.25, and both numbers are legitimate
 prices. A solver will hand you one of them without mentioning the other. This
 is called <strong>degeneracy</strong>, and it is why a sensitivity report should be read as
 a range and never as a point.</p>
 <blockquote class="takeaway">
-<p><strong>In one sentence.</strong> Unbounded on one side means infeasible on the other, and
-impossibility always has a short arithmetic proof.</p>
+<p><strong>In one sentence.</strong> Impossibility always has a short arithmetic proof, built
+by mixing the rules exactly the way a price list mixes them.</p>
 </blockquote>
-<h2 id="ch10"><span class="num">10</span>Where this leads</h2>
+<h2 id="ch11"><span class="num">11</span>Where this leads</h2>
 <p>Everything above is one small problem solved by hand. What makes duality worth
 this much attention is what gets built on it.</p>
 <ul>
@@ -506,8 +524,10 @@ what is left, and take the <em>dual</em> of that leftover problem as a new rule 
 send back. Every Benders cut is a price list from chapter 3, doing the job it
 did there: proving a proposal cannot be as good as it claims.</li>
 </ul>
-<p>The next guide, <a href="../branch-and-price/">solving a model you never wrote down</a>,
-is the second of those under load.</p>
+<p>The next guide, <a href="../corners-vs-centre/">along the edge, or through the middle</a>,
+takes the first of those apart: how the walk uses the dual row to choose, and
+what a rival method that refuses corners does instead. <a href="../branch-and-price/">Solving a model you
+never wrote down</a> is the second of them under load.</p>
 <h2>What the plain words are really called</h2>
 <p>Every invented phrase in this guide has a standard name. They are here so that
 anything you read next is legible.</p>

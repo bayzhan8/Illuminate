@@ -6,7 +6,7 @@ from illuminate.draw import (HAIRLINE, OK, PLAN, PRICE, SURFACE, TEXT, TEXT_DIM,
                              TEXT_FAINT, chapter_dir, figure, heading, save, tag)
 from queues import desk as d
 
-OUT = chapter_dir("05-variance-not-utilisation")
+OUT = chapter_dir("06-variance-not-utilisation")
 
 
 def variance_png():
@@ -26,7 +26,8 @@ def variance_png():
     axL.barh(ys, waits, height=0.5, color=PLAN, zorder=4,
              edgecolor=SURFACE, linewidth=2)
     for y, w in zip(ys, waits):
-        axL.text(w + 14, y, f"{w:.0f} min", va="center", ha="left",
+        axL.text(w + 14, y, (f"{w:.0f} min" if w == int(w) else f"{w:.1f} min"),
+                 va="center", ha="left",
                  fontsize=10, color=TEXT_DIM, zorder=6)
     axL.set_yticks(ys)
     axL.set_yticklabels(labels, fontsize=9, color=TEXT_DIM)

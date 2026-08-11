@@ -14,7 +14,7 @@ from illuminate.draw import (HAIRLINE, OK, PRICE, SURFACE, TEXT, TEXT_DIM,
                              chapter_dir, save)
 from twopaths.barrier import Region, barrier_value, centre_for
 
-OUT = chapter_dir("08-what-the-barrier-does")
+OUT = chapter_dir("12-what-the-barrier-does")
 
 A = [[4, 2], [2, 3], [3, 1]]
 B = [44, 30, 32]

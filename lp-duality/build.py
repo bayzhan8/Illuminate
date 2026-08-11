@@ -27,8 +27,9 @@ CHAPTERS = [
     Chapter(6, "06-who-is-binding", "Which rules are actually holding you back"),
     Chapter(7, "07-what-one-more-is-worth", "What one more plank is worth"),
     Chapter(8, "08-the-price-breaks", "The price is only local"),
-    Chapter(9, "09-when-it-goes-wrong", "When it goes wrong"),
-    Chapter(10, "10-where-this-leads", "Where this leads"),
+    Chapter(9, "09-profit-runs-away", "Profit that runs away"),
+    Chapter(10, "10-no-such-plan", "A plan that cannot exist"),
+    Chapter(11, "11-where-this-leads", "Where this leads"),
 ]
 
 # The mathematics below is the same mathematics as src/lpduality, written a

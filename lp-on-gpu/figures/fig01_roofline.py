@@ -6,7 +6,7 @@ from firstorder import story as s
 from illuminate.draw import (HAIRLINE, OK, PLAN, PRICE, SURFACE, TEXT, TEXT_DIM,
                              TEXT_FAINT, chapter_dir, figure, heading, save, tag)
 
-OUT = chapter_dir("01-wider-not-faster")
+OUT = chapter_dir("02-the-roofline")
 
 # Two illustrative machines. The point is the *shape* of the comparison, not
 # these particular products: one has far more arithmetic per byte delivered.

@@ -5,8 +5,8 @@ from illuminate.draw import (TEXT, TEXT_DIM, TEXT_FAINT, OK, SURFACE, PLAN, PRIC
                              animate, chapter_dir, figure, heading, margin_note, save, tag)
 from boards import board_axes, draw_board
 
-OUT_LOOP = chapter_dir("07-the-loop")
-OUT_TOUCH = chapter_dir("07-the-loop")
+OUT_LOOP = chapter_dir("09-the-loop")
+OUT_TOUCH = chapter_dir("09-the-loop")
 
 
 def loop_gif(seconds_per_round=1.9):

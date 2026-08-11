@@ -20,8 +20,8 @@ RULES = [
     ((-1.0, 0.0), 0.0, "you cannot build a negative number of tables"),
     ((0.0, -1.0), 0.0, "nor a negative number of chairs"),
     ((4.0, 2.0), 44.0, "44 planks: a table takes 4, a chair 2"),
-    ((2.0, 3.0), 30.0, "30 hours of bench time: 2 and 3"),
-    ((3.0, 1.0), 32.0, "32 hours of finishing: 3 and 1"),
+    ((2.0, 3.0), 30.0, "30 hours of labour: 2 and 3"),
+    ((3.0, 1.0), 32.0, "32 hours of saw time: 3 and 1"),
 ]
 
 

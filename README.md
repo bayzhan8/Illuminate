@@ -49,6 +49,9 @@ variability rather than utilisation does the damage, and a 95% confidence
 interval that covers 9%.
 
 Queued: branch and bound and branch and cut · Benders decomposition.
+Branch and bound is the next one to write: three of the guides above already
+lean on it, which is the only place in the repository where a guide asks the
+reader to take something on trust.
 
 ## Repository map
 
@@ -62,6 +65,7 @@ Queued: branch and bound and branch and cut · Benders decomposition.
 | `<topic>/src/` | the code behind every number |
 | `<topic>/tests/` | maths · prose-against-code · JavaScript-against-Python |
 | `<topic>/notes/` | the decision log |
+| `notes/craft.md` | the prose rules every guide is written to |
 | `illuminate/` | shared package: figure style, typeface, and the `lesson.md` → site machinery |
 | `index.html`, `assets/` | the published site |
 
@@ -87,9 +91,10 @@ sandbox JavaScript are skipped and everything else runs.
 
 ## Adding a guide
 
-Read `.claude/skills/new-topic/SKILL.md` first. Short version: find the worked
-example by computation before writing a word of prose, then write `lesson.md`,
-then let `build.py` generate the rest. Register the folder in `TOPICS` here, in
+Read `.claude/skills/new-topic/SKILL.md` and `notes/craft.md` first. Short
+version: find the worked example by computation before writing a word of prose,
+then write `lesson.md` one small idea per chapter, then let `build.py` generate
+the rest. Register the folder in `TOPICS` here, in
 the list above, and in `index.html`.
 
 ## The standard

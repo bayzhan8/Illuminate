@@ -21,7 +21,7 @@ from illuminate.draw import (HAIRLINE, OK, PLAN, PRICE, SURFACE, TEXT, TEXT_DIM,
                              TEXT_FAINT, chapter_dir, save)
 from twopaths.barrier import Region, central_path
 
-OUT = chapter_dir("10-neither-one-won")
+OUT = chapter_dir("14-neither-one-won")
 
 A = [[4, 2], [2, 3], [3, 1]]
 B = [44, 30, 32]
@@ -74,7 +74,7 @@ def crossover_png():
         ax.tick_params(labelbottom=False, labelleft=False, length=0)
 
         # The two walls that meet at the corner, drawn far past the window so
-        # they fill it at any zoom: planks, then bench time.
+        # they fill it at any zoom: planks, then labour.
         span = np.array([-2.0, 2.0]) * half
         for row, limit in ((A[0], B[0]), (A[1], B[1])):
             xs = CORNER[0] + span

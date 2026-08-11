@@ -147,7 +147,7 @@ def test_the_bug_count_the_chapter_confesses_to_is_the_real_one():
 
 def test_the_lesson_splits_into_the_chapters_build_expects():
     front, chapters, _ = build.split_lesson(build.TOPIC)
-    assert len(chapters) == len(build.CHAPTERS) == 10
+    assert len(chapters) == len(build.CHAPTERS) == 12
     assert front.startswith(build.TOPIC.heading)
 
 
@@ -222,7 +222,7 @@ def test_the_baked_in_rounds_are_the_real_ones():
         assert row["value"] == pytest.approx(float(here.value))
         assert row["best"] == m.BOARDS.describe(here.best_pattern)
         assert row["added"] == here.added
-    page = (SANDBOX / "07.html").read_text()
+    page = (SANDBOX / "09.html").read_text()
     assert "ROUNDS_JSON" not in page, "the rounds were never substituted in"
     assert '"held": 3' in page or '"held":3' in page
 
@@ -283,3 +283,13 @@ def test_the_derivation_of_six_and_a_half_in_chapter_three():
     assert max(sum(p[i] for i in longs) for p in m.PATTERNS) == 2
     assert sum(m.BOARDS.demands[i] for i in longs) == 13
     assert Fraction(13, 2) == m.DW_BOUND
+
+def test_the_readme_chapter_table_matches_the_chapters():
+    """The topic README is hand-written, so nothing else catches it going stale
+    when a chapter is split. Every link must resolve and be in build order."""
+    readme = (ROOT / "README.md").read_text()
+    linked = re.findall(r"\]\(chapters/([^)/]+)/\)", readme)
+    assert linked == [c.folder for c in build.CHAPTERS], \
+        "run the chapter table in README.md past build.CHAPTERS again"
+    for folder in linked:
+        assert (ROOT / "chapters" / folder).is_dir(), folder
