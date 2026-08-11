@@ -6,6 +6,9 @@
    colour-vision simulator rather than by eye, and stays clearly separated
    under protanopia, deuteranopia and tritanopia in both schemes. */
 
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
 :root {
   --paper: #fffff8;
   --panel: #ffffff;
@@ -36,8 +39,17 @@
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
+/* Two faces from one superfamily, so they share proportions and colour.
+   Mono carries the identity -- the bar, headings, contents, figures, code,
+   anything that is data. Serif carries the reading, because several thousand
+   words of monospace is tiring in a way that has nothing to do with taste. */
+:root {
+  --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --text-face: "IBM Plex Serif", Iowan Old Style, Georgia, serif;
+}
+
 body {
-  font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-family: var(--mono);
   font-size: 15px;
   line-height: 1.6;
   letter-spacing: -0.01em;
@@ -100,7 +112,7 @@ main { flex: 1 0 auto; }
 .withtoc {
   flex: 1 0 auto;
   display: grid;
-  grid-template-columns: 14rem minmax(0, 46rem);
+  grid-template-columns: 14rem minmax(0, 42rem);
   gap: 3.5rem;
   justify-content: center;
   align-items: start;
@@ -150,30 +162,36 @@ main { flex: 1 0 auto; }
 .toc a.current .toc-num { color: var(--plan); }
 
 @media (max-width: 1060px) {
-  .withtoc { grid-template-columns: minmax(0, 46rem); }
+  .withtoc { grid-template-columns: minmax(0, 42rem); }
   .toc { display: none; }
 }
 
 .prose {
-  max-width: 46rem;
+  max-width: 42rem;
   margin: 0 auto;
   padding: 3rem 1.5rem 5rem;
+  font-family: var(--text-face);
+  font-size: 1.115rem;
+  line-height: 1.68;
+  letter-spacing: 0;
 }
 
 .prose h1 {
-  font-size: clamp(1.6rem, 4.4vw, 2.3rem);
+  font-family: var(--mono);
+  font-size: clamp(1.5rem, 4vw, 2.05rem);
   font-weight: 600;
   letter-spacing: -0.03em;
-  line-height: 1.15;
-  margin-bottom: 1rem;
+  line-height: 1.2;
+  margin-bottom: 1.1rem;
 }
 
 .prose h2 {
-  font-size: 1.18rem;
+  font-family: var(--mono);
+  font-size: 1.16rem;
   font-weight: 600;
   letter-spacing: -0.02em;
-  margin: 3.4rem 0 1rem;
-  padding-top: 1.4rem;
+  margin: 3.6rem 0 1.2rem;
+  padding-top: 1.5rem;
   border-top: 2px solid var(--rule);
   scroll-margin-top: 5rem;
 }
@@ -185,13 +203,24 @@ main { flex: 1 0 auto; }
   font-weight: 500;
 }
 
-.prose h3 { font-size: 1rem; font-weight: 600; margin: 2rem 0 0.6rem; }
+.prose h3 {
+  font-family: var(--mono);
+  font-size: 0.98rem;
+  font-weight: 600;
+  margin: 2.2rem 0 0.7rem;
+}
 
-.prose p { margin: 0 0 1.1rem; }
+.prose p { margin: 0 0 1.25rem; }
 .prose strong { font-weight: 600; }
 .prose em { font-style: italic; color: var(--ink2); }
 
-.prose > p:first-of-type { font-size: 1.05rem; }
+/* the standfirst: the sentence under the title that says what this is */
+.prose > p:first-of-type {
+  font-size: 1.24rem;
+  line-height: 1.5;
+  color: var(--ink2);
+  margin-bottom: 1.6rem;
+}
 
 .prose a {
   text-decoration: none;
@@ -209,6 +238,8 @@ main { flex: 1 0 auto; }
 }
 
 .prose code {
+  font-family: var(--mono);
+  font-size: 0.86em;
   background: var(--panel);
   border: 1px solid var(--rule-soft);
   padding: 0.05em 0.35em;
@@ -217,6 +248,8 @@ main { flex: 1 0 auto; }
 }
 
 .prose pre {
+  font-family: var(--mono);
+  font-size: 0.86rem;
   background: var(--panel);
   border: 2px solid var(--rule);
   padding: 1rem 1.1rem;
@@ -243,7 +276,7 @@ main { flex: 1 0 auto; }
   margin: 2.4rem 0 0;
   color: var(--ink);
 }
-.takeaway p { margin: 0; font-size: 1.02rem; line-height: 1.55; }
+.takeaway p { margin: 0; font-size: 1.1rem; line-height: 1.55; }
 /* the chapter rule immediately after a landing would double its bottom edge */
 .takeaway + hr { display: none; }
 
@@ -256,6 +289,17 @@ main { flex: 1 0 auto; }
   color: var(--muted);
   margin-bottom: 0.55rem;
 }
+
+/* how far through the guide the reader is, drawn along the bottom of the bar */
+.progress {
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  height: 2px;
+  background: var(--plan);
+  width: 0;
+}
+.bar { position: sticky; }
 
 /* --- figures ------------------------------------------------------------ */
 
@@ -276,9 +320,11 @@ main { flex: 1 0 auto; }
 .overflow-x { overflow-x: auto; margin: 0 0 1.6rem; }
 
 table {
+  font-family: var(--mono);
   border-collapse: collapse;
   width: 100%;
-  font-size: 0.92rem;
+  font-size: 0.86rem;
+  letter-spacing: -0.01em;
 }
 th, td {
   border-bottom: 1px solid var(--rule-soft);
