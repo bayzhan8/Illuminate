@@ -1,9 +1,13 @@
 # Column generation and branch-and-price
 
-*Solving a model you never wrote down.*
+*Solving a problem you never wrote down.*
 
-A model with four trillion variables that fits on a napkin, and a method that
-solves it without writing down more than a handful of them.
+An order of boards takes seven. Finding a way to cut it in seven is easy;
+proving that six is impossible is the whole difficulty, and how well you can
+prove it depends entirely on how the question was written down. The way that
+works needs one unknown per way of cutting a board — six here, four trillion
+for a paper mill — and this is the method that solves it without writing more
+than a handful of them down.
 
 The idea is the one from [lp-duality](../lp-duality/), turned into an
 algorithm. A set of prices is a certificate that no plan beats your number. So
@@ -18,7 +22,7 @@ for it.
 
 | | | |
 |---|---|---|
-| 0 | [What this is](chapters/00-what-this-is/) | 5.44, 6.5, and the answer 7 |
+| 0 | [What this is](chapters/00-what-this-is/) | two hand-checkable proofs, 5.44 and 6.5 |
 | 1 | [The order](chapters/01-the-order/) | boards, pieces, and what a pattern is |
 | 2 | [The obvious model, and why it is too weak](chapters/02-the-obvious-model/) | the obvious model, relaxed into uselessness |
 | 3 | [One variable per pattern](chapters/03-one-variable-per-pattern/) | one variable per pattern, and 6.5 |

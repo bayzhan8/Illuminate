@@ -52,20 +52,21 @@ def hero_gif(frames=48, fps=12):
             reached, phase = dw, "done"
         bar.set_width(max(0.0, reached - 4.6))
         marker.set_data([reached], [0.35])
+        # the captions state finished arithmetic, never the bar's current
+        # position: mid-sweep interpolation would print "136 / 25 = 2.89"
         if phase == "naive":
-            note.set_text("the obvious model proves you need at least "
-                          f"{reached:.2f} boards\nso six might be enough — "
-                          "it cannot say otherwise")
+            note.set_text("counting only the wood: 136 feet ordered,\n"
+                          f"25 feet to a board, so at least {naive:.2f} boards")
             note.set_color(TEXT_DIM)
             bar.set_color(TEXT_FAINT)
         elif phase == "dw":
-            note.set_text(f"one variable per cutting pattern proves at least "
-                          f"{reached:.2f}\nsix is now impossible")
+            note.set_text("counting the long pieces: 13 of them,\n"
+                          f"two to a board, so at least {dw:g}")
             note.set_color(PLAN)
             bar.set_color(PLAN)
         else:
-            note.set_text("at least 6 and a half, so at least 7 — and 7 can be "
-                          "cut\nfound without ever listing the patterns")
+            note.set_text("at least 6.5 means at least 7,\n"
+                          "and 7 boards can be cut — so 7 is the answer")
             note.set_color(OK)
             bar.set_color(PLAN)
         return []

@@ -46,6 +46,16 @@
 <main class="prose">
 <h1>Along the edge, or through the middle</h1>
 <p><strong>Two ways to solve a linear program, and the forty years of argument between them.</strong></p>
+<p>First, what the problem is. A workshop has some stock — planks, labour hours,
+saw time — and some things it can build out of that stock, each earning a known
+amount. It must decide how much of each thing to build. Every rule in sight is
+proportional: two tables take twice the planks of one and earn twice as much,
+and there is a fixed amount of everything. Find the plan that earns the most.
+That is a <strong>linear program</strong>. The name is from the 1940s and has nothing to do
+with computer programming; <em>programme</em> meant a schedule of activities.</p>
+<p>Problems of that shape are everywhere, and they have a property almost nothing
+else in optimisation has: they can be solved at enormous size, exactly, with a
+proof attached. How is the argument this guide is about.</p>
 <p>In 1972 two mathematicians published a shape built to embarrass an algorithm.
 It is a cube, squashed so that its faces tilt a little instead of meeting
 square, and in ten dimensions it has 1024 corners. Turn the standard method for
@@ -86,11 +96,23 @@ wall, and both finish at the same marked point." loading="lazy"></figure>
 time, and earns $30. A chair takes 2 planks, 3 hours of labour and 1 of saw
 time, and earns $20. It is the same workshop, with the same numbers, as
 <a href="../lp-duality/">the duality guide</a>.</p>
-<p>The best it can do is <strong>9 tables and 4 chairs, worth $350</strong>. Both routes above
-find that. They have almost nothing else in common.</p>
-<p>The blue route only ever stands at corners. It makes three hops and stops. The
-red route never stands at a corner, never even touches a wall, and stops
-because it got close enough rather than because it arrived.</p>
+<p>Draw every plan the workshop could legally carry out — so many tables across, so
+many chairs up — and they fill the shaded region above. Each straight edge is one
+of the limits running out: along one edge there are no planks left, along
+another no labour. The <strong>corners</strong> are where two limits run out at the same
+moment, and the <strong>walls</strong> are the edges themselves. Nobody chose that shape. It
+is simply what is left once each limit has taken its cut.</p>
+<p>The best the workshop can do is <strong>9 tables and 4 chairs, worth $350</strong>, and both
+routes drawn above arrive at it. They have almost nothing else in common.</p>
+<p>The blue route only ever stands at corners. It hops from one to the next, three
+times, and stops. The red route never stands at a corner and never even touches
+a wall; it curves through the middle of the region and stops because it got
+close enough, not because it arrived anywhere.</p>
+<p>That difference is not a detail of implementation. The two methods disagree
+about where the answer to a linear program <em>lives</em> — one says at a corner, the
+other says at the end of a curve through open space — and nearly everything in
+this guide, including which method your solver runs on which problem, follows
+from that disagreement.</p>
 <blockquote class="takeaway">
 <p><strong>In one sentence.</strong> Two methods, one answer, and no shared idea about where
 a solution lives.</p>
@@ -142,12 +164,17 @@ corner along the way labelled by the dollar value of the plan there: zero, then
 320, then 340, then 350 at the final corner." loading="lazy"></figure>
 <p>The walk rests on a fact that has to be established before it makes any sense:
 if a linear program has an optimum at all, then some corner achieves it.</p>
-<p>The reason is that the objective is linear. Stand anywhere in the region that
-is not a corner and there is a direction you can move in without leaving, and
-along which the objective either improves or stays level. Keep going and you
-run into a wall; slide along it and repeat. You cannot get stuck partway,
-because a linear objective has no interior peak to get stuck on. Whatever the
-best value is, a corner attains it.</p>
+<p>The reason is that the profit is linear: walk along any straight line and it
+changes at a constant rate, rising steadily, falling steadily, or staying flat,
+but never bending. (The quantity being maximised is called the <strong>objective</strong>,
+and here it is the profit.)</p>
+<p>That is what rules out getting stuck. Stand anywhere in the region that is not a
+corner. There is always a direction you can move in without leaving the region
+along which the profit does not go down, so take it, and keep going until you
+run into a wall; then slide along the wall and repeat. Nothing can strand you
+partway, because a quantity that only ever changes at a constant rate has no
+hilltop in the middle of the region to stand on. So whatever the best value is,
+some corner attains it.</p>
 <p>That converts an infinite search into a finite one, and the simplex method is
 what you get by taking the conversion seriously:</p>
 <ol>
@@ -253,8 +280,12 @@ The answer was: in the worst case, not good.</p>
 its faces tilt slightly instead of meeting at right angles. It has 2ⁿ corners,
 exactly as a cube should. It is not degenerate, not badly scaled by any
 standard anybody had, and not in any visible way a trick.</p>
-<p>Run the walk on it with Dantzig's original rule, which enters the column that
-improves the objective fastest per unit, and it visits <strong>every single corner</strong>
+<p>Step 2 of the walk left something open: when more than one edge leaving a corner
+improves the profit, which do you take? That choice is a separate ingredient of
+the method, and it has a name — the <strong>pivot rule</strong>. Dantzig's original one is
+greedy: take the edge that improves the profit fastest per unit of the thing
+being increased.</p>
+<p>Run the walk on the cube with that rule and it visits <strong>every single corner</strong>
 before it stops. This repository's simplex, in exact rational arithmetic,
 confirms it: the cube in 10 dimensions has 1024 corners and takes <strong>1023
 pivots</strong>. Exactly 2ⁿ − 1, at every size tested.</p>
@@ -280,12 +311,14 @@ is flat at one pivot for every size." loading="lazy"></figure>
 <p>Chapter 4 reads like an indictment of the simplex method. It is not one. It is
 an indictment of one line inside it.</p>
 <p>The three lines above come from the same simplex code on the same cubes. One
-function differs: which improving column to enter. That single substitution
-moves the count from doubling, to a gentler climb, to a single pivot.</p>
+function differs: the pivot rule, which picks the edge to walk along. That
+single substitution moves the count from doubling, to a gentler climb, to a
+single pivot.</p>
 <ul>
 <li><strong>Dantzig's rule</strong> takes exactly <strong>2ⁿ − 1</strong> pivots. Every corner.</li>
-<li><strong>Bland's rule</strong>, which takes the lowest-numbered improving column, takes
-exactly <strong>2·Fib(n+1) − 1</strong>. At n = 10 that is 177 rather than 1023.</li>
+<li><strong>Bland's rule</strong>, which ignores the numbers entirely and takes whichever
+improving edge comes first in a fixed ordering, takes exactly
+<strong>2·Fib(n+1) − 1</strong>. At n = 10 that is 177 rather than 1023.</li>
 <li><strong>Steepest edge</strong>, which measures improvement per unit of <em>movement</em> rather
 than per unit of variable, takes <strong>one pivot</strong>, at every size.</li>
 </ul>
@@ -302,7 +335,7 @@ Hold the dimension steady and change only the rule, then hold the rule steady
 and raise the dimension. One of those controls sets the exponent.</p>
 <blockquote class="takeaway">
 <p><strong>In one sentence.</strong> The exponent in chapter 4 belongs to the rule that
-picked the column, not to the method that did the walking.</p>
+picked the edge, not to the method that did the walking.</p>
 </blockquote>
 <h2 id="ch6"><span class="num">6</span>Not cycling is not the same as being fast</h2>
 <p>Bland's rule is the one to be careful about, because it is easy to draw the
@@ -721,7 +754,7 @@ first one.</p>
 <td>a <strong>vertex</strong>, or a <strong>basic feasible solution</strong></td>
 </tr>
 <tr>
-<td>which column to enter</td>
+<td>which edge to walk along</td>
 <td>the <strong>pivot rule</strong> or pricing rule</td>
 </tr>
 <tr>

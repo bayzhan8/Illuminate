@@ -45,9 +45,18 @@
 <main class="prose">
 <h1>The machine got wider, not faster</h1>
 <p><strong>Why linear programming had to change algorithms to use a GPU.</strong></p>
-<p>Two methods, the same small workshop, the same starting point, the same step
-sizes. Their inner loops cost the same to run and differ by one term in one
-line.</p>
+<p>A <strong>linear program</strong> is a planning problem in which everything is
+proportional: a workshop with limited stock, several things it can build, a
+known profit for each, and the question of how much of each to build. Since the
+1940s the standard way to solve one has been the <strong>simplex method</strong>, which walks
+from corner to corner of the region of legal plans, improving as it goes, and
+stops when no neighbouring corner is better. <a href="../corners-vs-centre/">The previous
+guide</a> builds it; all you need here is that shape — a
+walk, one step at a time.</p>
+<p>This guide is about why that shape became a problem, and what replaced it.</p>
+<p>Start with the symptom. Two methods, the same small workshop, the same starting
+point, the same step sizes. Their inner loops cost the same to run and differ by
+one term in one line.</p>
 <p>One of them lands on $350, which is exactly right. The other never lands on
 anything. Four thousand iterations in it is still swinging between $0 and $753,
 and it would still be swinging after four million.</p>
@@ -59,7 +68,8 @@ arithmetic units fed by a memory system that did not get thousands of times
 faster.</p>
 <p>The simplex method cannot use a machine like that. Not because nobody has
 tried, but because of what it <em>is</em>: a chain of decisions where each one depends
-on the last.</p>
+on the last. A machine that can do ten thousand things at once is no help when
+you only have one thing to do until it finishes.</p>
 <p>So the interesting question is not how to parallelise simplex. It is what a
 method would have to look like to use the hardware at all, and what you give up
 by using it. The delicate one is the answer.</p>
@@ -76,20 +86,29 @@ here.</p>
 <figure class="plate"><img src="chapters/00-what-this-is/hero.gif" alt="Two curves against iteration count on the same workshop. One oscillates
 violently between zero and eight hundred without ever settling. The other rises
 smoothly and stops on three hundred and fifty." loading="lazy"></figure>
-<p>Each curve is what one method thinks its current plan is worth, plotted against
-how many iterations it has run. The problem behind them is a workshop with
-three shelves of raw material and two things it can build, and it is small
-enough that the right answer is known exactly.</p>
-<p>The red one never settles. It is still swinging between $0 and $753 after four
-thousand iterations, and it will do that forever.</p>
-<p>The blue one stops on $350, which happens to be exactly right.</p>
-<p>Neither is a bug, and neither is badly tuned. The two updates differ by one
-term in one line, and most of this guide is about that term: where it comes
-from, why anyone would want a method built this way, and what it still cannot
-do.</p>
+<p>Each curve is what one method believes its current plan is worth, plotted
+against how many rounds of arithmetic it has done. The problem behind them is a
+workshop with three shelves of raw material and two things it can build, small
+enough that the right answer is known exactly and is $350.</p>
+<p>The blue one climbs and stops on $350.</p>
+<p>The red one never settles. Four thousand rounds in it is still swinging between
+$0 and $753, and it will keep swinging forever.</p>
+<p>Now the part that makes this worth a guide. Neither curve is a bug, and neither
+method is badly tuned. They were given the same problem, the same starting
+point and the same step sizes, and their two update rules are identical except
+for a single extra term in one line. That one term is the difference between a
+method that works and a method that does not exist.</p>
+<p>Both of these methods are built the way they are for one reason: their inner
+loop is nothing but multiplying a table of numbers by a list of numbers, over
+and over. That is the one kind of work a graphics processor can do thousands of
+ways at once, and it is the reason anybody tolerates a method this fragile. The
+guide is the case for that trade — what the hardware demands, what a method
+shaped to satisfy it looks like, what the missing term is, and what you give up
+by taking the deal.</p>
 <blockquote class="takeaway">
-<p><strong>In one sentence.</strong> A method that can use parallel hardware is available,
-but only just, and the difference between it working and not is very small.</p>
+<p><strong>In one sentence.</strong> There is a method that can use parallel hardware, but
+only just, and what separates it from a method that never converges is one
+term in one line.</p>
 </blockquote>
 <h2 id="ch1"><span class="num">1</span>How much arithmetic per byte</h2>
 <p>Start with the hardware, because it determines which algorithms are worth
@@ -161,8 +180,9 @@ arithmetic, so the only speedup a wider machine can offer is its bandwidth
 ratio.</p>
 </blockquote>
 <h2 id="ch3"><span class="num">3</span>Why simplex is the wrong shape</h2>
-<p>The simplex method walks from corner to corner of the feasible region, and each
-step is a chain:</p>
+<p>Draw every plan the workshop could legally carry out and they fill a region
+with flat sides and sharp corners. The simplex method walks from corner to
+corner of that region, and each step is a chain:</p>
 <ol>
 <li>Work out which product would improve the plan if you started making it.</li>
 <li>Work out how much of it you can make before some rule binds.</li>
@@ -408,19 +428,24 @@ rather than react to its last one turns the spiral inward, at no extra cost.</p>
 <p>The spiral converges. The trouble is how.</p>
 <p>Look at what one step of the inward spiral does. It carries the point some way
 <em>around</em> the answer, and it brings it a little way <em>in</em>. A turn and a shrink,
-over and over, and not only in the drawing. On the toy problem there is no clamping and no case analysis, so if you measure the state
-as an offset from the answer, one iteration is exactly &quot;multiply that offset by
-a fixed two-by-two matrix&quot;, and it is the same matrix every time.</p>
-<p>A matrix that turns everything has no direction it merely stretches, so it has
-no real eigenvalues. What it has instead is a conjugate pair of complex ones,
-and a complex number carries exactly two pieces of information, which here are
-the two things the spiral is doing: the angle of the pair is how far one step
-turns, and the size of the pair is what one step multiplies the distance by.
-Both come out in closed form. With a step size of 0.2:</p>
+over and over.</p>
+<p>That is not merely what the drawing looks like; on the toy problem it is
+precisely what the arithmetic does. There is nothing being clamped and no case
+analysis, so if you measure the state as an offset from the answer, one
+iteration is exactly <em>multiply that offset by a fixed two-by-two table of
+numbers</em> — and it is the same table, every step, forever.</p>
+<p>A step of that kind is summarised by two quantities: how far round it carries
+the point, and how much it closes in. Both can be computed in advance rather
+than measured off a picture. With a step size of 0.2:</p>
 <ul>
 <li>it turns <strong>11.5°</strong> per iteration, so a full revolution takes <strong>31.2</strong> steps</li>
 <li>it shrinks the distance to the answer by <strong>2.0%</strong> per iteration</li>
 </ul>
+<p><em>(Both come from the eigenvalues of that two-by-two matrix, which turn out to be
+a complex conjugate pair: the angle of the pair is the turn, and its magnitude,
+√(1 − 0.2 × 0.2) = 0.9798, is the shrink. Read the 2.0% as the rate the spiral
+settles into rather than a promise about the change in distance at each
+individual step. Nothing below needs the machinery, only the two numbers.)</em></p>
 <p>Put them together and the difficulty is plain. Thirty-one steps of shaving 2%
 off a distance leave you about half as far away as you began, so one full
 revolution of that spiral buys you one halving. It is spinning quickly and
