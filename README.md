@@ -32,9 +32,10 @@ Why linear programming had to change algorithms when machines started getting
 wider instead of faster.
 
 **[branch-and-price](branch-and-price/)** · [read](https://bayzhan8.github.io/Illuminate/branch-and-price/) · [play](https://bayzhan8.github.io/Illuminate/branch-and-price/sandbox/)
-A cutting-stock model with four trillion variables that fits on a napkin.
-Column generation asks the prices which variable is missing rather than
-searching for it; branch-and-price puts that loop inside a search tree.
+An order of boards takes seven, and proving six is impossible is far harder
+than finding a way to do it in seven. Column generation asks the prices which
+unknown is missing rather than searching four trillion of them for it;
+branch-and-price puts that loop inside a search tree.
 
 **[solvers](solvers/)** · [read](https://bayzhan8.github.io/Illuminate/solvers/) · [play](https://bayzhan8.github.io/Illuminate/solvers/sandbox/)
 Hand a solver a twenty-row model and it deletes thirteen of the rows before any
@@ -43,10 +44,10 @@ is, why it is where the gap opens, and which solvers you can actually deploy
 without a licence server ruining your week.
 
 **[queues](queues/)** · [read](https://bayzhan8.github.io/Illuminate/queues/) · [play](https://bayzhan8.github.io/Illuminate/queues/sandbox/)
-A clerk who serves a customer in six minutes will hand someone a wait of an
-hour without ever slowing down. Little's law as one region measured twice, why
-variability rather than utilisation does the damage, and a 95% confidence
-interval that covers 9%.
+A clerk who gets through the average customer in six minutes will hand someone
+a wait of an hour without ever slowing down. Little's law as one region
+measured twice, why variability rather than utilisation does the damage, and a
+95% confidence interval that covers 9%.
 
 Queued: branch and bound and branch and cut · Benders decomposition.
 Branch and bound is the next one to write: three of the guides above already

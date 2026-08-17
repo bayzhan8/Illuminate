@@ -67,6 +67,63 @@ idea (a table read two ways) that is spending the guide's whole notation budget
 at once, and `solvers` 2 is a catalogue of six reductions, which is a single
 chapter's work even though it is six paragraphs. Length was never the test.
 
+## 1a · The chapter-0 rule, and the failure that produced it
+
+The August 2026 re-cut fixed the *chapters* and left the *openings* alone, and
+that turned out to be where the corpus was still losing readers. A reader was
+handed `branch-and-price` chapter 0 and reported, accurately, that they got
+nothing from it. It read:
+
+> Model it the obvious way, relax it, and it proves you need at least 5.44
+> boards. So six might be enough. The model cannot say otherwise.
+
+Five sentences, and the argument in them runs on four things the reader has not
+been given: what it means to *model* something, what it means to *relax* a
+model, why a lower limit of 5.44 leaves six open, and why any of it matters. The
+sentences are short and the vocabulary is plain, so the page looks accessible
+and is not. This is the same disease as the three-ideas-per-chapter problem in
+§1, relocated: the compression moved out of the chapter and into the sentence.
+
+Two rules follow, and they are absolute.
+
+**A chapter 0 teaches; it does not tease.** It must leave the reader holding one
+thing they did not have, established well enough that they could repeat it to
+somebody else. A list of results with the derivations withheld is a trailer, and
+a trailer is worth nothing to a reader who came to learn. The test: strike every
+number from the chapter and ask whether anything is left. If not, rewrite it.
+
+**Nothing may carry an argument before it has been built.** Not a term, not a
+notion, not a step. This is §2 applied at word scale rather than chapter scale.
+The words that kept breaking it, in order of damage: *relax* and *relaxation*,
+*model* used as a verb, *bound*, *variable*, *column*, *objective*, *feasible
+region*, *basis*. If one of them is load-bearing in a sentence, either it was
+built in an earlier chapter — name that chapter — or it gets built right there,
+in a sentence, before it is leant on.
+
+**Applied**, August 2026, second pass. Every chapter 0 in the repository was
+rewritten, and the openings above them with it.
+
+| | was | now |
+|---|---|---|
+| `branch-and-price` | 5.44 and 6.5 asserted, running on *model* and *relax* | the order, and two lower-limit arguments the reader checks by hand — 136 ÷ 25, and 13 long pieces two to a board. Chapter 2 then builds *model* and *relax* and shows where the first one came from mechanically |
+| `lp-duality` | two panels stopping on the same number | the buyer's problem stated fully enough that its answer being $350 is surprising, plus what the coincidence buys: a receipt |
+| `corners-vs-centre` | the two routes, and $350 | the region, corners and walls defined; and the opening now says what a linear program *is*, which the guide had never done |
+| `lp-on-gpu` | one curve settles, one does not | why anyone would build a method this fragile, said before the fragility |
+| `queues` | 6 / 54 / 594 minutes, and an assertion about idleness | *busy* derived from the arrival rate, the three rows as a table, and the row-to-row arithmetic — 80% more work, nine times the wait |
+| `solvers` | rows, columns and nonzeros used cold | all three defined off the picture, then one deletion walked through end to end |
+
+Two further things that pass came out of the same read and are worth keeping as
+standing checks. `queues` chapter 0 said "six minutes a customer, always", which
+reads as deterministic service while quoting M/M/1 numbers; the wait at 90% is
+54 minutes only because service is *random*, and 27 if it really were always six
+minutes. **State the distribution wherever a number depends on it.** And
+`lp-on-gpu` chapter 9 required eigenvalues of a 2×2 matrix and complex conjugate
+pairs to reach two numbers; it now states what one step does — a fixed turn and a
+fixed shrink — derives nothing from linear algebra, and puts the eigenvalue route
+in a parenthetical for readers who want it. **Where a technique is the standard
+route rather than the content, name it in an aside and take the reader by the
+short way.**
+
 ## 2 · Nothing is used before it is built, and say when you are cashing in
 
 The reference is a tower: function → inverse → polynomial → plane map → linear

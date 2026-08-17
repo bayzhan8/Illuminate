@@ -16,8 +16,13 @@ its faces tilt slightly instead of meeting at right angles. It has 2ⁿ corners,
 exactly as a cube should. It is not degenerate, not badly scaled by any
 standard anybody had, and not in any visible way a trick.
 
-Run the walk on it with Dantzig's original rule, which enters the column that
-improves the objective fastest per unit, and it visits **every single corner**
+Step 2 of the walk left something open: when more than one edge leaving a corner
+improves the profit, which do you take? That choice is a separate ingredient of
+the method, and it has a name — the **pivot rule**. Dantzig's original one is
+greedy: take the edge that improves the profit fastest per unit of the thing
+being increased.
+
+Run the walk on the cube with that rule and it visits **every single corner**
 before it stops. This repository's simplex, in exact rational arithmetic,
 confirms it: the cube in 10 dimensions has 1024 corners and takes **1023
 pivots**. Exactly 2ⁿ − 1, at every size tested.

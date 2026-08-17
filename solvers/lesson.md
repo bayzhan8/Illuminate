@@ -42,18 +42,38 @@ model, twenty rows deep and twenty-one columns wide. As the animation runs,
 squares fade out in waves until only a small block in the upper left remains
 solid.](chapters/00-what-this-is/hero.gif)
 
-Each square is a place where a variable appears in a constraint. That is the
-whole model, as written.
+Three words first, because the whole guide is written in them.
+
+A **model** is a problem handed to a computer: a list of quantities to be
+decided, and a list of arithmetic rules those quantities must satisfy. Write it
+out as a grid — one row per rule, one column per quantity, and a mark in a
+square wherever that quantity appears in that rule — and you get the picture
+above. So a **row** is a rule, a **column** is a quantity to be decided, and the
+marks are what people call the **nonzeros**. Almost every square is empty, which
+is why models get drawn this way: real ones are overwhelmingly empty, and that
+emptiness is what makes them solvable at all.
+
+The model above is a small production plan: three products, two periods, 20
+rules, 21 quantities and 42 marks.
 
 Watch what survives. **20 rows, 21 columns and 42 nonzeros become 7, 9 and
-14.** Two thirds of the model is gone, and the answer has not changed: both
-versions cost **$290**, and a solution to the small one can be turned back into
-a solution to the big one exactly.
+14.** Two thirds of the model is deleted before any solving starts, and the
+answer does not change: both versions cost **$290**, and an answer to the small
+model can be turned back into an answer to the big one exactly.
 
-This is presolve. It is not an approximation, not a heuristic, and not
+Here is one of the deletions, so that nothing about this looks like magic. One
+of the twenty rules says that the stock of product A at the start is zero. It
+arrived written as a rule because that is what was convenient to type, but it is
+not really a statement about how quantities interact. It is a fact about one
+quantity. So the solver copies "fixed at zero" onto that column and deletes the
+row; the model is one rule smaller and means exactly the same thing. And now
+that the quantity is pinned, it substitutes zero everywhere that column appears
+and deletes the column too. Two deletions, no cleverness, no risk.
+
+This is **presolve**. It is not an approximation, not a heuristic and not
 optional. Every serious solver does it, they all do it differently, and it is
-one of the main reasons two solvers running "the same algorithm" are not the
-same speed.
+one of the main reasons that two solvers running "the same algorithm" are
+nowhere near the same speed.
 
 > **In one sentence.** Most of a model is usually redundant, and finding out
 > which part is a separate job from solving it.
@@ -258,10 +278,17 @@ could prove as written, a blue dot marks the stronger bound after presolve, and
 a red dot marks the true best plan, with the closed part of the gap
 marked.](chapters/05-what-it-costs/bound.png)
 
-Ignore the whole-number requirement and solve what is left, and the model as
-written proves the answer cannot be cheaper than **$248**. After presolve, the
-same relaxation proves it cannot be cheaper than **$263**. The true answer is
-**$290**.
+Here is how a solver knows anything about the answer before it has found it.
+Cross out the requirement that the yes/no decisions be whole numbers, allowing
+a production line to be 0.25 open, and solve what is left. That is called the
+**relaxation**, and it is easy to solve. Because crossing out a requirement can
+only make things cheaper, whatever the relaxation costs is a floor under the
+true answer — a number the real answer cannot go below. The closer that floor is
+to the truth, the more of the search can be skipped.
+
+The model as written has a relaxation costing **$248**, so the answer cannot be
+cheaper than $248. After presolve, the same relaxation costs **$263**, so now
+the answer cannot be cheaper than $263. The true answer is **$290**.
 
 No cutting plane was added. No node was explored. **$15 of a $42 gap closed**,
 purely from columns being fixed and bounds being narrowed, and a better bound is

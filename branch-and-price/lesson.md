@@ -1,24 +1,33 @@
-# Solving a model you never wrote down
+# Solving a problem you never wrote down
 
-**Column generation and branch-and-price, built from a cutting-stock order.**
+**Column generation and branch-and-price, built from a workshop cutting boards.**
 
-Here is a model with four trillion variables that fits on a napkin, and a way
-of solving it that never writes down more than a handful of them.
+A workshop buys wooden boards in one standard length and saws them into the
+shorter pieces its customers order. Boards cost money and offcuts are scrap, so
+the workshop wants to fill each order using as few boards as it can. That is
+the whole problem, and this guide is about the surprising amount of trouble it
+causes.
 
-[The duality guide](../lp-duality/) gives you the check: prices that cover
-every option prove no plan beats your number. Run that backwards and it
-generates. An option the prices fail to cover is a missing variable, and you
-can solve for it directly instead of hunting for it.
+The trouble is not finding a good way to cut. It is *proving* that no better
+way exists. Getting a computer to do that turns out to depend entirely on how
+you write the question down, and the way that works has an absurd property: for
+a real order it involves about four trillion unknown quantities to solve for,
+far more than any machine could store. The method in this guide solves it
+anyway, by keeping almost every one of those unknowns missing and letting the
+problem itself say which one to fetch next.
 
-**The plan.** Chapters 1 to 3 set up cutting stock and show that the obvious
-model is too weak while a second model is far stronger. Chapter 4 is why that
-second model cannot be written down. Chapters 5 to 9 are the loop that solves
-it anyway. Chapter 10 puts the loop inside a search tree, and confesses to two
-bugs that cost this repository real answers. Chapter 11 is what the same shape
-is called everywhere else.
+**Reading order.** Chapters 1 to 3 set up the workshop and show that the
+obvious way of writing the question down is much weaker than a second way.
+Chapter 4 is why that second way cannot be written down at all. Chapters 5 to 9
+build the loop that solves it regardless. Chapter 10 puts that loop inside a
+search, and confesses to two bugs that cost this repository real answers.
+Chapter 11 is what all of it is called in the literature.
 
-Numbers below come from the code in this folder, in exact rationals, asserted
-by its tests.
+This guide leans on [the duality guide](../lp-duality/) from chapter 6 onwards,
+and says so each time it does. Chapters 1 to 5 need nothing but arithmetic.
+
+Numbers below come from the code in this folder, in exact fractions, and every
+one of them is checked by a test.
 
 ---
 
@@ -28,22 +37,58 @@ by its tests.
 blue bar pushes past six to six and a half, and the answer lands on
 seven.](chapters/00-what-this-is/hero.gif)
 
-An order has to be cut from standard boards. How many boards does it take?
+Boards come 25 feet long. Today's order is three pieces of 4 feet, six pieces
+of 9 feet and seven pieces of 10 feet. You may cut each board however you like,
+cutting is free, and whatever is left at the end of a board is scrap — two
+offcuts cannot be glued back together. **How few boards can fill the order?**
 
-Model it the obvious way, relax it, and it proves you need at least **5.44**
-boards. So six might be enough. The model cannot say otherwise.
+The answer is seven. The interesting part is not the seven; it is that
+establishing it takes two separate pieces of work, and only one of them is easy.
 
-Now model the *same order* differently, relax it the same way, and it proves
-you need at least **6.5**. Six is now impossible.
+Showing that seven is *enough* is the easy half. Cut seven boards in some
+sensible way, lay out the pieces, and count. Anyone can check it. But that only
+shows seven works — on its own it leaves open that some cleverer arrangement
+does the job in six.
 
-Seven boards can be cut. So seven is the answer, proved.
+Ruling out six is the hard half, and you cannot get there by trying
+arrangements, because there are far too many to try. You need an argument that
+covers every arrangement at once, including the ones nobody thought of. Here
+are two such arguments. Both are correct. Only one is any use.
 
-The second model has one variable for every way of cutting a board, which for
-a real order is a few trillion variables. This guide is about why that model is
-so much stronger, and how it gets solved without ever being written down.
+**First argument: count the wood.** The order asks for
+3×4 + 6×9 + 7×10 = 136 feet of wood, and each board supplies 25 feet. Even if
+not one inch were wasted, 136 ÷ 25 = 5.44 boards' worth of wood is needed, so
+five boards cannot possibly be enough. At least six.
 
-> **In one sentence.** Two models of the same order, both relaxed the same way,
-> and only one of them can rule out six boards.
+**Second argument: count the long pieces.** Call a piece **long** if it is 9
+feet or 10. The three shortest long pieces together are 9 + 9 + 9 = 27 feet,
+and a board is 25, so no board can carry three long pieces — two is the most
+any board can hold, however it is cut. The order asks for 6 + 7 = 13 long
+pieces. At two to a board, 13 ÷ 2 = 6.5 boards are needed, and you cannot buy
+half a board. At least seven.
+
+That second argument settles it. At least seven, and seven can be cut, so seven
+is the answer and the question is closed. It took twenty seconds and you
+checked it yourself.
+
+Now the point of the guide. Both arguments are lower limits on the number of
+boards, both were obtained by ignoring some of what makes the problem hard, and
+one of them is worth 1.06 boards more than the other. When people say a way of
+writing down a problem is *stronger*, this is the entire meaning: it produces
+limits closer to the truth, and a limit closer to the truth is what lets you
+stop searching sooner.
+
+The catch is that nobody hands you the second argument. It came from noticing
+something about this particular order, and a real order has hundreds of
+lengths, where nothing will be noticeable. What is needed is a procedure that
+manufactures arguments of that quality automatically. There is one. Its cost is
+that it works with one unknown for every way of cutting a single board that is
+worth using at all — six of them for this order, and roughly four trillion for a
+paper mill.
+
+> **In one sentence.** Finding a good answer is easy and proving nothing beats
+> it is hard, and how well you can prove it depends entirely on how the question
+> was written down.
 
 ---
 
@@ -81,29 +126,58 @@ to learn on. Chapter 4 is where that stops being true.
 
 ## 2 · The obvious model, and why it is too weak
 
-The natural way to model this is to decide, for each board, what comes off it:
-take a pile of boards, mark some of them "used", and assign pieces to them
-without overfilling any.
+Chapter 0 gave two hand-made arguments about this order. This chapter and the
+next are where they come from, and getting there needs two words.
 
-Relax that, letting a board be 30% used and a piece be split across two boards,
-and the answer it gives is:
+To **model** a problem is to write it down as unknown quantities to be solved
+for, together with the arithmetic those quantities must satisfy. To
+**relax** a model is to then cross out one of those requirements on purpose,
+producing an easier problem that a computer can solve quickly.
+
+The point of doing that is not the easiness. Every arrangement that satisfied
+the original requirements still satisfies the shortened list, so the relaxed
+problem is choosing from a strictly larger set of candidates — and it may find
+something in there that the real problem could not have used. Here the aim is to
+use as few boards as possible, so a larger set of candidates can only bring the
+answer *down*, never up. Whatever number the relaxation reports is therefore a
+floor under the true one: the real answer cannot be below it. That is where a
+lower limit comes from when nobody hands you a clever argument.
+
+The requirement that gets crossed out is nearly always the same one:
+**whole numbers**. Real answers here are whole boards and whole pieces, and
+insisting on whole numbers is what makes a problem hard. Let the quantities go
+fractional and the problem becomes easy. So every lower limit in this guide
+comes from the same recipe: write the problem down, allow fractions, solve, and
+read off the floor. The standard word for such a floor is a **bound**.
+
+Now do that to the obvious model. The natural way to write cutting stock down
+is to decide, for each board, what comes off it: take a pile of boards, mark
+some of them "used", and assign pieces to them without overfilling any. The
+unknowns are the marks and the assignments, and every one of them is a
+whole-number yes-or-no.
+
+Allow fractions, so that a board may be 30% used and a piece may be split
+across two boards, and the answer it gives is:
 
 > total length ordered ÷ board length
 > = (3×4 + 6×9 + 7×10) ÷ 25 = 136 ÷ 25 = **5.44 boards**
 
-Why that particular ratio? Because once a piece may be sawn anywhere and its
-two halves counted against two different boards, nothing can be stranded. A
-board with 6 feet spare no longer wastes them: the next piece simply starts
-there and finishes on the board after. Every constraint about fitting has
-dissolved, and the only thing the model still has to respect is material. The
-order asks for 136 feet of wood. Each board supplies 25 feet of it, none of
-which need go to waste. So fewer than 136 ÷ 25 boards cannot supply the wood,
-and 136 ÷ 25 boards can. The bound is the ratio because the relaxation removed
-every other obstacle.
+which is chapter 0's first argument, arrived at mechanically rather than by
+noticing anything.
 
-It is a genuine lower bound and it is useless, for the reason just given: this
-is the answer you would get if boards were *liquid*, and the leftover at the
-end of one board carries over to the next. Round it up and six boards might do.
+Why does it land on exactly that ratio? Because once a piece may be sawn
+anywhere and its two halves counted against two different boards, nothing can
+be stranded. A board with 6 feet spare no longer wastes them: the next piece
+simply starts there and finishes on the board after. Every requirement about
+*fitting* has dissolved along with the whole numbers, and the only thing left
+for the model to respect is material. The order asks for 136 feet of wood. Each
+board supplies 25 feet of it, none of which need go to waste. So fewer than
+136 ÷ 25 boards cannot supply the wood, and 136 ÷ 25 boards can. The bound is
+the ratio because the relaxation removed every other obstacle.
+
+It is a genuine lower limit, and it is useless, for the reason just given: this
+is the answer you would get if boards were *liquid* and the leftover at the end
+of one board flowed into the next. Round it up and six boards might do.
 
 Six boards will not do. The relaxation cannot see it, because the fact that
 makes it impossible — a 10-foot piece sits on one board, whole — is precisely
@@ -116,11 +190,16 @@ what was relaxed away.
 
 ## 3 · One variable per pattern
 
-So model the decision differently. Instead of *which pieces go on which board*,
-decide **how many boards to cut with each pattern.**
+So write the problem down differently. Instead of asking *which pieces go on
+which board*, ask **how many boards to cut with each pattern** — where a
+pattern, from chapter 1, is one complete way of cutting one board.
+
+That gives one unknown quantity per pattern. Six patterns, six unknowns. The
+standard word for one of those unknown quantities is a **variable**, and it is
+used from here on.
 
 Every pattern is a way of cutting a board that is already legal: the pieces fit,
-by construction. So the model has nothing left to say about fitting. It only
+by construction. So this model has nothing left to say about fitting. It only
 has to say that enough pieces come out:
 
 > **choose** how many boards to cut with each pattern, to **minimise** the
@@ -154,10 +233,27 @@ The order wants 6 nines and 7 tens. Thirteen long pieces at two to a board
 needs 13/2 boards, and 13/2 is 6.5. The mix above sits exactly on that ceiling,
 which is why it cannot be beaten.
 
-Two relaxations of the same order, an enormous distance apart. Integrality was
-not discarded this time. It was absorbed into the variables: every pattern
-is a whole-board decision already made correctly, so relaxing the *count* of
-patterns cannot un-decide it. What remains to relax does far less harm.
+So here are two relaxations of the same order — same recipe, same crossing-out
+of whole numbers — landing more than a board apart. It is worth being precise
+about why, because this is the one idea the whole guide is built on.
+
+In the obvious model, the whole numbers *were* the fitting. Saying "this
+10-foot piece goes entirely on board 3" is a whole-number statement, and
+allowing fractions is exactly what let the piece be sawn in half and spread
+across two boards. Crossing out the whole numbers destroyed the thing that made
+the problem a cutting problem at all.
+
+In the pattern model, the whole-number work has already been done, once,
+correctly, inside each pattern. A pattern is a legal way to cut one board: the
+pieces fit, by construction, and nothing about that can be undone later. So
+when the relaxation allows two and a half boards to be cut with some pattern,
+it is not permitting anything physically impossible about *fitting* — it is
+only permitting a fractional count of boards. Fitting is out of the
+relaxation's reach, because it was settled before the relaxation arrived.
+
+That is the trade. The pattern model pays for a strong bound with an enormous
+number of unknowns, one per pattern, and the payment is the subject of the next
+chapter.
 
 | | says you need at least | so, at least | true answer |
 |---|---|---|---|
@@ -171,7 +267,8 @@ to put up with everything that follows.
 Chapter 11 comes back to it; for now the idea is all you need.)*
 
 > **In one sentence.** Deciding in whole patterns rather than in individual
-> pieces absorbs the integrality, so relaxing what is left costs much less.
+> pieces settles the whole-number question in advance, so crossing it out later
+> costs almost nothing.
 
 ---
 
@@ -205,8 +302,9 @@ The model cannot be written down. So do not write it down. Start with a model
 that is obviously too small.
 
 Take a few patterns — say the lazy ones, each board cut into copies of a single
-length — and solve *that*. This is the **restricted master**: the real model,
-restricted to the columns someone has bothered to write down.
+length — and solve *that*. Everyone calls it the **restricted master**: the
+real model, restricted to the handful of patterns somebody actually bothered to
+write down. It is the real problem with almost all of its variables missing.
 
 Our order has three lazy patterns: a board cut into six 4-foot pieces, a board
 cut into two 9s, a board cut into two 10s. With only those three on the table
@@ -338,22 +436,32 @@ from opposite sides — and the next chapter is how you run it without a list.
 The question is whether some unwritten pattern yields more than one board's
 worth at these prices.
 
-Do not search the list. *Build* the answer.
+Searching a list of four trillion patterns is hopeless. But nobody said the
+answer has to be *found*. It can be **built**.
 
-Fill one 25-foot board so as to maximise the total value of the pieces taken
-off it, at the current prices. That is a knapsack problem: small, fast,
-entirely standard. And its answer is the best pattern in existence at these
-prices, including every one nobody has written down.
+Here is the question again, phrased as a puzzle about one board. You have 25
+feet of wood in front of you and a price for each length: a 4-foot piece is
+worth 1/6, a 9 is worth 1/2, a 10 is worth 1/2. Cut the board so as to make the
+pieces on it worth as much as possible in total. What do you cut?
+
+That is a **knapsack problem** — the standard name for "fill a container of
+fixed size with items of known size and value, as valuably as you can" — and it
+is a small, fast, thoroughly solved kind of problem. Crucially, whatever it
+hands back *is* a pattern, and it is the most valuable pattern that exists at
+these prices. Not the most valuable one on any list. The most valuable one, full
+stop, including all the ones nobody has ever written down, because the knapsack
+constructed it from the wood rather than looking it up.
 
 At the prices above the knapsack returns **four 4-foot pieces and one
-9-foot piece**, worth 4×(1/6) + 1×(1/2) = **7/6**. More than one board, so
-that pattern is missing and it goes into the model.
+9-foot piece**, worth 4×(1/6) + 1×(1/2) = **7/6**. Seven sixths is more than
+one, so by chapter 6's test that pattern is worth having, and it goes into the
+model.
 
-Pricing is where the work happens, and note what it returns: the argmax over
-every column, or a proof that none is worth adding, rather than a shortlist to
-sift through afterwards. When
-the knapsack's best is worth **1 or less**, nothing anywhere would help, and
-the restricted model is optimal for the full one.
+Notice what has just been avoided. There is no shortlist and no sampling. One
+knapsack solve either hands back a best pattern in existence — this order has
+two patterns tied at 7/6, and any winner will do — or, when its best comes out
+at **1 or less**, proves that no pattern anywhere would help, in which case the
+restricted model's answer is already the full model's answer.
 
 **[Try it yourself →](https://bayzhan8.github.io/Illuminate/branch-and-price/sandbox/08.html)**
 Set the three prices by hand and watch which pattern the knapsack builds.
@@ -416,16 +524,34 @@ always is. The relaxation is famously tight; instances where rounding up is
 and a rounded bound is a number rather than a set of cuts. To get something you
 can take to the saw, the fractions have to be branched away.
 
-Hence **branch-and-price**: branch-and-bound in which the relaxation at every
-node is itself solved by generating columns.
+The standard way to branch fractions away is **branch and bound**, and since
+this repository has no guide to it yet, here it is in full. Solve the relaxation.
+If some quantity comes out fractional — say a pattern is used 2.5 times — then
+whatever the true answer is, it either uses that pattern at most 2 times or at
+least 3 times. There is no third case. So split the problem into those two
+smaller problems and solve each. Repeat, and you get a tree of ever more
+constrained problems.
+
+Two things stop the tree from exploding. A branch whose extra restrictions make
+the problem impossible is dropped. And a branch whose *relaxation* already needs
+more boards than some whole-number answer you have already found in hand cannot
+possibly contain anything better, so it is dropped too, unexamined — which is
+where the whole value of a strong relaxation shows up. A bound of 6.5 prunes
+branches that a bound of 5.44 would have made you explore.
+
+**Branch-and-price** is branch and bound in which the relaxation at every node
+of that tree is itself solved by column generation, since the model is still too
+big to write down at any node.
 
 > **At each node**
 >
 > 1. Impose the node's branching decisions on the master.
 > 2. Solve that relaxation by column generation: the full loop, at every node.
-> 3. Prune if it is infeasible, or if its bound cannot beat the best plan found.
-> 4. If the answer is whole, record it. Otherwise pick a fractional pattern
->    count and split: one child uses it at most ⌊x⌋ times, the other at least ⌈x⌉.
+> 3. Prune if it is impossible, or if its bound cannot beat the best whole
+>    answer found so far.
+> 4. If the answer is whole, record it. Otherwise pick a pattern used a
+>    fractional number of times and split: one child uses it at most ⌊x⌋ times,
+>    the other at least ⌈x⌉ (those brackets mean round down and round up).
 
 ![A search tree of eleven boxes, each labelled with the number of boards its
 relaxation needs, some marked whole, some cannot win, branching down four

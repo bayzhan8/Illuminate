@@ -2,11 +2,16 @@
 
 ## 3 · One variable per pattern
 
-So model the decision differently. Instead of *which pieces go on which board*,
-decide **how many boards to cut with each pattern.**
+So write the problem down differently. Instead of asking *which pieces go on
+which board*, ask **how many boards to cut with each pattern** — where a
+pattern, from chapter 1, is one complete way of cutting one board.
+
+That gives one unknown quantity per pattern. Six patterns, six unknowns. The
+standard word for one of those unknown quantities is a **variable**, and it is
+used from here on.
 
 Every pattern is a way of cutting a board that is already legal: the pieces fit,
-by construction. So the model has nothing left to say about fitting. It only
+by construction. So this model has nothing left to say about fitting. It only
 has to say that enough pieces come out:
 
 > **choose** how many boards to cut with each pattern, to **minimise** the
@@ -40,10 +45,27 @@ The order wants 6 nines and 7 tens. Thirteen long pieces at two to a board
 needs 13/2 boards, and 13/2 is 6.5. The mix above sits exactly on that ceiling,
 which is why it cannot be beaten.
 
-Two relaxations of the same order, an enormous distance apart. Integrality was
-not discarded this time. It was absorbed into the variables: every pattern
-is a whole-board decision already made correctly, so relaxing the *count* of
-patterns cannot un-decide it. What remains to relax does far less harm.
+So here are two relaxations of the same order — same recipe, same crossing-out
+of whole numbers — landing more than a board apart. It is worth being precise
+about why, because this is the one idea the whole guide is built on.
+
+In the obvious model, the whole numbers *were* the fitting. Saying "this
+10-foot piece goes entirely on board 3" is a whole-number statement, and
+allowing fractions is exactly what let the piece be sawn in half and spread
+across two boards. Crossing out the whole numbers destroyed the thing that made
+the problem a cutting problem at all.
+
+In the pattern model, the whole-number work has already been done, once,
+correctly, inside each pattern. A pattern is a legal way to cut one board: the
+pieces fit, by construction, and nothing about that can be undone later. So
+when the relaxation allows two and a half boards to be cut with some pattern,
+it is not permitting anything physically impossible about *fitting* — it is
+only permitting a fractional count of boards. Fitting is out of the
+relaxation's reach, because it was settled before the relaxation arrived.
+
+That is the trade. The pattern model pays for a strong bound with an enormous
+number of unknowns, one per pattern, and the payment is the subject of the next
+chapter.
 
 | | says you need at least | so, at least | true answer |
 |---|---|---|---|
@@ -57,7 +79,8 @@ to put up with everything that follows.
 Chapter 11 comes back to it; for now the idea is all you need.)*
 
 > **In one sentence.** Deciding in whole patterns rather than in individual
-> pieces absorbs the integrality, so relaxing what is left costs much less.
+> pieces settles the whole-number question in advance, so crossing it out later
+> costs almost nothing.
 
 ---
 

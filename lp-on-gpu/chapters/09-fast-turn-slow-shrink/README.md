@@ -6,19 +6,26 @@ The spiral converges. The trouble is how.
 
 Look at what one step of the inward spiral does. It carries the point some way
 *around* the answer, and it brings it a little way *in*. A turn and a shrink,
-over and over, and not only in the drawing. On the toy problem there is no clamping and no case analysis, so if you measure the state
-as an offset from the answer, one iteration is exactly "multiply that offset by
-a fixed two-by-two matrix", and it is the same matrix every time.
+over and over.
 
-A matrix that turns everything has no direction it merely stretches, so it has
-no real eigenvalues. What it has instead is a conjugate pair of complex ones,
-and a complex number carries exactly two pieces of information, which here are
-the two things the spiral is doing: the angle of the pair is how far one step
-turns, and the size of the pair is what one step multiplies the distance by.
-Both come out in closed form. With a step size of 0.2:
+That is not merely what the drawing looks like; on the toy problem it is
+precisely what the arithmetic does. There is nothing being clamped and no case
+analysis, so if you measure the state as an offset from the answer, one
+iteration is exactly *multiply that offset by a fixed two-by-two table of
+numbers* — and it is the same table, every step, forever.
+
+A step of that kind is summarised by two quantities: how far round it carries
+the point, and how much it closes in. Both can be computed in advance rather
+than measured off a picture. With a step size of 0.2:
 
 - it turns **11.5°** per iteration, so a full revolution takes **31.2** steps
 - it shrinks the distance to the answer by **2.0%** per iteration
+
+*(Both come from the eigenvalues of that two-by-two matrix, which turn out to be
+a complex conjugate pair: the angle of the pair is the turn, and its magnitude,
+√(1 − 0.2 × 0.2) = 0.9798, is the shrink. Read the 2.0% as the rate the spiral
+settles into rather than a promise about the change in distance at each
+individual step. Nothing below needs the machinery, only the two numbers.)*
 
 Put them together and the difficulty is plain. Thirty-one steps of shaving 2%
 off a distance leave you about half as far away as you began, so one full

@@ -71,7 +71,7 @@ def test_the_shape_of_the_model_is_the_shape_the_prose_quotes():
     assert "Twelve of the twenty-one columns go" in FLAT
     # "two thirds of the model is gone" is about the nonzeros, and is exact
     assert p.after[2] * 3 == p.before[2]
-    assert "Two thirds of the model is gone" in FLAT
+    assert "Two thirds of the model is deleted" in FLAT
 
 
 def test_the_round_counts_are_the_computed_ones():
@@ -141,7 +141,7 @@ def test_presolve_really_does_preserve_the_answer():
     x = postsolve(L.SMALL_PRESOLVED, reduced.x)
     assert L.SMALL.violations(x) == []
     assert L.SMALL.objective(x) == L.SMALL_ANSWER.value
-    assert "a solution to the small one can be turned back into" in FLAT
+    assert "an answer to the small model can be turned back into" in FLAT
 
 
 def test_the_fuzz_count_quoted_in_the_tail_is_the_one_that_runs():

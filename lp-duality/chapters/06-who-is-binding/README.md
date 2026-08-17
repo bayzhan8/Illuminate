@@ -11,7 +11,7 @@ sits there unused.
 Now look at the prices: $6.25 a plank, $2.50 an hour, and nothing at all for
 saw time.
 
-![The feasible region with the two limits the best plan is pressed against drawn
+![The region of legal plans with the two limits the best plan is pressed against drawn
 solid and priced, and the limit it is clear of drawn dashed and priced at
 zero.](binding.png)
 

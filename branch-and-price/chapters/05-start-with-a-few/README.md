@@ -6,8 +6,9 @@ The model cannot be written down. So do not write it down. Start with a model
 that is obviously too small.
 
 Take a few patterns — say the lazy ones, each board cut into copies of a single
-length — and solve *that*. This is the **restricted master**: the real model,
-restricted to the columns someone has bothered to write down.
+length — and solve *that*. Everyone calls it the **restricted master**: the
+real model, restricted to the handful of patterns somebody actually bothered to
+write down. It is the real problem with almost all of its variables missing.
 
 Our order has three lazy patterns: a board cut into six 4-foot pieces, a board
 cut into two 9s, a board cut into two 10s. With only those three on the table

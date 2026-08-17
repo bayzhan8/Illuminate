@@ -10,16 +10,34 @@ always is. The relaxation is famously tight; instances where rounding up is
 and a rounded bound is a number rather than a set of cuts. To get something you
 can take to the saw, the fractions have to be branched away.
 
-Hence **branch-and-price**: branch-and-bound in which the relaxation at every
-node is itself solved by generating columns.
+The standard way to branch fractions away is **branch and bound**, and since
+this repository has no guide to it yet, here it is in full. Solve the relaxation.
+If some quantity comes out fractional — say a pattern is used 2.5 times — then
+whatever the true answer is, it either uses that pattern at most 2 times or at
+least 3 times. There is no third case. So split the problem into those two
+smaller problems and solve each. Repeat, and you get a tree of ever more
+constrained problems.
+
+Two things stop the tree from exploding. A branch whose extra restrictions make
+the problem impossible is dropped. And a branch whose *relaxation* already needs
+more boards than some whole-number answer you have already found in hand cannot
+possibly contain anything better, so it is dropped too, unexamined — which is
+where the whole value of a strong relaxation shows up. A bound of 6.5 prunes
+branches that a bound of 5.44 would have made you explore.
+
+**Branch-and-price** is branch and bound in which the relaxation at every node
+of that tree is itself solved by column generation, since the model is still too
+big to write down at any node.
 
 > **At each node**
 >
 > 1. Impose the node's branching decisions on the master.
 > 2. Solve that relaxation by column generation: the full loop, at every node.
-> 3. Prune if it is infeasible, or if its bound cannot beat the best plan found.
-> 4. If the answer is whole, record it. Otherwise pick a fractional pattern
->    count and split: one child uses it at most ⌊x⌋ times, the other at least ⌈x⌉.
+> 3. Prune if it is impossible, or if its bound cannot beat the best whole
+>    answer found so far.
+> 4. If the answer is whole, record it. Otherwise pick a pattern used a
+>    fractional number of times and split: one child uses it at most ⌊x⌋ times,
+>    the other at least ⌈x⌉ (those brackets mean round down and round up).
 
 ![A search tree of eleven boxes, each labelled with the number of boards its
 relaxation needs, some marked whole, some cannot win, branching down four

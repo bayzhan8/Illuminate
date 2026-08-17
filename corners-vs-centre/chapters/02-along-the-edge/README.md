@@ -14,12 +14,18 @@ corner along the way labelled by the dollar value of the plan there: zero, then
 The walk rests on a fact that has to be established before it makes any sense:
 if a linear program has an optimum at all, then some corner achieves it.
 
-The reason is that the objective is linear. Stand anywhere in the region that
-is not a corner and there is a direction you can move in without leaving, and
-along which the objective either improves or stays level. Keep going and you
-run into a wall; slide along it and repeat. You cannot get stuck partway,
-because a linear objective has no interior peak to get stuck on. Whatever the
-best value is, a corner attains it.
+The reason is that the profit is linear: walk along any straight line and it
+changes at a constant rate, rising steadily, falling steadily, or staying flat,
+but never bending. (The quantity being maximised is called the **objective**,
+and here it is the profit.)
+
+That is what rules out getting stuck. Stand anywhere in the region that is not a
+corner. There is always a direction you can move in without leaving the region
+along which the profit does not go down, so take it, and keep going until you
+run into a wall; then slide along the wall and repeat. Nothing can strand you
+partway, because a quantity that only ever changes at a constant rate has no
+hilltop in the middle of the region to stand on. So whatever the best value is,
+some corner attains it.
 
 That converts an infinite search into a finite one, and the simplex method is
 what you get by taking the conversion seriously:

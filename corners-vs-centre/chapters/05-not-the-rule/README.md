@@ -10,12 +10,14 @@ Chapter 4 reads like an indictment of the simplex method. It is not one. It is
 an indictment of one line inside it.
 
 The three lines above come from the same simplex code on the same cubes. One
-function differs: which improving column to enter. That single substitution
-moves the count from doubling, to a gentler climb, to a single pivot.
+function differs: the pivot rule, which picks the edge to walk along. That
+single substitution moves the count from doubling, to a gentler climb, to a
+single pivot.
 
 - **Dantzig's rule** takes exactly **2ⁿ − 1** pivots. Every corner.
-- **Bland's rule**, which takes the lowest-numbered improving column, takes
-  exactly **2·Fib(n+1) − 1**. At n = 10 that is 177 rather than 1023.
+- **Bland's rule**, which ignores the numbers entirely and takes whichever
+  improving edge comes first in a fixed ordering, takes exactly
+  **2·Fib(n+1) − 1**. At n = 10 that is 177 rather than 1023.
 - **Steepest edge**, which measures improvement per unit of *movement* rather
   than per unit of variable, takes **one pivot**, at every size.
 
@@ -34,7 +36,7 @@ Hold the dimension steady and change only the rule, then hold the rule steady
 and raise the dimension. One of those controls sets the exponent.
 
 > **In one sentence.** The exponent in chapter 4 belongs to the rule that
-> picked the column, not to the method that did the walking.
+> picked the edge, not to the method that did the walking.
 
 ---
 

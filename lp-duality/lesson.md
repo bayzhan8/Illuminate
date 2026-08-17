@@ -43,21 +43,43 @@ profit line climbing until it rests on a corner. On the right the buyer's
 possible prices, with a cost line falling until it rests on a corner. Both stop
 at three hundred and fifty dollars.](chapters/00-what-this-is/hero.gif)
 
-Watch the two panels. They are not the same picture.
+A workshop has 44 planks, 30 hours of labour and 32 hours of saw time, and it
+turns those into tables and chairs. Two people are looking at it, and they are
+asking different questions.
 
-The left one is a workshop owner asking *what should I build?* They push their
-profit as high as it will go.
+**The owner** wants to know what to build. Any combination of tables and chairs
+the stock will stretch to is a candidate, and the owner is hunting for the one
+that earns the most money. That is the left panel: a line of constant profit
+being pushed outwards until the stock will not allow any more. It comes to rest
+at **$350**.
 
-The right one is a buyer asking *what would I have to pay to buy this place
-out?* They push their bill as low as it will go.
+**A buyer** has walked in wanting to purchase the entire contents of the
+building — the planks, the labour hours, the saw hours — and has to name a price
+for each. Naturally the buyer wants the total bill to be as small as possible.
+But it has to be an offer the owner would take. The owner will refuse any price
+list that undervalues a product: if the buyer prices a table's worth of
+ingredients at $25 when a table sells for $30, the owner simply keeps the
+materials and builds tables instead. So the buyer is pushing a bill *down*
+against that restriction, and cannot push it below the point where some product
+would be worth more built than sold. That is the right panel. It also comes to
+rest at **$350**.
 
-Different axes. Different shapes. One climbing, one falling. Neither is allowed
-to look at the other.
+Nothing in the setup makes those the same question. One is about how much
+furniture to make; the other is about what raw materials are worth. One is a
+largest, the other a smallest. Neither calculation ever consults the other.
 
 They stop at the same number. Not close to it. On it.
 
-> **In one sentence.** Two unrelated-looking questions about the same workshop
-> have the same answer, and the rest of this guide is about why.
+The reason to care is not the coincidence itself but what falls out of it. If
+the two answers always agree, then a price list becomes a **receipt**. Hand
+someone a plan earning $350 and a price list billing $350 and they can check, in
+a few multiplications, that no plan anywhere on earth beats $350 — without
+looking at a single other plan. The rest of this guide is where that receipt
+comes from, why it always exists, and the four or five other things it turns out
+to be good for.
+
+> **In one sentence.** Two questions about the same workshop that share no
+> ingredients have the same answer, and each one's answer certifies the other's.
 
 ---
 
@@ -155,13 +177,27 @@ table's ingredients are worth 4×7 + 2×3 = $34, and a chair's are worth
 2×7 + 3×3 = $23.
 
 Now notice something. A table sells for $30 and its ingredients are priced at
-$34. A chair sells for $20 and its ingredients are priced at $23. Both products
-are worth more as ingredients than as furniture.
+$34. A chair sells for $20 and its ingredients are priced at $23. At these
+prices, both products are worth more as raw material than as furniture.
 
-Suppose that holds for every product. Then whatever the workshop builds, it
-consumes ingredients worth at least what the finished goods sell for. So the
-total value of everything on the shelves is at least the most the workshop
-could possibly earn.
+Suppose that is true of every product. Then take *any* plan the workshop might
+carry out and follow it through two steps.
+
+**Step one.** Whatever the plan builds, the ingredients it consumes are worth
+at least what the finished goods sell for. That is true product by product, and
+a plan is nothing but a number of each, so adding up preserves it.
+
+**Step two.** The ingredients it consumes came out of the building, so they are
+worth at most what is in the building — you cannot use more planks than you own,
+and no price is negative.
+
+Chain those together. What the plan earns is at most what its ingredients are
+worth, and what its ingredients are worth is at most the value of everything on
+the shelves. So the plan earns at most the value of everything on the shelves.
+
+And notice what the argument never asked. It never asked which plan. It holds
+for the best plan, the worst plan and every plan in between, all at once. So
+the value of the building at these prices is a number *no plan can beat*.
 
 That is a ceiling, and it came from prices rather than from plans.
 
@@ -313,7 +349,7 @@ sits there unused.
 Now look at the prices: $6.25 a plank, $2.50 an hour, and nothing at all for
 saw time.
 
-![The feasible region with the two limits the best plan is pressed against drawn
+![The region of legal plans with the two limits the best plan is pressed against drawn
 solid and priced, and the limit it is clear of drawn dashed and priced at
 zero.](chapters/06-who-is-binding/binding.png)
 

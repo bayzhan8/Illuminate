@@ -2,8 +2,9 @@
 
 ## 3 · Why simplex is the wrong shape
 
-The simplex method walks from corner to corner of the feasible region, and each
-step is a chain:
+Draw every plan the workshop could legally carry out and they fill a region
+with flat sides and sharp corners. The simplex method walks from corner to
+corner of that region, and each step is a chain:
 
 1. Work out which product would improve the plan if you started making it.
 2. Work out how much of it you can make before some rule binds.

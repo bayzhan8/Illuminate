@@ -14,13 +14,27 @@ table's ingredients are worth 4×7 + 2×3 = $34, and a chair's are worth
 2×7 + 3×3 = $23.
 
 Now notice something. A table sells for $30 and its ingredients are priced at
-$34. A chair sells for $20 and its ingredients are priced at $23. Both products
-are worth more as ingredients than as furniture.
+$34. A chair sells for $20 and its ingredients are priced at $23. At these
+prices, both products are worth more as raw material than as furniture.
 
-Suppose that holds for every product. Then whatever the workshop builds, it
-consumes ingredients worth at least what the finished goods sell for. So the
-total value of everything on the shelves is at least the most the workshop
-could possibly earn.
+Suppose that is true of every product. Then take *any* plan the workshop might
+carry out and follow it through two steps.
+
+**Step one.** Whatever the plan builds, the ingredients it consumes are worth
+at least what the finished goods sell for. That is true product by product, and
+a plan is nothing but a number of each, so adding up preserves it.
+
+**Step two.** The ingredients it consumes came out of the building, so they are
+worth at most what is in the building — you cannot use more planks than you own,
+and no price is negative.
+
+Chain those together. What the plan earns is at most what its ingredients are
+worth, and what its ingredients are worth is at most the value of everything on
+the shelves. So the plan earns at most the value of everything on the shelves.
+
+And notice what the argument never asked. It never asked which plan. It holds
+for the best plan, the worst plan and every plan in between, all at once. So
+the value of the building at these prices is a number *no plan can beat*.
 
 That is a ceiling, and it came from prices rather than from plans.
 

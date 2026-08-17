@@ -10,10 +10,17 @@ could prove as written, a blue dot marks the stronger bound after presolve, and
 a red dot marks the true best plan, with the closed part of the gap
 marked.](bound.png)
 
-Ignore the whole-number requirement and solve what is left, and the model as
-written proves the answer cannot be cheaper than **$248**. After presolve, the
-same relaxation proves it cannot be cheaper than **$263**. The true answer is
-**$290**.
+Here is how a solver knows anything about the answer before it has found it.
+Cross out the requirement that the yes/no decisions be whole numbers, allowing
+a production line to be 0.25 open, and solve what is left. That is called the
+**relaxation**, and it is easy to solve. Because crossing out a requirement can
+only make things cheaper, whatever the relaxation costs is a floor under the
+true answer — a number the real answer cannot go below. The closer that floor is
+to the truth, the more of the search can be skipped.
+
+The model as written has a relaxation costing **$248**, so the answer cannot be
+cheaper than $248. After presolve, the same relaxation costs **$263**, so now
+the answer cannot be cheaper than $263. The true answer is **$290**.
 
 No cutting plane was added. No node was explored. **$15 of a $42 gap closed**,
 purely from columns being fixed and bounds being narrowed, and a better bound is
