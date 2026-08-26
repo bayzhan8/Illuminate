@@ -364,6 +364,7 @@ def test_the_dates_are_the_ones_the_research_settled_on():
                        ("1978", "Avis and Chv"),
                        ("1979", "Khachiyan"),
                        ("1984", "Karmarkar"),
+                       ("2001", "announced in 2001"),
                        ("2004", "Spielman"),
                        ("2012", "Santos"),
                        ("2011", "subexponential"),

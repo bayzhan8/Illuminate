@@ -113,8 +113,10 @@ def gradient_descent_ascent(problem: Problem, iterations: int,
     the result.
     """
     tau_, sigma_ = steps_for(problem)
-    tau = tau or tau_
-    sigma = sigma or sigma_
+    # `or` would swallow an explicit 0.0 and silently substitute the default,
+    # so test None instead. A zero step is a legitimate thing to ask for.
+    tau = tau_ if tau is None else tau
+    sigma = sigma_ if sigma is None else sigma
     x = np.zeros(len(problem.c)) if start is None else np.asarray(start[0], float).copy()
     y = np.zeros(len(problem.b)) if start is None else np.asarray(start[1], float).copy()
 
@@ -144,8 +146,10 @@ def pdhg(problem: Problem, iterations: int, start=None,
     trick of chapter 7; passing 0 turns it off.
     """
     tau_, sigma_ = steps_for(problem)
-    tau = tau or tau_
-    sigma = sigma or sigma_
+    # `or` would swallow an explicit 0.0 and silently substitute the default,
+    # so test None instead. A zero step is a legitimate thing to ask for.
+    tau = tau_ if tau is None else tau
+    sigma = sigma_ if sigma is None else sigma
     x = np.zeros(len(problem.c)) if start is None else np.asarray(start[0], float).copy()
     y = np.zeros(len(problem.b)) if start is None else np.asarray(start[1], float).copy()
 

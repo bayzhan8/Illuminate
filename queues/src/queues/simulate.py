@@ -74,7 +74,7 @@ def run_queue(rate: float, service_rate: float, customers: int,
               record_every: int = 0) -> Run:
     """Serve `customers` people, one event at a time.
 
-    A deliberately plain event loop, because chapter 7 walks through it. The
+    A deliberately plain event loop, because chapter 11 walks through it. The
     one line that matters is the area accumulation, and it has to happen
     *before* the queue length changes -- that is the vertical slicing of
     chapter 2, and doing it after is the classic way to get a plausible wrong
@@ -161,7 +161,7 @@ def lindley(rate: float, service_rate: float, customers: int,
 
     Equivalent in law to the event loop for a single server serving in order,
     and about a thousand times faster, which is what makes the convergence
-    study in chapter 7 affordable. Used only where the *distribution* of the
+    study in chapter 12 affordable. Used only where the *distribution* of the
     answer matters rather than the mechanics.
     """
     gaps = rng.exponential(1 / rate, customers)
@@ -205,7 +205,7 @@ def correlation_length(waits: np.ndarray, window: int = 20000) -> float:
 
     The integrated autocorrelation time: 1 + twice the sum of the
     autocorrelations. At high utilisation this runs into the thousands, which
-    is the reason the naive confidence interval in chapter 7 is so wrong.
+    is the reason the naive confidence interval in chapter 12 is so wrong.
     """
     centred = waits - waits.mean()
     variance = float(centred @ centred) / len(centred)

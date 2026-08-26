@@ -1,4 +1,4 @@
-"""Chapter 9: the search tree, with a whole column generation run at each node."""
+"""Chapter 10: the search tree, with a whole column generation run at each node."""
 
 import math
 

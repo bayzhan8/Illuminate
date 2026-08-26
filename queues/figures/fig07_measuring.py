@@ -1,4 +1,4 @@
-"""Chapter 12: the relation is satisfied long before either side is right.
+"""Chapter 11: the relation is satisfied long before either side is right.
 
 Run one queue and track both averages as they go. They agree with each other
 from almost the first customer, and neither is close to the truth for a very

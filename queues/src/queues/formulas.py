@@ -85,7 +85,7 @@ class MM1:
         """Roughly how long the queue takes to forget its starting state.
 
         Used only to say how long a measurement window has to be before an
-        average of it means anything; chapter 7 leans on this.
+        average of it means anything; chapter 8 leans on this.
         """
         import math
         return 1.0 / (math.sqrt(float(self.service_rate))
@@ -149,7 +149,7 @@ def kingman(rate: Number, mean_service: Number,
 
     Exact when arrivals are Poisson (arrival_cv_squared = 1), where it reduces
     to Pollaczek-Khinchine. Elsewhere it is a heavy-traffic result and the
-    guide says so: chapter 5 shows it overstating the wait by 96% at half
+    guide says so: chapter 6 shows it overstating the wait by 96% at half
     utilisation with regular arrivals.
     """
     rate, mean_service = frac(rate), frac(mean_service)

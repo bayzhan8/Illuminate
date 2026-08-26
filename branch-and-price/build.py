@@ -32,7 +32,7 @@ CHAPTERS = [
 ]
 
 # The same mathematics as src/bandp, written a second time in JavaScript so the
-# pages need no server. tests/test_sandbox.py runs both over the same inputs.
+# pages need no server. tests/test_lesson.py runs both over the same inputs.
 MATHS = r"""
 const BOARD = 25;
 const WIDTHS = [4, 9, 10];
@@ -148,7 +148,7 @@ draw();
         r"""
 const cv = document.getElementById("c"), out = document.getElementById("out");
 const step = document.getElementById("step");
-// the rounds as the Python produced them; tests/test_sandbox.py checks these
+// the rounds as the Python produced them; tests/test_lesson.py checks these
 // against a live run rather than trusting the numbers pasted here
 const ROUNDS = ROUNDS_JSON;
 function draw() {

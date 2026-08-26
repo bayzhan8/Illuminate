@@ -180,7 +180,7 @@ function sortRound(pts) {
 
 const cv = document.getElementById("c"), out = document.getElementById("out");
 const step = document.getElementById("step");
-// the rounds as the Python produced them; tests/test_sandbox.py checks these
+// the rounds as the Python produced them; tests/test_lesson.py checks these
 // against a live run rather than trusting the numbers pasted here
 const ROUNDS = [{"held": 3, "value": 7.0, "duals": ["1/6", "1/2", "1/2"], "best": "4\u00d74 + 1\u00d79", "bestValue": 1.1666666666666667, "added": true}, {"held": 4, "value": 6.875, "duals": ["1/8", "1/2", "1/2"], "best": "1\u00d74 + 2\u00d79", "bestValue": 1.125, "added": true}, {"held": 5, "value": 6.5, "duals": ["1/7", "3/7", "1/2"], "best": "1\u00d74 + 2\u00d710", "bestValue": 1.1428571428571428, "added": true}, {"held": 6, "value": 6.5, "duals": ["0", "1/2", "1/2"], "best": "1\u00d74 + 2\u00d79", "bestValue": 1.0, "added": false}];
 function draw() {

@@ -29,7 +29,7 @@ are worth knowing about because neither announces itself:
 
 The first is handled in `solve_node`, the second by the emergency columns in
 `restricted_master`.  With both, this agrees with brute-force integer optima on
-every one of the 1230 instances `tests/test_search.py` puts through it; the
+every one of the 1230 instances `tests/test_cutting.py` puts through it; the
 first version of this file, which had neither, disagreed on 476 of them while
 looking entirely reasonable.
 """

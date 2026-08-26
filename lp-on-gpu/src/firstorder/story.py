@@ -8,8 +8,10 @@ economy. It means the answer is already known exactly, in rationals, from a
 method that shares no line of code with anything here, so every claim about
 what a first-order method found can be checked rather than asserted.
 
-`TOY` is one variable and one equality, which is the smallest problem that
-still spirals. Its whole trajectory lives in a plane, so the guide can draw it.
+The toy the guide draws -- one variable, one rule, x >= 3 -- is the smallest
+problem that still spirals, and its whole trajectory lives in a plane. It is
+defined in `figures/fig04_the_spiral.py` rather than here, because that is the
+only place it is used.
 """
 
 from __future__ import annotations
@@ -41,9 +43,11 @@ TAU, SIGMA = steps_for(WORKSHOP)
 
 # minimise nothing, subject to x = 3, written as two inequalities so the
 # machinery is the same one the workshop uses
-TOY = Problem.build(A=[[1.0], [-1.0]], b=[3.0, -3.0], c=[0.0])
-TOY_START = (np.array([2.0]), np.array([2.0, 0.0]))
-TOY_ANSWER = np.array([3.0, 0.0, 0.0])
+# Removed: a `TOY` Problem written as the pair x <= 3, -x <= -3. Nothing read
+# it, and it did not match the toy the guide actually draws -- fig04 implements
+# x >= 3, whose price moves the other way. Two different toys under one name is
+# a trap for whoever wires it up next. The drawn one lives in
+# figures/fig04_the_spiral.py, which is the only place it is used.
 
 # The spiral is analysed on the bare one-equality map, where the clamp never
 # binds and the iteration is exactly a rotation-and-shrink.

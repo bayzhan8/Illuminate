@@ -338,9 +338,12 @@ Here is the whole calculation, and it is arithmetic you can do in your head:</p>
 </ul>
 <p>Add them up: <strong>7 boards</strong>, which answers a smaller question than the one we
 asked.</p>
-<p>That number is an honest upper bound, since those three patterns really do fill
-the order. What it is not is the answer to the strong model, which has three
-more patterns nobody has written down, and in the mill instance four trillion.</p>
+<p>That number is an honest upper bound on the relaxation, since those three
+patterns really do fill the order. It is not yet a plan you could take to the
+saw: half a board of cutting is not a thing, and rounding each of the three up
+separately costs 1 + 3 + 4 = 8 boards. What it is not is the answer to the
+strong model, which has three more patterns nobody has written down, and in the
+mill instance four trillion.</p>
 <p>So the method now needs one thing, and only one. Not a way to search the
 missing patterns, of which there are far too many. A way to answer <em>whether any
 of them would help</em> without adding them, and ideally without looking at them.</p>
@@ -550,9 +553,9 @@ fractional number of times and split: one child uses it at most ⌊x⌋ times,
 the other at least ⌈x⌉ (those brackets mean round down and round up).</li>
 </ol>
 </blockquote>
-<figure class="plate"><img src="chapters/10-branch-and-price/tree.png" alt="A search tree of eleven boxes, each labelled with the number of boards its
-relaxation needs, some marked whole, some cannot win, branching down four
-levels." loading="lazy"></figure>
+<figure class="plate"><img src="chapters/10-branch-and-price/tree.png" alt="A search tree of eleven boxes, each labelled with the number of boards its relaxation needs, some marked whole, some cannot win, branching down four levels." loading="lazy"></figure>
+<p>(The tree drawn is the bigger order from chapter 9, not the six-pattern one.
+This order branches away in three nodes, which makes for a dull picture.)</p>
 <p>Each box hides a complete solve-price-add cycle. The tree stays small because
 it starts from a bound that is already nearly right, which is chapter 3 being
 repaid. Branch-and-price is branch-and-bound with a far better relaxation and a

@@ -2,8 +2,8 @@
 is solved.
 
 Columns are grouped by product and rows by the constraints belonging to it, so
-the blocks are visible. Product C is the one nobody ordered, and watching its
-whole block go out at once is most of the chapter.
+the blocks are visible. Product C is the one nobody ordered, and its block is the one to watch, though it goes
+out over several rounds rather than in one.
 """
 
 from matplotlib.patches import Rectangle

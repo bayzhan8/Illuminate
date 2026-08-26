@@ -1,4 +1,4 @@
-"""Chapter 13: what a textbook confidence interval actually covers here.
+"""Chapter 12: what a textbook confidence interval actually covers here.
 
 Consecutive waits in a queue are strongly dependent, so the usual interval,
 which assumes they are not, is far too narrow. Both numbers on this chart
