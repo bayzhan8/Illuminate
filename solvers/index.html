@@ -46,17 +46,19 @@
 <main class="prose">
 <h1>What solvers actually do</h1>
 <p><strong>What is inside the box, and how to pick one you can actually deploy.</strong></p>
-<p>Take a small production model: three products, two periods, twenty rows and
-twenty-one columns. Nothing about it is clever. It is the kind of thing you get
-on a first pass, written the way the problem was described to you.</p>
-<p>Hand it to a solver and the first thing that happens is that the solver deletes
-most of it. Thirteen of the twenty rows go. Twelve of the twenty-one columns
-go. One of the yes/no decisions in it, a question about whether to set up a
-production line, is settled outright, by arithmetic, before any search begins.</p>
-<p>None of that is the simplex method, and none of it is branch and bound. It
-happens before either one is allowed to start, it is where a large part of the
-difference between solvers lives, and it is almost never the part anybody
-learns.</p>
+<p>Take a small production model. Three products, two periods, twenty rows and
+twenty-one columns. Nothing about it is clever — it is the kind of thing you
+get on a first pass, written the way the problem was described to you.</p>
+<p>Hand it to a solver, and before any algorithm you have heard of gets to run,
+the solver deletes most of it.</p>
+<p>Thirteen of the twenty rows: gone. Twelve of the twenty-one columns: gone. And
+one of the yes/no decisions in it — a genuine decision, whether to set up a
+production line — is settled outright, by arithmetic, before the search opens a
+single node.</p>
+<p>That is two thirds of the model, removed by something that is not the simplex
+method and is not branch and bound. It happens before either one is allowed to
+start. It is where a large part of the difference between solvers lives.</p>
+<p>And it is almost never the part anybody learns.</p>
 <p>This guide is in two halves. The first is that machinery, built and run in
 exact arithmetic so you can watch it work. The second is the part people
 actually get stuck on: which solvers exist, how they differ, which ones you can
@@ -106,9 +108,10 @@ are nowhere near the same speed.</p>
 which part is a separate job from solving it.</p>
 </blockquote>
 <h2 id="ch1"><span class="num">1</span>A solver is not an algorithm</h2>
-<p>If you have read the other guides here, you know how to solve a linear program.
-<a href="../corners-vs-centre/">Walk the corners</a>, or go through the middle. You could
-implement one yourself, and people do, in a few hundred lines.</p>
+<p>If you have read the other guides here, you already know how to solve a linear
+program: <a href="../corners-vs-centre/">walk the corners</a>, or go through the middle.
+You could implement one yourself in a few hundred lines, and people do.</p>
+<p>And you would not have a solver. Not a rough one — a different kind of object.</p>
 <p>What you would have is not a solver, and the gap is not a matter of polish.</p>
 <p>A commercial mixed-integer solver is perhaps a million lines. The part that
 takes a step, the simplex pivot or the interior point iteration, is a small
@@ -251,8 +254,9 @@ ones that prove a variable can be moved to a bound without loss.)</em></p>
 written has no way to see any of them.</p>
 </blockquote>
 <h2 id="ch3"><span class="num">3</span>The cascade, and where the gap opens</h2>
-<p>Take those reductions one at a time and they are unremarkable. Run them in a
-loop and something else happens.</p>
+<p>Take those reductions one at a time and they are unremarkable. Every one of
+them is something a careful person would spot. Run them in a <em>loop</em>, though,
+and something happens that no single pass could produce.</p>
 <figure class="plate"><img src="chapters/03-the-cascade/cascade.png" alt="Two panels, each plotting how much of a model is left against how many rounds
 of the reduction loop have run. Three stepped lines fall away in each: nonzeros,
 columns and rows. Neither panel drops all at once; both keep stepping down for
@@ -279,7 +283,7 @@ different fixed point.</p>
 reduction is what exposes the next one.</p>
 </blockquote>
 <h2 id="ch4"><span class="num">4</span>A decision made by arithmetic</h2>
-<p>The best thing in this guide happens in round 3.</p>
+<p>The best thing in this guide happens in round 3, and it is not a deletion.</p>
 <p>Everything so far has deleted rows and columns, useful bookkeeping and nothing
 more. What happens in round 3 is the loop settling one of the actual decisions
 in the model, the kind a person would assume requires a search.</p>
@@ -540,8 +544,10 @@ engine, and the one engine in it worth choosing deliberately is CP-SAT.</p>
 <h2 id="ch11"><span class="num">11</span>Why the benchmarks cannot be read straight</h2>
 <p>The obvious move is to look up which solver is fastest. The standard source is
 Hans Mittelmann's benchmark pages, which have run for years and are the closest
-thing the field has to a referee.</p>
-<p>Read them, and read the note at the top first.</p>
+thing this field has to a referee.</p>
+<p>Then read the note at the top, and watch the leaderboard stop meaning what you
+assumed it meant.</p>
+<p>Here is what that note says.</p>
 <p>Results for <strong>IBM CPLEX and FICO Xpress were removed</strong> after those vendors
 objected, following the 2018 INFORMS annual meeting. <strong>Gurobi withdrew in
 August 2024.</strong> <strong>MindOpt followed in December 2024.</strong></p>
@@ -555,9 +561,9 @@ cost money.</p>
 by request, so what those tables rank is who is willing to be ranked.</p>
 </blockquote>
 <h2 id="ch12"><span class="num">12</span>Measure on your own models</h2>
-<p>Suppose the tables were complete. They would still not answer your question,
-and this is the more important of the two problems because no amount of tidying
-up fixes it.</p>
+<p>Now suppose the tables were complete. Every solver, every version, perfectly
+refereed. They would <em>still</em> not answer your question, and this is the more
+important of the two problems, because no amount of tidying up fixes it.</p>
 <p><strong>A benchmark is a set of models, and yours is not in it.</strong></p>
 <p>Solver performance varies over instances by orders of magnitude: not by tens of
 percent but by factors of a thousand. A solver that wins on a shifted geometric
@@ -675,9 +681,10 @@ chapter 4 is the first place to look.</p>
 <p><strong>Measure before you buy.</strong> The evaluation licences exist for this. Ten of your
 own instances, a fixed time limit, all candidates.</p>
 <p><strong>Keep the solver replaceable.</strong> Write through a layer, and the decision you
-make today stays cheap to revisit. Everything in chapters 7 to 13 changes.
-SCIP's licence changed. Gurobi left the benchmarks. cuOpt was proprietary and
-is now Apache 2.0. The one durable move is to not be welded to any of it.</p>
+make today stays cheap to revisit. Everything in chapters 7 to 13 changes:
+SCIP's licence changed, Gurobi left the benchmarks, and cuOpt went from
+proprietary to Apache 2.0. The one durable move is to not be welded to any of
+it.</p>
 <blockquote class="takeaway">
 <p><strong>In one sentence.</strong> Formulate well, measure on your own models, and keep the
 solver behind a layer so that none of this has to be decided permanently.</p>

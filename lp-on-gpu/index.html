@@ -53,25 +53,29 @@ corner to corner of the region of legal plans, improving as it goes, and stops
 when no neighbouring corner is better. <a href="../corners-vs-centre/">The previous
 guide</a> builds it; all you need here is that shape: a
 walk, one step at a time.</p>
-<p>Here are two methods on the same small workshop, from the same starting point,
-with the same step sizes. Their inner loops cost the same to run and differ by
-one term in one line.</p>
-<p>One lands on $350, which is exactly right. The other never lands on anything.
-Four thousand iterations in it is still swinging between $0 and $753, and it
-would still be swinging after four million.</p>
-<p>Nobody puts up with a method that delicate unless something forces them to.
-What forced them is the hardware. For thirty years the way to solve a linear
-program faster was to buy a quicker processor; that stopped working, and what
-replaced it was not a quicker processor but a much wider one, thousands of
-arithmetic units fed by a memory system that did not get thousands of times
-faster.</p>
-<p>The simplex method cannot use a machine like that, and not for want of anybody
-trying. It is a chain of decisions in which each one depends on the last, and a
-machine that can do ten thousand things at once is no help when you only have
-one thing to do until it finishes.</p>
+<p>Two methods. Same small workshop, same starting point, same step sizes. Their
+inner loops cost exactly the same to run, and the code differs by <strong>one term in
+one line</strong>.</p>
+<p>One of them lands on $350, which is the right answer.</p>
+<p>The other never lands on anything at all. Four thousand iterations in, it is
+still swinging between $0 and $753, and it would still be swinging after four
+million.</p>
+<p>One term. That is the entire difference between a method and a thing that spins
+forever.</p>
+<p>Nobody puts up with something that delicate unless they are being forced to, so
+the first question is what is doing the forcing. It is the hardware. For thirty
+years the way to solve a linear program faster was to buy a quicker processor.
+That stopped working. What replaced it was not a quicker processor but a much
+<em>wider</em> one: thousands of arithmetic units, fed by a memory system that did not
+get thousands of times faster.</p>
+<p>And the simplex method cannot use a machine like that. Not for want of anyone
+trying — it is a chain of decisions where each one depends on the last, and a
+machine that can do ten thousand things at once is no help whatever when you
+have exactly one thing to do until it finishes.</p>
 <p>So the interesting question is not how to parallelise simplex. It is what a
-method would have to look like to use the hardware at all, and what you give up
-by using it. The delicate one is the answer.</p>
+method would have to look like to use that hardware at all, and what you give
+up by using it. The delicate one is the answer, and the missing term is where
+the guide is going.</p>
 <p><strong>The plan.</strong> Chapters 1 and 2 are about the hardware and why it changes which
 algorithms are worth having. Chapter 3 is why simplex is the wrong shape.
 Chapters 4 to 10 build a method that is the right shape, starting from the
@@ -107,8 +111,8 @@ only just, and what separates it from a method that never converges is one
 term in one line.</p>
 </blockquote>
 <h2 id="ch1"><span class="num">1</span>How much arithmetic per byte</h2>
-<p>Start with the hardware, because it determines which algorithms are worth
-having.</p>
+<p>Start with the hardware, because it decides which algorithms are worth having,
+and it decides it before you have written a line.</p>
 <p>A modern accelerator has enormously more arithmetic capability than a server
 processor. It does not have proportionally more memory bandwidth. Roughly: a
 hundred times the arithmetic, but only about fifteen times the rate at which it
@@ -205,8 +209,8 @@ wins, is <a href="../corners-vs-centre/">the guide before this one</a>.)</em></p
 comes from taking few steps rather than from taking them in parallel.</p>
 </blockquote>
 <h2 id="ch4"><span class="num">4</span>Reading the table two ways</h2>
-<p>So ask for the opposite of chapter 3. What would a method look like if the
-<em>only</em> thing it ever did was multiply by the matrix?</p>
+<p>So ask for the exact opposite of chapter 3. What would a method look like if
+the <em>only</em> thing it ever did was multiply by the matrix?</p>
 <p>Answering that needs some notation, and this chapter spends all of it. Four
 symbols, <code>A</code>, <code>x</code>, <code>b</code> and <code>y</code>, and one mark on top of the first. Nothing else
 in this guide is written in symbols at all, so if you get through this chapter
@@ -321,7 +325,9 @@ from something to search for into a standstill between two greedy parties.</p>
 up turns &quot;find the best plan&quot; into &quot;find where two opponents stop moving&quot;.</p>
 </blockquote>
 <h2 id="ch6"><span class="num">6</span>A method made of one operation</h2>
-<p>Now the payoff, and it is why the last two chapters were worth the trouble.</p>
+<p>Now the payoff, and it is why the last two chapters were worth the trouble.
+Both questions the method needs to ask turn out to be the same table, read the
+two ways chapter 4 set up.</p>
 <p>To improve the plan you need to know, at the current prices, whether a product
 earns more than its ingredients cost. That comparison is the profit against
 <code>Aᵀy</code>.</p>
@@ -344,7 +350,8 @@ whose whole inner loop is two passes over the matrix.</p>
 </blockquote>
 <h2 id="ch7"><span class="num">7</span>The obvious version does not work</h2>
 <p>The obvious thing is to move both at once. Push the plan down a little, push
-the prices up a little, repeat.</p>
+the prices up a little, repeat. It is the first thing anyone would write, and
+it does not work at all.</p>
 <p>To see what happens, shrink the problem until the whole state fits on a page:
 one variable, one rule, <code>x = 3</code>. Nothing to maximise, one shelf, one product,
 and the plan simply has to hit 3. Then the state is a plan and a price, two
@@ -387,7 +394,7 @@ long as you care to let it run.</p>
 circle forever instead of settling.</p>
 </blockquote>
 <h2 id="ch8"><span class="num">8</span>One term different</h2>
-<p>Now the fix, and it is almost nothing.</p>
+<p>Now the fix. Brace yourself, because it is almost nothing.</p>
 <p>When the prices react, do not show them the plan's current position. Show them
 where the plan is <em>heading</em>: the new plan, plus the step it has just taken,
 again.</p>
@@ -424,7 +431,8 @@ on and raise the step size until even that stops working.</p>
 rather than react to its last one turns the spiral inward, at no extra cost.</p>
 </blockquote>
 <h2 id="ch9"><span class="num">9</span>It turns fast and shrinks slowly</h2>
-<p>The spiral converges. The trouble is how.</p>
+<p>The spiral converges. So we are done — except look at <em>how</em> it converges,
+because that is where the trouble is.</p>
 <p>Look at what one step of the inward spiral does. It carries the point some way
 <em>around</em> the answer, and it brings it a little way <em>in</em>. A turn and a shrink,
 over and over.</p>

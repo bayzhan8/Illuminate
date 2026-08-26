@@ -212,7 +212,7 @@ def test_the_far_corner_the_prose_describes_is_the_real_one():
     assert spare == Fraction(4, 3)
     assert "10⅔ of them" in FLAT
     assert "a plank and a third to spare" in FLAT
-    assert "but the saw" in FLAT
+    assert "It is the saw, which most people do not guess" in FLAT
 
 
 def test_the_unbounded_pairing_is_stated_as_one_direction_only():

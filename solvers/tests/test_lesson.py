@@ -67,11 +67,11 @@ def test_the_shape_of_the_model_is_the_shape_the_prose_quotes():
     assert "twenty rows and twenty-one columns" in FLAT
     # the two counts the opening makes of what disappears
     assert p.before[0] - p.after[0] == 13 and p.before[1] - p.after[1] == 12
-    assert "Thirteen of the twenty rows go" in FLAT
-    assert "Twelve of the twenty-one columns go" in FLAT
+    assert "Thirteen of the twenty rows: gone" in FLAT
+    assert "Twelve of the twenty-one columns: gone" in FLAT
     # "two thirds of the model is gone" is about the nonzeros, and is exact
     assert p.after[2] * 3 == p.before[2]
-    assert "Two thirds of the model is deleted" in FLAT
+    assert "two thirds of the model, removed by something" in FLAT
 
 
 def test_the_round_counts_are_the_computed_ones():

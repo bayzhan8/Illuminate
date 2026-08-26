@@ -11,9 +11,12 @@ that way.
 
 import itertools
 import math
+from pathlib import Path
 from fractions import Fraction
 
 import pytest
+
+ROOT = Path(__file__).resolve().parents[1]
 
 from bandp import mill as m
 from bandp.cutting import (Instance, all_patterns, column_generation,
@@ -188,3 +191,75 @@ def test_the_loop_ignores_most_of_the_bigger_order():
 
 def test_the_mill_is_the_size_the_guide_says():
     assert m.MILL_PATTERNS == 3_972_952_644_549
+
+
+def test_putting_both_bugs_back_reproduces_the_number_the_guide_confesses_to():
+    """Chapter 10 quotes how badly the solver did before the two fixes. That
+    number has to be reproducible, or it is folklore.
+
+    Both bugs are reconstructed here rather than trusted: the master is rebuilt
+    without emergency columns, and solve_node is rebuilt to stop the moment the
+    knapsack nominates a pattern it already holds. The prose said 476 for a
+    year, which came from a working copy predating the first commit and cannot
+    be recovered; 456 is what the reconstruction gives.
+    """
+    import itertools
+
+    from bandp import search as S
+    from bandp.cutting import Instance
+
+    def master_without_emergency(inst, patterns, bounds):
+        rows = [[p[i] for p in patterns] for i in range(inst.m)]
+        rhs = list(inst.demands)
+        ops = [">="] * inst.m
+        names = [f"pieces of width {w}" for w in inst.widths]
+        cost = [1] * len(patterns)
+        for bound in bounds:
+            rows.append([1 if p == bound.pattern else 0 for p in patterns])
+            rhs.append(bound.limit)
+            ops.append(bound.direction)
+            names.append("branch")
+        return S.LP.build(c=cost, A=rows, b=rhs, op=ops, sense="min",
+                          row_names=names,
+                          var_names=[f"x{i}" for i in range(len(patterns))])
+
+    def solve_node_stopping_early(inst, bounds, patterns=None, limit=200):
+        patterns = list(patterns if patterns is not None
+                        else S.starting_patterns(inst))
+        for bound in bounds:
+            if bound.pattern not in patterns:
+                patterns.append(bound.pattern)
+        for _ in range(limit):
+            here = S.solve(S.restricted_master(inst, patterns, bounds))
+            if not here.ok:
+                return here, patterns
+            value, pattern = S.price(inst, here.prices[:inst.m])
+            if value <= 1 or pattern in patterns:        # the bug
+                return S._without_emergency(here, len(patterns)), patterns
+            patterns.append(pattern)
+        raise RuntimeError("did not settle")
+
+    good_master, good_node = S.restricted_master, S.solve_node
+    S.restricted_master = master_without_emergency
+    S.solve_node = solve_node_stopping_early
+    try:
+        checked = wrong = 0
+        for width in (16, 18, 20, 22, 24):
+            for widths in itertools.combinations(range(5, width // 2 + 2), 3):
+                for demands in [(3, 4, 5), (5, 3, 4), (2, 5, 7),
+                                (4, 6, 3), (7, 4, 3), (6, 5, 4)]:
+                    inst = Instance(width, widths, demands)
+                    exact = S.integer_optimum_by_enumeration(inst)
+                    if exact is None:
+                        continue
+                    checked += 1
+                    try:
+                        if S.branch_and_price(inst).best != exact:
+                            wrong += 1
+                    except Exception:
+                        wrong += 1
+    finally:
+        S.restricted_master, S.solve_node = good_master, good_node
+
+    assert (wrong, checked) == (456, 1230)
+    assert "**456 of 1230**" in (ROOT / "lesson.md").read_text()

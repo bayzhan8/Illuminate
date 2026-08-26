@@ -151,8 +151,9 @@ def test_the_tree_size_matches_the_figure():
 
 
 def test_the_bug_count_the_chapter_confesses_to_is_the_real_one():
-    """Chapter 10 quotes how badly the first version of the solver did. If that
-    claim is going to be in the prose it has to be reproducible."""
+    """Chapter 10 quotes how badly the solver does with both bugs restored.
+    The reconstruction that produces that number lives in test_cutting.py; this
+    only checks the sweep really is 1230 instances and the solver is clean."""
     import itertools
 
     from bandp.cutting import Instance
@@ -169,7 +170,7 @@ def test_the_bug_count_the_chapter_confesses_to_is_the_real_one():
                 checked += 1
                 assert branch_and_price(inst).best == exact
     assert checked == 1230, checked
-    assert "**476 of 1230**" in TEXT
+    assert "**456 of 1230**" in TEXT
 
 
 # --- structure -------------------------------------------------------------

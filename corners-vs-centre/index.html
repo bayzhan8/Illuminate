@@ -47,38 +47,43 @@
 <h1>Along the edge, or through the middle</h1>
 <p><strong>Two ways to solve a linear program, and the forty years of argument between
 them.</strong></p>
-<p>First, what the problem is. A workshop has some stock (planks, labour hours,
-saw time) and some things it can build out of that stock, each earning a known
-amount. It must decide how much of each thing to build. Every rule in sight is
-proportional: two tables take twice the planks of one and earn twice as much,
-and there is a fixed amount of everything. Find the plan that earns the most.</p>
+<p>In 1972 two mathematicians published a shape whose only purpose was to
+humiliate an algorithm.</p>
+<p>It is a cube. Squashed, so that its faces tilt a little instead of meeting
+square. In ten dimensions it has 1024 corners, and the standard method for
+linear programming — the one that had been running refinery schedules and air
+force logistics for twenty-five years by then — visits <strong>every single one of
+them</strong> before it stops. Ten twenty-three hops across a shape that a slightly
+different rule crosses in one.</p>
+<p>That should have been the end of the method.</p>
+<p>It was not. In the fifty years since, on the models people actually solve, it
+has never once behaved the way it behaves on that cube. Not rarely. Never. The
+hop count keeps coming out at a small multiple of the number of rules in the
+problem, which is a number you can comfortably afford.</p>
+<p>So the subject spent three decades holding two facts that refused to sit
+together: a proven catastrophe, and not one person who had ever met it. The
+explanation was announced in 2001 and published in 2004, and it is worth the
+wait.</p>
+<p>That gap — between what the theory promised and what everybody could see — is
+also where a second method comes from. This one refuses corners altogether. It
+starts in the middle of the region of legal plans and creeps toward the answer
+along a curve, never touching a wall, never landing anywhere. The two methods
+were invented thirty-seven years apart, for different reasons, by people
+answering different questions, and they have been argued over ever since.</p>
+<p>Chapter 14 is where that argument ends up, and the ending is that they were
+never really rivals at all. A large solve today runs one of them and finishes
+with the other.</p>
+<p>First, though, what the problem is. A workshop has some stock (planks, labour
+hours, saw time) and some things it can build out of that stock, each earning a
+known amount. It must decide how much of each thing to build. Every rule in
+sight is proportional: two tables take twice the planks of one and earn twice
+as much, and there is a fixed amount of everything. Find the plan that earns
+the most.</p>
 <p>That is a <strong>linear program</strong>. The name is from the 1940s and has nothing to do
-with computer programming; <em>programme</em> meant a schedule of activities.</p>
-<p>Problems of that shape are everywhere, and they have a property almost nothing
-else in optimisation has: they can be solved at enormous size, exactly, with a
-proof attached. How is the argument this guide is about.</p>
-<p>In 1972 two mathematicians published a shape built to embarrass an algorithm.
-It is a cube, squashed so that its faces tilt a little instead of meeting
-square, and in ten dimensions it has 1024 corners. Turn the standard method for
-linear programming loose on it and the method stops at every one of them: 1023
-hops to cross a shape that a better-chosen rule crosses in a single hop.</p>
-<p>The method they were embarrassing was twenty-five years old at the time and was
-already drawing up refinery schedules and air force logistics. It still is. And
-in all those years, on the models people actually solve, it has never once
-behaved the way it behaves on that cube. The hop count keeps coming out at a
-small multiple of the number of rules in the problem, which is a number you can
-afford.</p>
-<p>So the subject spent three decades holding two facts that did not fit together:
-a proven catastrophe, and nobody who had ever met one. The explanation was
-announced in 2001 and published in 2004.</p>
-<p>That gap, between what the theory promised and what everyone could see, is
-where the second method comes from. It refuses corners altogether: it starts in
-the middle of the region of legal plans and creeps towards the answer along a
-curve, never touching a wall. The two were invented thirty-seven years apart,
-for different reasons, by people answering different questions, and they have
-been argued over ever since. Chapter 14 is where the argument ends up, and the
-ending is that they were never really rivals. A large solve today runs one of
-them and finishes with the other.</p>
+with computer programming; <em>programme</em> meant a schedule of activities. Problems
+of that shape are everywhere, and they have a property almost nothing else in
+optimisation has: they can be solved at enormous size, exactly, with a proof
+attached.</p>
 <p><strong>The plan.</strong> Chapters 1 to 3 build the walk and then show why it should be
 hopeless. Chapter 4 is the shape that proves it, and chapters 5 to 8 take that
 proof apart: what it is really about, what it is not about, and why the
@@ -233,7 +238,7 @@ improves.</p>
 </blockquote>
 <h2 id="ch3"><span class="num">3</span>It should have been slow</h2>
 <figure class="plate"><img src="chapters/03-it-should-have-been-slow/the-count.png" alt="A logarithmic chart against the number of variables. One line, for the number of corners a search would face, climbs steeply towards the top of the chart. A band near the bottom, for the number of hops solves are observed to take, stays almost flat." loading="lazy"></figure>
-<p>Now the arithmetic that should have killed the method in its first week.</p>
+<p>Now for the arithmetic that should have killed the method in its first week.</p>
 <p>A corner is where enough rules run out at once: with <em>n</em> variables, pick <em>n</em> of
 the rules and solve them as simultaneous equations. Every corner arises that
 way, so counting corners is really counting the ways of choosing which rules
@@ -308,8 +313,8 @@ a pathological or degenerate input.</p>
 <figure class="plate"><img src="chapters/05-not-the-rule/by-rule.png" alt="A logarithmic chart of pivot counts against cube dimension. One straight line
 doubles with each dimension. A second straight line climbs more gently. A third
 is flat at one pivot for every size." loading="lazy"></figure>
-<p>Chapter 4 reads like an indictment of the simplex method. It indicts one line
-inside it.</p>
+<p>Chapter 4 reads like an indictment of the simplex method. Look closely at what
+it actually convicts, though, because it is one line inside it.</p>
 <p>The three lines above come from the same simplex code on the same cubes. One
 function differs: the pivot rule, which picks the edge to walk along. That
 single substitution moves the count from doubling, to a gentler climb, to a
@@ -378,8 +383,8 @@ it will finish soon, and on the cube its count still multiplies by about 1.618
 for every dimension added.</p>
 </blockquote>
 <h2 id="ch7"><span class="num">7</span>Every rule has a cube</h2>
-<p>The obvious next move is to declare steepest edge the winner. One pivot at
-every size is hard to argue with.</p>
+<p>The obvious next move is to declare steepest edge the winner and go home. One
+pivot at every size is hard to argue with.</p>
 <p>That reading is wrong, and the number behind it says nothing about steepest
 edge and everything about this particular cube. Klee and Minty built their
 shape to punish a rule that chases the fastest immediate gain per unit of
@@ -406,9 +411,10 @@ has shown there is always a fast route for a rule to find.</p>
 whether a short route between corners always exists is itself unsettled.</p>
 </blockquote>
 <h2 id="ch8"><span class="num">8</span>Why nobody ever meets one</h2>
-<p>Now back to the question chapter 3 left standing, which the last four chapters
-have made sharper rather than easier. Bad cases are not a quirk of one rule.
-They are everywhere in the theory. And they are nowhere in practice.</p>
+<p>Now back to the question chapter 3 left standing. Four chapters have gone by
+and it has got <em>worse</em>: bad cases are not a quirk of one rule, they are
+everywhere in the theory, and they are still nowhere in practice.</p>
+<p>So which is wrong, the theory or the world?</p>
 <p>The resolution came from Daniel Spielman and Shang-Hua Teng in 2004, and it is
 called <strong>smoothed analysis</strong>. It changes the question being asked.</p>
 <p>Worst-case analysis asks: over all inputs of this size, what is the largest
@@ -416,6 +422,9 @@ number of pivots? Smoothed analysis asks something the machine can actually be
 handed: take any input at all, including a Klee-Minty cube, jiggle every number
 in it by a tiny random amount, and now ask for the expected number of pivots.</p>
 <p>The answer is polynomial.</p>
+<p>Read that again, because it is doing something sneaky. Nothing about the cube
+changed. What changed is that we asked about inputs that have been <em>nudged</em>,
+and the cube did not survive being nudged.</p>
 <p>Read what that does to the cube. The cube is not merely rare; it is <em>unstable</em>.
 The exponential behaviour depends on its faces tilting at exactly the angles
 Klee and Minty chose, and a perturbation too small to see destroys it. The bad
@@ -433,9 +442,11 @@ which is why they fill the theory and never arrive in the post.</p>
 <figure class="plate"><img src="chapters/09-polynomial-and-slower/ellipsoids.gif" alt="A sequence of increasingly elongated ellipses, each contained in the last,
 tightening around a thin sliver of the workshop region near its best corner." loading="lazy"></figure>
 <p>In 1979 Leonid Khachiyan showed that linear programming is solvable in
-polynomial time, using the ellipsoid method. This was genuine news. It made
-newspapers outside mathematics, which is not a thing that happens to
-algorithms.</p>
+polynomial time, using the ellipsoid method.</p>
+<p>This made the newspapers. Actual newspapers, outside mathematics, which is not
+a thing that happens to algorithms. And then essentially nobody used it, for
+reasons that are worth understanding, because they are the difference between a
+complexity class and a program that finishes.</p>
 <p>The method ignores the region's shape completely. Wrap everything in an
 ellipsoid and ask whether its centre is a legal plan. If it is not, then some
 rule it breaks tells you the answer cannot be on that side, so throw that half
@@ -564,11 +575,11 @@ exact answer to a slightly wrong question.</p>
 mu. In the first the contours form a broad bowl with its lowest point near the
 middle. In the second the bowl has tilted and its minimum has slid towards the
 best corner. In the third the contours are compressed against that corner." loading="lazy"></figure>
-<p>The path is the trail of minima. The surface is what produces them, and it
-explains why any of this works. (Solvers flip every sign and hunt for the
-smallest score rather than the largest, which is why these are pictures of
-bowls with a bottom rather than hills with a peak. Same problem, drawn upside
-down.)</p>
+<p>The path is the trail of minima. But a trail of minima is a shadow of
+something, and the something is a surface. Look at the surface and the whole
+method stops being a trick. (Solvers flip every sign and hunt for the smallest
+score rather than the largest, which is why these are pictures of bowls with a
+bottom rather than hills with a peak. Same problem, drawn upside down.)</p>
 <p>At μ = 100 the penalty dominates and the surface is a broad bowl sitting in the
 middle of the region. Its minimum is worth <strong>$194</strong>, which is nowhere near
 optimal and is not trying to be. At μ = 10 the bowl has tilted towards profit
