@@ -24,7 +24,7 @@ CHAPTERS = [
     Chapter(7, "07-who-is-who", "Who is who"),
     Chapter(8, "08-a-layer-not-a-solver", "A layer is not a solver"),
     Chapter(9, "09-not-linear", "When the problem is not linear"),
-    Chapter(10, "10-a-toolkit-is-not-a-solver", "A toolkit is not a solver either"),
+    Chapter(10, "10-a-toolkit-is-not-a-solver", "What OR-Tools actually is"),
     Chapter(11, "11-the-benchmarks", "Why the benchmarks cannot be read straight"),
     Chapter(12, "12-measure-your-own", "Measure on your own models"),
     Chapter(13, "13-the-licence", "The licence is the deployment problem"),

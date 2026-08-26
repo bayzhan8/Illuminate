@@ -99,7 +99,7 @@ def test_the_node_counts_are_the_computed_ones():
 
 
 def test_the_forced_setup_chain_is_arithmetic_the_reader_can_check():
-    """Chapter 3 walks 25/100 = 0.25 and rounds it up. All three must be real."""
+    """Chapter 4 walks 25/100 = 0.25 and rounds it up. All three must be real."""
     demand = L.DEMAND[("B", 1)]
     assert (demand, L.BIG_M) == (25, 100)
     assert "`openB1 ≥ makeB1 / 100 ≥ 25 / 100 = 0.25`" in FLAT
@@ -109,7 +109,7 @@ def test_the_forced_setup_chain_is_arithmetic_the_reader_can_check():
     forced = [r for r in L.SMALL_PRESOLVED.log
               if r.target == "openB1" and r.kind == "tightened bound"]
     assert forced and forced[0].round == 9
-    assert "it happens in round 9" in FLAT
+    assert "happens in round 9" in FLAT
 
 
 def test_the_model_description_matches_the_instance():
@@ -178,10 +178,14 @@ def test_each_chapter_ends_on_its_one_sentence_summary():
 
 def test_the_readme_chapter_table_matches_the_chapters():
     """The topic README is hand-written, so nothing else catches it going stale
-    when a chapter is split. Every link must resolve and be in build order."""
+    when a chapter is split. Every chapter must be listed, once, in build order.
+
+    The links point at the published page rather than at chapters/, because the
+    chapter markdown is no longer pushed to GitHub; a relative link would 404
+    for every chapter whose folder holds no image and is therefore untracked."""
     readme = (ROOT / "README.md").read_text()
-    linked = re.findall(r"\]\(chapters/([^)/]+)/\)", readme)
-    assert linked == [c.folder for c in build.CHAPTERS], \
+    linked = re.findall(r"\]\(https://[^)]*/#ch(\d+)\)", readme)
+    assert linked == [str(c.number) for c in build.CHAPTERS], \
         "run the chapter table in README.md past build.CHAPTERS again"
-    for folder in linked:
-        assert (ROOT / "chapters" / folder).is_dir(), folder
+    for chapter in build.CHAPTERS:
+        assert (ROOT / "chapters" / chapter.folder).is_dir(), chapter.folder

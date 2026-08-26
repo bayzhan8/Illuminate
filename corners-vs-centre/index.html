@@ -31,8 +31,8 @@
     <li><a href="#ch2"><span class="toc-num">2</span><span class="toc-title">Along the edge</span></a></li>
     <li><a href="#ch3"><span class="toc-num">3</span><span class="toc-title">It should have been slow</span></a></li>
     <li><a href="#ch4"><span class="toc-num">4</span><span class="toc-title">Klee and Minty build a cube</span></a></li>
-    <li><a href="#ch5"><span class="toc-num">5</span><span class="toc-title">The rule, not the method</span></a></li>
-    <li><a href="#ch6"><span class="toc-num">6</span><span class="toc-title">Not cycling is not the same as being fast</span></a></li>
+    <li><a href="#ch5"><span class="toc-num">5</span><span class="toc-title">Where the exponent lives</span></a></li>
+    <li><a href="#ch6"><span class="toc-num">6</span><span class="toc-title">Bland&#x27;s rule finishes, slowly</span></a></li>
     <li><a href="#ch7"><span class="toc-num">7</span><span class="toc-title">Every rule has a cube</span></a></li>
     <li><a href="#ch8"><span class="toc-num">8</span><span class="toc-title">Why nobody ever meets one</span></a></li>
     <li><a href="#ch9"><span class="toc-num">9</span><span class="toc-title">Polynomial, and slower</span></a></li>
@@ -45,13 +45,14 @@
 </nav>
 <main class="prose">
 <h1>Along the edge, or through the middle</h1>
-<p><strong>Two ways to solve a linear program, and the forty years of argument between them.</strong></p>
-<p>First, what the problem is. A workshop has some stock — planks, labour hours,
-saw time — and some things it can build out of that stock, each earning a known
+<p><strong>Two ways to solve a linear program, and the forty years of argument between
+them.</strong></p>
+<p>First, what the problem is. A workshop has some stock (planks, labour hours,
+saw time) and some things it can build out of that stock, each earning a known
 amount. It must decide how much of each thing to build. Every rule in sight is
 proportional: two tables take twice the planks of one and earn twice as much,
-and there is a fixed amount of everything. Find the plan that earns the most.
-That is a <strong>linear program</strong>. The name is from the 1940s and has nothing to do
+and there is a fixed amount of everything. Find the plan that earns the most.</p>
+<p>That is a <strong>linear program</strong>. The name is from the 1940s and has nothing to do
 with computer programming; <em>programme</em> meant a schedule of activities.</p>
 <p>Problems of that shape are everywhere, and they have a property almost nothing
 else in optimisation has: they can be solved at enormous size, exactly, with a
@@ -66,8 +67,10 @@ already drawing up refinery schedules and air force logistics. It still is. And
 in all those years, on the models people actually solve, it has never once
 behaved the way it behaves on that cube. The hop count keeps coming out at a
 small multiple of the number of rules in the problem, which is a number you can
-afford. A proven catastrophe that nobody ever meets. It took until 2004 for
-anybody to explain why.</p>
+afford.</p>
+<p>So the subject spent three decades holding two facts that did not fit together:
+a proven catastrophe, and nobody who had ever met one. It took until 2004 for
+anybody to explain the discrepancy.</p>
 <p>That gap, between what the theory promised and what everyone could see, is
 where the second method comes from. It refuses corners altogether: it starts in
 the middle of the region of legal plans and creeps towards the answer along a
@@ -91,14 +94,14 @@ text says so.</p>
 hopping between corners in three straight segments. A red curve starts near the
 middle of the region and sweeps smoothly through the interior, never touching a
 wall, and both finish at the same marked point." loading="lazy"></figure>
-<p>A workshop makes tables and chairs. It has 44 planks, 30 hours of labour and
-32 hours of saw time. A table takes 4 planks, 2 hours of labour and 3 of saw
-time, and earns $30. A chair takes 2 planks, 3 hours of labour and 1 of saw
-time, and earns $20. It is the same workshop, with the same numbers, as
-<a href="../lp-duality/">the duality guide</a>.</p>
-<p>Draw every plan the workshop could legally carry out — so many tables across, so
-many chairs up — and they fill the shaded region above. Each straight edge is one
-of the limits running out: along one edge there are no planks left, along
+<p>A workshop makes tables and chairs. It has 44 planks, 30 hours of labour and 32
+hours of saw time. A table takes 4 planks, 2 hours of labour and 3 of saw time,
+and earns $30. A chair takes 2 planks, 3 hours of labour and 1 of saw time, and
+earns $20. It is the same workshop, with the same numbers, as <a href="../lp-duality/">the duality
+guide</a>.</p>
+<p>Draw every plan the workshop could legally carry out, so many tables across and
+so many chairs up, and they fill the shaded region above. Each straight edge is
+one of the limits running out: along one edge there are no planks left, along
 another no labour. The <strong>corners</strong> are where two limits run out at the same
 moment, and the <strong>walls</strong> are the edges themselves. Nobody chose that shape. It
 is simply what is left once each limit has taken its cut.</p>
@@ -108,11 +111,11 @@ routes drawn above arrive at it. They have almost nothing else in common.</p>
 times, and stops. The red route never stands at a corner and never even touches
 a wall; it curves through the middle of the region and stops because it got
 close enough, not because it arrived anywhere.</p>
-<p>That difference is not a detail of implementation. The two methods disagree
-about where the answer to a linear program <em>lives</em> — one says at a corner, the
-other says at the end of a curve through open space — and nearly everything in
-this guide, including which method your solver runs on which problem, follows
-from that disagreement.</p>
+<p>That difference runs deeper than implementation. The two methods disagree about
+where the answer to a linear program <em>lives</em>. One says at a corner, the other
+says at the end of a curve through open space, and nearly everything in this
+guide, including which method your solver runs on which problem, follows from
+that disagreement.</p>
 <blockquote class="takeaway">
 <p><strong>In one sentence.</strong> Two methods, one answer, and no shared idea about where
 a solution lives.</p>
@@ -123,9 +126,8 @@ new line cuts away part of the shaded area, and after the fifth the survivor is
 a five-sided region with its corners marked." loading="lazy"></figure>
 <p>Nobody drew that region. It is what is left after each rule takes its cut, and
 its corners are simply the places where two rules run out at the same moment.
-That is worth dwelling on, because every method in this guide is in some sense
-an opinion about those corners: whether to visit them, avoid them, or ignore
-them entirely.</p>
+Every method in this guide turns out to be, in some sense, an opinion about
+those corners: whether to visit them, avoid them, or ignore them entirely.</p>
 <p>The problem itself is old in the way that arithmetic is old. What was new in
 the 1940s was treating it as a <em>computational</em> question with a general method
 attached, rather than as a modelling exercise to be hand-solved case by case.</p>
@@ -162,19 +164,19 @@ plan is worth." loading="lazy"></figure>
 <figure class="plate"><img src="chapters/02-along-the-edge/the-walk.png" alt="The same region and the same three-hop path shown as a still, with every
 corner along the way labelled by the dollar value of the plan there: zero, then
 320, then 340, then 350 at the final corner." loading="lazy"></figure>
-<p>The walk rests on a fact that has to be established before it makes any sense:
-if a linear program has an optimum at all, then some corner achieves it.</p>
-<p>The reason is that the profit is linear: walk along any straight line and it
-changes at a constant rate, rising steadily, falling steadily, or staying flat,
-but never bending. (The quantity being maximised is called the <strong>objective</strong>,
-and here it is the profit.)</p>
-<p>That is what rules out getting stuck. Stand anywhere in the region that is not a
-corner. There is always a direction you can move in without leaving the region
-along which the profit does not go down, so take it, and keep going until you
-run into a wall; then slide along the wall and repeat. Nothing can strand you
-partway, because a quantity that only ever changes at a constant rate has no
-hilltop in the middle of the region to stand on. So whatever the best value is,
-some corner attains it.</p>
+<p>Before the walk makes any sense, one fact has to be established: if a linear
+program has an optimum at all, then some corner achieves it.</p>
+<p>Here is why. The profit is linear, so walking along any straight line changes
+it at a constant rate: rising steadily, falling steadily, or staying flat, but
+never bending. (The quantity being maximised is called the <strong>objective</strong>, and
+here it is the profit.)</p>
+<p>That is what rules out getting stuck. Stand anywhere in the region that is not
+a corner. There is always a direction you can move in without leaving the
+region along which the profit does not go down, so take it, and keep going
+until you run into a wall; then slide along the wall and repeat. A quantity
+that only ever changes at a constant rate has no hilltop in the middle of the
+region for you to be stranded on. So whatever the best value is, some corner
+attains it.</p>
 <p>That converts an infinite search into a finite one, and the simplex method is
 what you get by taking the conversion seriously:</p>
 <ol>
@@ -183,10 +185,10 @@ what you get by taking the conversion seriously:</p>
 take it to the next corner.</li>
 <li>If none does, stop. You are optimal.</li>
 </ol>
-<p>Step 3 is the part that makes it a <em>method</em> rather than a search. When no
-adjacent corner is better, no corner anywhere is better. The check is local
-and the conclusion is global, and that is the whole of what duality buys you,
-worked out in <a href="../lp-duality/">the duality guide</a>.</p>
+<p>Step 3 is what makes this a <em>method</em> rather than a search. When no adjacent
+corner is better, no corner anywhere is better. The check is local and the
+conclusion is global, and buying that jump is the whole job of duality, worked
+out in <a href="../lp-duality/">the duality guide</a>.</p>
 <p>On the workshop, from a standing start:</p>
 <div class="overflow-x"><table>
 <thead>
@@ -236,7 +238,7 @@ improves.</p>
 of corners a search would face, climbs steeply off the top of the chart. A band
 near the bottom, for the number of hops solves are observed to take, stays
 almost flat." loading="lazy"></figure>
-<p>Here is the arithmetic that should have killed the method in its first week.</p>
+<p>Now the arithmetic that should have killed the method in its first week.</p>
 <p>A corner is where enough rules run out at once: with <em>n</em> variables, pick <em>n</em> of
 the rules and solve them as simultaneous equations. Every corner arises that
 way, so counting corners is really counting the ways of choosing which rules
@@ -280,11 +282,11 @@ The answer was: in the worst case, not good.</p>
 its faces tilt slightly instead of meeting at right angles. It has 2ⁿ corners,
 exactly as a cube should. It is not degenerate, not badly scaled by any
 standard anybody had, and not in any visible way a trick.</p>
-<p>Step 2 of the walk left something open: when more than one edge leaving a corner
-improves the profit, which do you take? That choice is a separate ingredient of
-the method, and it has a name — the <strong>pivot rule</strong>. Dantzig's original one is
-greedy: take the edge that improves the profit fastest per unit of the thing
-being increased.</p>
+<p>Step 2 of the walk left something open: when more than one edge leaving a
+corner improves the profit, which do you take? That choice is a separate
+ingredient of the method, and it has a name, the <strong>pivot rule</strong>. Dantzig's
+original one is greedy: take the edge that improves the profit fastest per unit
+of the thing being increased.</p>
 <p>Run the walk on the cube with that rule and it visits <strong>every single corner</strong>
 before it stops. This repository's simplex, in exact rational arithmetic,
 confirms it: the cube in 10 dimensions has 1024 corners and takes <strong>1023
@@ -297,19 +299,19 @@ against a shape built to punish greed.</p>
 <p>You can check the claim off the chart rather than taking it on trust, and the
 easiest place is the left-hand end. At dimension 3 the cube has 2³ = 8 corners,
 which is where the dashed line sits. The red line sits at 7. Standing on 8
-corners takes 7 hops between them, so a walk one pivot short of the corner count
-is a walk that missed nothing. Read across at any dimension you like and the
-gap stays exactly one: at dimension 10, 1024 and 1023.</p>
+corners takes 7 hops between them, so a walk one pivot short of the corner
+count is a walk that missed nothing. Read across at any dimension you like and
+the gap stays exactly one: at dimension 10, 1024 and 1023.</p>
 <blockquote class="takeaway">
 <p><strong>In one sentence.</strong> The worst case is real, it is exponential, and it is not
 a pathological or degenerate input.</p>
 </blockquote>
-<h2 id="ch5"><span class="num">5</span>The rule, not the method</h2>
+<h2 id="ch5"><span class="num">5</span>Where the exponent lives</h2>
 <figure class="plate"><img src="chapters/05-not-the-rule/by-rule.png" alt="A logarithmic chart of pivot counts against cube dimension. One straight line
 doubles with each dimension. A second straight line climbs more gently. A third
 is flat at one pivot for every size." loading="lazy"></figure>
-<p>Chapter 4 reads like an indictment of the simplex method. It is not one. It is
-an indictment of one line inside it.</p>
+<p>Chapter 4 reads like an indictment of the simplex method. It indicts one line
+inside it.</p>
 <p>The three lines above come from the same simplex code on the same cubes. One
 function differs: the pivot rule, which picks the edge to walk along. That
 single substitution moves the count from doubling, to a gentler climb, to a
@@ -322,49 +324,50 @@ improving edge comes first in a fixed ordering, takes exactly
 <li><strong>Steepest edge</strong>, which measures improvement per unit of <em>movement</em> rather
 than per unit of variable, takes <strong>one pivot</strong>, at every size.</li>
 </ul>
-<p>Nothing else was touched. Same cube, same corners, same rule for deciding how
-far to go once a direction is chosen, same stopping test. If the blow-up in
+<p>Nothing else was touched: same cube, same corners, same rule for deciding how
+far to go once a direction is chosen, same stopping test. Had the blow-up in
 chapter 4 belonged to the walk, swapping a single function could not have moved
 it, and it moved it from 1023 to 1.</p>
 <p>So the honest reading of Klee and Minty is narrower than it first sounds. They
 did not show that walking corners is exponential. They showed that <em>walking
 corners while always taking the steepest immediate gain</em> is exponential, which
 is a statement about greed.</p>
-<p><strong><a href="https://bayzhan8.github.io/Illuminate/corners-vs-centre/sandbox/05.html">Try it yourself →</a></strong>
+<p><strong><a href="https://bayzhan8.github.io/Illuminate/corners-vs-centre/sandbox/05.html">Try it yourself
+→</a></strong>
 Hold the dimension steady and change only the rule, then hold the rule steady
 and raise the dimension. One of those controls sets the exponent.</p>
 <blockquote class="takeaway">
 <p><strong>In one sentence.</strong> The exponent in chapter 4 belongs to the rule that
 picked the edge, not to the method that did the walking.</p>
 </blockquote>
-<h2 id="ch6"><span class="num">6</span>Not cycling is not the same as being fast</h2>
+<h2 id="ch6"><span class="num">6</span>Bland's rule finishes, slowly</h2>
 <p>Bland's rule is the one to be careful about, because it is easy to draw the
 wrong lesson from it.</p>
 <p>Its guarantee is that it cannot cycle. A simplex walk can in principle return
 to a corner it has already left and go round forever; Bland's rule makes that
 impossible, so the walk always terminates. That is a real property, and it is
 why the other guides in this repository use it.</p>
-<p>Termination is not speed, and here the difference can be measured exactly.</p>
+<p>Termination is a promise about the end of the walk and says nothing about its
+length. On the cube we can measure the difference exactly.</p>
 <p>Start with the formula, since it arrives out of nowhere. The Fibonacci numbers
 are what you get by starting with 1 and 1 and making every term the sum of the
-two before it: 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, and on up. Bland's count on
-the cube of dimension <em>n</em> is the term at position <em>n</em> + 1, doubled, less one. At
-n = 10 the term is 89, so the count is 177.</p>
-<p>Now watch what that does as the cube grows. The counts run
-3, 5, 9, 15, 25, 41, 67, 109, 177. Divide each by the one before it. 5 over 3 is
-one and two thirds; 9 over 5 is 1.8; 15 over 9 is back to one and two thirds.
-They bounce about at first. Then they settle: by 109 over 67 they have almost
-stopped moving, and 177 over 109 sits a whisker above 1.6 and is still edging
-down.</p>
+two before it: 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, and on up. Bland's count
+on the cube of dimension <em>n</em> is the term at position <em>n</em> + 1, doubled, less
+one. At n = 10 the term is 89, so the count is 177.</p>
+<p>Now watch what that does as the cube grows. The counts run 3, 5, 9, 15, 25, 41,
+67, 109, 177. Divide each by the one before it. 5 over 3 is one and two thirds;
+9 over 5 is 1.8; 15 over 9 is back to one and two thirds. They bounce about at
+first. Then they settle: by 109 over 67 they have almost stopped moving, and
+177 over 109 sits a whisker above 1.6 and is still edging down.</p>
 <p>What they are closing in on is the golden ratio, about 1.618, which is what
 ratios of consecutive Fibonacci numbers always do. So each extra dimension
 multiplies Bland's pivot count by about 1.618, where Dantzig's rule multiplies
-by 2. Both are exponential. One simply has a smaller base, and a smaller base
-buys you a few dimensions, not a different answer. Avis and Chvátal established
-this in 1978.</p>
-<p><strong>Not cycling is not the same as being fast.</strong> The cube is what lets that be
-shown rather than asserted, and it is the reason a guarantee should always be
-read for what it actually promises.</p>
+by 2. Both are exponential; one simply has a smaller base, and a smaller base
+buys you a few dimensions rather than a different answer. Avis and Chvátal
+established this in 1978.</p>
+<p>The cube is what lets that be shown rather than asserted, and it is the reason
+a guarantee should always be read for exactly what it promises and nothing
+more.</p>
 <blockquote class="takeaway">
 <p><strong>In one sentence.</strong> Bland's rule promises that the walk will finish, not that
 it will finish soon, and on the cube its count still multiplies by about 1.618
@@ -373,23 +376,24 @@ for every dimension added.</p>
 <h2 id="ch7"><span class="num">7</span>Every rule has a cube</h2>
 <p>The obvious next move is to declare steepest edge the winner. One pivot at
 every size is hard to argue with.</p>
-<p>Do not. That number says nothing about steepest edge, and everything about this
-particular cube. Klee and Minty built their shape to punish a rule that chases
-the fastest immediate gain per unit of variable. Steepest edge measures gain per
-unit of <em>movement</em>, so it simply is not the rule the trap was set for. A trap
-that one animal walks past is not evidence about that animal.</p>
-<p>And the traps generalise. Deformed constructions have since been produced
+<p>That reading is wrong, and the number behind it says nothing about steepest
+edge and everything about this particular cube. Klee and Minty built their
+shape to punish a rule that chases the fastest immediate gain per unit of
+variable. Steepest edge measures gain per unit of <em>movement</em>, so it simply is
+not the rule the trap was set for, and a trap that one animal walks past tells
+you nothing about that animal.</p>
+<p>The traps also generalise. Deformed constructions have since been produced
 against essentially every rule anyone has proposed, including randomised ones,
 where the construction has to defeat an average rather than a fixed sequence of
 choices. The last well-known holdout, Zadeh's rule, survived until 2022.</p>
 <p><strong>No pivot rule is known to be polynomial, and whether one exists is open.</strong></p>
-<p>The geometry underneath is open too, and it is worth separating from the rules,
-because it is a stronger statement. Forget which rule you use and forget how a
-method chooses. Ask only whether a short route between two corners <em>exists at
-all</em>. That is the Hirsch conjecture. Klee and Walkup disposed of the unbounded
-case in 1967, and Francisco Santos disproved the bounded version in 2012. The
-weaker polynomial Hirsch conjecture, which asks only for a polynomial bound on
-the length of the shortest route, remains unsettled.</p>
+<p>The geometry underneath is open too, and it is the stronger statement, so
+separate it out. Forget which rule you use and forget how a method chooses. Ask
+only whether a short route between two corners <em>exists at all</em>. That is the
+Hirsch conjecture. Klee and Walkup disposed of the unbounded case in 1967, and
+Francisco Santos disproved the bounded version in 2012. The weaker polynomial
+Hirsch conjecture, which asks only for a polynomial bound on the length of the
+shortest route, remains unsettled.</p>
 <p>So it is not merely that nobody has found a rule that is always fast. Nobody
 has shown there is always a fast route for a rule to find.</p>
 <blockquote class="takeaway">
@@ -397,9 +401,9 @@ has shown there is always a fast route for a rule to find.</p>
 whether a short route between corners always exists is itself unsettled.</p>
 </blockquote>
 <h2 id="ch8"><span class="num">8</span>Why nobody ever meets one</h2>
-<p>Now the question chapter 3 left standing, and it has become sharper rather than
-easier. Bad cases are not a quirk of one rule. They are everywhere in the
-theory. And they are nowhere in practice.</p>
+<p>Now back to the question chapter 3 left standing, which the last four chapters
+have made sharper rather than easier. Bad cases are not a quirk of one rule.
+They are everywhere in the theory. And they are nowhere in practice.</p>
 <p>The resolution came from Daniel Spielman and Shang-Hua Teng in 2004, and it is
 called <strong>smoothed analysis</strong>. It changes the question being asked.</p>
 <p>Worst-case analysis asks: over all inputs of this size, what is the largest
@@ -407,15 +411,15 @@ number of pivots? Smoothed analysis asks something the machine can actually be
 handed: take any input at all, including a Klee-Minty cube, jiggle every number
 in it by a tiny random amount, and now ask for the expected number of pivots.</p>
 <p>The answer is polynomial.</p>
-<p>Read what that does to the cube. The cube is not merely rare. It is <em>unstable</em>:
-the exponential behaviour depends on its faces tilting at exactly the angles
+<p>Read what that does to the cube. The cube is not merely rare; it is <em>unstable</em>.
+The exponential behaviour depends on its faces tilting at exactly the angles
 Klee and Minty chose, and a perturbation too small to see destroys it. The bad
-cases are real and they are knife-edges, and real data — measured quantities,
-prices, capacities, anything that arrived with noise on it — is never sitting on
-a knife-edge.</p>
-<p>So the seventy-year puzzle was not that the theory was wrong. It was that
-worst-case analysis had been answering a question whose answer says very little
-about the inputs anybody actually has.</p>
+cases are real, and they are knife-edges, and real data, whether measured
+quantities or prices or capacities or anything else that arrived carrying
+noise, is never sitting on a knife-edge.</p>
+<p>So the seventy-year puzzle was never that the theory was wrong. Worst-case
+analysis had been answering a question whose answer says very little about the
+inputs anybody actually has.</p>
 <blockquote class="takeaway">
 <p><strong>In one sentence.</strong> The bad cases survive every rule but not a random nudge,
 which is why they fill the theory and never arrive in the post.</p>
@@ -469,22 +473,21 @@ Karmarkar originally used but the reformulation the field settled on shortly
 after, and it starts from a complaint about corners. Every method so far has
 had to treat a wall as a hard edge: you are on the legal side or you are not,
 and the moment you touch one the rules change. That is what makes the problem
-combinatorial. So get rid of the edges. Make the walls push.</p>
+combinatorial. So get rid of the edges and make the walls push.</p>
 <p>One word and one letter first, and between them they are the only new notation
 in this guide. The <strong>slack</strong> in a rule, for a particular plan, is how much of
-that rule is still going spare. The
-workshop has 44 planks; a plan that consumes 40 of them has 4 planks of slack.
-Every rule has its own slack, and so does each of the two floors, since you
-cannot build a negative number of chairs. Slack is positive everywhere inside
-the region and exactly zero on the walls, which is what makes it the right
-thing to build a penalty out of.</p>
+that rule is still going spare. The workshop has 44 planks; a plan that
+consumes 40 of them has 4 planks of slack. Every rule has its own slack, and so
+does each of the two floors, since you cannot build a negative number of
+chairs. Slack is positive everywhere inside the region and exactly zero on the
+walls, which is what makes it the right thing to build a penalty out of.</p>
 <p>So score a plan not by its profit but by this:</p>
 <blockquote class="aside">
 <p><strong>profit</strong> + <strong>μ</strong> × (sum of the logs of the slack in each rule)</p>
 </blockquote>
 <p>and hunt for the best score. The letter is <strong>μ</strong>, Greek lowercase mu, and it is
-simply a dial: a number you choose that says how hard the walls push. Read it as
-&quot;how strongly the walls repel&quot; every time it appears.</p>
+simply a dial: a number you choose that says how hard the walls push. Read it
+as &quot;how strongly the walls repel&quot; every time it appears.</p>
 <p>The second term is the whole idea, and the logarithm in it is doing something
 specific that no ordinary penalty would.</p>
 <p>A logarithm of a number smaller than one is negative, and it has no floor at
@@ -525,23 +528,23 @@ profitable territory.</li>
 the true optimum, which is on the boundary, without ever getting there.</li>
 </ul>
 <p>The curve traced out is the <strong>central path</strong>.</p>
-<p>Now the thing worth being careful about, because it is what separates this from
-every other method that produces a sequence of approximations. Every point on
-that curve is <em>exact</em>. It is not a rough answer waiting to be refined. It is the
-precise, perfectly-attained optimum of a genuinely different and perfectly
-well-posed problem: the one where the walls repel with strength μ.</p>
+<p>Now the thing that separates this from every other method producing a sequence
+of approximations, and it is easy to read past. Every point on that curve is
+<em>exact</em>. It is the precise, perfectly-attained optimum of a different and
+perfectly well-posed problem: the one where the walls repel with strength μ.</p>
 <p>So the method never approximates anything. It solves an easy nearby problem
 exactly, then changes the problem to a less nearby one and solves that exactly
-too. What is being reduced between rounds is not error. It is the distance
-between the question you can answer and the question you were asked.</p>
-<p>Two things worth noticing about where this came from. The barrier idea was not
-new in 1984. Ragnar Frisch proposed the logarithmic barrier in 1955, and
-Fiacco and McCormick had built a general nonlinear framework on it by 1968.
-What was new was the complexity analysis and the demonstration that this could
-beat simplex on real problems. And the resemblance to Karmarkar's method was
-not a coincidence anyone had to guess at: within two years it had been shown
-that his method is equivalent to a projected Newton barrier method.</p>
-<p><strong><a href="https://bayzhan8.github.io/Illuminate/corners-vs-centre/sandbox/11.html">Try it yourself →</a></strong>
+too. What shrinks between rounds is not error. It is the distance between the
+question you can answer and the question you were asked.</p>
+<p>Two things about where this came from. The barrier idea was not new in 1984.
+Ragnar Frisch proposed the logarithmic barrier in 1955, and Fiacco and
+McCormick had built a general nonlinear framework on it by 1968. What was new
+was the complexity analysis and the demonstration that this could beat simplex
+on real problems. And the resemblance to Karmarkar's method was not a
+coincidence anyone had to guess at: within two years it had been shown that his
+method is equivalent to a projected Newton barrier method.</p>
+<p><strong><a href="https://bayzhan8.github.io/Illuminate/corners-vs-centre/sandbox/11.html">Try it yourself
+→</a></strong>
 Drag μ from one end to the other and watch the point leave the centre of the
 shape and go looking for money.</p>
 <blockquote class="takeaway">
@@ -554,7 +557,7 @@ mu. In the first the contours form a broad bowl with its lowest point near the
 middle. In the second the bowl has tilted and its minimum has slid towards the
 best corner. In the third the contours are compressed against that corner." loading="lazy"></figure>
 <p>The path is the trail of minima. The surface is what produces them, and it
-explains why this works at all. (Solvers flip every sign and hunt for the
+explains why any of this works. (Solvers flip every sign and hunt for the
 smallest score rather than the largest, which is why these are pictures of
 bowls with a bottom rather than hills with a peak. Same problem, drawn upside
 down.)</p>
@@ -563,9 +566,9 @@ middle of the region. Its minimum is worth <strong>$194</strong>, which is nowhe
 optimal and is not trying to be. At μ = 10 the bowl has tilted towards profit
 and its bottom has slid to a point worth <strong>$325</strong>. At μ = 1 the contours are
 crushed into the corner and the minimum is worth <strong>$348</strong>.</p>
-<p>At every stage there is exactly one minimum and the surface around it is
-smooth and curved. That is the whole trick, because a smooth bowl with one
-bottom is precisely what Newton's method is for.</p>
+<p>At every stage there is exactly one minimum and the surface around it is smooth
+and curved. That is what the whole construction was for, because a smooth bowl
+with one bottom is precisely what Newton's method is for.</p>
 <p>Newton's method goes like this. Stand anywhere on the surface and measure two
 things about the ground under your feet: which way it slopes, and how fast that
 slope is changing. Those two measurements are enough to fit a parabola through
@@ -595,7 +598,8 @@ problems come with step counts you can predict.</p>
 <figure class="plate"><img src="chapters/13-a-gap-you-can-forecast/the-gap.png" alt="A logarithmic chart with mu decreasing to the right. Two nearly parallel
 straight lines descend together: an upper line for the guaranteed bound and a
 lower one for the gap that actually remained." loading="lazy"></figure>
-<p>This is the property that decided real deployments, and it is not speed.</p>
+<p>This is the property that decided real deployments, and it has nothing to do
+with speed.</p>
 <p>A point on the central path arrives with a receipt. The gap between what it is
 worth and the best possible is at most <strong>μ times the number of walls</strong>. The
 workshop has five walls (three rules and two floors), so the bound is 5μ:</p>
@@ -655,19 +659,19 @@ the slack in that rule: get twice as close and the wall shoves twice as hard.
 That push is a price in exactly the sense of <a href="../lp-duality/">the duality
 guide</a>: what one more unit of that resource would be worth. Now
 multiply a wall's price by the slack left in that rule. The slack cancels, and
-what remains is μ. Every wall, the same μ, exactly.</p>
-<p>The second ingredient is the one being quoted rather than derived: duality says
-that the amount a plan is leaving on the table is the sum, over the rules, of
-each rule's price times the slack left in it. The duality guide builds that
-sum, and at a true optimum every term in it is zero, which is why a resource
-with something to spare is worth nothing. The central path is that same picture
-with the zeros replaced by μ. Five walls, one μ apiece, and the total you might
+what remains is μ. Every wall, the same μ.</p>
+<p>The second ingredient is quoted rather than derived: duality says that the
+amount a plan is leaving on the table is the sum, over the rules, of each
+rule's price times the slack left in it. The duality guide builds that sum, and
+at a true optimum every term in it is zero, which is why a resource with
+something to spare is worth nothing. The central path is that same picture with
+the zeros replaced by μ. Five walls, one μ apiece, and the total you might
 still be missing is 5μ.</p>
 <p>Divide μ by ten and you divide your remaining ignorance by ten. Before running
 anything, you can say how many more rounds buy how many more digits.</p>
 <p>Simplex offers nothing comparable. Standing at a corner, you know what you have
 and you know it is not yet optimal, but the number of hops left is not a
-quantity you can ask about. Every corner looks like the ones before it right up
+quantity you can ask about; every corner looks like the ones before it right up
 until the last one. That is fine when the solve takes a second. It is a
 different matter when it takes six hours on a model due at 6am, and it is the
 reason interior point methods took over the very large end of the market rather
@@ -699,8 +703,8 @@ are solved in sequence, still run on simplex.</li>
 </ul>
 <p>So a modern barrier solve usually ends with <strong>crossover</strong>: hand the interior
 point to a simplex-style routine and let it walk the short distance to a real
-corner. The two methods are not competitors in the same program. They are
-stages of it.</p>
+corner. The two methods are stages of one program rather than competitors in
+it.</p>
 <p>The rough division of labour today:</p>
 <div class="overflow-x"><table>
 <thead>
@@ -799,8 +803,8 @@ cd corners-vs-centre &amp;&amp; make verify
 step count is a step count and not an artefact of rounding near a degenerate
 corner. The barrier and ellipsoid routines are floating point, as they must be,
 and every claim made about them is checked against the exact optimum the
-simplex returns. The two closed forms in chapters 5 and 6 are asserted against the
-formulas, not against stored numbers, at every dimension up to 12.</p>
+simplex returns. The two closed forms in chapters 5 and 6 are asserted against
+the formulas, not against stored numbers, at every dimension up to 12.</p>
 
 </main>
 </div>

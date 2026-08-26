@@ -56,19 +56,29 @@ reader to take something on trust.
 
 ## Repository map
 
-| path | what it holds |
-|---|---|
-| `<topic>/lesson.md` | the prose. The only place it exists |
-| `<topic>/build.py` | the topic's configuration: chapter names, sandbox definitions |
-| `<topic>/chapters/` | generated per-chapter READMEs, and the images belonging to each |
-| `<topic>/figures/` | one script per chapter, writing into `chapters/` |
-| `<topic>/sandbox/` | generated client-side pages |
-| `<topic>/src/` | the code behind every number |
-| `<topic>/tests/` | maths · prose-against-code · JavaScript-against-Python |
-| `<topic>/notes/` | the decision log |
-| `notes/craft.md` | the prose rules every guide is written to |
-| `illuminate/` | shared package: figure style, typeface, and the `lesson.md` → site machinery |
-| `index.html`, `assets/` | the published site |
+| path | what it holds | |
+|---|---|---|
+| `<topic>/lesson.md` | the prose. The only place it exists | local |
+| `<topic>/build.py` | the topic's configuration: chapter names, sandbox definitions | |
+| `<topic>/chapters/` | the images belonging to each chapter, and a generated README beside them | mixed |
+| `<topic>/figures/` | one script per chapter, writing into `chapters/` | |
+| `<topic>/sandbox/` | generated client-side pages | |
+| `<topic>/src/` | the code behind every number | |
+| `<topic>/tests/` | maths · prose-against-code · JavaScript-against-Python | |
+| `<topic>/notes/` | the decision log | local |
+| `notes/craft.md` | the prose rules every guide is written to | local |
+| `illuminate/` | shared package: figure style, typeface, and the `lesson.md` → site machinery | |
+| `index.html`, `assets/` | the published site | |
+
+Rows marked **local** are gitignored: the prose source and the working notes
+stay on disk and are not pushed. What ships is the built page, the sandboxes,
+the figures and the code that produced every number. `chapters/` is mixed — the
+figures are tracked because `index.html` requests them by path, the generated
+chapter READMEs beside them are not.
+
+That is why the chapter tables in each topic's README link to the published page
+rather than into `chapters/`, and a test in every topic pins those links against
+`build.CHAPTERS` so the table cannot rot silently.
 
 Pages serves from the repository root rather than a `docs/` folder. [^1]
 

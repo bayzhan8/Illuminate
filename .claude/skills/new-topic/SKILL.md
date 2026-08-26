@@ -189,11 +189,11 @@ the page still reads perfectly while being wrong.
 ### 8. Wire it up
 
 ```bash
-cd <topic> && make check          # figures, build, test
+cd <topic> && make check          # render, publish, verify
 ```
 
 Then add the topic to `TOPICS` in the root `Makefile`, to the table in the root
-`README.md`, and to the landing page `index.html`. Run `make test` from the
+`README.md`, and to the landing page `index.html`. Run `make verify` from the
 root, commit, push. GitHub Pages serves from the repository root, so images
 have one home and the paths in `lesson.md` are the paths the site uses.
 

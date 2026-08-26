@@ -365,8 +365,8 @@ def test_the_dates_are_the_ones_the_research_settled_on():
                        ("2012", "Santos"),
                        ("2022", "Zadeh"),
                        ("1967", "Walkup")):
-        assert year in TEXT, year
-        assert what in TEXT, what
+        assert year in FLAT, year
+        assert what in FLAT, what
 
 
 def test_every_number_in_the_prose_is_either_computed_or_a_pinned_date():
@@ -551,10 +551,14 @@ def test_the_page_never_leaves_the_region():
 
 def test_the_readme_chapter_table_matches_the_chapters():
     """The topic README is hand-written, so nothing else catches it going stale
-    when a chapter is split. Every link must resolve and be in build order."""
+    when a chapter is split. Every chapter must be listed, once, in build order.
+
+    The links point at the published page rather than at chapters/, because the
+    chapter markdown is no longer pushed to GitHub; a relative link would 404
+    for every chapter whose folder holds no image and is therefore untracked."""
     readme = (ROOT / "README.md").read_text()
-    linked = re.findall(r"\]\(chapters/([^)/]+)/\)", readme)
-    assert linked == [c.folder for c in build.CHAPTERS], \
+    linked = re.findall(r"\]\(https://[^)]*/#ch(\d+)\)", readme)
+    assert linked == [str(c.number) for c in build.CHAPTERS], \
         "run the chapter table in README.md past build.CHAPTERS again"
-    for folder in linked:
-        assert (ROOT / "chapters" / folder).is_dir(), folder
+    for chapter in build.CHAPTERS:
+        assert (ROOT / "chapters" / chapter.folder).is_dir(), chapter.folder

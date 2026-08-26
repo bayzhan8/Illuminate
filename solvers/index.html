@@ -36,7 +36,7 @@
     <li><a href="#ch7"><span class="toc-num">7</span><span class="toc-title">Who is who</span></a></li>
     <li><a href="#ch8"><span class="toc-num">8</span><span class="toc-title">A layer is not a solver</span></a></li>
     <li><a href="#ch9"><span class="toc-num">9</span><span class="toc-title">When the problem is not linear</span></a></li>
-    <li><a href="#ch10"><span class="toc-num">10</span><span class="toc-title">A toolkit is not a solver either</span></a></li>
+    <li><a href="#ch10"><span class="toc-num">10</span><span class="toc-title">What OR-Tools actually is</span></a></li>
     <li><a href="#ch11"><span class="toc-num">11</span><span class="toc-title">Why the benchmarks cannot be read straight</span></a></li>
     <li><a href="#ch12"><span class="toc-num">12</span><span class="toc-title">Measure on your own models</span></a></li>
     <li><a href="#ch13"><span class="toc-num">13</span><span class="toc-title">The licence is the deployment problem</span></a></li>
@@ -46,7 +46,7 @@
 <main class="prose">
 <h1>What solvers actually do</h1>
 <p><strong>What is inside the box, and how to pick one you can actually deploy.</strong></p>
-<p>Here is a small production model: three products, two periods, twenty rows and
+<p>Take a small production model: three products, two periods, twenty rows and
 twenty-one columns. Nothing about it is clever. It is the kind of thing you get
 on a first pass, written the way the problem was described to you.</p>
 <p>Hand it to a solver and the first thing that happens is that the solver deletes
@@ -62,11 +62,10 @@ exact arithmetic so you can watch it work. The second is the part people
 actually get stuck on: which solvers exist, how they differ, which ones you can
 put in a container without a licence server ruining your week, and what the
 public benchmarks can and cannot tell you.</p>
-<p><strong>The plan.</strong> Chapters 1 to 5 are what a solver does before it solves
-anything, and what that costs. Chapter 6 is the rest of the machine.
-Chapters 7 to 13 are the landscape: who is who, what a modelling layer is,
-why the benchmarks are harder to read than they look, and licensing.
-Chapter 14 is how to choose.</p>
+<p><strong>The plan.</strong> Chapters 1 to 5 are what a solver does before it solves anything,
+and what that costs. Chapter 6 is the rest of the machine. Chapters 7 to 13 are
+the landscape: who is who, what a modelling layer is, why the benchmarks are
+harder to read than they look, and licensing. Chapter 14 is how to choose.</p>
 <p>Every number in the first half is computed by the code in this folder, in exact
 rational arithmetic, and asserted by a test. The second half is mostly not
 computable: it is claims about products and licences, which change. Those are
@@ -79,12 +78,12 @@ solid." loading="lazy"></figure>
 <p>Three words first, because the whole guide is written in them.</p>
 <p>A <strong>model</strong> is a problem handed to a computer: a list of quantities to be
 decided, and a list of arithmetic rules those quantities must satisfy. Write it
-out as a grid — one row per rule, one column per quantity, and a mark in a
-square wherever that quantity appears in that rule — and you get the picture
-above. So a <strong>row</strong> is a rule, a <strong>column</strong> is a quantity to be decided, and the
-marks are what people call the <strong>nonzeros</strong>. Almost every square is empty, which
-is why models get drawn this way: real ones are overwhelmingly empty, and that
-emptiness is what makes them solvable at all.</p>
+out as a grid, with one row per rule, one column per quantity, and a mark in a
+square wherever that quantity appears in that rule, and you get the picture
+above. So a <strong>row</strong> is a rule, a <strong>column</strong> is a quantity to be decided, and
+the marks are what people call the <strong>nonzeros</strong>. Almost every square is empty,
+which is why models get drawn this way: real ones are overwhelmingly empty, and
+that emptiness is what makes them solvable at all.</p>
 <p>The model above is a small production plan: three products, two periods, 20
 rules, 21 quantities and 42 marks.</p>
 <p>Watch what survives. <strong>20 rows, 21 columns and 42 nonzeros become 7, 9 and
@@ -93,16 +92,15 @@ answer does not change: both versions cost <strong>$290</strong>, and an answer 
 model can be turned back into an answer to the big one exactly.</p>
 <p>Here is one of the deletions, so that nothing about this looks like magic. One
 of the twenty rules says that the stock of product A at the start is zero. It
-arrived written as a rule because that is what was convenient to type, but it is
-not really a statement about how quantities interact. It is a fact about one
+arrived written as a rule because that is what was convenient to type, but it
+does not really describe how quantities interact. It is a fact about one
 quantity. So the solver copies &quot;fixed at zero&quot; onto that column and deletes the
 row; the model is one rule smaller and means exactly the same thing. And now
 that the quantity is pinned, it substitutes zero everywhere that column appears
 and deletes the column too. Two deletions, no cleverness, no risk.</p>
-<p>This is <strong>presolve</strong>. It is not an approximation, not a heuristic and not
-optional. Every serious solver does it, they all do it differently, and it is
-one of the main reasons that two solvers running &quot;the same algorithm&quot; are
-nowhere near the same speed.</p>
+<p>This is <strong>presolve</strong>. Every serious solver does it, they all do it differently,
+and it is one of the main reasons that two solvers running &quot;the same algorithm&quot;
+are nowhere near the same speed.</p>
 <blockquote class="takeaway">
 <p><strong>In one sentence.</strong> Most of a model is usually redundant, and finding out
 which part is a separate job from solving it.</p>
@@ -110,7 +108,7 @@ which part is a separate job from solving it.</p>
 <h2 id="ch1"><span class="num">1</span>A solver is not an algorithm</h2>
 <p>If you have read the other guides here, you know how to solve a linear program.
 <a href="../corners-vs-centre/">Walk the corners</a>, or go through the middle. You could
-implement one. People do, in a few hundred lines.</p>
+implement one yourself, and people do, in a few hundred lines.</p>
 <p>What you would have is not a solver, and the gap is not a matter of polish.</p>
 <p>A commercial mixed-integer solver is perhaps a million lines. The part that
 takes a step, the simplex pivot or the interior point iteration, is a small
@@ -165,8 +163,8 @@ fraction of it. The rest is:</p>
 </tr>
 </tbody>
 </table></div>
-<p>The last row is the one in the textbooks. It is not where the difference
-between a solver that finishes and one that does not usually lives.</p>
+<p>The last row is the one in the textbooks, and it is rarely where the difference
+between a solver that finishes and one that does not lives.</p>
 <p>There is a well-known measurement of this. Robert Bixby tracked linear
 programming speed from 1988 to 2004 and separated the two causes: machines got
 about a thousand times faster, and the algorithms and implementations got about
@@ -219,11 +217,10 @@ the end of the period, and a yes/no switch for whether the line is <strong>open<
 each period, and <strong>nothing at all for product C</strong>, which is on the sheet
 because it is on the product list, not because anyone ordered it.</p>
 <p>Every reduction below is something a person reading that model would notice.
-The point is that the model, as handed over, cannot notice any of it.</p>
+The model, as handed over, cannot notice any of it.</p>
 <p><strong>A row with one variable in it is a bound wearing a costume.</strong> <code>holdA0 = 0</code> is
-not really a constraint. It is a fact about a variable. Presolve reads it as
-<code>0 ≤ holdA0 ≤ 0</code>, writes that on the column, and deletes the row. Six rows go
-this way immediately, one for each product's opening and closing stock.</p>
+not really a constraint. It is a fact about a variable. Presolve reads it as <code>0 ≤ holdA0 ≤ 0</code>, writes that on the column, and deletes the row. Six rows go this
+way immediately, one for each product's opening and closing stock.</p>
 <p><strong>A variable whose two bounds have met is not a variable.</strong> <code>holdA0</code> now has a
 lower bound of 0 and an upper bound of 0. There is nothing left to decide.
 Presolve substitutes the value into every row that mentions it and removes the
@@ -263,8 +260,8 @@ many rounds." loading="lazy"></figure>
 <p>If presolve were a checklist applied once, those lines would fall in round one
 and go flat. They do not. The small model takes <strong>13 rounds</strong> to settle and the
 larger one takes <strong>27</strong>.</p>
-<p>The reason is that each reduction is what makes the next one visible. Deleting a
-row creates a fixed column. Fixing a column empties a row. Emptying a row
+<p>The reason is that each reduction is what makes the next one visible. Deleting
+a row creates a fixed column. Fixing a column empties a row. Emptying a row
 narrows a bound. Narrowing a bound fixes another column.</p>
 <p>None of those steps is clever. What is doing the work is the loop: a reduction
 that was invisible in round one becomes obvious in round nine, because eight
@@ -279,12 +276,11 @@ different fixed point.</p>
 reduction is what exposes the next one.</p>
 </blockquote>
 <h2 id="ch4"><span class="num">4</span>A decision made by arithmetic</h2>
-<p>Here is the best thing in this guide, and it happens in round 9.</p>
-<p>Everything so far has deleted rows and columns — bookkeeping, however useful.
-This is different. This is the loop settling one of the actual decisions in the
-model, the kind a person would assume requires a search.</p>
-<p>Product B needs 25 units in period 1. The balance row therefore forces
-<code>makeB1 ≥ 25</code>. The link row says <code>makeB1 − 100 × openB1 ≤ 0</code>, so</p>
+<p>The best thing in this guide happens in round 9.</p>
+<p>Everything so far has deleted rows and columns, useful bookkeeping and nothing
+more. What happens in round 9 is the loop settling one of the actual decisions
+in the model, the kind a person would assume requires a search.</p>
+<p>Product B needs 25 units in period 1. The balance row therefore forces <code>makeB1 ≥ 25</code>. The link row says <code>makeB1 − 100 × openB1 ≤ 0</code>, so</p>
 <blockquote class="aside">
 <p><code>openB1 ≥ makeB1 / 100 ≥ 25 / 100 = 0.25</code></p>
 </blockquote>
@@ -296,17 +292,18 @@ division and rounding, before branch and bound has opened a single node.</p>
 <p>That is four lines of arithmetic you can check by hand, and it disposes of a
 binary decision permanently. A search would have had to try both branches and
 prove one of them worthless.</p>
-<p><strong><a href="https://bayzhan8.github.io/Illuminate/solvers/sandbox/04.html">Try it yourself →</a></strong>
-Move demand and the big-M constant, and watch the switch stop being a decision.</p>
+<p><strong><a href="https://bayzhan8.github.io/Illuminate/solvers/sandbox/04.html">Try it yourself
+→</a></strong> Move demand
+and the big-M constant, and watch the switch stop being a decision.</p>
 <p>Now the part that turns this into advice. Look at what the deduction leaned on:
-the 100 in the link row, which is there only to mean &quot;no limit, really&quot;. Make it
-1,000,000 instead and the same chain gives <code>openB1 ≥ 0.000025</code>, which still
+the 100 in the link row, which is there only to mean &quot;no limit, really&quot;. Make
+it 1,000,000 instead and the same chain gives <code>openB1 ≥ 0.000025</code>, which still
 rounds to 1, so this particular deduction survives.</p>
 <p>But look at what happens to the <em>fractional</em> relaxation of that row. At 100, a
 model that wants to make 25 units must set <code>openB1</code> to at least 0.25 and pay a
-quarter of the setup cost. At 1,000,000 it need only set it to 0.000025 and pays
-essentially nothing, so the relaxation happily makes things in a factory it has
-not paid to open. The bound it reports is correspondingly useless.</p>
+quarter of the setup cost. At 1,000,000 it need only set it to 0.000025 and
+pays essentially nothing, so the relaxation happily makes things in a factory
+it has not paid to open. The bound it reports is correspondingly useless.</p>
 <p>That is why &quot;just use a big number&quot; is the most expensive habit in integer
 modelling. The constant does not change what is feasible. It changes how much
 the relaxation is allowed to lie, and the relaxation is what prunes the tree.</p>
@@ -322,22 +319,22 @@ model can prove about itself, and that is the part that pays.</p>
 could prove as written, a blue dot marks the stronger bound after presolve, and
 a red dot marks the true best plan, with the closed part of the gap
 marked." loading="lazy"></figure>
-<p>Here is how a solver knows anything about the answer before it has found it.
+<p>First, how a solver knows anything about the answer before it has found it.
 Cross out the requirement that the yes/no decisions be whole numbers, allowing
 a production line to be 0.25 open, and solve what is left. That is called the
 <strong>relaxation</strong>, and it is easy to solve. Because crossing out a requirement can
 only make things cheaper, whatever the relaxation costs is a floor under the
-true answer — a number the real answer cannot go below. The closer that floor is
+true answer, a number the real answer cannot go below. The closer that floor is
 to the truth, the more of the search can be skipped.</p>
 <p>The model as written has a relaxation costing <strong>$248</strong>, so the answer cannot be
 cheaper than $248. After presolve, the same relaxation costs <strong>$263</strong>, so now
 the answer cannot be cheaper than $263. The true answer is <strong>$290</strong>.</p>
 <p>No cutting plane was added. No node was explored. <strong>$15 of a $42 gap closed</strong>,
-purely from columns being fixed and bounds being narrowed, and a better bound is
-worth more than a faster pivot, because it prunes the tree rather than walking
-it. On this instance branch and bound opens <strong>9 nodes</strong> on the model as written
-and <strong>5</strong> on the reduced one. Small numbers, because it is a small model; the
-mechanism is what scales.</p>
+purely from columns being fixed and bounds being narrowed, and a better bound
+is worth more than a faster pivot, because it prunes the tree rather than
+walking it. On this instance branch and bound opens <strong>9 nodes</strong> on the model as
+written and <strong>5</strong> on the reduced one. Small numbers, because it is a small
+model; the mechanism is what scales.</p>
 <p>So much for the upside. Now the bill.</p>
 <p><strong>Your variables stop existing.</strong> Ask the solver for the value of <code>holdA0</code> and
 it may not have one, because that column was gone before the algorithm started.
@@ -350,8 +347,8 @@ matches what you wrote.</p>
 of <a href="../lp-duality/">the duality guide</a>, are attached to rows. When a row has
 been deleted as redundant, the price that comes back for it is zero, which is
 correct and often not what the person asking wanted to know. Some solvers
-restrict presolve automatically when you ask for a sensitivity report, and it is
-worth knowing whether yours does.</p>
+restrict presolve automatically when you ask for a sensitivity report, and it
+is worth knowing whether yours does.</p>
 <p><strong>&quot;Presolve says infeasible&quot; is a real answer and an unhelpful one.</strong> If the
 reductions prove there is no solution, you get told at once, which is fast and
 correct. What you do not get is a nice explanation, because the reasoning is a
@@ -361,9 +358,9 @@ finding that flag before you need it.</p>
 <p><strong>And it is occasionally slower.</strong> On a model with little redundancy, presolve
 costs time and returns nothing. Rarely, it removes structure that a later part
 of the solver would have exploited. This is uncommon enough that leaving it on
-is the right default, and the flag to turn it off is nonetheless the first thing
-to reach for when a solver behaves inexplicably, because it tells you which half
-of the machine to suspect.</p>
+is the right default, and the flag to turn it off is nonetheless the first
+thing to reach for when a solver behaves inexplicably, because it tells you
+which half of the machine to suspect.</p>
 <blockquote class="takeaway">
 <p><strong>In one sentence.</strong> Presolve buys a stronger bound and a smaller model, and
 charges you in traceability.</p>
@@ -374,13 +371,13 @@ mixed-integer problems it is not the largest.</p>
 <p><strong>Cutting planes</strong> are extra constraints that are true of every whole-number
 solution but false for the fractional answer the relaxation just produced. Add
 enough and the relaxation stops being able to lie to you. A modern solver
-generates a dozen families of them, adds far more than it keeps, and spends real
-effort deciding which to throw away, because a cut that does not tighten the
-bound is a row you now have to carry.</p>
+generates a dozen families of them, adds far more than it keeps, and spends
+real effort deciding which to throw away, because a cut that does not tighten
+the bound is a row you now have to carry.</p>
 <p><strong>Heuristics</strong> try to find a decent solution early, by rounding, by fixing
-things and re-solving, by taking two known solutions and searching between them.
-The value is not the solution. It is that a good incumbent lets the search prune
-whole subtrees, and a search with no incumbent prunes nothing.</p>
+things and re-solving, by taking two known solutions and searching between
+them. The value is not the solution. It is that a good incumbent lets the
+search prune whole subtrees, and a search with no incumbent prunes nothing.</p>
 <p><strong>Branching</strong> is the choice of what to split on. It is the single most studied
 knob in the subject, and the difference between a naive rule and a good one is
 routinely orders of magnitude in tree size, which the <a href="../branch-and-price/">branch and
@@ -390,13 +387,13 @@ millions and yields around 0.0001, and the ratio between the largest and
 smallest number in your matrix is a better predictor of trouble than its size.
 Solvers scale the matrix to fight this. Every one of them has tolerances: a
 number below which a value counts as zero, a violation below which a constraint
-counts as satisfied. Those are not bugs, they are policy, and two solvers
+counts as satisfied. Those are policy rather than bugs, and two solvers
 disagreeing about whether your model is feasible is usually two policies
 disagreeing rather than one of them being broken.</p>
 <p>This guide computes none of that, and quoting numbers for it would mean
-inventing them. What the chapter is for is the shape: when a solver is slow, the
-question &quot;which of these is going wrong&quot; is more useful than &quot;is my model too
-big&quot;.</p>
+inventing them. What the chapter is for is the shape: when a solver is slow,
+the question &quot;which of these is going wrong&quot; is more useful than &quot;is my model
+too big&quot;.</p>
 <blockquote class="takeaway">
 <p><strong>In one sentence.</strong> Bound quality, a good early solution and sane numerics
 decide most solves, and none of them is the algorithm.</p>
@@ -405,10 +402,10 @@ decide most solves, and none of them is the algorithm.</p>
 <p>The landscape splits cleanly, and the split is about money rather than
 mathematics.</p>
 <p><strong>The commercial solvers.</strong> Gurobi, IBM CPLEX, FICO Xpress, COPT and MOSEK.
-They are genuinely fast, they are supported, and on hard mixed-integer models
-the good ones remain ahead of everything free. They are also expensive, and
-priced per machine or per core in ways that interact badly with autoscaling.
-Every one of them has a free size-limited or academic tier.</p>
+They are fast, they are supported, and on hard mixed-integer models the good
+ones remain ahead of everything free. They are also expensive, and priced per
+machine or per core in ways that interact badly with autoscaling. Every one of
+them has a free size-limited or academic tier.</p>
 <p><strong>The open-source solvers.</strong> These are the ones worth knowing:</p>
 <div class="overflow-x"><table>
 <thead>
@@ -446,16 +443,16 @@ Every one of them has a free size-limited or academic tier.</p>
 </tr>
 <tr>
 <td><strong>Clarabel</strong>, <strong>SCS</strong>, <strong>OSQP</strong></td>
-<td>Conic and quadratic. What the convex problems of chapter 7 get sent to</td>
+<td>Conic and quadratic. What the convex problems of chapter 9 get sent to</td>
 <td>Apache 2.0 / MIT</td>
 </tr>
 </tbody>
 </table></div>
 <p>Two changes here matter more than any benchmark. SCIP moved from an academic
 licence to <strong>Apache 2.0</strong> at version 8.0.3, which turned it from something you
-could publish papers with into something you could ship. And <strong>HiGHS</strong> has become
-good enough to be the default answer for anyone who does not have a specific
-reason to pay, which was not true a decade ago.</p>
+could publish papers with into something you could ship. And <strong>HiGHS</strong> has
+become good enough to be the default answer for anyone who does not have a
+specific reason to pay, which was not true a decade ago.</p>
 <p>The honest summary of the gap: for pure linear programs at ordinary sizes, the
 free solvers are close enough that the difference rarely decides anything. For
 hard mixed-integer models the commercial ones are still meaningfully ahead, and
@@ -469,10 +466,10 @@ budget, and the reasons to pay are narrower every year.</p>
 straight before you compare anything.</p>
 <p>You write a model in something. That something is usually not a solver.</p>
 <p><strong>Modelling layers</strong> let you write a model once and send it to any of several
-engines: Pyomo, PuLP and python-mip in Python, JuMP in Julia, and the commercial
-languages AMPL and GAMS. Switching solvers becomes a one-line change, which is
-the strongest practical argument for using one: it makes the solver decision
-reversible.</p>
+engines: Pyomo, PuLP and python-mip in Python, JuMP in Julia, and the
+commercial languages AMPL and GAMS. Switching solvers becomes a one-line
+change, which is the strongest practical argument for using one: it makes the
+solver decision reversible.</p>
 <p>So the first question about any name you are handed is which of the two it is.
 Get that wrong and you will compare a language with an engine and conclude
 something about neither.</p>
@@ -509,32 +506,30 @@ replaced ECOS, which had been the default for years and had known trouble with
 numerical stability at the edges. It will also drive HiGHS when what you wrote
 turns out to be an ordinary linear program.</p>
 <p>The limit is the same as the strength. CVXPY wants convexity. If your problem
-genuinely is not convex, or its difficulty lives in whole-number decisions
-rather than in curvature, this is the wrong tool and a MIP solver is the right
-one.</p>
+really is not convex, or its difficulty lives in whole-number decisions rather
+than in curvature, this is the wrong tool and a MIP solver is the right one.</p>
 <blockquote class="takeaway">
 <p><strong>In one sentence.</strong> If your model has squares or norms in it, none of the
 solvers named so far will take it, and the layer that will also refuses to
 let you write something it cannot vouch for.</p>
 </blockquote>
-<h2 id="ch10"><span class="num">10</span>A toolkit is not a solver either</h2>
+<h2 id="ch10"><span class="num">10</span>What OR-Tools actually is</h2>
 <p>There is a third thing a name can refer to, and it causes more confusion than
 either of the first two, because it contains both.</p>
-<p><strong>Google OR-Tools</strong> is where this gets misread. OR-Tools is a toolkit, not a
-solver. Inside it are Google's own engines, <strong>GLOP</strong> for linear programming and
-<strong>PDLP</strong> for very large ones, alongside wrappers that let it drive SCIP, HiGHS
-and the commercial solvers. &quot;We used OR-Tools&quot; does not say which engine solved
-anything.</p>
-<p>The exception is <strong>CP-SAT</strong>, which is Google's own and is a genuinely different
-kind of machine. It is a constraint programming solver built on a SAT engine: it
-works in whole numbers, learns clauses from the conflicts it hits, and does not
-lean on a linear relaxation the way a MIP solver does. It has won its category
-at the MiniZinc competition repeatedly. For scheduling, rostering and
-assignment, where the constraints are logical rather than numerical, it is often
-the right tool and it will beat an LP-based solver comfortably.</p>
+<p><strong>Google OR-Tools</strong> is a toolkit. Inside it are Google's own engines, <strong>GLOP</strong>
+for linear programming and <strong>PDLP</strong> for very large ones, alongside wrappers
+that let it drive SCIP, HiGHS and the commercial solvers. &quot;We used OR-Tools&quot;
+does not say which engine solved anything.</p>
+<p>The exception is <strong>CP-SAT</strong>, which is Google's own and is a different kind of
+machine altogether. It is a constraint programming solver built on a SAT
+engine: it works in whole numbers, learns clauses from the conflicts it hits,
+and does not lean on a linear relaxation the way a MIP solver does. It has won
+its category at the MiniZinc competition repeatedly. For scheduling, rostering
+and assignment, where the constraints are logical rather than numerical, it is
+often the right tool and it will beat an LP-based solver comfortably.</p>
 <p>Its limits are the mirror image. It wants integers and bounded variables. Give
-it genuinely continuous quantities, or a model whose strength lives in its
-linear relaxation, and a MIP solver is the better answer.</p>
+it truly continuous quantities, or a model whose strength lives in its linear
+relaxation, and a MIP solver is the better answer.</p>
 <blockquote class="takeaway">
 <p><strong>In one sentence.</strong> &quot;We used OR-Tools&quot; names a toolkit rather than an
 engine, and the one engine in it worth choosing deliberately is CP-SAT.</p>
@@ -545,33 +540,32 @@ Hans Mittelmann's benchmark pages, which have run for years and are the closest
 thing the field has to a referee.</p>
 <p>Read them, and read the note at the top first.</p>
 <p>Results for <strong>IBM CPLEX and FICO Xpress were removed</strong> after those vendors
-objected, following the 2018 INFORMS annual meeting. <strong>Gurobi withdrew in August
-2024.</strong> <strong>MindOpt followed in December 2024.</strong> The pages are still valuable and
-still run, but the leaderboard now shows the solvers that stayed, and the
-absence of a name is not information about its speed.</p>
-<p>So the leaderboard now shows the solvers that stayed. The pages remain valuable
-and the methodology was never the problem; what changed is that an absence on
-them is not information about a solver's speed, and reading them as a complete
-ranking will mislead you about exactly the products that cost money.</p>
+objected, following the 2018 INFORMS annual meeting. <strong>Gurobi withdrew in
+August 2024.</strong> <strong>MindOpt followed in December 2024.</strong></p>
+<p>The pages remain valuable and the methodology was never the problem. What
+changed is that the leaderboard now shows the solvers that stayed, so an
+absence on it carries no information about a solver's speed, and reading the
+tables as a complete ranking will mislead you about exactly the products that
+cost money.</p>
 <blockquote class="takeaway">
 <p><strong>In one sentence.</strong> Most of the commercial field left the public benchmarks
 by request, so what those tables rank is who is willing to be ranked.</p>
 </blockquote>
 <h2 id="ch12"><span class="num">12</span>Measure on your own models</h2>
-<p>Suppose the tables were complete. They would still not answer your question, and
-this is the more important of the two problems because no amount of tidying up
-fixes it.</p>
+<p>Suppose the tables were complete. They would still not answer your question,
+and this is the more important of the two problems because no amount of tidying
+up fixes it.</p>
 <p><strong>A benchmark is a set of models, and yours is not in it.</strong></p>
-<p>Solver performance varies over instances by orders of magnitude — not by tens of
-percent, by factors of a thousand. A solver that wins on a shifted geometric
+<p>Solver performance varies over instances by orders of magnitude: not by tens of
+percent but by factors of a thousand. A solver that wins on a shifted geometric
 mean over a public set can comfortably be the slower one on your particular
 model, because your model has structure that the set does not, and structure is
 what solvers exploit. The aggregate is a fact about the aggregate.</p>
 <p>Which makes the actual advice short, and it is the only thing in this chapter
 worth remembering. Take ten instances that look like what you will really be
 solving, run every candidate on them with a fixed time limit, and compare. That
-measurement is worth more than every published table put together, because it is
-the only one measuring the thing you care about.</p>
+measurement is worth more than every published table put together, because it
+is the only one measuring the thing you care about.</p>
 <p>Two traps while you do it.</p>
 <p><strong>Compare like with like.</strong> A solver that returns a 0.01% gap has not done the
 same work as one that proved optimality, and the second is doing something much
@@ -585,18 +579,18 @@ you measure once, you are partly measuring the weather.</p>
 your own models with the tolerances pinned.</p>
 </blockquote>
 <h2 id="ch13"><span class="num">13</span>The licence is the deployment problem</h2>
-<p>Here is the part nobody warns you about, and it is where most of the pain
-actually is. The mathematics never fails on a Friday. The licence does.</p>
+<p>Nobody warns you about this part, and it is where most of the deployment pain
+actually is. The mathematics never fails on a Friday; the licence does.</p>
 <p>A commercial solver has to check that you are allowed to run it, and how it
 checks is the whole story.</p>
 <p><strong>Node-locked.</strong> A file tied to one machine, usually by its MAC address or host
 ID. Fine on a laptop. Useless the moment your workload lives on machines that
 did not exist this morning, because the identity it is locked to is the thing
 your infrastructure keeps replacing.</p>
-<p><strong>Floating.</strong> A licence server on your network hands out tokens, and you pay for
-how many are checked out at once. This works, and it requires that every worker
-can reach that server, which turns a maths library into a piece of network
-architecture with a firewall rule and a single point of failure.</p>
+<p><strong>Floating.</strong> A licence server on your network hands out tokens, and you pay
+for how many are checked out at once. This works, and it requires that every
+worker can reach that server, which turns a maths library into a piece of
+network architecture with a firewall rule and a single point of failure.</p>
 <p><strong>Cloud and container licensing.</strong> This is the modern answer and the reason the
 old pain has eased. Gurobi's <strong>Web License Service</strong> issues short-lived signed
 tokens to a container over the internet, renewed automatically, configured
@@ -607,21 +601,20 @@ credential becomes a secret like every other secret. The other vendors have
 their own equivalents.</p>
 <p>If you have fought a solver licence in a container, this is almost certainly
 what you were fighting: a node-locked or floating scheme meeting an environment
-where machines are disposable and there is no stable host to lock to. The fix is
-generally not a cleverer Dockerfile. It is a different licence type.</p>
-<p><strong>Academic licences</strong> are genuinely generous and genuinely restricted. They are
+where machines are disposable and there is no stable host to lock to. The fix
+is generally not a cleverer Dockerfile. It is a different licence type.</p>
+<p><strong>Academic licences</strong> are genuinely generous and sharply restricted. They are
 free, they are usually full-strength, and they are for academic work. Using one
-for anything commercial breaches the terms, and &quot;it was only a prototype&quot; is not
-a defence anyone has enjoyed making. Note also that free tiers are commonly
+for anything commercial breaches the terms, and &quot;it was only a prototype&quot; is
+not a defence anyone has enjoyed making. Note also that free tiers are commonly
 size-limited rather than time-limited, which means your model will work fine
 until it grows.</p>
-<p><strong>And the open-source ones have none of this.</strong> No licence server, no tokens, no
-node locking, no phone call when you scale to forty workers. <code>pip install highspy</code> and it runs. That is not a small advantage, and it is regularly the
-deciding one for a team that would otherwise be slightly better served by a
-commercial solver.</p>
+<p><strong>And the open-source ones have none of this.</strong> No licence server, no tokens,
+no node locking, no phone call when you scale to forty workers. <code>pip install highspy</code> and it runs. That is regularly the deciding advantage for a team that
+would otherwise be slightly better served by a commercial solver.</p>
 <p>The practical rule: <strong>decide how you will deploy before you decide what to
-deploy.</strong> Solver choice is easy to reverse behind a modelling layer. A licensing
-model that does not fit your infrastructure is not.</p>
+deploy.</strong> Solver choice is easy to reverse behind a modelling layer. A
+licensing model that does not fit your infrastructure is not.</p>
 <blockquote class="takeaway">
 <p><strong>In one sentence.</strong> Pick the licence type your deployment can live with
 first, because that constraint is harder to change than the solver.</p>
@@ -670,8 +663,7 @@ first, because that constraint is harder to change than the solver.</p>
 </tr>
 </tbody>
 </table></div>
-<p>Three closing observations, and they are the ones worth having been told
-first.</p>
+<p>Three closing observations, and they are the ones to have been told first.</p>
 <p><strong>Modelling beats solver choice, usually by more than an order of magnitude.</strong>
 The chapters above are about a solver deleting two thirds of a model. A better
 formulation does not need deleting. If a solve is too slow, rewriting the model
@@ -680,9 +672,9 @@ chapter 4 is the first place to look.</p>
 <p><strong>Measure before you buy.</strong> The evaluation licences exist for this. Ten of your
 own instances, a fixed time limit, all candidates.</p>
 <p><strong>Keep the solver replaceable.</strong> Write through a layer, and the decision you
-make today stays cheap to revisit. Everything in chapters 7 to 13 changes. SCIP's
-licence changed. Gurobi left the benchmarks. cuOpt was proprietary and is now
-Apache 2.0. The one durable move is to not be welded to any of it.</p>
+make today stays cheap to revisit. Everything in chapters 7 to 13 changes.
+SCIP's licence changed. Gurobi left the benchmarks. cuOpt was proprietary and
+is now Apache 2.0. The one durable move is to not be welded to any of it.</p>
 <blockquote class="takeaway">
 <p><strong>In one sentence.</strong> Formulate well, measure on your own models, and keep the
 solver behind a layer so that none of this has to be decided permanently.</p>
@@ -777,9 +769,9 @@ dated rather than stated flatly.</p>
 cd solvers &amp;&amp; make verify
 </code></pre>
 <p>The presolve here is exact rational arithmetic, which matters more than usual:
-in floating point, &quot;this row can never be violated&quot; quietly becomes &quot;this row is
-violated by a millionth&quot;, and a reduction that fires on a rounding error deletes
-a real solution. The tests check every reduction against a brute-force
+in floating point, &quot;this row can never be violated&quot; quietly becomes &quot;this row
+is violated by a millionth&quot;, and a reduction that fires on a rounding error
+deletes a real solution. The tests check every reduction against a brute-force
 enumeration of every whole point in the model, over four hundred random
 instances, because presolve is the part of a solver most capable of being
 confidently wrong.</p>

@@ -19,6 +19,9 @@ from bandp import mill as m
 
 ROOT = Path(__file__).resolve().parents[1]
 TEXT = (ROOT / "lesson.md").read_text()
+# phrases are checked against a whitespace-flattened copy, so re-wrapping a
+# paragraph never breaks a test about its content
+FLAT = " ".join(TEXT.split())
 IMAGE = re.compile(r"!\[([^\]]*)\]\(([^)]+)\)")
 
 sys.path.insert(0, str(ROOT))
@@ -72,7 +75,7 @@ def test_the_two_bounds_table_matches_the_code():
 
 def test_the_number_of_patterns_drawn_matches_the_prose():
     assert len(m.PATTERNS) == 6
-    assert "there are only\nsix worth using" in TEXT or "only\nsix" in TEXT
+    assert "there are only six worth using" in FLAT
 
 
 def test_the_first_round_prices_in_the_table_are_the_computed_ones():
@@ -86,7 +89,7 @@ def test_the_first_pattern_the_knapsack_asks_for_is_the_one_quoted():
     first = m.ROUNDS[0]
     assert m.BOARDS.describe(first.best_pattern) == "4×4 + 1×9"
     assert first.best_value == Fraction(7, 6)
-    assert "**four 4-foot pieces and one\n9-foot piece**" in TEXT
+    assert "**four 4-foot pieces and one 9-foot piece**" in FLAT
     assert "4×(1/6) + 1×(1/2) = **7/6**" in TEXT
 
 
@@ -100,7 +103,7 @@ def test_the_sequence_of_master_values_is_the_one_the_prose_narrates():
 def test_the_number_of_patterns_added_matches_the_prose():
     added = sum(1 for r in m.ROUNDS if r.added)
     assert added == 3
-    assert "Three patterns\nwere added" in TEXT or "Three patterns" in TEXT
+    assert "Three patterns were added" in FLAT
 
 
 def test_the_mill_count_in_the_prose_is_the_computed_one():
@@ -122,7 +125,7 @@ def test_the_tree_size_matches_the_figure():
 
 
 def test_the_bug_count_the_chapter_confesses_to_is_the_real_one():
-    """Chapter 8 quotes how badly the first version of the solver did. If that
+    """Chapter 10 quotes how badly the first version of the solver did. If that
     claim is going to be in the prose it has to be reproducible."""
     import itertools
 
@@ -286,10 +289,14 @@ def test_the_derivation_of_six_and_a_half_in_chapter_three():
 
 def test_the_readme_chapter_table_matches_the_chapters():
     """The topic README is hand-written, so nothing else catches it going stale
-    when a chapter is split. Every link must resolve and be in build order."""
+    when a chapter is split. Every chapter must be listed, once, in build order.
+
+    The links point at the published page rather than at chapters/, because the
+    chapter markdown is no longer pushed to GitHub; a relative link would 404
+    for every chapter whose folder holds no image and is therefore untracked."""
     readme = (ROOT / "README.md").read_text()
-    linked = re.findall(r"\]\(chapters/([^)/]+)/\)", readme)
-    assert linked == [c.folder for c in build.CHAPTERS], \
+    linked = re.findall(r"\]\(https://[^)]*/#ch(\d+)\)", readme)
+    assert linked == [str(c.number) for c in build.CHAPTERS], \
         "run the chapter table in README.md past build.CHAPTERS again"
-    for folder in linked:
-        assert (ROOT / "chapters" / folder).is_dir(), folder
+    for chapter in build.CHAPTERS:
+        assert (ROOT / "chapters" / chapter.folder).is_dir(), chapter.folder

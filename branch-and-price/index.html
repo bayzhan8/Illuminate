@@ -42,12 +42,12 @@
 </nav>
 <main class="prose">
 <h1>Solving a problem you never wrote down</h1>
-<p><strong>Column generation and branch-and-price, built from a workshop cutting boards.</strong></p>
+<p><strong>Column generation and branch-and-price, built from a workshop cutting
+boards.</strong></p>
 <p>A workshop buys wooden boards in one standard length and saws them into the
 shorter pieces its customers order. Boards cost money and offcuts are scrap, so
-the workshop wants to fill each order using as few boards as it can. That is
-the whole problem, and this guide is about the surprising amount of trouble it
-causes.</p>
+the workshop wants to fill each order using as few boards as it can.</p>
+<p>That is the whole problem, and it causes a surprising amount of trouble.</p>
 <p>The trouble is not finding a good way to cut. It is <em>proving</em> that no better
 way exists. Getting a computer to do that turns out to depend entirely on how
 you write the question down, and the way that works has an absurd property: for
@@ -71,26 +71,27 @@ blue bar pushes past six to six and a half, and the answer lands on
 seven." loading="lazy"></figure>
 <p>Boards come 25 feet long. Today's order is three pieces of 4 feet, six pieces
 of 9 feet and seven pieces of 10 feet. You may cut each board however you like,
-cutting is free, and whatever is left at the end of a board is scrap — two
+cutting is free, and whatever is left at the end of a board is scrap, since two
 offcuts cannot be glued back together. <strong>How few boards can fill the order?</strong></p>
 <p>The answer is seven. The interesting part is not the seven; it is that
-establishing it takes two separate pieces of work, and only one of them is easy.</p>
+establishing it takes two separate pieces of work, and only one of them is
+easy.</p>
 <p>Showing that seven is <em>enough</em> is the easy half. Cut seven boards in some
 sensible way, lay out the pieces, and count. Anyone can check it. But that only
-shows seven works — on its own it leaves open that some cleverer arrangement
-does the job in six.</p>
+shows seven works, and leaves open that some cleverer arrangement does the job
+in six.</p>
 <p>Ruling out six is the hard half, and you cannot get there by trying
 arrangements, because there are far too many to try. You need an argument that
 covers every arrangement at once, including the ones nobody thought of. Here
-are two such arguments. Both are correct. Only one is any use.</p>
-<p><strong>First argument: count the wood.</strong> The order asks for
-3×4 + 6×9 + 7×10 = 136 feet of wood, and each board supplies 25 feet. Even if
-not one inch were wasted, 136 ÷ 25 = 5.44 boards' worth of wood is needed, so
-five boards cannot possibly be enough. At least six.</p>
+are two such arguments. Both are correct, and only one of them is any use.</p>
+<p><strong>First argument: count the wood.</strong> The order asks for 3×4 + 6×9 + 7×10 = 136
+feet of wood, and each board supplies 25 feet. Even if not one inch were
+wasted, 136 ÷ 25 = 5.44 boards' worth of wood is needed, so five boards cannot
+possibly be enough. At least six.</p>
 <p><strong>Second argument: count the long pieces.</strong> Call a piece <strong>long</strong> if it is 9
 feet or 10. The three shortest long pieces together are 9 + 9 + 9 = 27 feet,
-and a board is 25, so no board can carry three long pieces — two is the most
-any board can hold, however it is cut. The order asks for 6 + 7 = 13 long
+and a board is 25, so no board can carry three long pieces, and two is the most
+any board can hold however it is cut. The order asks for 6 + 7 = 13 long
 pieces. At two to a board, 13 ÷ 2 = 6.5 boards are needed, and you cannot buy
 half a board. At least seven.</p>
 <p>That second argument settles it. At least seven, and seven can be cut, so seven
@@ -107,7 +108,7 @@ something about this particular order, and a real order has hundreds of
 lengths, where nothing will be noticeable. What is needed is a procedure that
 manufactures arguments of that quality automatically. There is one. Its cost is
 that it works with one unknown for every way of cutting a single board that is
-worth using at all — six of them for this order, and roughly four trillion for a
+worth using at all: six of them for this order, and roughly four trillion for a
 paper mill.</p>
 <blockquote class="takeaway">
 <p><strong>In one sentence.</strong> Finding a good answer is easy and proving nothing beats
@@ -115,7 +116,8 @@ it is hard, and how well you can prove it depends entirely on how the question
 was written down.</p>
 </blockquote>
 <h2 id="ch1"><span class="num">1</span>The order</h2>
-<p>A workshop buys boards <strong>25 feet</strong> long and needs shorter lengths cut from them.</p>
+<p>A workshop buys boards <strong>25 feet</strong> long and needs shorter lengths cut from
+them.</p>
 <figure class="plate"><img src="chapters/01-the-order/order.png" alt="One 25-foot board drawn to scale, with the order listed beneath
 it." loading="lazy"></figure>
 <div class="overflow-x"><table>
@@ -152,8 +154,8 @@ six worth using, in the sense that no further piece could be squeezed into the
 leftover:</p>
 <figure class="plate"><img src="chapters/01-the-order/patterns.png" alt="Six boards drawn to scale, each showing one way to cut it into 4, 9 and 10
 foot pieces, with the wasted end hatched." loading="lazy"></figure>
-<p>Six is a small enough number to print, which is exactly why this is the order
-to learn on. Chapter 4 is where that stops being true.</p>
+<p>Six patterns is few enough to draw on a single page. Chapter 4 is where that
+stops being true.</p>
 <blockquote class="takeaway">
 <p><strong>In one sentence.</strong> A pattern is one way of cutting one board, and the
 decision to be made is how many boards to cut with each.</p>
@@ -162,23 +164,23 @@ decision to be made is how many boards to cut with each.</p>
 <p>Chapter 0 gave two hand-made arguments about this order. This chapter and the
 next are where they come from, and getting there needs two words.</p>
 <p>To <strong>model</strong> a problem is to write it down as unknown quantities to be solved
-for, together with the arithmetic those quantities must satisfy. To
-<strong>relax</strong> a model is to then cross out one of those requirements on purpose,
-producing an easier problem that a computer can solve quickly.</p>
+for, together with the arithmetic those quantities must satisfy. To <strong>relax</strong> a
+model is to then cross out one of those requirements on purpose, producing an
+easier problem that a computer can solve quickly.</p>
 <p>The point of doing that is not the easiness. Every arrangement that satisfied
 the original requirements still satisfies the shortened list, so the relaxed
-problem is choosing from a strictly larger set of candidates — and it may find
-something in there that the real problem could not have used. Here the aim is to
-use as few boards as possible, so a larger set of candidates can only bring the
-answer <em>down</em>, never up. Whatever number the relaxation reports is therefore a
-floor under the true one: the real answer cannot be below it. That is where a
-lower limit comes from when nobody hands you a clever argument.</p>
-<p>The requirement that gets crossed out is nearly always the same one:
-<strong>whole numbers</strong>. Real answers here are whole boards and whole pieces, and
-insisting on whole numbers is what makes a problem hard. Let the quantities go
-fractional and the problem becomes easy. So every lower limit in this guide
-comes from the same recipe: write the problem down, allow fractions, solve, and
-read off the floor. The standard word for such a floor is a <strong>bound</strong>.</p>
+problem is choosing from a strictly larger set of candidates, and it may find
+something in there that the real problem could not have used. Here the aim is
+to use as few boards as possible, so a larger set of candidates can only bring
+the answer <em>down</em>, never up. Whatever number the relaxation reports is
+therefore a floor under the true one: the real answer cannot be below it. That
+is where a lower limit comes from when nobody hands you a clever argument.</p>
+<p>The requirement that gets crossed out is nearly always the same one: <strong>whole
+numbers</strong>. Real answers here are whole boards and whole pieces, and insisting
+on whole numbers is what makes a problem hard. Let the quantities go fractional
+and the problem becomes easy. So every lower limit in this guide comes from the
+same recipe: write the problem down, allow fractions, solve, and read off the
+floor. The standard word for such a floor is a <strong>bound</strong>.</p>
 <p>Now do that to the obvious model. The natural way to write cutting stock down
 is to decide, for each board, what comes off it: take a pile of boards, mark
 some of them &quot;used&quot;, and assign pieces to them without overfilling any. The
@@ -198,29 +200,29 @@ be stranded. A board with 6 feet spare no longer wastes them: the next piece
 simply starts there and finishes on the board after. Every requirement about
 <em>fitting</em> has dissolved along with the whole numbers, and the only thing left
 for the model to respect is material. The order asks for 136 feet of wood. Each
-board supplies 25 feet of it, none of which need go to waste. So fewer than
-136 ÷ 25 boards cannot supply the wood, and 136 ÷ 25 boards can. The bound is
-the ratio because the relaxation removed every other obstacle.</p>
+board supplies 25 feet of it, none of which need go to waste. So fewer than 136
+÷ 25 boards cannot supply the wood, and 136 ÷ 25 boards can. The bound is the
+ratio because the relaxation removed every other obstacle.</p>
 <p>It is a genuine lower limit, and it is useless, for the reason just given: this
 is the answer you would get if boards were <em>liquid</em> and the leftover at the end
 of one board flowed into the next. Round it up and six boards might do.</p>
 <p>Six boards will not do. The relaxation cannot see it, because the fact that
-makes it impossible — a 10-foot piece sits on one board, whole — is precisely
-what was relaxed away.</p>
+makes it impossible, namely that a 10-foot piece sits on one board and stays
+whole, is precisely what was relaxed away.</p>
 <blockquote class="takeaway">
 <p><strong>In one sentence.</strong> Relaxing the obvious model throws away the very thing
 that makes the problem hard, so its bound is far too low.</p>
 </blockquote>
 <h2 id="ch3"><span class="num">3</span>One variable per pattern</h2>
 <p>So write the problem down differently. Instead of asking <em>which pieces go on
-which board</em>, ask <strong>how many boards to cut with each pattern</strong> — where a
-pattern, from chapter 1, is one complete way of cutting one board.</p>
+which board</em>, ask <strong>how many boards to cut with each pattern</strong>, where a pattern
+from chapter 1 is one complete way of cutting one board.</p>
 <p>That gives one unknown quantity per pattern. Six patterns, six unknowns. The
 standard word for one of those unknown quantities is a <strong>variable</strong>, and it is
 used from here on.</p>
-<p>Every pattern is a way of cutting a board that is already legal: the pieces fit,
-by construction. So this model has nothing left to say about fitting. It only
-has to say that enough pieces come out:</p>
+<p>Every pattern is a way of cutting a board that is already legal: the pieces
+fit, by construction. So this model has nothing left to say about fitting. It
+only has to say that enough pieces come out:</p>
 <blockquote class="aside">
 <p><strong>choose</strong> how many boards to cut with each pattern, to <strong>minimise</strong> the
 total number of boards, so that for each length, the pieces produced across
@@ -248,9 +250,9 @@ boards or not.</p>
 <p>The order wants 6 nines and 7 tens. Thirteen long pieces at two to a board
 needs 13/2 boards, and 13/2 is 6.5. The mix above sits exactly on that ceiling,
 which is why it cannot be beaten.</p>
-<p>So here are two relaxations of the same order — same recipe, same crossing-out
-of whole numbers — landing more than a board apart. It is worth being precise
-about why, because this is the one idea the whole guide is built on.</p>
+<p>So here are two relaxations of the same order, on the same recipe and the same
+crossing-out of whole numbers, landing more than a board apart. Why they differ
+is the one idea the whole guide is built on, so let us be precise about it.</p>
 <p>In the obvious model, the whole numbers <em>were</em> the fitting. Saying &quot;this
 10-foot piece goes entirely on board 3&quot; is a whole-number statement, and
 allowing fractions is exactly what let the piece be sawn in half and spread
@@ -260,9 +262,9 @@ the problem a cutting problem at all.</p>
 correctly, inside each pattern. A pattern is a legal way to cut one board: the
 pieces fit, by construction, and nothing about that can be undone later. So
 when the relaxation allows two and a half boards to be cut with some pattern,
-it is not permitting anything physically impossible about <em>fitting</em> — it is
-only permitting a fractional count of boards. Fitting is out of the
-relaxation's reach, because it was settled before the relaxation arrived.</p>
+it is not permitting anything physically impossible about <em>fitting</em>; it is only
+permitting a fractional count of boards. Fitting is out of the relaxation's
+reach, because it was settled before the relaxation arrived.</p>
 <p>That is the trade. The pattern model pays for a strong bound with an enormous
 number of unknowns, one per pattern, and the payment is the subject of the next
 chapter.</p>
@@ -290,8 +292,8 @@ chapter.</p>
 </tr>
 </tbody>
 </table></div>
-<p>Here the second relaxation settles the question by itself, which is the reason
-to put up with everything that follows.</p>
+<p>The second relaxation settles the question by itself. Everything that follows
+is the price of getting it.</p>
 <p><em>(The standard name for this reformulation is <strong>Dantzig–Wolfe decomposition</strong>.
 Chapter 11 comes back to it; for now the idea is all you need.)</em></p>
 <blockquote class="takeaway">
@@ -319,10 +321,11 @@ irrelevant, but you cannot tell which part until you have solved it.</p>
 <h2 id="ch5"><span class="num">5</span>Start with a few</h2>
 <p>The model cannot be written down. So do not write it down. Start with a model
 that is obviously too small.</p>
-<p>Take a few patterns — say the lazy ones, each board cut into copies of a single
-length — and solve <em>that</em>. Everyone calls it the <strong>restricted master</strong>: the
-real model, restricted to the handful of patterns somebody actually bothered to
-write down. It is the real problem with almost all of its variables missing.</p>
+<p>Take a few patterns, say the lazy ones with each board cut into copies of a
+single length, and solve <em>that</em>. Everyone calls it the <strong>restricted master</strong>:
+the real model, restricted to the handful of patterns somebody actually
+bothered to write down. It is the real problem with almost all of its variables
+missing.</p>
 <p>Our order has three lazy patterns: a board cut into six 4-foot pieces, a board
 cut into two 9s, a board cut into two 10s. With only those three on the table
 there is nothing to decide, because each ordered length has exactly one source.
@@ -337,11 +340,11 @@ asked.</p>
 <p>That number is an honest upper bound, since those three patterns really do fill
 the order. What it is not is the answer to the strong model, which has three
 more patterns nobody has written down, and in the mill instance four trillion.</p>
-<p>So the method now needs one thing, and only one. Not a way to search the missing
-patterns — there are too many. A way to answer <em>whether any of them would help</em>
-without adding them, and ideally without looking at them.</p>
-<p>That is what the next two chapters are, and the surprising part is that the
-too-small model already contains the answer.</p>
+<p>So the method now needs one thing, and only one. Not a way to search the
+missing patterns, of which there are far too many. A way to answer <em>whether any
+of them would help</em> without adding them, and ideally without looking at them.</p>
+<p>The next two chapters are that test, and the surprising part is that the
+too-small model already contains it.</p>
 <blockquote class="takeaway">
 <p><strong>In one sentence.</strong> Solving a deliberately impoverished model is free, and
 the only question left is whether anything is missing from it.</p>
@@ -378,24 +381,25 @@ round they come out as</p>
 </table></div>
 <p>Each one is readable straight off the lazy pattern that supplies it. The only
 source of 4-foot pieces here is a board cut into six, so one more of them costs
-a sixth of a board. The only source of 9-foot pieces is a board cut into two, so
-one more costs half a board. The 10s the same, for the same reason.</p>
-<p>Be clear about what these are. They are not the prices of the real problem. They
-are what this impoverished three-pattern model currently believes, and they will
-move as better patterns arrive.</p>
-<p>Now the move the whole method rests on. Take <em>any</em> pattern, written down or not.</p>
+a sixth of a board. The only source of 9-foot pieces is a board cut into two,
+so one more costs half a board. The 10s the same, for the same reason.</p>
+<p>Be clear about what these are. They are not the prices of the real problem.
+They are what this impoverished three-pattern model currently believes, and
+they will move as better patterns arrive.</p>
+<p>Now the move the whole method rests on. Take <em>any</em> pattern, written down or
+not.</p>
 <p>Cutting a board with it costs one board. The pieces that come off it are worth,
 at these prices, some amount. So the pattern is worth adding exactly when</p>
 <blockquote class="aside">
 <p>the pieces it yields are worth <strong>more than one board.</strong></p>
 </blockquote>
-<p>Check it on the three patterns the model already holds. Six 4-foot pieces at 1/6
-each: worth exactly 1. Two 9s at 1/2 each: exactly 1. Two 10s at 1/2: exactly 1.
-Three sums, all landing on 1, and none of them a help.</p>
-<p>That is not a coincidence and it is worth seeing why: a pattern the model is
-already leaning on <em>cannot</em> be worth more than the board it eats, or the prices
-would not have come out of that model in the first place. Solving forced them to
-be consistent with everything on the table.</p>
+<p>Check it on the three patterns the model already holds. Six 4-foot pieces at
+1/6 each: worth exactly 1. Two 9s at 1/2 each: exactly 1. Two 10s at 1/2:
+exactly 1. Three sums, all landing on 1, and none of them a help.</p>
+<p>That is no coincidence. A pattern the model is already leaning on <em>cannot</em> be
+worth more than the board it eats, or the prices would not have come out of
+that model in the first place. Solving forced them to be consistent with
+everything on the table.</p>
 <p>One board in, pieces worth some amount out. The difference between the two is
 what everyone else calls the pattern's <strong>reduced cost</strong>: below zero when the
 pieces beat the board, which is when the pattern is worth having, and zero for
@@ -403,37 +407,38 @@ the three just checked.</p>
 <p>What the name buys you is small compared with what the comparison buys you. It
 uses the prices and the pattern's own contents, and nothing else. No solve, no
 model, no list. Which means a pattern nobody has ever written down can still be
-judged by it — and that is the crack the rest of the method goes through.</p>
+judged by it, and that is the crack the rest of the method goes through.</p>
 <blockquote class="takeaway">
 <p><strong>In one sentence.</strong> A pattern is worth adding when its pieces are worth more
 than a board, a test that needs only the prices and the pattern itself.</p>
 </blockquote>
 <h2 id="ch7"><span class="num">7</span>The same test, from the other side</h2>
-<p>There is a second way to say all of that, and it is worth carrying both, because
-each one makes a different thing obvious.</p>
-<p>Duality puts a rule on what a price list is allowed to be. Prices are legal only
-when no board anywhere can be cut into pieces worth more than the board costs. A
-list that fails that test is promising value out of nowhere, and a price list
-that promises value out of nowhere can be used to argue for anything.</p>
-<p>The rule has a name, <strong>dual feasibility</strong>, and the thing to notice is its shape:
+<p>There is a second way to say all of that, and we will carry both, because each
+one makes a different thing obvious.</p>
+<p>Duality puts a rule on what a price list is allowed to be. Prices are legal
+only when no board anywhere can be cut into pieces worth more than the board
+costs. A list that fails that test is promising value out of nowhere, and a
+price list that promises value out of nowhere can be used to argue for
+anything.</p>
+<p>The rule has a name, <strong>dual feasibility</strong>, and its shape is what matters here:
 it is one condition per pattern. One for each way of cutting a board. All four
 trillion of them.</p>
 <p>The prices from chapter 6 pass that test for every pattern in the restricted
 master. Solving that model is what forced them to. What is <em>open</em> is every
 pattern left out of it, because a price list has no way of knowing which
-patterns exist — it is a list of numbers, one per length, and nothing in it
+patterns exist. It is a list of numbers, one per length, and nothing in it
 records what it has never been shown.</p>
 <p>So there are two cases, and they are the two halves of the method.</p>
-<p><strong>If the prices pass for the unwritten patterns too</strong>, the list is legal for the
-full model. Then the duality guide's check applies exactly as written: a plan
-and a price list that agree end the search. The number the restricted master
-reported is the full model's number, proved without the full model ever being
-built.</p>
+<p><strong>If the prices pass for the unwritten patterns too</strong>, the list is legal for
+the full model. Then the duality guide's check applies exactly as written: a
+plan and a price list that agree end the search. The number the restricted
+master reported is the full model's number, proved without the full model ever
+being built.</p>
 <p><strong>If some unwritten pattern fails</strong>, the prices were only legal because that
 pattern was missing. Writing it down is precisely what will force them to move.</p>
 <p>Which is why the two framings are one search. Hunting for a pattern worth more
 than a board, and hunting for a broken dual condition, are the same hunt seen
-from opposite sides — and the next chapter is how you run it without a list.</p>
+from opposite sides, and the next chapter is how you run it without a list.</p>
 <blockquote class="takeaway">
 <p><strong>In one sentence.</strong> A price list cannot tell which patterns it has never been
 shown, so the whole method is the search for one that would embarrass it.</p>
@@ -447,23 +452,23 @@ answer has to be <em>found</em>. It can be <strong>built</strong>.</p>
 feet of wood in front of you and a price for each length: a 4-foot piece is
 worth 1/6, a 9 is worth 1/2, a 10 is worth 1/2. Cut the board so as to make the
 pieces on it worth as much as possible in total. What do you cut?</p>
-<p>That is a <strong>knapsack problem</strong> — the standard name for &quot;fill a container of
-fixed size with items of known size and value, as valuably as you can&quot; — and it
+<p>That is a <strong>knapsack problem</strong>, the standard name for &quot;fill a container of
+fixed size with items of known size and value, as valuably as you can&quot;, and it
 is a small, fast, thoroughly solved kind of problem. Crucially, whatever it
 hands back <em>is</em> a pattern, and it is the most valuable pattern that exists at
-these prices. Not the most valuable one on any list. The most valuable one, full
-stop, including all the ones nobody has ever written down, because the knapsack
-constructed it from the wood rather than looking it up.</p>
-<p>At the prices above the knapsack returns <strong>four 4-foot pieces and one
-9-foot piece</strong>, worth 4×(1/6) + 1×(1/2) = <strong>7/6</strong>. Seven sixths is more than
-one, so by chapter 6's test that pattern is worth having, and it goes into the
-model.</p>
+these prices. Not the most valuable one on any list. The most valuable one,
+full stop, including all the ones nobody has ever written down, because the
+knapsack constructed it from the wood rather than looking it up.</p>
+<p>At the prices above the knapsack returns <strong>four 4-foot pieces and one 9-foot
+piece</strong>, worth 4×(1/6) + 1×(1/2) = <strong>7/6</strong>. Seven sixths is more than one, so
+by chapter 6's test that pattern is worth having, and it goes into the model.</p>
 <p>Notice what has just been avoided. There is no shortlist and no sampling. One
-knapsack solve either hands back a best pattern in existence — this order has
-two patterns tied at 7/6, and any winner will do — or, when its best comes out
+knapsack solve either hands back a best pattern in existence (this order has
+two patterns tied at 7/6, and any winner will do), or, when its best comes out
 at <strong>1 or less</strong>, proves that no pattern anywhere would help, in which case the
 restricted model's answer is already the full model's answer.</p>
-<p><strong><a href="https://bayzhan8.github.io/Illuminate/branch-and-price/sandbox/08.html">Try it yourself →</a></strong>
+<p><strong><a href="https://bayzhan8.github.io/Illuminate/branch-and-price/sandbox/08.html">Try it yourself
+→</a></strong>
 Set the three prices by hand and watch which pattern the knapsack builds.</p>
 <blockquote class="takeaway">
 <p><strong>In one sentence.</strong> Finding the missing column is a knapsack, and it returns
@@ -487,7 +492,7 @@ prices, and the pattern the knapsack asks for
 next." loading="lazy"></figure>
 <p>Watch the number come down: <strong>7 boards</strong>, then 6.875, then 6.5. Then the
 knapsack returns a pattern worth exactly 1 and the loop stops. Three patterns
-added, and 6.5 boards is optimal for a model nobody wrote down.</p>
+were added, and 6.5 boards is optimal for a model nobody wrote down.</p>
 <p>Be exact about what step 5 claims. Not that no better answer exists: that no
 <em>column</em> exists which would improve this one. The knapsack searched every
 pattern implicitly rather than sampling some, so it is a proof.</p>
@@ -498,7 +503,8 @@ highlighted and the rest left blank." loading="lazy"></figure>
 <p>Twenty-four patterns were never written down and never needed to be. On the
 mill instance the same sentence holds with four trillion in place of
 twenty-four.</p>
-<p><strong><a href="https://bayzhan8.github.io/Illuminate/branch-and-price/sandbox/09.html">Try it yourself →</a></strong>
+<p><strong><a href="https://bayzhan8.github.io/Illuminate/branch-and-price/sandbox/09.html">Try it yourself
+→</a></strong>
 Step the loop one round at a time and watch the prices move.</p>
 <blockquote class="takeaway">
 <p><strong>In one sentence.</strong> Alternating between a small model and a knapsack solves
@@ -512,21 +518,21 @@ always is. The relaxation is famously tight; instances where rounding up is
 and a rounded bound is a number rather than a set of cuts. To get something you
 can take to the saw, the fractions have to be branched away.</p>
 <p>The standard way to branch fractions away is <strong>branch and bound</strong>, and since
-this repository has no guide to it yet, here it is in full. Solve the relaxation.
-If some quantity comes out fractional — say a pattern is used 2.5 times — then
-whatever the true answer is, it either uses that pattern at most 2 times or at
-least 3 times. There is no third case. So split the problem into those two
-smaller problems and solve each. Repeat, and you get a tree of ever more
-constrained problems.</p>
+this repository has no guide to it yet, here it is in full. Solve the
+relaxation. If some quantity comes out fractional, say a pattern used 2.5
+times, then whatever the true answer is, it either uses that pattern at most 2
+times or at least 3 times. There is no third case. So split the problem into
+those two smaller problems and solve each. Repeat, and you get a tree of ever
+more constrained problems.</p>
 <p>Two things stop the tree from exploding. A branch whose extra restrictions make
-the problem impossible is dropped. And a branch whose <em>relaxation</em> already needs
-more boards than some whole-number answer you have already found in hand cannot
-possibly contain anything better, so it is dropped too, unexamined — which is
-where the whole value of a strong relaxation shows up. A bound of 6.5 prunes
+the problem impossible is dropped. And a branch whose <em>relaxation</em> already
+needs more boards than some whole-number answer you have already found in hand
+cannot possibly contain anything better, so it is dropped too, unexamined. That
+is where the whole value of a strong relaxation shows up. A bound of 6.5 prunes
 branches that a bound of 5.44 would have made you explore.</p>
 <p><strong>Branch-and-price</strong> is branch and bound in which the relaxation at every node
-of that tree is itself solved by column generation, since the model is still too
-big to write down at any node.</p>
+of that tree is itself solved by column generation, since the model is still
+too big to write down at any node.</p>
 <blockquote class="aside">
 <p><strong>At each node</strong></p>
 <ol>
@@ -549,8 +555,8 @@ way of holding that relaxation implicitly.</p>
 <h3>Two traps, both of which cost this repository real answers</h3>
 <p>This is where the theory bit back. Both failures produced entirely reasonable
 looking trees and entirely wrong numbers.</p>
-<p><strong>A branching row has a price too.</strong> Tell a node &quot;use this pattern at most
-zero times&quot; and that restriction acquires a dual value, which inflates that one
+<p><strong>A branching row has a price too.</strong> Tell a node &quot;use this pattern at most zero
+times&quot; and that restriction acquires a dual value, which inflates that one
 pattern's reduced cost. The knapsack then keeps nominating a pattern the master
 already holds and has pinned at zero. Reading that as &quot;no improving column
 exists&quot; stops the loop early and leaves the node's bound too high; in a
@@ -593,10 +599,10 @@ Benders cut is a price list doing exactly the job it did in chapter 7, proving
 a proposal cannot be as good as it claims.</p>
 <h3>When pricing is just filtering a list</h3>
 <p>A case that resembles the above and is not.</p>
-<p>Suppose the columns are not defined by a polyhedron but <em>pre-generated</em>: a fixed
-list of candidate driver schedules, say, computed in advance. Then there is no
-optimisation problem to solve for the best column. You scan the list and take
-the best reduced cost. The algorithm still works and the surrounding
+<p>Suppose the columns are not defined by a polyhedron but <em>pre-generated</em>: a
+fixed list of candidate driver schedules, say, computed in advance. Then there
+is no optimisation problem to solve for the best column. You scan the list and
+take the best reduced cost. The algorithm still works and the surrounding
 branch-and-price machinery is unchanged.</p>
 <p>But it is no longer generating the extreme points of a block. It is
 reduced-cost filtering of a discretised approximation of one, and the bound you
@@ -659,15 +665,14 @@ list made a modelling decision on your behalf.</p>
 <em>Integer Programming</em> by Conforti, Cornuéjols and Zambelli, which is the place
 to go next and does properly what this page does with pictures.</p>
 <h2>Running the code</h2>
-<pre><code class="language-bash">make venv     # once, from the repository root
-make test     # re-check every number this page quotes
-make figures  # re-render every image
+<pre><code class="language-bash">make bootstrap    # once, from the repository root
+cd branch-and-price &amp;&amp; make verify
 </code></pre>
-<p>The solver reuses the exact-fraction simplex from
-<a href="../lp-duality/">the duality topic</a> rather than carrying a second copy. This
-topic really is that one under load. The tests check the mathematics, the prose
-against the code, and branch-and-price against a brute-force solver that
-enumerates every pattern.</p>
+<p>The solver reuses the exact-fraction simplex from <a href="../lp-duality/">the duality
+topic</a> rather than carrying a second copy. This topic really is
+that one under load. The tests check the mathematics, the prose against the
+code, and branch-and-price against a brute-force solver that enumerates every
+pattern.</p>
 
 </main>
 </div>

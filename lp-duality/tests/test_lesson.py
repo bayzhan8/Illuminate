@@ -180,15 +180,21 @@ def test_every_invented_phrase_has_its_real_name():
 
 
 def test_the_lesson_does_not_oversell_the_evidence():
-    """Chapter 5 shows 320 examples of a theorem. It has to say so."""
-    assert "It is not a proof." in FLAT
+    """Chapter 5 shows 320 examples of a theorem. It has to say so, and it has
+    to point at where the proof actually turns up."""
+    assert "320 pieces of evidence, not a proof" in FLAT
+    assert "chapter 10 shows its shape" in FLAT
 
 def test_the_readme_chapter_table_matches_the_chapters():
     """The topic README is hand-written, so nothing else catches it going stale
-    when a chapter is split. Every link must resolve and be in build order."""
+    when a chapter is split. Every chapter must be listed, once, in build order.
+
+    The links point at the published page rather than at chapters/, because the
+    chapter markdown is no longer pushed to GitHub; a relative link would 404
+    for every chapter whose folder holds no image and is therefore untracked."""
     readme = (ROOT / "README.md").read_text()
-    linked = re.findall(r"\]\(chapters/([^)/]+)/\)", readme)
-    assert linked == [c.folder for c in build.CHAPTERS], \
+    linked = re.findall(r"\]\(https://[^)]*/#ch(\d+)\)", readme)
+    assert linked == [str(c.number) for c in build.CHAPTERS], \
         "run the chapter table in README.md past build.CHAPTERS again"
-    for folder in linked:
-        assert (ROOT / "chapters" / folder).is_dir(), folder
+    for chapter in build.CHAPTERS:
+        assert (ROOT / "chapters" / chapter.folder).is_dir(), chapter.folder

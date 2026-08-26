@@ -20,7 +20,7 @@ CHAPTERS = [
     Chapter(3, "03-what-it-does-not-need", "What the law does not need"),
     Chapter(4, "04-the-multiplier", "Where the multiplier comes from"),
     Chapter(5, "05-the-wait-explodes", "The wait explodes before the clerk is full"),
-    Chapter(6, "06-variance-not-utilisation", "It is not the utilisation"),
+    Chapter(6, "06-variance-not-utilisation", "The other dial"),
     Chapter(7, "07-the-long-job", "Why you keep arriving during the long job"),
     Chapter(8, "08-three-dials", "Three dials"),
     Chapter(9, "09-two-clerks", "Two clerks, one line"),

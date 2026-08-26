@@ -22,18 +22,18 @@ for it.
 
 | | | |
 |---|---|---|
-| 0 | [What this is](chapters/00-what-this-is/) | two hand-checkable proofs, 5.44 and 6.5 |
-| 1 | [The order](chapters/01-the-order/) | boards, pieces, and what a pattern is |
-| 2 | [The obvious model, and why it is too weak](chapters/02-the-obvious-model/) | the obvious model, relaxed into uselessness |
-| 3 | [One variable per pattern](chapters/03-one-variable-per-pattern/) | one variable per pattern, and 6.5 |
-| 4 | [Too many to write down](chapters/04-too-many-to-write-down/) | four trillion columns |
-| 5 | [Start with a few](chapters/05-start-with-a-few/) | start with three patterns and 7 boards |
-| 6 | [What the prices are telling you](chapters/06-what-the-prices-say/) | the prices judge a pattern nobody wrote |
-| 7 | [The same test, from the other side](chapters/07-the-same-from-the-dual/) | the same test, read from the dual side |
-| 8 | [Asking for a pattern is a knapsack](chapters/08-a-knapsack/) | the missing column is a knapsack |
-| 9 | [The loop, and why it is allowed to stop](chapters/09-the-loop/) | the loop, and why it may stop |
-| 10 | [Branching, when the answer is 6.5 boards](chapters/10-branch-and-price/) | the loop inside a tree, and two real bugs |
-| 11 | [Where this leads](chapters/11-where-this-leads/) | Dantzig-Wolfe, Benders, and a warning |
+| 0 | [What this is](https://bayzhan8.github.io/Illuminate/branch-and-price/#ch0) | two hand-checkable proofs, 5.44 and 6.5 |
+| 1 | [The order](https://bayzhan8.github.io/Illuminate/branch-and-price/#ch1) | boards, pieces, and what a pattern is |
+| 2 | [The obvious model, and why it is too weak](https://bayzhan8.github.io/Illuminate/branch-and-price/#ch2) | the obvious model, relaxed into uselessness |
+| 3 | [One variable per pattern](https://bayzhan8.github.io/Illuminate/branch-and-price/#ch3) | one variable per pattern, and 6.5 |
+| 4 | [Too many to write down](https://bayzhan8.github.io/Illuminate/branch-and-price/#ch4) | four trillion columns |
+| 5 | [Start with a few](https://bayzhan8.github.io/Illuminate/branch-and-price/#ch5) | start with three patterns and 7 boards |
+| 6 | [What the prices are telling you](https://bayzhan8.github.io/Illuminate/branch-and-price/#ch6) | the prices judge a pattern nobody wrote |
+| 7 | [The same test, from the other side](https://bayzhan8.github.io/Illuminate/branch-and-price/#ch7) | the same test, read from the dual side |
+| 8 | [Asking for a pattern is a knapsack](https://bayzhan8.github.io/Illuminate/branch-and-price/#ch8) | the missing column is a knapsack |
+| 9 | [The loop, and why it is allowed to stop](https://bayzhan8.github.io/Illuminate/branch-and-price/#ch9) | the loop, and why it may stop |
+| 10 | [Branching, when the answer is 6.5 boards](https://bayzhan8.github.io/Illuminate/branch-and-price/#ch10) | the loop inside a tree, and two real bugs |
+| 11 | [Where this leads](https://bayzhan8.github.io/Illuminate/branch-and-price/#ch11) | Dantzig-Wolfe, Benders, and a warning |
 
 ## The claim
 
@@ -52,10 +52,10 @@ brute force on **476 of 1230** instances, for two reasons that are now written
 up in chapter 10 because neither of them announces itself.
 
 ```bash
-cd .. && make venv
+cd .. && make bootstrap   # once, from the repository root
 cd branch-and-price
-make test
-make check     # figures, then build, then test
+make verify
+make check                # render, then publish, then verify
 ```
 
 ## Source

@@ -6,3 +6,11 @@ __pycache__/
 build/
 dist/
 .DS_Store
+
+# The prose source stays off GitHub. Readers get the built pages; the markdown
+# it was generated from, and the working notes behind it, stay on disk.
+# Figures under chapters/ are still tracked -- index.html requests them by path.
+/*/lesson.md
+/*/chapters/*/README.md
+/*/notes/
+/notes/

@@ -17,21 +17,21 @@ from 1972 and what it does and does not say.
 
 | | | |
 |---|---|---|
-| 0 | [What this is](chapters/00-what-this-is/) | two routes, one answer |
-| 1 | [A new kind of problem](chapters/01-a-new-kind-of-problem/) | where the region and the question came from |
-| 2 | [Along the edge](chapters/02-along-the-edge/) | the walk, and why it may stop |
-| 3 | [It should have been slow](chapters/03-it-should-have-been-slow/) | the corner count says it cannot work |
-| 4 | [Klee and Minty build a cube](chapters/04-the-cube/) | the cube that visits every corner |
-| 5 | [The rule, not the method](chapters/05-not-the-rule/) | change one function, lose the exponent |
-| 6 | [Not cycling is not the same as being fast](chapters/06-not-cycling-is-not-fast/) | a guarantee to finish is not a guarantee to be quick |
-| 7 | [Every rule has a cube](chapters/07-every-rule-has-a-cube/) | every rule has a cube of its own |
-| 8 | [Why nobody ever meets one](chapters/08-why-nobody-meets-one/) | the bad cases are knife-edges |
-| 9 | [Polynomial, and slower](chapters/09-polynomial-and-slower/) | polynomial, and slower than the walk |
-| 10 | [The wall that pushes back](chapters/10-the-wall-that-pushes-back/) | a penalty with no floor |
-| 11 | [The central path](chapters/11-the-central-path/) | the curve of exact answers to wrong questions |
-| 12 | [What the barrier actually does](chapters/12-what-the-barrier-does/) | one bowl, and Newton's method on it |
-| 13 | [A gap you can forecast](chapters/13-a-gap-you-can-forecast/) | the receipt a path point carries |
-| 14 | [Neither one won](chapters/14-neither-one-won/) | crossover, and the division of labour |
+| 0 | [What this is](https://bayzhan8.github.io/Illuminate/corners-vs-centre/#ch0) | two routes, one answer |
+| 1 | [A new kind of problem](https://bayzhan8.github.io/Illuminate/corners-vs-centre/#ch1) | where the region and the question came from |
+| 2 | [Along the edge](https://bayzhan8.github.io/Illuminate/corners-vs-centre/#ch2) | the walk, and why it may stop |
+| 3 | [It should have been slow](https://bayzhan8.github.io/Illuminate/corners-vs-centre/#ch3) | the corner count says it cannot work |
+| 4 | [Klee and Minty build a cube](https://bayzhan8.github.io/Illuminate/corners-vs-centre/#ch4) | the cube that visits every corner |
+| 5 | [Where the exponent lives](https://bayzhan8.github.io/Illuminate/corners-vs-centre/#ch5) | change one function, lose the exponent |
+| 6 | [Bland's rule finishes, slowly](https://bayzhan8.github.io/Illuminate/corners-vs-centre/#ch6) | a guarantee to finish is not a guarantee to be quick |
+| 7 | [Every rule has a cube](https://bayzhan8.github.io/Illuminate/corners-vs-centre/#ch7) | every rule has a cube of its own |
+| 8 | [Why nobody ever meets one](https://bayzhan8.github.io/Illuminate/corners-vs-centre/#ch8) | the bad cases are knife-edges |
+| 9 | [Polynomial, and slower](https://bayzhan8.github.io/Illuminate/corners-vs-centre/#ch9) | polynomial, and slower than the walk |
+| 10 | [The wall that pushes back](https://bayzhan8.github.io/Illuminate/corners-vs-centre/#ch10) | a penalty with no floor |
+| 11 | [The central path](https://bayzhan8.github.io/Illuminate/corners-vs-centre/#ch11) | the curve of exact answers to wrong questions |
+| 12 | [What the barrier actually does](https://bayzhan8.github.io/Illuminate/corners-vs-centre/#ch12) | one bowl, and Newton's method on it |
+| 13 | [A gap you can forecast](https://bayzhan8.github.io/Illuminate/corners-vs-centre/#ch13) | the receipt a path point carries |
+| 14 | [Neither one won](https://bayzhan8.github.io/Illuminate/corners-vs-centre/#ch14) | crossover, and the division of labour |
 
 ## The claim chapters 5 and 6 rest on
 

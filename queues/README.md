@@ -13,20 +13,20 @@ why, built from that one desk.
 
 | | | |
 |---|---|---|
-| 0 | [What this is](chapters/00-what-this-is/) | the wait, against how busy the clerk is |
-| 1 | [The desk](chapters/01-the-desk/) | L, W and the only Greek letter here |
-| 2 | [Draw a box](chapters/02-draw-a-box/) | Little's law, as one region measured twice |
-| 3 | [What the law does not need](chapters/03-what-it-does-not-need/) | which is nearly everything |
-| 4 | [Where the multiplier comes from](chapters/04-the-multiplier/) | each round drags in a smaller round |
-| 5 | [The wait explodes before the clerk is full](chapters/05-the-wait-explodes/) | 54 minutes at 90%, 594 at 99% |
-| 6 | [It is not the utilisation](chapters/06-variance-not-utilisation/) | a 26-fold spread at fixed speed and load |
-| 7 | [Why you keep arriving during the long job](chapters/07-the-long-job/) | why you keep landing in the long job |
-| 8 | [Three dials](chapters/08-three-dials/) | utilisation, variability, job length |
-| 9 | [Two clerks, one line](chapters/09-two-clerks/) | pooling, and why it helps most when quiet |
-| 10 | [When pooling is the wrong answer](chapters/10-when-pooling-loses/) | when a shared queue is the wrong answer |
-| 11 | [Measuring it is harder than computing it](chapters/11-measuring-is-harder/) | the law holds long before you have converged |
-| 12 | [The confidence interval is twenty times too narrow](chapters/12-coverage/) | a 95% interval that covers 9% |
-| 13 | [The same law somewhere else](chapters/13-the-same-law-elsewhere/) | inventory, WIP, beds, tenure |
+| 0 | [What this is](https://bayzhan8.github.io/Illuminate/queues/#ch0) | the wait, against how busy the clerk is |
+| 1 | [The desk](https://bayzhan8.github.io/Illuminate/queues/#ch1) | L, W and the only Greek letter here |
+| 2 | [Draw a box](https://bayzhan8.github.io/Illuminate/queues/#ch2) | Little's law, as one region measured twice |
+| 3 | [What the law does not need](https://bayzhan8.github.io/Illuminate/queues/#ch3) | which is nearly everything |
+| 4 | [Where the multiplier comes from](https://bayzhan8.github.io/Illuminate/queues/#ch4) | each round drags in a smaller round |
+| 5 | [The wait explodes before the clerk is full](https://bayzhan8.github.io/Illuminate/queues/#ch5) | 54 minutes at 90%, 594 at 99% |
+| 6 | [The other dial](https://bayzhan8.github.io/Illuminate/queues/#ch6) | a 26-fold spread at fixed speed and load |
+| 7 | [Why you keep arriving during the long job](https://bayzhan8.github.io/Illuminate/queues/#ch7) | why you keep landing in the long job |
+| 8 | [Three dials](https://bayzhan8.github.io/Illuminate/queues/#ch8) | utilisation, variability, job length |
+| 9 | [Two clerks, one line](https://bayzhan8.github.io/Illuminate/queues/#ch9) | pooling, and why it helps most when quiet |
+| 10 | [When pooling is the wrong answer](https://bayzhan8.github.io/Illuminate/queues/#ch10) | when a shared queue is the wrong answer |
+| 11 | [Measuring it is harder than computing it](https://bayzhan8.github.io/Illuminate/queues/#ch11) | the law holds long before you have converged |
+| 12 | [The confidence interval is twenty times too narrow](https://bayzhan8.github.io/Illuminate/queues/#ch12) | a 95% interval that covers 9% |
+| 13 | [The same law somewhere else](https://bayzhan8.github.io/Illuminate/queues/#ch13) | inventory, WIP, beds, tenure |
 
 ## The claim
 

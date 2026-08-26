@@ -17,21 +17,21 @@ week.
 
 | | | |
 |---|---|---|
-| 0 | [What this is](chapters/00-what-this-is/) | two thirds of a model, deleted |
-| 1 | [A solver is not an algorithm](chapters/01-not-an-algorithm/) | the algorithm is the small part |
-| 2 | [What presolve takes out](chapters/02-what-it-removes/) | six reductions a person would spot |
-| 3 | [The cascade, and where the gap opens](chapters/03-the-cascade/) | why it is a loop and not a checklist |
-| 4 | [A decision made by arithmetic](chapters/04-a-decision-by-arithmetic/) | a yes/no decision settled by division |
-| 5 | [What it costs you](chapters/05-what-it-costs/) | a stronger bound, and what it costs |
-| 6 | [The rest of the machine](chapters/06-the-rest-of-the-machine/) | cuts, heuristics, branching, numerics |
-| 7 | [Who is who](chapters/07-who-is-who/) | who is who among the solvers |
-| 8 | [A layer is not a solver](chapters/08-a-layer-not-a-solver/) | a layer is not an engine |
-| 9 | [When the problem is not linear](chapters/09-not-linear/) | squares and norms, and the layer that checks |
-| 10 | [A toolkit is not a solver either](chapters/10-a-toolkit-is-not-a-solver/) | a toolkit is neither |
-| 11 | [Why the benchmarks cannot be read straight](chapters/11-the-benchmarks/) | the names that left the benchmarks |
-| 12 | [Measure on your own models](chapters/12-measure-your-own/) | ten of your own instances |
-| 13 | [The licence is the deployment problem](chapters/13-the-licence/) | the licence, not the mathematics |
-| 14 | [How to choose](chapters/14-how-to-choose/) | the questions in the order they arrive |
+| 0 | [What this is](https://bayzhan8.github.io/Illuminate/solvers/#ch0) | two thirds of a model, deleted |
+| 1 | [A solver is not an algorithm](https://bayzhan8.github.io/Illuminate/solvers/#ch1) | the algorithm is the small part |
+| 2 | [What presolve takes out](https://bayzhan8.github.io/Illuminate/solvers/#ch2) | six reductions a person would spot |
+| 3 | [The cascade, and where the gap opens](https://bayzhan8.github.io/Illuminate/solvers/#ch3) | why it is a loop and not a checklist |
+| 4 | [A decision made by arithmetic](https://bayzhan8.github.io/Illuminate/solvers/#ch4) | a yes/no decision settled by division |
+| 5 | [What it costs you](https://bayzhan8.github.io/Illuminate/solvers/#ch5) | a stronger bound, and what it costs |
+| 6 | [The rest of the machine](https://bayzhan8.github.io/Illuminate/solvers/#ch6) | cuts, heuristics, branching, numerics |
+| 7 | [Who is who](https://bayzhan8.github.io/Illuminate/solvers/#ch7) | who is who among the solvers |
+| 8 | [A layer is not a solver](https://bayzhan8.github.io/Illuminate/solvers/#ch8) | a layer is not an engine |
+| 9 | [When the problem is not linear](https://bayzhan8.github.io/Illuminate/solvers/#ch9) | squares and norms, and the layer that checks |
+| 10 | [What OR-Tools actually is](https://bayzhan8.github.io/Illuminate/solvers/#ch10) | a toolkit, and the one engine in it worth choosing |
+| 11 | [Why the benchmarks cannot be read straight](https://bayzhan8.github.io/Illuminate/solvers/#ch11) | the names that left the benchmarks |
+| 12 | [Measure on your own models](https://bayzhan8.github.io/Illuminate/solvers/#ch12) | ten of your own instances |
+| 13 | [The licence is the deployment problem](https://bayzhan8.github.io/Illuminate/solvers/#ch13) | the licence, not the mathematics |
+| 14 | [How to choose](https://bayzhan8.github.io/Illuminate/solvers/#ch14) | the questions in the order they arrive |
 
 ## The claim
 

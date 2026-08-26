@@ -16,20 +16,20 @@ the version that does not work.
 
 | | | |
 |---|---|---|
-| 0 | [What this is](chapters/00-what-this-is/) | one term, and whether it settles |
-| 1 | [How much arithmetic per byte](chapters/01-arithmetic-per-byte/) | 0.17 operations per byte |
-| 2 | [The roofline](chapters/02-the-roofline/) | 1.3% of the arithmetic, 14.5x the speed |
-| 3 | [Why simplex is the wrong shape](chapters/03-the-wrong-shape/) | a chain of dependent decisions |
-| 4 | [Reading the table two ways](chapters/04-reading-the-table/) | one table, read across and down |
-| 5 | [Two players, one score](chapters/05-two-players/) | the plan and the prices as opponents |
-| 6 | [A method made of one operation](chapters/06-one-operation/) | two matrix products and a clamp |
-| 7 | [The obvious version does not work](chapters/07-the-obvious-version/) | the spiral that winds outward |
-| 8 | [One term different](chapters/08-one-term-different/) | anticipation, and the spiral reverses |
-| 9 | [It turns fast and shrinks slowly](chapters/09-fast-turn-slow-shrink/) | it turns fast and closes in slowly |
-| 10 | [Cancel the rotation](chapters/10-cancel-the-rotation/) | averaging cancels the turn, for free |
-| 11 | [Does it get the right answer?](chapters/11-the-same-answer/) | the same plan, and the same prices |
-| 12 | [What it costs](chapters/12-what-it-costs/) | no legal plan until it converges, and no corner |
-| 13 | [Where this leaves things](chapters/13-where-this-leaves-things/) | what actually changed |
+| 0 | [What this is](https://bayzhan8.github.io/Illuminate/lp-on-gpu/#ch0) | one term, and whether it settles |
+| 1 | [How much arithmetic per byte](https://bayzhan8.github.io/Illuminate/lp-on-gpu/#ch1) | 0.17 operations per byte |
+| 2 | [The roofline](https://bayzhan8.github.io/Illuminate/lp-on-gpu/#ch2) | 1.3% of the arithmetic, 14.5x the speed |
+| 3 | [Why simplex is the wrong shape](https://bayzhan8.github.io/Illuminate/lp-on-gpu/#ch3) | a chain of dependent decisions |
+| 4 | [Reading the table two ways](https://bayzhan8.github.io/Illuminate/lp-on-gpu/#ch4) | one table, read across and down |
+| 5 | [Two players, one score](https://bayzhan8.github.io/Illuminate/lp-on-gpu/#ch5) | the plan and the prices as opponents |
+| 6 | [A method made of one operation](https://bayzhan8.github.io/Illuminate/lp-on-gpu/#ch6) | two matrix products and a clamp |
+| 7 | [The obvious version does not work](https://bayzhan8.github.io/Illuminate/lp-on-gpu/#ch7) | the spiral that winds outward |
+| 8 | [One term different](https://bayzhan8.github.io/Illuminate/lp-on-gpu/#ch8) | anticipation, and the spiral reverses |
+| 9 | [It turns fast and shrinks slowly](https://bayzhan8.github.io/Illuminate/lp-on-gpu/#ch9) | it turns fast and closes in slowly |
+| 10 | [Cancel the rotation](https://bayzhan8.github.io/Illuminate/lp-on-gpu/#ch10) | averaging cancels the turn, for free |
+| 11 | [Does it get the right answer?](https://bayzhan8.github.io/Illuminate/lp-on-gpu/#ch11) | the same plan, and the same prices |
+| 12 | [What it costs](https://bayzhan8.github.io/Illuminate/lp-on-gpu/#ch12) | no legal plan until it converges, and no corner |
+| 13 | [Where this leaves things](https://bayzhan8.github.io/Illuminate/lp-on-gpu/#ch13) | what actually changed |
 
 ## The claim
 
