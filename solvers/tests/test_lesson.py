@@ -75,10 +75,14 @@ def test_the_shape_of_the_model_is_the_shape_the_prose_quotes():
 
 
 def test_the_round_counts_are_the_computed_ones():
-    assert L.SMALL_PRESOLVED.rounds == 13
-    assert L.BIG_PRESOLVED.rounds == 27
-    assert "**13 rounds**" in FLAT and "**27**" in FLAT
-    assert "a chain thirteen rounds deep" in FLAT
+    """The count is the depth of the cascade, so every reduction has to get a
+    look each round. An `any(...)` over a generator would short-circuit and
+    inflate this number into an artefact of the ORDER list."""
+    assert L.SMALL_PRESOLVED.rounds == 3
+    assert L.BIG_PRESOLVED.rounds == 6
+    assert L.BIG_PRESOLVED.rounds > L.SMALL_PRESOLVED.rounds
+    assert "**3 rounds**" in FLAT and "**6**" in FLAT
+    assert "three rounds deep" in FLAT
 
 
 def test_the_answer_and_the_two_bounds_match_the_code():
@@ -108,8 +112,11 @@ def test_the_forced_setup_chain_is_arithmetic_the_reader_can_check():
     # and it really is round 9, as the prose says
     forced = [r for r in L.SMALL_PRESOLVED.log
               if r.target == "openB1" and r.kind == "tightened bound"]
-    assert forced and forced[0].round == 9
-    assert "happens in round 9" in FLAT
+    assert forced and forced[0].round == 2
+    fixed = [r for r in L.SMALL_PRESOLVED.log
+             if r.target == "openB1" and r.kind == "fixed column"]
+    assert fixed and fixed[0].round == 3
+    assert "happens in round 3" in FLAT
 
 
 def test_the_model_description_matches_the_instance():
@@ -129,9 +136,12 @@ def test_the_reductions_the_chapter_names_all_actually_fire():
     assert kinds["dropped row"] == 13
     assert kinds["fixed column"] == 12
     # six opening/closing stock rows go first, as chapter 2 claims
-    first = [r for r in L.SMALL_PRESOLVED.log if r.round == 1]
-    assert len(first) == 6 and all(r.kind == "dropped row" for r in first)
-    assert "Six rows go\nthis way immediately" in TEXT or "Six rows go" in FLAT
+    stock_rows = {"startA", "endA", "startB", "endB", "startC", "endC"}
+    singletons = [r for r in L.SMALL_PRESOLVED.log
+                  if r.kind == "dropped row" and r.target in stock_rows]
+    assert len(singletons) == 6
+    assert all(r.round == 1 for r in singletons)
+    assert "Six rows go" in FLAT
     assert "Six columns go" in FLAT
 
 

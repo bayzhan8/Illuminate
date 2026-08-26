@@ -58,14 +58,20 @@ def loop_gif(seconds_per_round=1.9):
 
 
 def touched_png():
-    """The bigger order's thirty patterns, with the six the loop ever built."""
+    """The bigger order's thirty patterns, with the ones the loop ever built.
+
+    The count in the heading is of *drawn* patterns that were built, not of
+    columns held. Those differ: the loop is seeded with one-length patterns and
+    two of those are not maximal, so they are not on this page at all.
+    """
     inst = m.SCALE
     every = m.SCALE_PATTERNS
     used = set(m.SCALE_ROUNDS[-1].patterns)
 
     fig, ax = figure(8.0, 6.4)
     fig.subplots_adjust(left=0.05, right=0.97, top=0.90, bottom=0.04)
-    heading(ax, f"{m.SCALE_TOUCHED} of the {len(every)} patterns were ever built")
+    shown_used = sum(1 for p in every if p in used)
+    heading(ax, f"{shown_used} of the {len(every)} patterns were ever built")
 
     rows = (len(every) + 1) // 2
     ax.set_xlim(-2, inst.width * 2 + 14)

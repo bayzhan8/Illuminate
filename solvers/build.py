@@ -31,7 +31,7 @@ CHAPTERS = [
     Chapter(14, "14-how-to-choose", "How to choose"),
 ]
 
-# The bound-tightening chain from chapter 3, in JavaScript so the page needs no
+# The bound-tightening chain from chapter 4, in JavaScript so the page needs no
 # server. tests/test_sandbox.py runs this and the Python over the same inputs.
 MATHS = r"""
 // One link row: make <= M * open, with open a yes/no switch.

@@ -112,11 +112,37 @@ def test_the_mill_count_in_the_prose_is_the_computed_one():
 
 
 def test_the_bigger_order_numbers_match():
+    """SCALE_TOUCHED counts patterns that are both drawn and built. The loop
+    holds six columns but one of them, a lazy pattern with 7 feet spare, is not
+    maximal and so is not one of the thirty on the page. Quoting six against
+    thirty would be counting in two different universes."""
     assert m.SCALE.width == 55 and len(m.SCALE.widths) == 4
-    assert (m.SCALE_TOUCHED, len(m.SCALE_PATTERNS)) == (6, 30)
-    assert "thirty usable patterns, and the loop settles after touching six" in TEXT
-    assert f"Twenty-four patterns were never written down" in TEXT
-    assert len(m.SCALE_PATTERNS) - m.SCALE_TOUCHED == 24
+    assert (m.SCALE_HELD, m.SCALE_TOUCHED, len(m.SCALE_PATTERNS)) == (6, 5, 30)
+    held = set(m.SCALE_ROUNDS[-1].patterns)
+    assert sum(1 for p in held if p in m.SCALE_PATTERNS) == m.SCALE_TOUCHED
+    assert "thirty patterns worth using, and the loop settles having built five" in FLAT
+    assert "Twenty-five patterns were never written down" in FLAT
+    assert len(m.SCALE_PATTERNS) - m.SCALE_TOUCHED == 25
+
+
+def test_the_tie_count_at_seven_sixths_is_the_real_one():
+    """An earlier draft said two patterns tie. Four do."""
+    from fractions import Fraction
+    duals = m.ROUNDS[0].duals
+    worth = {p: sum(n * d for n, d in zip(p, duals)) for p in m.PATTERNS}
+    best = max(worth.values())
+    assert best == Fraction(7, 6)
+    assert sum(1 for v in worth.values() if v == best) == 4
+    assert "four patterns tie at 7/6 here" in FLAT
+
+
+def test_chapter_zero_counts_both_orders_the_same_way():
+    """The opening pairs "six for this order" with a mill figure. Six is the
+    count of MAXIMAL patterns, so the mill number beside it must be too."""
+    assert len(m.PATTERNS) == 6
+    assert m.thousands(m.MILL_MAXIMAL) == "188,129,537,088"
+    assert "a hundred and eighty-eight billion" in FLAT
+    assert m.MILL_MAXIMAL < m.MILL_PATTERNS
 
 
 def test_the_tree_size_matches_the_figure():

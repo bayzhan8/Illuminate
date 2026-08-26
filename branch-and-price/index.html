@@ -107,9 +107,10 @@ stop searching sooner.</p>
 something about this particular order, and a real order has hundreds of
 lengths, where nothing will be noticeable. What is needed is a procedure that
 manufactures arguments of that quality automatically. There is one. Its cost is
-that it works with one unknown for every way of cutting a single board that is
-worth using at all: six of them for this order, and roughly four trillion for a
-paper mill.</p>
+that it works with one unknown for every way of cutting a single board. Six of
+them for this order, once the wasteful ones are thrown out. For a paper mill,
+still a hundred and eighty-eight billion after the same cull, and getting on
+for four trillion if you keep the wasteful ones too.</p>
 <blockquote class="takeaway">
 <p><strong>In one sentence.</strong> Finding a good answer is easy and proving nothing beats
 it is hard, and how well you can prove it depends entirely on how the question
@@ -463,9 +464,9 @@ knapsack constructed it from the wood rather than looking it up.</p>
 piece</strong>, worth 4×(1/6) + 1×(1/2) = <strong>7/6</strong>. Seven sixths is more than one, so
 by chapter 6's test that pattern is worth having, and it goes into the model.</p>
 <p>Notice what has just been avoided. There is no shortlist and no sampling. One
-knapsack solve either hands back a best pattern in existence (this order has
-two patterns tied at 7/6, and any winner will do), or, when its best comes out
-at <strong>1 or less</strong>, proves that no pattern anywhere would help, in which case the
+knapsack solve either hands back a best pattern in existence (four patterns tie
+at 7/6 here, and any winner will do), or, when its best comes out at <strong>1 or
+less</strong>, proves that no pattern anywhere would help, in which case the
 restricted model's answer is already the full model's answer.</p>
 <p><strong><a href="https://bayzhan8.github.io/Illuminate/branch-and-price/sandbox/08.html">Try it yourself
 →</a></strong>
@@ -497,12 +498,16 @@ were added, and 6.5 boards is optimal for a model nobody wrote down.</p>
 <em>column</em> exists which would improve this one. The knapsack searched every
 pattern implicitly rather than sampling some, so it is a proof.</p>
 <p>On a slightly bigger order, 55-foot boards with four different lengths, there
-are thirty usable patterns, and the loop settles after touching six of them:</p>
+are thirty patterns worth using, and the loop settles having built five of
+them:</p>
 <figure class="plate"><img src="chapters/09-the-loop/touched.png" alt="Thirty patterns drawn as boards, with the six the loop actually built
 highlighted and the rest left blank." loading="lazy"></figure>
-<p>Twenty-four patterns were never written down and never needed to be. On the
-mill instance the same sentence holds with four trillion in place of
-twenty-four.</p>
+<p>Twenty-five patterns were never written down and never needed to be. On the
+mill instance the same sentence holds with billions in place of twenty-five.</p>
+<p>(The loop finishes holding six columns rather than five. The sixth is one of
+the lazy patterns it started with, a board cut into three 16-foot pieces, which
+leaves 7 feet spare and so is not one of the thirty worth using. It is still
+sitting in the model at the end, at zero.)</p>
 <p><strong><a href="https://bayzhan8.github.io/Illuminate/branch-and-price/sandbox/09.html">Try it yourself
 →</a></strong>
 Step the loop one round at a time and watch the prices move.</p>

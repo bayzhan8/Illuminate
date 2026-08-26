@@ -180,7 +180,8 @@ def test_emergency_columns_are_priced_out_of_any_real_answer():
 # --- the bigger order ------------------------------------------------------
 
 def test_the_loop_ignores_most_of_the_bigger_order():
-    assert m.SCALE_TOUCHED == 6
+    assert m.SCALE_HELD == 6            # columns the loop ends holding
+    assert m.SCALE_TOUCHED == 5         # of which this many are maximal
     assert len(m.SCALE_PATTERNS) == 30
     assert m.SCALE_TOUCHED < len(m.SCALE_PATTERNS) / 4
 

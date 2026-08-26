@@ -81,9 +81,7 @@ answer and what it costs.</p>
 checked against come from the exact rational simplex in <a href="../lp-duality/">the duality
 guide</a>, which shares no line of code with anything here.</p>
 <h2 id="ch0"><span class="num">0</span>What this is</h2>
-<figure class="plate"><img src="chapters/00-what-this-is/hero.gif" alt="Two curves against iteration count on the same workshop. One oscillates
-violently between zero and eight hundred without ever settling. The other rises
-smoothly and stops on three hundred and fifty." loading="lazy"></figure>
+<figure class="plate"><img src="chapters/00-what-this-is/hero.gif" alt="Two curves against iteration count on the same workshop. One oscillates violently between zero and seven hundred and fifty without ever settling. The other rises smoothly and stops on three hundred and fifty." loading="lazy"></figure>
 <p>Each curve is what one method believes its current plan is worth, plotted
 against how many rounds of arithmetic it has done. The problem behind them is a
 workshop with three shelves of raw material and two things it can build, small
@@ -124,9 +122,9 @@ it?</strong></p>
 <p>Multiply two dense matrices and the answer is enormous: every number you load
 is used hundreds of times over, so the arithmetic is the thing you are waiting
 for. Add two long lists of numbers and the answer is dismal: load sixteen
-bytes, do one addition, move on, and the arithmetic units spend almost all of
-their time waiting for the next delivery. Everyone calls this ratio <em>arithmetic
-intensity</em>.</p>
+bytes, do one addition at 0.06 operations per byte, move on, and the arithmetic
+units spend almost all of their time waiting for the next delivery. Everyone
+calls this ratio <em>arithmetic intensity</em>.</p>
 <p>Now count it for the operation this whole guide is about.</p>
 <p>Multiplying a sparse matrix by a vector, the way solvers store matrices, costs
 about <strong>12 bytes per stored entry</strong>: eight for the value and four to record
@@ -134,8 +132,9 @@ which column it sits in. Having fetched that entry, you do <strong>2 operations<
 with it, one multiply and one add. Then you never look at it again. There is no
 reuse anywhere in the operation, which is exactly what &quot;sparse&quot; costs you.</p>
 <p>Two operations per twelve bytes. <strong>0.17 operations per byte.</strong></p>
-<p>That is about as poor as a number of this kind gets, and everything in the next
-chapter follows from it.</p>
+<p>A vector add is poorer still, at 0.06, but nobody builds a solver out of vector
+adds. For the operation an LP solver actually spends its life in, 0.17 is as
+low as it gets, and everything in the next chapter follows from it.</p>
 <blockquote class="takeaway">
 <p><strong>In one sentence.</strong> A sparse matrix-vector product does one sixth of an
 operation per byte it fetches, and nothing about how it is written can change
@@ -438,7 +437,8 @@ numbers</em>, and it is the same table, every step, forever.</p>
 the point, and how much it closes in. Both can be computed in advance rather
 than measured off a picture. With a step size of 0.2:</p>
 <ul>
-<li>it turns <strong>11.5°</strong> per iteration, so a full revolution takes <strong>31.2</strong> steps</li>
+<li>it turns <strong>11.5°</strong> per iteration, so a full revolution takes <strong>31.2</strong> steps
+(360 divided by the unrounded 11.537, not by the 11.5 printed here)</li>
 <li>it shrinks the distance to the answer by <strong>2.0%</strong> per iteration</li>
 </ul>
 <p><em>(Both come from the eigenvalues of that two-by-two matrix, which turn out to
@@ -451,18 +451,43 @@ numbers.)</em></p>
 off a distance leave you about half as far away as you began, so one full
 revolution of that spiral buys you one halving. It is spinning quickly and
 closing in barely at all.</p>
-<p>And you cannot fix it by taking bigger steps, because the two are locked
-together.</p>
+<p>The obvious reply is to take a bigger step, and on this toy the obvious reply
+is right.</p>
 <figure class="plate"><img src="chapters/09-fast-turn-slow-shrink/anatomy.png" alt="Two curves against step size on shared axes: degrees turned per iteration
 rising steeply, and percent closer per iteration rising with
 it." loading="lazy"></figure>
-<p>Raising the step size does make it contract faster. It also makes it rotate
-faster, and past a threshold the method stops converging at all. The setting
-that keeps it stable is the setting that makes it crawl.</p>
-<p>So most of the work is going into going round, and only a sliver into going in.</p>
+<p>Both curves rise together. At a step of 0.9 the same iteration shrinks the
+distance by <strong>56% per step</strong> instead of 2%, and it is still perfectly stable.
+Ninety steps then leave you at 10⁻³³ rather than 0.36. So on one variable and
+one rule there is no bind at all: turn the step up until just before it breaks,
+and go home.</p>
+<p>The bind arrives when <code>A</code> stops being a single number.</p>
+<p>Here is the thing a matrix has that a number does not. Stretch the plane by <code>A</code>
+and some directions get stretched more than others; the largest of those
+factors and the smallest are what the method has to live between. For the
+workshop they are <strong>6.33</strong> and <strong>1.71</strong>.</p>
+<p>Now watch those two numbers fight over one step size.</p>
+<p><strong>The largest sets the speed limit.</strong> The iteration is only stable while the
+step stays under one over the biggest stretch. Exceed it and the spiral turns
+outward again, exactly as in chapter 7. So the step is capped at roughly
+1/6.33, and every direction has to use that same cap.</p>
+<p><strong>The smallest sets the pace.</strong> How fast a direction converges depends on its
+own stretch factor, not on the biggest one. At the largest safe step, the 6.33
+direction contracts a comfortable <strong>56% per iteration</strong>. The 1.71 direction
+contracts <strong>3.0%</strong>.</p>
+<p>The slow one is the one you wait for. It does not matter how quickly the rest
+of the problem is settling if one direction is still shaving three percent off
+its error and turning <strong>14°</strong> as it goes, which is a full revolution every
+<strong>25.6</strong> steps and a little over half the distance gone per lap.</p>
+<p>So the crawl was never a property of the step size. It is the <em>spread</em> between
+the largest stretch and the smallest, and no single step size can suit both
+ends of it. That ratio has a name, the <strong>condition number</strong>, and it is the
+quantity first-order methods live and die by.</p>
+<p>Which leaves the rotation as the thing to attack, and that is the next chapter.</p>
 <blockquote class="takeaway">
-<p><strong>In one sentence.</strong> The iteration rotates far more than it contracts, and
-the step size cannot fix that because it drives both.</p>
+<p><strong>In one sentence.</strong> One step size has to serve every direction at once, so
+the widest-stretching direction caps it while the narrowest sets the pace,
+and the gap between them is the whole difficulty.</p>
 </blockquote>
 <h2 id="ch10"><span class="num">10</span>Cancel the rotation</h2>
 <p>If the problem is rotation, remove the rotation.</p>
@@ -479,9 +504,7 @@ the one a full turn before it, and no later point ever undoes it. Average the
 batch and you are left with the ring's centre and the progress inward, which is
 the part you wanted. Then throw away the state, start again from the average,
 and do it once more.</p>
-<figure class="plate"><img src="chapters/10-cancel-the-rotation/restarts.png" alt="Two convergence curves on a logarithmic scale, one decaying slowly and the
-other dropping by six orders of magnitude over the same number of
-iterations." loading="lazy"></figure>
+<figure class="plate"><img src="chapters/10-cancel-the-rotation/restarts.png" alt="Two convergence curves on a logarithmic scale over the same six hundred iterations. Both descend, but the restarted one ends about six orders of magnitude below the other." loading="lazy"></figure>
 <p>The iteration is unchanged, the two matrix products per step are unchanged, and
 so are the step sizes. Restarting every 40 iterations leaves it, after 600
 iterations, about <strong>a million times</strong> closer to the answer.</p>
@@ -494,8 +517,8 @@ schedule, and there are stronger variants than plain averaging. The mechanism
 is the one above.)</em></p>
 <p><strong><a href="https://bayzhan8.github.io/Illuminate/lp-on-gpu/sandbox/10.html">Try it yourself
 →</a></strong> Sweep the
-restart period and find the best one, then check it against the length of one
-revolution from the chapter before.</p>
+restart period and find the best one, then check it against the 25.6 steps a
+revolution of the slow direction takes.</p>
 <blockquote class="takeaway">
 <p><strong>In one sentence.</strong> Averaging over a revolution cancels the rotation and
 keeps the drift, which costs nothing and is worth orders of magnitude.</p>
@@ -505,9 +528,8 @@ keeps the drift, which costs nothing and is worth orders of magnitude.</p>
 <p>The duality guide solved this workshop in exact rational arithmetic with a
 simplex method: <strong>9 tables and 4 chairs, worth $350</strong>, with shadow prices of
 <strong>$6.25</strong> a plank, <strong>$2.50</strong> an hour and <strong>nothing</strong> for saw time.</p>
-<figure class="plate"><img src="chapters/11-the-same-answer/agree.png" alt="A logarithmic convergence curve falling from tens to below ten to the
-fifteenth over about a thousand iterations." loading="lazy"></figure>
-<p>The first-order method finds the same plan, to fifteen decimal places.</p>
+<figure class="plate"><img src="chapters/11-the-same-answer/agree.png" alt="A logarithmic convergence curve falling from tens to about ten to the minus eleventh over about a thousand iterations." loading="lazy"></figure>
+<p>The first-order method finds the same plan, to fifteen significant figures.</p>
 <p>It also finds the same prices, and that is more than a bonus. The prices are
 half of what the method is, so it produces the shadow prices without being
 asked. The duality guide's second problem is not something this method solves

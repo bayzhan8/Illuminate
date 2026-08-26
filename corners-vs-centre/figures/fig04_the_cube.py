@@ -49,7 +49,8 @@ def cube_png():
     ax.set_axisbelow(True)
 
     last = rows[-1]
-    tag(ax, 1.25, 260, f"corners the cube has\n(1 to {last[1]:,})",
+    first = (SIZES[0], corner_count(SIZES[0]))
+    tag(ax, 1.25, 260, f"corners the cube has\n({first[1]:,} to {last[1]:,})",
         color=TEXT_FAINT, size=9)
     tag(ax, 5.9, 2.6, "the greedy rule stops at every corner:\none pivot short of the dashed line",
         color=PRICE, size=9.5)

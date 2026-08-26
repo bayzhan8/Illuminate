@@ -157,8 +157,10 @@ per hour. Read it as &quot;arrivals per hour&quot; every time it appears.</p>
 <p>Nobody computing <code>L</code> ever asks anyone a question, and nobody computing <code>W</code> ever
 looks at a clock on the wall. They are two measurements, not two views of one.</p>
 <p>One more quantity, because it turns out to be the same idea: <strong>utilisation</strong>,
-the fraction of the time the clerk is busy. At ten customers an hour arriving
-and six minutes each, the clerk is busy 90% of the time.</p>
+the fraction of the time the clerk is busy. At nine customers an hour arriving
+and six minutes each, that is 54 minutes of work walking in every hour, so the
+clerk is busy 90% of the time. (Ten an hour would be sixty minutes of work per
+hour, and a queue with no long-run average at all.)</p>
 <blockquote class="takeaway">
 <p><strong>In one sentence.</strong> <code>L</code> is counted off the clock and <code>W</code> off the customers,
 and nothing so far connects them.</p>
@@ -552,16 +554,21 @@ own queue. This chapter is about why that is much harder than it looks.</p>
 counting heads over time and dividing by the arrival rate, against asking each
 customer and averaging.</p>
 <figure class="plate"><img src="chapters/11-measuring-is-harder/measuring.png" alt="Two estimates of the average time in the system as a run proceeds, one riding
-exactly on top of the other, both wandering between 44 and 60 minutes over
-three hundred thousand customers." loading="lazy"></figure>
+exactly on top of the other, both climbing out of the forties and then drifting
+either side of sixty minutes over three hundred thousand
+customers." loading="lazy"></figure>
 <p>Two things are in that picture, and they point in opposite directions.</p>
 <p><strong>Little's law is satisfied from almost the first customer.</strong> The two curves
 sit on top of each other the whole way. That is the identity of chapter 2 doing
 its work: over a window that starts and ends with an empty room, the agreement
 is exact to fourteen decimal places, with no assumptions and no limit taken.</p>
-<p><strong>And both of them are wrong for a very long time.</strong> After three hundred
-thousand customers the estimate is still wandering around in the fifties for a
-true answer of sixty.</p>
+<p><strong>And both of them are wrong for a very long time.</strong> The true answer is sixty
+minutes. After a thousand customers the estimate says 43.6; after ten thousand,
+52.0; it does not come within a couple of minutes of the truth until about a
+hundred thousand. Even then it will not sit still: 60.2 at two hundred
+thousand, 61.6 at two hundred and fifty thousand, 59.6 at three hundred
+thousand. Three hundred thousand customers is a lot of queueing to be told the
+answer to within two minutes.</p>
 <p>Put those together and you get the trap. Your simulation satisfying <code>L = λW</code>
 tells you nothing whatsoever about whether it has converged, because it was
 never going to fail that check. The identity holds on any sample path at all,

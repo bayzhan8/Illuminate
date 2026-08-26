@@ -274,3 +274,49 @@ def test_the_readme_chapter_table_matches_the_chapters():
         "run the chapter table in README.md past build.CHAPTERS again"
     for chapter in build.CHAPTERS:
         assert (ROOT / "chapters" / chapter.folder).is_dir(), chapter.folder
+
+
+def test_the_conditioning_numbers_in_chapter_nine_are_the_real_ones():
+    """Chapter 9 used to claim a bigger step cannot help. It can: on the toy,
+    step 0.9 is stable and contracts 56% per iteration against 2% at step 0.2.
+    The real bind is the spread of singular values of A, so that is what the
+    chapter now says, and these are the numbers it says it with."""
+    import math
+
+    import numpy as np
+    sv = np.linalg.svd(np.array(s.WORKSHOP.A, dtype=float), compute_uv=False)
+    big, small = float(sv[0]), float(sv[-1])
+    assert f"{big:.2f}" == "6.33" and f"{small:.2f}" == "1.71"
+    assert "**6.33** and **1.71**" in FLAT
+
+    tau = 0.9 / big                       # the step the solver actually uses
+    def mode(sigma):
+        t = (tau * sigma) ** 2
+        return math.sqrt(1 - t), math.degrees(math.atan2(math.sqrt(t), math.sqrt(1 - t)))
+
+    fast, _ = mode(big)
+    slow, turn = mode(small)
+    assert f"{100 * (1 - fast):.0f}" == "56"
+    assert f"{100 * (1 - slow):.1f}" == "3.0"
+    assert f"{turn:.0f}" == "14"
+    assert f"{360 / turn:.1f}" == "25.6"
+    for shown in ("**56% per iteration**", "**3.0%**", "**14°**", "**25.6**"):
+        assert shown in FLAT, shown
+
+    # and the claim the chapter now makes about the toy, which is what the
+    # anatomy figure has been plotting all along
+    for step, shrink in ((0.2, "2.0"), (0.9, "56.4")):
+        assert f"{100 * (1 - math.sqrt(1 - step * step)):.1f}" == shrink
+    assert "**56% per step**" in FLAT
+
+
+def test_the_convergence_alt_text_matches_where_the_curve_actually_stops():
+    """The alt text said "below ten to the fifteenth". The plotted run bottoms
+    out four orders of magnitude short of that."""
+    import numpy as np
+    run = s.converging_run(1200)
+    d = np.asarray(run.distance_to(s.TRUE_PLAN, s.TRUE_PRICES), dtype=float)
+    floor = float(d[d > 0].min())
+    assert 1e-12 < floor < 1e-10, floor
+    assert "ten to the minus eleventh" in FLAT
+    assert "fifteenth" not in FLAT

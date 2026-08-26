@@ -37,6 +37,35 @@ MILL_WIDTHS = (135, 108, 93, 42, 51, 76, 29, 63, 87, 119)
 MILL_PATTERNS = count_patterns(MILL_ROLL, MILL_WIDTHS)
 
 
+def count_maximal(width: int, widths: tuple[int, ...]) -> int:
+    """How many patterns have no room left for another piece.
+
+    ``count_patterns`` counts every non-empty pattern, wasteful ones included.
+    Chapter 1 calls a pattern worth using only when nothing more fits, and the
+    two counts are far apart -- 6 against 21 for the small order, 188 billion
+    against 3.97 trillion for the mill -- so a sentence that quotes one number
+    from each definition is comparing different things.
+    """
+    from functools import lru_cache
+    order = sorted(widths)
+    smallest = order[0]
+
+    @lru_cache(maxsize=None)
+    def below(remaining: int, i: int) -> int:
+        if i == len(order):
+            return 1 if remaining < smallest else 0
+        total, k = 0, 0
+        while k * order[i] <= remaining:
+            total += below(remaining - k * order[i], i + 1)
+            k += 1
+        return total
+
+    return below(width, 0)
+
+
+MILL_MAXIMAL = count_maximal(MILL_ROLL, MILL_WIDTHS)
+
+
 def material_bound(inst: Instance) -> Fraction:
     """What the obvious model's relaxation gives: total width over roll width.
 
@@ -60,7 +89,11 @@ ANSWER = SEARCH.best                         # 7 boards
 
 SCALE_PATTERNS = all_patterns(SCALE)
 SCALE_ROUNDS = column_generation(SCALE)
-SCALE_TOUCHED = len(SCALE_ROUNDS[-1].patterns)
+SCALE_HELD = len(SCALE_ROUNDS[-1].patterns)   # columns the loop ends holding
+# How many of the drawn (maximal) patterns were ever built. Not the same as
+# SCALE_HELD: the loop is seeded with one-length patterns, and two of those
+# leave room for another piece, so they are not maximal and never drawn.
+SCALE_TOUCHED = sum(1 for p in SCALE_ROUNDS[-1].patterns if p in SCALE_PATTERNS)
 SCALE_DW = SCALE_ROUNDS[-1].value
 SCALE_NAIVE = material_bound(SCALE)
 SCALE_SEARCH = branch_and_price(SCALE)

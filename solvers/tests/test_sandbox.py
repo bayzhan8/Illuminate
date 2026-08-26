@@ -1,6 +1,6 @@
 """Cross-checks the sandbox page's JavaScript against the Python.
 
-The page carries its own copy of the bound-tightening chain from chapter 3,
+The page carries its own copy of the bound-tightening chain from chapter 4,
 because it runs client-side with nothing behind it. Two copies of a formula
 drift the moment one is edited alone, so both are run over the same spread of
 inputs here. Requires `node`; without it only the structure assertions run.
@@ -95,7 +95,7 @@ def test_the_rounded_bound_matches_the_python():
 
 @needs_node
 def test_the_switch_is_forced_on_exactly_when_there_is_demand():
-    """The claim chapter 3 makes: any demand at all settles the switch."""
+    """The claim chapter 4 makes: any demand at all settles the switch."""
     cases = [(d, 100) for d in range(0, 101)]
     got = run_js(
         "console.log(JSON.stringify("

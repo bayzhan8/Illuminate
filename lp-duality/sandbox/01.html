@@ -87,27 +87,6 @@ function tightRows(A, b, x) {
   return out;
 }
 
-// Prices, read off the rules the plan is pressed against: the rows with
-// nothing to spare carry the whole bill, and the rest are worth zero.
-function prices(c, A, b, x) {
-  const y = A.map(() => 0);
-  const tight = tightRows(A, b, x);
-  if (x[0] > 1e-9 && x[1] > 1e-9 && tight.length >= 2) {
-    const [i, j] = tight.slice(0, 2);
-    const det = A[i][0] * A[j][1] - A[j][0] * A[i][1];
-    if (Math.abs(det) > 1e-12) {
-      y[i] = (c[0] * A[j][1] - c[1] * A[j][0]) / det;
-      y[j] = (c[1] * A[i][0] - c[0] * A[i][1]) / det;
-    }
-  } else if (tight.length) {
-    // only one product gets built: one row carries it
-    const i = tight[0];
-    const k = x[0] > 1e-9 ? 0 : 1;
-    if (Math.abs(A[i][k]) > 1e-12) y[i] = c[k] / A[i][k];
-  }
-  return y;
-}
-
 function covers(c, A, y) {
   for (let k = 0; k < c.length; k++) {
     let charged = 0;
@@ -115,6 +94,60 @@ function covers(c, A, y) {
     if (charged < c[k] - 1e-9) return false;
   }
   return y.every(v => v >= -1e-9);
+}
+
+// Solve a square system by Gaussian elimination with partial pivoting.
+// Returns null when the rows are dependent, which is how a candidate that
+// does not pin down a single price list gets discarded.
+function solveSquare(M, rhs) {
+  const n = M.length;
+  const a = M.map((row, i) => row.concat([rhs[i]]));
+  for (let col = 0; col < n; col++) {
+    let piv = -1, best = 1e-9;
+    for (let row = col; row < n; row++)
+      if (Math.abs(a[row][col]) > best) { best = Math.abs(a[row][col]); piv = row; }
+    if (piv < 0) return null;
+    const tmp = a[col]; a[col] = a[piv]; a[piv] = tmp;
+    for (let row = 0; row < n; row++) {
+      if (row === col) continue;
+      const f = a[row][col] / a[col][col];
+      for (let k = col; k <= n; k++) a[row][k] -= f * a[col][k];
+    }
+  }
+  return a.map((row, i) => row[n] / row[i]);
+}
+
+function choose(items, k) {
+  if (k === 0) return [[]];
+  return items.flatMap((v, i) =>
+    choose(items.slice(i + 1), k - 1).map(rest => [v].concat(rest)));
+}
+
+// The cheapest honest price list, found the same way bestPlan finds the best
+// plan: by looking at every corner of the prices problem rather than by being
+// clever. A corner makes as many of the dual's own rules tight as there are
+// prices, so enumerate those choices, throw away the ones that fail to cover
+// every product, and keep the cheapest survivor. Reading the prices off
+// whichever rows the plan happened to be pressed against is quicker and is
+// wrong on degenerate corners, where it can return a list that undercharges
+// for a product the workshop is not currently building.
+function prices(c, A, b) {
+  const m = A.length;
+  const rules = [];
+  for (let k = 0; k < c.length; k++)          // a product must be covered
+    rules.push({ a: A.map(row => row[k]), rhs: c[k] });
+  for (let i = 0; i < m; i++) {               // and no price is negative
+    const a = A.map(() => 0); a[i] = 1;
+    rules.push({ a: a, rhs: 0 });
+  }
+  let best = null, bestBill = Infinity;
+  for (const pick of choose(rules.map((_, i) => i), m)) {
+    const y = solveSquare(pick.map(i => rules[i].a), pick.map(i => rules[i].rhs));
+    if (!y || !covers(c, A, y)) continue;
+    const bill = y.reduce((s, v, i) => s + v * b[i], 0);
+    if (bill < bestBill - 1e-9) { bestBill = bill; best = y; }
+  }
+  return best || A.map(() => 0);
 }
 
 function ceilingFrom(A, b, c, y) {
@@ -239,7 +272,7 @@ function draw() {
   p.line(0, lvl / c[1], 13, (lvl - 13 * c[0]) / c[1], p.P.price, 1.8);
   for (const q of pts) p.dot(q[0], q[1], p.P.plan, 3.5);
   p.dot(best.x[0], best.x[1], p.P.plan, 7);
-  const y = prices(c, RECIPE, STOCK, best.x);
+  const y = prices(c, RECIPE, STOCK);
   out.textContent =
     "best plan    " + best.x[0].toFixed(2) + " tables, " +
       best.x[1].toFixed(2) + " chairs\n" +

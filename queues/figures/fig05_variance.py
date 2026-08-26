@@ -1,4 +1,4 @@
-"""Chapter 5: same clerk, same speed, same utilisation, thirteen times the wait."""
+"""Chapter 6: same clerk, same speed, same utilisation, twenty-six times the wait."""
 
 import numpy as np
 

@@ -36,11 +36,11 @@ def test_presolve_shrinks_the_worked_instance_as_the_guide_says():
     p = L.SMALL_PRESOLVED
     assert p.before == (20, 21, 42)
     assert p.after == (7, 9, 14)
-    assert p.rounds == 13
+    assert p.rounds == 3
 
 
 def test_presolve_proves_a_setup_must_happen_before_any_search():
-    """openB1 is fixed to 1 by reasoning alone, which is the chapter 3 claim."""
+    """openB1 is fixed to 1 by reasoning alone, which is the chapter 4 claim."""
     j = [c.name for c in L.SMALL.cols].index("openB1")
     assert L.SMALL_PRESOLVED.fixed[j] == 1
     assert any(r.target == "openB1" and r.kind == "tightened bound"

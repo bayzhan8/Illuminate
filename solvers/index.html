@@ -167,10 +167,10 @@ fraction of it. The rest is:</p>
 between a solver that finishes and one that does not lives.</p>
 <p>There is a well-known measurement of this. Robert Bixby tracked linear
 programming speed from 1988 to 2004 and separated the two causes: machines got
-about a thousand times faster, and the algorithms and implementations got about
-<strong>3,300 times faster on top of that</strong>. Thorsten Koch and colleagues repeated
-the exercise for 2001 to 2020 and found the machine-independent factor had
-continued to climb, more slowly for LP and considerably faster for
+about sixteen hundred times faster, and the algorithms and implementations got
+about <strong>3,300 times faster on top of that</strong>. Thorsten Koch and colleagues
+repeated the exercise for 2001 to 2020 and found the machine-independent factor
+had continued to climb, more slowly for LP and considerably faster for
 mixed-integer problems.</p>
 <p>Machine-independent means exactly what it says. Same computer, same model, same
 answer, thousands of times sooner, because of what the software decided to do
@@ -258,16 +258,19 @@ of the reduction loop have run. Three stepped lines fall away in each: nonzeros,
 columns and rows. Neither panel drops all at once; both keep stepping down for
 many rounds." loading="lazy"></figure>
 <p>If presolve were a checklist applied once, those lines would fall in round one
-and go flat. They do not. The small model takes <strong>13 rounds</strong> to settle and the
-larger one takes <strong>27</strong>.</p>
+and go flat. They do not. The small model needs <strong>3 rounds</strong> to settle, and the
+larger one needs <strong>6</strong>.</p>
 <p>The reason is that each reduction is what makes the next one visible. Deleting
 a row creates a fixed column. Fixing a column empties a row. Emptying a row
 narrows a bound. Narrowing a bound fixes another column.</p>
 <p>None of those steps is clever. What is doing the work is the loop: a reduction
-that was invisible in round one becomes obvious in round nine, because eight
+that was invisible in round one becomes obvious in round three, because two
 rounds of other reductions have cleared the view. That is why presolve is
 described as a fixed point rather than a pass, and why a solver keeps going
 until a whole round changes nothing.</p>
+<p>The count also grows with the model. Three rounds on twenty rows, six on a
+hundred and eighteen, and the depth is a property of how the reductions chain
+together rather than of how many there are.</p>
 <p>It is also why two solvers with the same list of reductions can end up with
 models of different sizes. Run them in a different order and you reach a
 different fixed point.</p>
@@ -276,9 +279,9 @@ different fixed point.</p>
 reduction is what exposes the next one.</p>
 </blockquote>
 <h2 id="ch4"><span class="num">4</span>A decision made by arithmetic</h2>
-<p>The best thing in this guide happens in round 9.</p>
+<p>The best thing in this guide happens in round 3.</p>
 <p>Everything so far has deleted rows and columns, useful bookkeeping and nothing
-more. What happens in round 9 is the loop settling one of the actual decisions
+more. What happens in round 3 is the loop settling one of the actual decisions
 in the model, the kind a person would assume requires a search.</p>
 <p>Product B needs 25 units in period 1. The balance row therefore forces <code>makeB1 ≥ 25</code>. The link row says <code>makeB1 − 100 × openB1 ≤ 0</code>, so</p>
 <blockquote class="aside">
@@ -352,9 +355,9 @@ is worth knowing whether yours does.</p>
 <p><strong>&quot;Presolve says infeasible&quot; is a real answer and an unhelpful one.</strong> If the
 reductions prove there is no solution, you get told at once, which is fast and
 correct. What you do not get is a nice explanation, because the reasoning is a
-chain thirteen rounds deep. Most solvers have a separate and much slower mode
-that will find a small conflicting subset of rows for you, and it is worth
-finding that flag before you need it.</p>
+chain of reductions three rounds deep, each one resting on the last. Most
+solvers have a separate and much slower mode that will find a small conflicting
+subset of rows for you, and it is worth finding that flag before you need it.</p>
 <p><strong>And it is occasionally slower.</strong> On a model with little redundancy, presolve
 costs time and returns nothing. Rarely, it removes structure that a later part
 of the solver would have exploited. This is uncommon enough that leaving it on

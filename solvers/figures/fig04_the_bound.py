@@ -1,4 +1,4 @@
-"""Chapter 4: what presolve did to the bound, which is the part that pays.
+"""Chapter 5: what presolve did to the bound, which is the part that pays.
 
 Nothing here is a cutting plane and nothing here is a search. The whole move
 comes from fixing columns and tightening bounds.

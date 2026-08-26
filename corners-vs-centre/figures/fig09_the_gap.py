@@ -63,7 +63,11 @@ def gap_png():
 
     tag(ax, 3e0, 2.2e3, "what the method promises: 5 mu", color=PRICE, size=10.5)
     tag(ax, 6e-3, 4.5e-5, "what it had already achieved", color=PLAN, size=10.5)
-    tag(ax, 4e-3, 1.1e2, f"both fall tenfold for every tenfold in mu:\n"
+    # The promise is exactly 5 mu, so it is a straight line the whole way. The
+    # gap actually achieved only settles into the same slope once mu is small;
+    # at the left-hand end it is far below the promise and falls more slowly,
+    # which is what the picture shows and what the caption must not overclaim.
+    tag(ax, 4e-3, 1.1e2, f"once mu is small both fall tenfold per tenfold:\n"
         f"the gap to ${best:,.0f} is forecastable", color=TEXT_DIM, size=9.5)
     save(fig, OUT / "the-gap.png", tight=False)
     return best, rows

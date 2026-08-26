@@ -78,7 +78,14 @@ def two_counts_gif(fps=14):
     # The sweep is repetitive once the reader has the idea, so it goes quickly.
     # The bars are the payoff and each one has to land separately, so they get
     # half a second each.
-    strips = 40
+    # The strip edges are the event times, not a uniform grid. On a uniform
+    # grid the occupancy jumps inside a strip, midpoint sampling misses it,
+    # and the running total lands on 11.73 for a region whose area is 11.60 --
+    # which would have this figure disproving the identity it exists to show.
+    # Between two consecutive events the occupancy is constant, so these
+    # rectangles are the region exactly.
+    edges = np.array(sorted({WINDOW[0], WINDOW[1], *ARRIVALS, *DEPARTURES}))
+    strips = len(edges) - 1
     bars = len(ARRIVALS)
     hold_between = 10
     frames_per_bar = 7
@@ -91,8 +98,10 @@ def two_counts_gif(fps=14):
     note = margin_note(fig, x=0.04, size=10.5)
     drawn: list = []
 
-    edges = np.linspace(*WINDOW, strips + 1)
     total_area = sum(STAYS)
+    exact = sum(occupancy((edges[s] + edges[s + 1]) / 2) * (edges[s + 1] - edges[s])
+                for s in range(strips))
+    assert abs(exact - total_area) < 1e-12, (exact, total_area)
 
     def clear():
         while drawn:

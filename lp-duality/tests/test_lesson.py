@@ -198,3 +198,25 @@ def test_the_readme_chapter_table_matches_the_chapters():
         "run the chapter table in README.md past build.CHAPTERS again"
     for chapter in build.CHAPTERS:
         assert (ROOT / "chapters" / chapter.folder).is_dir(), chapter.folder
+
+
+def test_the_far_corner_the_prose_describes_is_the_real_one():
+    """An earlier draft said "build 11 tables and every plank is gone". Eleven
+    tables needs 33 saw-hours against 32, so it is not even feasible, and the
+    rightmost corner is set by the saw with planks to spare."""
+    from fractions import Fraction
+    assert 11 * w.RECIPE["tables"][2] > w.PRIMAL.b[w.SAW]        # 33 > 32
+    corner = Fraction(w.PRIMAL.b[w.SAW], w.RECIPE["tables"][2])  # 32/3
+    assert corner == Fraction(32, 3)
+    spare = w.PRIMAL.b[w.WOOD] - corner * w.RECIPE["tables"][0]
+    assert spare == Fraction(4, 3)
+    assert "10⅔ of them" in FLAT
+    assert "a plank and a third to spare" in FLAT
+    assert "but the saw" in FLAT
+
+
+def test_the_unbounded_pairing_is_stated_as_one_direction_only():
+    """Primal unbounded => dual infeasible. The converse needs feasibility, and
+    chapter 10's own example has both sides empty."""
+    assert "if the plan side runs away, the price side has nothing whatever to offer" in FLAT
+    assert "Both sides can be empty at once" in FLAT

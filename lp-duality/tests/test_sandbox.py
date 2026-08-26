@@ -36,7 +36,7 @@ needs_node = pytest.mark.skipif(NODE is None, reason="node is not installed")
 
 def run_js(snippet: str):
     result = subprocess.run([NODE, "-e", build.MATHS + snippet],
-                            capture_output=True, text=True, timeout=60)
+                            capture_output=True, text=True, timeout=600)
     assert result.returncode == 0, result.stderr
     return json.loads(result.stdout)
 
@@ -154,3 +154,37 @@ def test_the_pages_agree_about_the_value_curve():
     for level, js in zip(levels, got):
         here = solve(with_rhs(w.PRIMAL, w.WOOD, level)).value
         assert js == pytest.approx(float(here), abs=1e-7)
+
+
+@needs_node
+def test_the_page_never_prints_a_price_list_that_proves_nothing():
+    """The bug this guards against: reading prices off whichever rows the plan
+    is pressed against returns, on degenerate corners, a list that undercharges
+    for a product nobody is currently building. The bill still comes out right,
+    so the page's own "the same number, every time" check cannot see it.
+
+    Swept exhaustively over every reachable setting of sandbox 06's three
+    sliders, which is where it was found: 1,673 of 191,296 settings were wrong.
+    """
+    got = run_js("""
+      let dualInfeasible = 0, billMismatch = 0, slackButPriced = 0;
+      for (let p = 10; p <= 70; p++)
+        for (let h = 5; h <= 60; h++)
+          for (let s = 5; s <= 60; s++) {
+            const b = [p, h, s];
+            const best = bestPlan(PROFIT, RECIPE, b);
+            if (!best) continue;
+            const y = prices(PROFIT, RECIPE, b);
+            if (!covers(PROFIT, RECIPE, y)) dualInfeasible++;
+            const bill = y.reduce((t, v, i) => t + v * b[i], 0);
+            if (Math.abs(bill - best.value) > 1e-6) billMismatch++;
+            for (let i = 0; i < 3; i++) {
+              const used = RECIPE[i][0] * best.x[0] + RECIPE[i][1] * best.x[1];
+              if (b[i] - used > 1e-7 && y[i] > 1e-7) slackButPriced++;
+            }
+          }
+      console.log(JSON.stringify({dualInfeasible, billMismatch, slackButPriced}));
+    """)
+    assert got["dualInfeasible"] == 0, "the page charges less than a product earns"
+    assert got["billMismatch"] == 0, "strong duality broken on the page"
+    assert got["slackButPriced"] == 0, "spare capacity carrying a price"

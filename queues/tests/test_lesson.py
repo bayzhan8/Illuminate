@@ -334,3 +334,29 @@ def test_the_readme_chapter_table_matches_the_chapters():
         "run the chapter table in README.md past build.CHAPTERS again"
     for chapter in build.CHAPTERS:
         assert (ROOT / "chapters" / chapter.folder).is_dir(), chapter.folder
+
+
+def test_the_utilisation_sentence_uses_the_arrival_rate_not_the_service_rate():
+    """An earlier draft said "ten customers an hour arriving ... busy 90%".
+    Ten an hour at six minutes each is 100% busy and has no steady state."""
+    from fractions import Fraction as F
+    assert d.SERVICE_RATE == 10                       # ten SERVED per hour
+    assert F(9) * d.MEAN_SERVICE == F(9, 10)          # nine ARRIVING per hour
+    assert F(10) * d.MEAN_SERVICE == 1                # ten arriving would saturate
+    assert "At nine customers an hour arriving" in FLAT
+    assert "Ten an hour would be sixty minutes of work per hour" in FLAT
+
+
+def test_the_convergence_numbers_quoted_are_the_plotted_ones():
+    """Chapter 11 quotes the running estimate at four checkpoints. They come
+    from the same run the figure draws, so they cannot drift apart."""
+    import numpy as np
+
+    from queues.simulate import run_queue
+    run = run_queue(rate=9.0, service_rate=10.0, customers=300_000, seed=17,
+                    record_every=200)
+    w = np.cumsum(run.waits) / np.arange(1, len(run.waits) + 1) * 60
+    for n, shown in ((1_000, "43.6"), (10_000, "52.0"),
+                     (200_000, "60.2"), (250_000, "61.6"), (300_000, "59.6")):
+        assert f"{w[n - 1]:.1f}" == shown, (n, f"{w[n - 1]:.1f}", shown)
+        assert shown in FLAT

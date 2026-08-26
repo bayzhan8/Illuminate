@@ -300,7 +300,14 @@ def presolve(m: Model, stop_after: int | None = None) -> Presolved:
     try:
         for rnd in range(1, limit + 1):
             s.round = rnd
-            if not any(step(s) for step in ORDER):
+            # Every reduction gets a look each round. `any(...)` over a
+            # generator would stop at the first one that fires, so a round
+            # would run only a prefix of the list; the fixed point is the same
+            # either way, but the round count is then an artefact of the
+            # ordering rather than the depth of the cascade, and chapter 3
+            # quotes that count.
+            fired = [step(s) for step in ORDER]
+            if not any(fired):
                 break
         else:
             if stop_after is None:

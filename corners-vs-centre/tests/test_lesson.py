@@ -326,9 +326,12 @@ def test_the_two_crossover_panels_are_a_hundredfold_apart():
     assert (mu_a, mu_b) == (0.01, 1e-4)
     assert f"{away_a:.2e}" == "1.65e-03"
     assert f"{away_b:.2e}" == "1.65e-05"
-    assert away_a / away_b == pytest.approx(100.0, rel=2e-2)
-    assert "lands\nexactly 100 times closer" in TEXT or \
-           "lands exactly 100 times closer" in FLAT
+    ratio = away_a / away_b
+    assert ratio == pytest.approx(100.0, rel=2e-2)
+    # "exactly 100" was the one word that could not be justified: the relation
+    # is asymptotic, so the prose quotes the measured 99.8 instead.
+    assert f"{ratio:.1f}" == "99.8"
+    assert "very nearly 100 times closer (99.8" in FLAT
 
 
 def test_the_distance_falls_in_step_with_mu_and_never_reaches_zero():
@@ -363,6 +366,7 @@ def test_the_dates_are_the_ones_the_research_settled_on():
                        ("1984", "Karmarkar"),
                        ("2004", "Spielman"),
                        ("2012", "Santos"),
+                       ("2011", "subexponential"),
                        ("2022", "Zadeh"),
                        ("1967", "Walkup")):
         assert year in FLAT, year
@@ -562,3 +566,58 @@ def test_the_readme_chapter_table_matches_the_chapters():
         "run the chapter table in README.md past build.CHAPTERS again"
     for chapter in build.CHAPTERS:
         assert (ROOT / "chapters" / chapter.folder).is_dir(), chapter.folder
+
+
+def test_the_analytic_centre_is_not_the_point_furthest_from_every_wall():
+    """An earlier draft called it that, and called it a property of the shape.
+    Both are false: the furthest point is the Chebyshev centre, and the
+    analytic centre moves when a redundant rule is added."""
+    import itertools
+
+    walls = np.array(A, dtype=float)
+    norms = np.linalg.norm(walls, axis=1)
+    M = np.vstack([np.hstack([walls, norms.reshape(-1, 1)]), [[-1, 0, 1], [0, -1, 1]]])
+    rhs = np.concatenate([np.array(B, dtype=float), [0.0, 0.0]])
+    best = None
+    for tri in itertools.combinations(range(len(M)), 3):
+        S = M[list(tri)]
+        if abs(np.linalg.det(S)) < 1e-12:
+            continue
+        z = np.linalg.solve(S, rhs[list(tri)])
+        if np.all(M @ z <= rhs + 1e-9) and (best is None or z[2] > best[2]):
+            best = z
+    assert f"{best[0]:.3f}, {best[1]:.3f}" == "3.486, 3.486"
+    assert f"{best[2]:.3f}" == "3.486"
+    assert "(3.486, 3.486)" in FLAT
+
+    centre = analytic_centre(REGION, START)
+    assert REGION.slack(centre).min() < best[2]          # strictly less roomy
+    assert f"{REGION.slack(centre).min():.3f}" == "2.428"
+
+    padded = Region.build(A + [[1, 0]], B + [20], PROFIT)   # 20 > max x, so redundant
+    moved = analytic_centre(padded, START)
+    assert not np.allclose(moved, centre, atol=1e-3)
+    assert "it is counting rules, not corners" in FLAT
+
+
+def test_the_gap_table_ratios_the_prose_quotes_are_the_real_ones():
+    """The promise falls exactly tenfold per tenfold in mu; the achieved gap
+    does not, until mu is small. The prose now quotes the real ratios."""
+    best = float(solve(PROFIT, A, B, rule=dantzig).value)
+    gaps = {}
+    for mu in (1e2, 1e1, 1e0, 1e-1, 1e-2):
+        point = centre_for(REGION, mu, START)
+        gaps[mu] = best - (PROFIT[0] * point[0] + PROFIT[1] * point[1])
+    ratios = [gaps[a] / gaps[b] for a, b in ((1e2, 1e1), (1e1, 1e0), (1e0, 1e-1))]
+    assert [f"{r:.1f}" for r in ratios] == ["6.2", "12.3", "10.2"]
+    assert "drops by 6.2, then 12.3, then 10.0" in FLAT
+
+
+def test_the_barrier_chapter_does_not_claim_the_log_is_the_only_unbounded_one():
+    """1/s diverges faster than -log s, so "nothing outbids an unbounded term"
+    was the wrong distinction. What matters is price x slack = mu."""
+    import math
+    for slack in (1e-3, 1e-6, 1e-9):
+        assert 1.0 / slack > -math.log(slack)
+    assert "Unboundedness is cheap." in FLAT
+    assert "the push times the slack comes to μ" in FLAT

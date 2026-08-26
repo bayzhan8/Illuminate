@@ -234,10 +234,7 @@ corner, improves along an edge, and knows it is finished when no edge
 improves.</p>
 </blockquote>
 <h2 id="ch3"><span class="num">3</span>It should have been slow</h2>
-<figure class="plate"><img src="chapters/03-it-should-have-been-slow/the-count.png" alt="A logarithmic chart against the number of variables. One line, for the number
-of corners a search would face, climbs steeply off the top of the chart. A band
-near the bottom, for the number of hops solves are observed to take, stays
-almost flat." loading="lazy"></figure>
+<figure class="plate"><img src="chapters/03-it-should-have-been-slow/the-count.png" alt="A logarithmic chart against the number of variables. One line, for the number of corners a search would face, climbs steeply towards the top of the chart. A band near the bottom, for the number of hops solves are observed to take, stays almost flat." loading="lazy"></figure>
 <p>Now the arithmetic that should have killed the method in its first week.</p>
 <p>A corner is where enough rules run out at once: with <em>n</em> variables, pick <em>n</em> of
 the rules and solve them as simultaneous equations. Every corner arises that
@@ -280,8 +277,11 @@ appeared in print in 1972, under the title <em>How good is the simplex algorithm
 The answer was: in the worst case, not good.</p>
 <p>Their construction is a cube in <em>n</em> dimensions that has been squashed, so that
 its faces tilt slightly instead of meeting at right angles. It has 2ⁿ corners,
-exactly as a cube should. It is not degenerate, not badly scaled by any
-standard anybody had, and not in any visible way a trick.</p>
+exactly as a cube should. It is not degenerate, and its geometry is not
+pathological in any way anybody could point at: it is a cube with a tilt. (The
+numbers you hand the solver are another matter. Writing the ten-dimensional
+cube down takes right-hand sides running from 1 to 10¹⁸, which no scaling
+heuristic would call healthy. The trap is in the tilt, not in the arithmetic.)</p>
 <p>Step 2 of the walk left something open: when more than one edge leaving a
 corner improves the profit, which do you take? That choice is a separate
 ingredient of the method, and it has a name, the <strong>pivot rule</strong>. Dantzig's
@@ -318,9 +318,7 @@ single substitution moves the count from doubling, to a gentler climb, to a
 single pivot.</p>
 <ul>
 <li><strong>Dantzig's rule</strong> takes exactly <strong>2ⁿ − 1</strong> pivots. Every corner.</li>
-<li><strong>Bland's rule</strong>, which ignores the numbers entirely and takes whichever
-improving edge comes first in a fixed ordering, takes exactly
-<strong>2·Fib(n+1) − 1</strong>. At n = 10 that is 177 rather than 1023.</li>
+<li><strong>Bland's rule</strong>, which ignores the numbers entirely and goes by a fixed ordering of the variables at both ends of the step, takes exactly <strong>2·Fib(n+1) − 1</strong>. At n = 10 that is 177 rather than 1023.</li>
 <li><strong>Steepest edge</strong>, which measures improvement per unit of <em>movement</em> rather
 than per unit of variable, takes <strong>one pivot</strong>, at every size.</li>
 </ul>
@@ -343,9 +341,17 @@ picked the edge, not to the method that did the walking.</p>
 <h2 id="ch6"><span class="num">6</span>Bland's rule finishes, slowly</h2>
 <p>Bland's rule is the one to be careful about, because it is easy to draw the
 wrong lesson from it.</p>
-<p>Its guarantee is that it cannot cycle. A simplex walk can in principle return
-to a corner it has already left and go round forever; Bland's rule makes that
-impossible, so the walk always terminates. That is a real property, and it is
+<p>Its guarantee is that it cannot cycle, and it is worth being exact about what
+cycling is, because the obvious picture is wrong. The walk does not wander off
+and come back. It gets stuck standing still: at a corner where more rules run
+out at once than the dimension requires, a step can be forced to have length
+zero, so the plan does not move at all while the bookkeeping underneath it
+changes. Repeat that and the bookkeeping can return to a state it has already
+been in, at which point the method is in a loop and the point never moved.</p>
+<p>Bland's rule forbids it by fixing an order on the variables and always taking
+the first eligible one, at <em>both</em> ends of the step: which variable comes in,
+and which one goes out. Both halves are needed. Order the entering variable
+alone and the walk can still cycle. With both, it always terminates, which is
 why the other guides in this repository use it.</p>
 <p>Termination is a promise about the end of the walk and says nothing about its
 length. On the cube we can measure the difference exactly.</p>
@@ -385,7 +391,8 @@ you nothing about that animal.</p>
 <p>The traps also generalise. Deformed constructions have since been produced
 against essentially every rule anyone has proposed, including randomised ones,
 where the construction has to defeat an average rather than a fixed sequence of
-choices. The last well-known holdout, Zadeh's rule, survived until 2022.</p>
+choices. The last well-known holdout, Zadeh's rule, fell to a subexponential
+construction in 2011 and to an exponential one published in 2022.</p>
 <p><strong>No pivot rule is known to be polynomial, and whether one exists is open.</strong></p>
 <p>The geometry underneath is open too, and it is the stronger statement, so
 separate it out. Forget which rule you use and forget how a method chooses. Ask
@@ -417,9 +424,9 @@ Klee and Minty chose, and a perturbation too small to see destroys it. The bad
 cases are real, and they are knife-edges, and real data, whether measured
 quantities or prices or capacities or anything else that arrived carrying
 noise, is never sitting on a knife-edge.</p>
-<p>So the seventy-year puzzle was never that the theory was wrong. Worst-case
-analysis had been answering a question whose answer says very little about the
-inputs anybody actually has.</p>
+<p>So the puzzle that had stood since 1947 was never that the theory was wrong.
+Worst-case analysis had been answering a question whose answer says very little
+about the inputs anybody actually has.</p>
 <blockquote class="takeaway">
 <p><strong>In one sentence.</strong> The bad cases survive every rule but not a random nudge,
 which is why they fill the theory and never arrive in the post.</p>
@@ -440,9 +447,9 @@ region with room in it, and if you have not found a point by then there was
 none.</p>
 <p>The bound is honest and the method is dreadful. In two dimensions the
 guaranteed shrink per step is exp(−1/4), about <strong>0.779</strong>: each cut is promised
-to remove barely a fifth. This repository's implementation achieves <strong>0.7698</strong>
-every single step, which is the smallest ellipsoid that can contain the
-surviving half, and it never does better, because there is no mechanism by
+to remove a little over a fifth. This repository's implementation achieves
+<strong>0.7698</strong> every single step, which is the smallest ellipsoid that can contain
+the surviving half, and it never does better, because there is no mechanism by
 which it could.</p>
 <p>Ask it to find a plan worth at least $349 in the workshop and it takes <strong>29
 cuts</strong>. The walk in chapter 2 reached the exact optimum of $350 in three hops.</p>
@@ -494,11 +501,16 @@ specific that no ordinary penalty would.</p>
 all. Halve the slack and the log drops by a fixed amount. Halve it again and it
 drops by that same amount again. Slack of a thousandth, a millionth, a
 billionth, and the log is still marching downwards with no sign of bottoming
-out. Compare that with penalising, say, the reciprocal of the slack, or its
-square: those also grow, but a plan can still buy its way through them if the
-profit on the other side is large enough. Nothing outbids a term with no lower
-bound. A plan pressed against a wall scores minus infinity, and no amount of
+out. A plan pressed against a wall scores minus infinity, and no amount of
 profit is worth minus infinity.</p>
+<p>Plenty of penalties would do that much. Charge one over the slack and it blows
+up faster than the log does: at a slack of a billionth the log has reached 21
+while one over the slack has reached a billion. Unboundedness is cheap.</p>
+<p>What the logarithm buys that its rivals do not is what happens at the bottom.
+Push the slack in a rule and the log pushes back with strength exactly μ
+divided by that slack, so the push times the slack comes to μ, the same μ, in
+every rule at once. That single tidy fact is the whole of the guarantee in
+chapter 13, and it is why this particular penalty and not a more violent one.</p>
 <p>So whatever plan wins this score is strictly inside, with room left in every
 rule at once, and it got there without anybody writing down a rule that says
 <em>stay inside</em>. The boundary has stopped being a constraint and become a force.</p>
@@ -519,9 +531,7 @@ one along it, and the optimal corner marked at the
 other." loading="lazy"></figure>
 <p>One setting of μ gives one point. Sweep it and the points join up.</p>
 <ul>
-<li><strong>μ enormous.</strong> Profit is irrelevant; the point sits as far from every wall
-as it can get. For the workshop that is <strong>(2.428, 3.209)</strong>, the <em>analytic
-centre</em>, which is a property of the shape alone.</li>
+<li><strong>μ enormous.</strong> Profit is irrelevant; all that is left is the penalty, and the point that minimises it sits at <strong>(2.428, 3.209)</strong>. This is the <em>analytic centre</em>. It is not the point furthest from every wall, which for this workshop is (3.486, 3.486) and sits a clear 3.486 from its nearest wall against the analytic centre's 2.428; what the analytic centre maximises is the <em>product</em> of the slacks rather than the smallest of them. Nor is it a property of the region alone: write the same region with a redundant rule added and it moves, because it is counting rules, not corners.</li>
 <li><strong>μ shrinking.</strong> The walls push more weakly, and the point drifts towards
 profitable territory.</li>
 <li><strong>μ approaching zero.</strong> The penalty stops mattering and the point approaches
@@ -595,9 +605,7 @@ combinatorial problem into a sequence of calculus problems, and calculus
 problems come with step counts you can predict.</p>
 </blockquote>
 <h2 id="ch13"><span class="num">13</span>A gap you can forecast</h2>
-<figure class="plate"><img src="chapters/13-a-gap-you-can-forecast/the-gap.png" alt="A logarithmic chart with mu decreasing to the right. Two nearly parallel
-straight lines descend together: an upper line for the guaranteed bound and a
-lower one for the gap that actually remained." loading="lazy"></figure>
+<figure class="plate"><img src="chapters/13-a-gap-you-can-forecast/the-gap.png" alt="A logarithmic chart with mu decreasing to the right. An upper line for the guaranteed bound falls as a straight line the whole way. A lower line for the gap that actually remained starts well below it and falls more slowly at first, then settles into the same slope." loading="lazy"></figure>
 <p>This is the property that decided real deployments, and it has nothing to do
 with speed.</p>
 <p>A point on the central path arrives with a receipt. The gap between what it is
@@ -667,8 +675,12 @@ at a true optimum every term in it is zero, which is why a resource with
 something to spare is worth nothing. The central path is that same picture with
 the zeros replaced by μ. Five walls, one μ apiece, and the total you might
 still be missing is 5μ.</p>
-<p>Divide μ by ten and you divide your remaining ignorance by ten. Before running
-anything, you can say how many more rounds buy how many more digits.</p>
+<p>Divide μ by ten and you divide the <em>promise</em> by ten, exactly, at every value of
+μ. The gap you have actually closed takes a while to fall into step with it:
+read the table from the top and the promise drops tenfold each row while the
+real gap drops by 6.2, then 12.3, then 10.0, settling down only once μ is
+small. From there the two move together, and before running anything you can
+say how many more rounds buy how many more digits.</p>
 <p>Simplex offers nothing comparable. Standing at a corner, you know what you have
 and you know it is not yet optimal, but the number of hops left is not a
 quantity you can ask about; every corner looks like the ones before it right up
@@ -686,10 +698,10 @@ In each, a red curve approaches from below and stops just short of the corner
 with a blue arrow bridging the remaining distance. The two pictures are
 indistinguishable." loading="lazy"></figure>
 <p>Both panels show the same corner. The right one is drawn a hundred times
-larger, with the repulsion turned down a hundredfold, and the point lands
-exactly 100 times closer. The picture does not change. Zooming in and
-tightening the tolerance move together, so <strong>there is no setting at which the
-point becomes a corner</strong>. It never lands.</p>
+larger, with the repulsion turned down a hundredfold, and the point lands very
+nearly 100 times closer (99.8, and closer to 100 the smaller μ gets). The
+picture does not change. Zooming in and tightening the tolerance move together,
+so <strong>there is no setting at which the point becomes a corner</strong>. It never lands.</p>
 <p>Often that does not matter. Sometimes it matters a great deal:</p>
 <ul>
 <li>Reading off <em>which rules are binding</em>, which is what a shadow price is
