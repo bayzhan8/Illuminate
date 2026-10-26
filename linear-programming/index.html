@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en" data-page="lesson">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Corners, walls and prices: linear programming</title>
+<meta name="description" content="Linear programming from one small farm, following Tovey&#x27;s Linear Optimization and Duality, with every number checked by code.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>
+  try {
+    var t = localStorage.getItem("illuminate-theme");
+    document.documentElement.dataset.theme = t ||
+      (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  } catch (e) {}
+</script>
+</head>
+<body>
+<header class="bar">
+  <a class="brand" href="../">ILLUMINATE</a>
+  <button class="toggle" id="theme" type="button" aria-label="Switch colour scheme">DARK</button>
+</header>
+<div class="withtoc">
+<nav class="toc" aria-label="Chapters">
+  <p class="toc-label">Contents</p>
+  <ol>
+    <li><a href="#ch0"><span class="toc-num">0</span><span class="toc-title">What this is</span></a></li>
+    <li><a href="#ch1"><span class="toc-num">1</span><span class="toc-title">A plan inside the walls</span></a></li>
+    <li><a href="#ch2"><span class="toc-num">2</span><span class="toc-title">The best plan sits on a corner</span></a></li>
+  </ol>
+</nav>
+<main class="prose">
+<h1>Corners, walls and prices</h1>
+<p>A farmer has 20 acres of land and 32 units of water, and has to decide how much
+wheat and how much corn to plant. That is a linear program. So, with thousands
+of rows instead of two, is an airline's crew schedule or a refinery's daily
+blend.</p>
+<p>This guide follows the first eight chapters of Craig Tovey's <em>Linear
+Optimization and Duality</em>, using that one farm almost the whole way through.
+Every number on the page is computed in exact fractions by the code beside it,
+and a test fails if the prose and the code disagree.</p>
+<h2 id="ch0"><span class="num">0</span>What this is</h2>
+<figure class="plate"><img src="chapters/00-what-this-is/walk.gif" alt="The farm's possible plans drawn as a shaded four-sided region; a dot walks from the corner with no crops, up the corn axis to 16 acres of corn worth $80,000, then along an edge to 8 acres of wheat and 12 of corn worth $84,000, and stops." loading="lazy"></figure>
+<p>That walk is the simplex method, which George Dantzig devised in 1947. It starts at a corner of the shape, moves
+along an edge to a neighbouring corner that is worth more, and stops when no
+neighbour is better. Here it takes two steps: from nothing planted, to all
+corn, to 8 acres of wheat and 12 of corn.</p>
+<p>Getting there takes a few ideas, and each chapter adds one:</p>
+<ul>
+<li><strong>Chapters 1 to 5</strong> set the problem up: what the shape is, why the answer
+sits on a corner, how to turn a story into a problem, and the second problem
+hiding behind every linear program, about what the resources are worth.</li>
+<li><strong>Chapters 6 to 11</strong> are about the shape itself: walls, corners, and what
+goes wrong when too many walls meet at one point.</li>
+<li><strong>Chapters 12 to 17</strong> are the simplex method: the walk, the table that does
+its bookkeeping, how it avoids walking in circles, and how it finds somewhere
+to start.</li>
+<li><strong>Chapters 18 to 20</strong> come back to prices: why they are right, how far they
+can be trusted, and how the big theorems fit together.</li>
+</ul>
+<p>Each idea comes as a picture first and a sentence second. Where the textbook
+needs symbols, they appear as a small table of numbers you can check by hand.
+The <a href="#glossary">glossary</a> at the end gives the textbook name for every plain
+word used here.</p>
+<h2 id="ch1"><span class="num">1</span>A plan inside the walls</h2>
+<p>The farm grows two crops. Each acre uses some land and some water, and earns a
+fixed amount:</p>
+<div class="overflow-x"><table>
+<thead>
+<tr>
+<th></th>
+<th>water</th>
+<th>land</th>
+<th>earns</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>an acre of wheat</td>
+<td>1 unit</td>
+<td>1 acre</td>
+<td>$3,000</td>
+</tr>
+<tr>
+<td>an acre of corn</td>
+<td>2 units</td>
+<td>1 acre</td>
+<td>$5,000</td>
+</tr>
+<tr>
+<td><strong>the farm has</strong></td>
+<td><strong>32 units</strong></td>
+<td><strong>20 acres</strong></td>
+<td></td>
+</tr>
+</tbody>
+</table></div>
+<p>A plan is just two numbers: acres of wheat and acres of corn. So every plan is
+a point on a sheet of paper, with wheat across and corn up.</p>
+<figure class="plate"><img src="chapters/01-inside-the-walls/region.png" alt="The plane of plans with wheat across and corn up. Two black lines mark where water runs out and where land runs out; the region under both and above the axes is shaded blue. Three test plans: 6 wheat and 8 corn sits inside and fits; 6 wheat and 14 corn sits above the water line and uses too much water; 14 wheat and 9 corn sits above the land line and uses too much land." loading="lazy"></figure>
+<p>Each resource draws one straight line. Below the water line are the plans that
+use at most 32 units of water; on the line itself the water runs out exactly.
+The same goes for land. Planting a negative number of acres is not allowed, so
+the two axes are walls as well. The shaded region is what is left: every plan
+the farm can actually carry out.</p>
+<p>Take 6 acres of wheat and 14 of corn. That uses 20 acres, all the land there
+is, which is fine. It also needs 6 + 28 = 34 units of water, two more than the
+farm has. The point lies just past the water line, and that is the whole
+check.</p>
+<p>The lines are straight because of two assumptions. A second acre of corn uses
+exactly as much water as the first, and the water used by wheat and corn simply
+adds up. Problems with those two properties are called <strong>linear programs</strong>. A
+water company that charged less per unit after the first 20 would bend the
+water line, and the methods in this guide would no longer apply as they stand.</p>
+<blockquote class="takeaway">
+<p><strong>In one sentence.</strong> A plan is a point, each limited resource is a straight wall, and the possible plans are the region inside all the walls.</p>
+</blockquote>
+<h2 id="ch2"><span class="num">2</span>The best plan sits on a corner</h2>
+<p>Corn earns $5,000 an acre and wheat only $3,000. The obvious plan is to plant
+as much corn as possible. Corn needs 2 units of water an acre, so 32 units are
+gone after 16 acres. That plan earns $80,000 and leaves 4 acres of land empty.</p>
+<p>It is not the best plan. Swap one acre of corn for two acres of wheat: the
+water used stays the same, the land used goes up by one, and the profit goes
+up by $1,000. Keep swapping until the land runs out, and the farm reaches 8
+acres of wheat and 12 of corn, worth $84,000.</p>
+<p>To see why nothing beats that, draw every plan worth some fixed amount. Those
+plans all lie on one straight line. Raise the amount, and the line slides
+across the region without turning.</p>
+<figure class="plate"><img src="chapters/02-best-is-a-corner/sweep.gif" alt="The farm's region with a dashed line of equal profit sliding up from the corner with no crops. The line leaves the region last at the corner 8 wheat and 12 corn, marked $84,000; the all-corn corner at 16 acres of corn is marked $80,000 and is passed before the end." loading="lazy"></figure>
+<p>The last point of the region the line touches is the best plan. Because the
+line is straight and the region's edges are straight, that last point is a
+corner. The region has only four:</p>
+<div class="overflow-x"><table>
+<thead>
+<tr>
+<th>corner</th>
+<th>wheat</th>
+<th>corn</th>
+<th>earns</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>nothing planted</td>
+<td>0</td>
+<td>0</td>
+<td>$0</td>
+</tr>
+<tr>
+<td>all wheat</td>
+<td>20</td>
+<td>0</td>
+<td>$60,000</td>
+</tr>
+<tr>
+<td>all corn</td>
+<td>0</td>
+<td>16</td>
+<td>$80,000</td>
+</tr>
+<tr>
+<td><strong>both walls at once</strong></td>
+<td><strong>8</strong></td>
+<td><strong>12</strong></td>
+<td><strong>$84,000</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>So the question &quot;which of infinitely many plans is best?&quot; becomes &quot;which of
+four corners is best?&quot;. With thousands of crops the number of corners is far
+too large to check one by one, and that is what the simplex method in chapter
+12 is for.</p>
+<p>One case looks like an exception and is not. If wheat and corn both earned
+$1,000 an acre, the line of equal profit would lie flat against the land wall,
+and every plan along that edge, from 20 acres of wheat to 8 wheat and 12 corn,
+would tie at $20,000. The best plans would then fill a whole edge, but the two
+ends of that edge are still corners, so checking corners still finds the best
+value.</p>
+<p><a href="sandbox/02.html">Change what the crops earn →</a></p>
+<blockquote class="takeaway">
+<p><strong>In one sentence.</strong> The best plan is the last point a sliding line of equal profit touches, and that point is always a corner.</p>
+</blockquote>
+<h2>Glossary</h2>
+<div class="overflow-x"><table>
+<thead>
+<tr>
+<th>here</th>
+<th>in Tovey and other textbooks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>plan</td>
+<td>feasible solution</td>
+</tr>
+<tr>
+<td>the region of possible plans</td>
+<td>feasible region</td>
+</tr>
+<tr>
+<td>wall</td>
+<td>constraint, or the hyperplane where it holds with equality</td>
+</tr>
+<tr>
+<td>line of equal profit</td>
+<td>isoprofit line, level set of the objective</td>
+</tr>
+<tr>
+<td>corner</td>
+<td>extreme point, vertex</td>
+</tr>
+</tbody>
+</table></div>
+<h2>Further reading</h2>
+<p>Craig A. Tovey, <em>Linear Optimization and Duality: A Modern Exposition</em>, CRC
+Press, 2021. Chapters 1 and 2 cover what chapters 1 and 2 here do, with more
+examples.</p>
+<h2>Running the code</h2>
+<p>From the repository root, <code>make bootstrap</code> once. Then, in this folder,
+<code>make check</code> re-renders every figure, rebuilds the page and runs the tests.</p>
+
+</main>
+</div>
+<footer class="foot">
+  <a href="https://bayzhan8.github.io/Illuminate">Illuminate</a> ·
+  <a href="https://github.com/bayzhan8/Illuminate/tree/main/linear-programming">source and tests</a>
+</footer>
+<script src="../assets/site.js"></script>
+</body>
+</html>

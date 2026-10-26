@@ -49,6 +49,9 @@ a wait of an hour without ever slowing down. Little's law as one region
 measured twice, why variability rather than utilisation does the damage, and a
 95% confidence interval that covers 9%.
 
+**[linear-programming](linear-programming/)** · [read](https://bayzhan8.github.io/Illuminate/linear-programming/) · [play](https://bayzhan8.github.io/Illuminate/linear-programming/sandbox/)
+Linear programming from one small farm, following Tovey's *Linear Optimization and Duality* Ch. 1–8. In progress: chapters 0–2.
+
 Queued: branch and bound and branch and cut · Benders decomposition.
 Branch and bound is the next one to write: three of the guides above already
 lean on it, which is the only place in the repository where a guide asks the
