@@ -50,7 +50,7 @@ measured twice, why variability rather than utilisation does the damage, and a
 95% confidence interval that covers 9%.
 
 **[linear-programming](linear-programming/)** · [read](https://bayzhan8.github.io/Illuminate/linear-programming/) · [play](https://bayzhan8.github.io/Illuminate/linear-programming/sandbox/)
-Linear programming from one small farm, following Tovey's *Linear Optimization and Duality* Ch. 1–8. In progress: chapters 0–2.
+Linear programming from the problem that started it, Kantorovich's 1938 plywood mill, following Tovey's *Linear Optimization and Duality* Ch. 1–8. In progress: chapters 0–2.
 
 Queued: branch and bound and branch and cut · Benders decomposition.
 Branch and bound is the next one to write: three of the guides above already

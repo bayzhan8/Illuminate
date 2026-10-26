@@ -25,9 +25,9 @@ CHAPTERS = [
 # A second copy of src/linprog's corner search, so the pages need no server.
 # tests/test_sandbox.py runs it through node against the Python.
 MATHS = r"""
-const USE   = [[1, 2], [1, 1]];   // water, land used by an acre of wheat, of corn
+const USE   = [[1, 2], [1, 1]];   // lathe, press hours per batch of 3-ply, of 5-ply
 const STOCK = [32, 20];
-const PROFIT = [3, 5];            // thousand dollars an acre
+const VALUE = [3, 5];             // thousand roubles per batch
 
 function feasible(x, A, b) {
   if (x[0] < -1e-9 || x[1] < -1e-9) return false;
@@ -62,28 +62,28 @@ function bestCorners(c, A, b) {
 }
 
 function money(thousands) {
-  return "$" + Math.round(thousands * 1000).toLocaleString("en-US");
+  return Math.round(thousands * 1000).toLocaleString("en-US") + " roubles";
 }
 """
 
 SANDBOXES = [
-    Sandbox(2, "Change what the crops earn",
-     "The farm, with the profit per acre of each crop under your control. The "
-     "dashed line is every plan worth as much as the best one.",
-     "Start corn at $5,000 and lower it slowly. Nothing happens, and then the "
-     "best plan jumps to a different corner all at once. Find the price where "
-     "two corners tie.",
-     slider("pw", "an acre of wheat earns ($ thousand)", 0.5, 8, 0.25, 3)
-     + slider("pc", "an acre of corn earns ($ thousand)", 0.5, 8, 0.25, 5),
+    Sandbox(2, "Change what each sheet is worth",
+     "The mill, with the value of each batch under your control. The dashed "
+     "line is every plan with the same value as the best one.",
+     "Start 5-ply at 5,000 roubles per batch and lower it slowly. Nothing "
+     "happens, and then the best plan jumps to a different corner. Find the "
+     "value where two corners tie.",
+     slider("pt", "value of a 3-ply batch (thousand roubles)", 0.5, 8, 0.25, 3)
+     + slider("pf", "value of a 5-ply batch (thousand roubles)", 0.5, 8, 0.25, 5),
      r"""
 const cv = document.getElementById("c"), out = document.getElementById("out");
-const pw = document.getElementById("pw"), pc = document.getElementById("pc");
+const pt = document.getElementById("pt"), pf = document.getElementById("pf");
 function draw() {
-  const c = [+pw.value, +pc.value];
-  document.getElementById("pwv").textContent = money(c[0]);
-  document.getElementById("pcv").textContent = money(c[1]);
+  const c = [+pt.value, +pf.value];
+  document.getElementById("ptv").textContent = money(c[0]);
+  document.getElementById("pfv").textContent = money(c[1]);
   const p = Plot(cv, 0, 23, 0, 18.5);
-  p.clear(); p.grid(2, 2); p.axes("acres of wheat", "acres of corn", 4, 4);
+  p.clear(); p.grid(2, 2); p.axes("3-ply batches t", "5-ply batches f", 4, 4);
   const pts = sortRound(corners(USE, STOCK));
   p.polygon(pts, p.P.plan, p.P.plan);
   for (let i = 0; i < USE.length; i++)
@@ -92,28 +92,28 @@ function draw() {
   p.line(0, best.value / c[1], 23, (best.value - 23 * c[0]) / c[1], p.P.ink, 1.6, [6, 3]);
   for (const q of pts) p.dot(q[0], q[1], p.P.muted, 3.5);
   for (const q of best.at) p.dot(q[0], q[1], p.P.plan, 7);
-  const plan = q => q[0] + " acres wheat, " + q[1] + " acres corn";
+  const plan = q => q[0] + " batches of 3-ply, " + q[1] + " batches of 5-ply";
   out.textContent = (best.at.length > 1
     ? "a tie: every plan on the edge between\n  " + best.at.map(plan).join("\n  ") +
       "\nearns the same"
     : "best plan   " + plan(best.at[0])) +
-    "\nworth       " + money(best.value);
+    "\nvalue       " + money(best.value);
 }
-pw.addEventListener("input", draw); pc.addEventListener("input", draw);
+pt.addEventListener("input", draw); pf.addEventListener("input", draw);
 window.addEventListener("resize", draw);
 document.addEventListener("themechange", draw);
 draw();
 """,
-     "The page checks all four corners and keeps the best. That only works "
-     "because the best plan is always at a corner, which is what chapter 2 "
-     "argues."),
+     "The page checks all four corners and keeps the highest value. That only "
+     "works because a best plan is always at a corner, which is what chapter "
+     "2 argues."),
 ]
 
 TOPIC = Topic(
     slug="linear-programming",
     root=ROOT,
     title="Corners, walls and prices: linear programming",
-    blurb=("Linear programming from one small farm, following Tovey's Linear "
+    blurb=("Linear programming from Kantorovich's plywood mill, following Tovey's Linear "
            "Optimization and Duality, with every number checked by code."),
     chapters=CHAPTERS,
     sandboxes=SANDBOXES,

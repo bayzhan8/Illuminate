@@ -10,7 +10,7 @@ from pathlib import Path
 
 import pytest
 
-from linprog import farm as f
+from linprog import mill as f
 from linprog.lp import best_by_enumeration, vertices
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -45,9 +45,9 @@ def test_the_pages_carry_their_own_logic():
 
 
 @needs_node
-def test_the_page_has_the_same_farm():
-    got = run_js("console.log(JSON.stringify([USE, STOCK, PROFIT]))")
-    assert got == [[list(r) for r in f.FARM.A], list(f.STOCK), list(f.PROFIT)]
+def test_the_page_has_the_same_mill():
+    got = run_js("console.log(JSON.stringify([USE, STOCK, VALUE]))")
+    assert got == [[list(r) for r in f.MILL.A], list(f.STOCK), list(f.VALUE)]
 
 
 @needs_node
@@ -59,7 +59,7 @@ def test_the_page_finds_the_same_best_corners_at_every_slider_setting():
       console.log(JSON.stringify(cases.map(c => bestCorners(c, USE, STOCK))));
     """)
     for c, js in zip(cases, got):
-        lp = f.FARM.with_c(c)
+        lp = f.MILL.with_c(c)
         top = best_by_enumeration(lp)[1]
         tied = sorted(tuple(float(v) for v in p) for p in vertices(lp) if lp.value(p) == top)
         assert js["value"] == pytest.approx(float(top))
@@ -69,4 +69,4 @@ def test_the_page_finds_the_same_best_corners_at_every_slider_setting():
 @needs_node
 def test_money_formatting_matches():
     got = run_js("console.log(JSON.stringify([money(84), money(3), money(0.5)]))")
-    assert got == [f.money(84), f.money(3), "$500"]
+    assert got == [f.money(84), f.money(3), "500 roubles"]

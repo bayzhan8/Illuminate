@@ -4,7 +4,7 @@ import re
 import sys
 from pathlib import Path
 
-from linprog import farm as f
+from linprog import mill as f
 
 ROOT = Path(__file__).resolve().parents[1]
 TEXT = (ROOT / "lesson.md").read_text()
@@ -30,39 +30,44 @@ def test_alt_text_is_a_real_description():
     assert [s for alt, s in IMAGE.findall(TEXT) if len(alt.strip()) < 40] == []
 
 
-def test_the_farm_table_matches_the_program():
-    assert "| an acre of wheat | 1 unit | 1 acre | $3,000 |" in FLAT
-    assert "| an acre of corn | 2 units | 1 acre | $5,000 |" in FLAT
-    assert "| **the farm has** | **32 units** | **20 acres** | |" in FLAT
-    assert f.USE == {"wheat": (1, 1), "corn": (2, 1)}
-    assert f.STOCK == (32, 20) and f.PROFIT == (3, 5)
+def test_the_mill_table_matches_the_program():
+    assert "| one batch of 3-ply | 1 hour | 1 hour | 3,000 roubles |" in FLAT
+    assert "| one batch of 5-ply | 2 hours | 1 hour | 5,000 roubles |" in FLAT
+    assert "| **the mill has** | **32 hours** | **20 hours** | |" in FLAT
+    assert f.PRODUCTS == ("3-ply", "5-ply")
+    assert f.RESOURCES == ("lathe", "press")
+    assert f.USE == {"3-ply": (1, 1), "5-ply": (2, 1)}
+    assert f.STOCK == (32, 20) and f.VALUE == (3, 5)
 
 
-def test_the_too_much_water_example_adds_up():
+def test_the_over_lathe_example_adds_up():
     p = (6, 14)
-    assert f.FARM.used(1, p) == 20
-    assert f.FARM.used(0, p) == 34 and -f.FARM.slack(0, p) == 2
-    assert "6 + 28 = 34 units of water, two more than the farm has" in FLAT
+    assert f.MILL.used(1, p) == 20
+    assert f.MILL.used(0, p) == 34 and -f.MILL.slack(0, p) == 2
+    assert "6 + 28 = 34 lathe hours, two more than the mill has" in FLAT
 
 
 def test_the_greedy_numbers_are_the_computed_ones():
-    assert f"gone after {f.acres(f.ALL_CORN_ACRES)} acres" in FLAT
-    assert f"earns {f.money(f.ALL_CORN_PROFIT)} and leaves {f.ALL_CORN_IDLE_LAND} acres" in FLAT
+    assert f"gone after {f.batches(f.ALL_FIVE_BATCHES)} batches of 5-ply" in FLAT
+    assert (f"worth {f.money(f.ALL_FIVE_VALUE)} and leaves "
+            f"{f.ALL_FIVE_IDLE_PRESS} press hours unused") in FLAT
 
 
 def test_the_best_plan_is_quoted_as_computed():
-    assert f.money(f.BEST_PROFIT) == "$84,000"
-    assert f"{f.BEST[0]} acres of wheat and {f.BEST[1]} of corn, worth $84,000" in FLAT
+    assert f.money(f.BEST_VALUE) == "84,000 roubles"
+    assert (f"{f.BEST[0]} batches of 3-ply and {f.BEST[1]} of 5-ply, "
+            f"worth {f.money(f.BEST_VALUE)}") in FLAT
 
 
 def test_the_corner_table_is_every_corner_and_its_value():
-    rows = re.findall(r"\| \**[a-z ]+\** \| \**(\d+)\** \| \**(\d+)\** \| \**(\$[\d,]+)\** \|", TEXT)
-    quoted = {(int(w), int(c)): v for w, c, v in rows}
-    assert quoted == {tuple(int(v) for v in p): f.money(f.FARM.value(p)) for p in f.CORNERS}
+    rows = re.findall(r"\|\s*\**[^|]+?\**\s*\|\s*\**(\d+)\**\s*\|\s*\**(\d+)\**"
+                      r"\s*\|\s*\**([\d,]+ roubles)\**\s*\|", TEXT)
+    quoted = {(int(t), int(five)): value for t, five, value in rows}
+    assert quoted == {tuple(int(v) for v in p): f.money(f.MILL.value(p)) for p in f.CORNERS}
 
 
 def test_the_hero_alt_text_describes_the_walk_drawn():
-    stops = [f.money(f.FARM.value(p)) for p in f.WALK.corners[1:]]
+    stops = [f.money(f.MILL.value(p)) for p in f.WALK.corners[1:]]
     alt = IMAGE.findall(TEXT)[0][0]
     assert all(s in alt for s in stops)
 
@@ -85,7 +90,7 @@ def test_the_generated_chapter_files_are_up_to_date():
 
 def test_every_invented_phrase_has_its_real_name():
     glossary = TEXT.split("## Glossary")[1]
-    for phrase in ("plan", "region of possible plans", "wall", "line of equal profit", "corner"):
+    for phrase in ("plan", "region of possible plans", "wall", "line of equal value", "corner"):
         assert f"| {phrase}" in glossary or f"| the {phrase}" in glossary
 
 
@@ -97,31 +102,33 @@ def test_em_dash_density_is_low():
 def test_the_shadow_lengths_are_rounded_from_the_exact_values():
     import math
     for i, root in ((0, "√5"), (1, "√2")):
-        a, b = f.FARM.A[i], f.FARM.b[i]
+        a, b = f.MILL.A[i], f.MILL.b[i]
         size = math.sqrt(a[0] ** 2 + a[1] ** 2)
         assert f"{b} ÷ {root} ≈ {float(b) / size:.1f}" in FLAT
 
 
 def test_the_arrow_decomposition_is_the_prices():
-    y, (w, l) = f.PRICES, f.FARM.A
-    assert (f"c = {y[0]} × ({w[0]}, {w[1]}) + {y[1]} × ({l[0]}, {l[1]})") in FLAT
+    y, (lathe, press) = f.PRICES, f.MILL.A
+    assert (f"c = {y[0]} × ({lathe[0]}, {lathe[1]}) + "
+            f"{y[1]} × ({press[0]}, {press[1]})") in FLAT
 
 
 def test_the_dot_product_numbers_quoted_are_computed():
     import math
-    a, length = [float(v) for v in f.FARM.A[0]], 14
-    wheat, along, corn = a[0] * length, math.hypot(*a) * length, a[1] * length
-    for v in (wheat, along, corn):
+    a, length = [float(v) for v in f.MILL.A[0]], 14
+    three_ply, along, five_ply = a[0] * length, math.hypot(*a) * length, a[1] * length
+    for v in (three_ply, along, five_ply):
         assert f"{v:.1f}" in FLAT
     assert f"8 ÷ √5 ≈ {8 / math.hypot(*a):.1f}" in FLAT
 
 
 def test_the_turned_arrow_gallery_is_quoted_as_computed():
     from linprog.lp import LP, vertices
-    names = {(0, 16): "all corn", (8, 12): "8 wheat and 12 corn", (20, 0): "all wheat"}
+    names = {(0, 16): "all 5-ply", (8, 12): "8 batches of 3-ply and 12 of 5-ply",
+             (20, 0): "all 3-ply"}
     alt = [a for a, s in IMAGE.findall(TEXT) if s.endswith("turns.png")][0]
     for c in ((1, 3), (3, 5), (1, 1), (3, 1)):
-        lp = LP.build(c=c, A=[list(r) for r in f.FARM.A], b=list(f.FARM.b))
+        lp = LP.build(c=c, A=[list(r) for r in f.MILL.A], b=list(f.MILL.b))
         top = max(lp.value(p) for p in vertices(lp))
         best = [tuple(int(v) for v in p) for p in vertices(lp) if lp.value(p) == top]
         assert f"c = ({c[0]}, {c[1]})" in alt and f.money(top) in alt
