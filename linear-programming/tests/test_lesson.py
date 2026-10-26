@@ -92,3 +92,38 @@ def test_every_invented_phrase_has_its_real_name():
 def test_em_dash_density_is_low():
     words = len(TEXT.split())
     assert TEXT.count("—") * 1000 / words < 3
+
+
+def test_the_shadow_lengths_are_rounded_from_the_exact_values():
+    import math
+    for i, root in ((0, "√5"), (1, "√2")):
+        a, b = f.FARM.A[i], f.FARM.b[i]
+        size = math.sqrt(a[0] ** 2 + a[1] ** 2)
+        assert f"{b} ÷ {root} ≈ {float(b) / size:.1f}" in FLAT
+
+
+def test_the_arrow_decomposition_is_the_prices():
+    y, (w, l) = f.PRICES, f.FARM.A
+    assert (f"c = {y[0]} × ({w[0]}, {w[1]}) + {y[1]} × ({l[0]}, {l[1]})") in FLAT
+
+
+def test_the_dot_product_numbers_quoted_are_computed():
+    import math
+    a, length = [float(v) for v in f.FARM.A[0]], 14
+    wheat, along, corn = a[0] * length, math.hypot(*a) * length, a[1] * length
+    for v in (wheat, along, corn):
+        assert f"{v:.1f}" in FLAT
+    assert f"8 ÷ √5 ≈ {8 / math.hypot(*a):.1f}" in FLAT
+
+
+def test_the_turned_arrow_gallery_is_quoted_as_computed():
+    from linprog.lp import LP, vertices
+    names = {(0, 16): "all corn", (8, 12): "8 wheat and 12 corn", (20, 0): "all wheat"}
+    alt = [a for a, s in IMAGE.findall(TEXT) if s.endswith("turns.png")][0]
+    for c in ((1, 3), (3, 5), (1, 1), (3, 1)):
+        lp = LP.build(c=c, A=[list(r) for r in f.FARM.A], b=list(f.FARM.b))
+        top = max(lp.value(p) for p in vertices(lp))
+        best = [tuple(int(v) for v in p) for p in vertices(lp) if lp.value(p) == top]
+        assert f"c = ({c[0]}, {c[1]})" in alt and f.money(top) in alt
+        if len(best) == 1:
+            assert f"c = ({c[0]}, {c[1]}): {'the best plan is ' if c == (1, 3) else ''}{names[best[0]]}" in alt
