@@ -42,11 +42,15 @@ Optimization and Duality</em>, using that one farm almost the whole way through.
 Every number on the page is computed in exact fractions by the code beside it,
 and a test fails if the prose and the code disagree.</p>
 <h2 id="ch0"><span class="num">0</span>What this is</h2>
-<figure class="plate"><img src="chapters/00-what-this-is/walk.gif" alt="The farm's possible plans drawn as a shaded four-sided region; a dot walks from the corner with no crops, up the corn axis to 16 acres of corn worth $80,000, then along an edge to 8 acres of wheat and 12 of corn worth $84,000, and stops." loading="lazy"></figure>
+<figure class="plate"><img src="chapters/00-what-this-is/walk.gif" alt="The farm's possible plans drawn as a shaded four-sided region. A dot starts at the corner with nothing planted. Step 1 moves it up the corn axis until the water runs out at 16 acres of corn, $80,000; step 2 moves it along the water wall to 8 acres of wheat and 12 of corn, $84,000, where it stops. A log records each corner reached and the profit gained, and the readout shows the water and land used at every moment." loading="lazy"></figure>
 <p>That walk is the simplex method, which George Dantzig devised in 1947. It starts at a corner of the shape, moves
 along an edge to a neighbouring corner that is worth more, and stops when no
 neighbour is better. Here it takes two steps: from nothing planted, to all
 corn, to 8 acres of wheat and 12 of corn.</p>
+<p>Watch the readout under the picture. In step 1 the water used climbs to 32 and
+stops climbing: the dot has hit the water wall. In step 2 the water stays at 32
+while the land climbs to 20: the dot slides along the water wall until it hits
+the land wall as well. Each step ends when one more resource runs out.</p>
 <p>Getting there takes a few ideas, and each chapter adds one:</p>
 <ul>
 <li><strong>Chapters 1 to 5</strong> set the problem up: what the shape is, why the answer
@@ -65,6 +69,9 @@ needs symbols, they appear as a small table of numbers you can check by hand.
 The <a href="#glossary">glossary</a> at the end gives the textbook name for every plain
 word used here.</p>
 <h2 id="ch1"><span class="num">1</span>A plan inside the walls</h2>
+<p>By the end of this page you will be able to look at one row of a linear
+program, such as 1 × w + 2 × c ≤ 32, and see an arrow, a wall at right angles
+to it, and which side of the wall is allowed.</p>
 <p>The farm grows two crops. Each acre uses some land and some water, and earns a
 fixed amount:</p>
 <div class="overflow-x"><table>
@@ -108,41 +115,71 @@ the farm can actually carry out.</p>
 <p>Take 6 acres of wheat and 14 of corn. That uses 20 acres, all the land there
 is, which is fine. It also needs 6 + 28 = 34 units of water, two more than the
 farm has. The point lies just past the water line, and that is the whole
-check.</p>
-<p>Why is the water's boundary a straight line, and why is the allowed side the
-side towards the origin? A plan of w acres of wheat and c acres of corn uses
-1 × w + 2 × c units of water. Put the water each crop needs per acre into an
-arrow a = (1, 2), and the plan into an arrow x = (w, c). Multiplying matching
-entries and adding is the <strong>dot product</strong>, written a·x.</p>
-<p>The dot product also has a geometric meaning. If θ is the angle between the two arrows,
-a·x = |a| |x| cos θ, and |x| cos θ is the length of x's shadow when it is
-dropped at right angles onto the line through a. So a·x = |a| × (the shadow of
-x on a): the water a plan uses is the length of its shadow along a, times the
-fixed number |a| = √5.</p>
-<figure class="plate"><img src="chapters/01-inside-the-walls/shadow.gif" alt="The plane of plans with the arrow a = (1, 2) drawn from the origin and a dotted line continuing in its direction. A plan slides along the water wall while a thick blue bar, its shadow on that line, keeps the same length of 14.3. The plan then moves off the wall away from the origin and the bar grows past the wall, turning amber and labelled too much water, then moves back inside and the bar shrinks. A caption shows a·x and the shadow at every moment." loading="lazy"></figure>
-<p>The water runs out when a·x = 32, which is when the shadow is 32 ÷ √5 ≈ 14.3.
-The plans with exactly that shadow are the points of one line, at right angles
-to a, crossing a's line at the shadow's tip. Slide a plan along that line and
-its shadow does not change. Move it further in the direction of a and the
-shadow grows, so the plan needs more than 32 units; move it back towards the
-origin and it needs less. The wall a·x = 32 therefore cuts the sheet into two
-halves: a·x &lt; 32 on the origin's side and a·x &gt; 32 on the far side. The
-arrow a points towards the side that uses more water.</p>
+check. The rest of this page explains why the line is straight, why it sits
+where it does, and why the allowed side is the origin's side.</p>
+<h3>One row is a dot product</h3>
+<p>A plan of w acres of wheat and c acres of corn uses 1 × w + 2 × c units of
+water. Put the water each crop needs per acre into an arrow a = (1, 2), and the
+plan into an arrow x = (w, c). Multiplying matching entries and adding is the
+<strong>dot product</strong>, written a·x. Every row of a linear program is one dot
+product, and its arrow is the row of numbers in front of the variables.</p>
+<p>The dot product has a second meaning, and it is the picture behind every wall.
+If θ is the angle between the two arrows, a·x = |a| |x| cos θ. The part
+|x| cos θ is the length of x's <strong>shadow</strong> on a: drop a line from the tip of x
+at right angles onto the line through a, and measure from the origin to where
+it lands.</p>
+<figure class="plate"><img src="chapters/01-inside-the-walls/dot.gif" alt="A plan x of length 14 drawn from the origin swings from the wheat axis, through the direction of the water arrow a = (1, 2), up to the corn axis. Its shadow on the line through a is a thick blue bar, the dashed drop from the tip of x meets that line at a right angle, and an arc marks the angle θ between x and a. Under the picture, 1 × w + 2 × c and |a| × |x| × cos θ give the same number at every moment: 14.0 on the wheat axis, 31.3 when x points along a, 28.0 on the corn axis." loading="lazy"></figure>
+<p>Watch the two readouts under the picture.</p>
+<ul>
+<li>They agree in every frame. Multiply-and-add is the arithmetic, and
+length × length × cos θ is the same number seen as a picture.</li>
+<li>x never changes length, yet the water it needs runs from 14.0 up to 31.3 and
+back down to 28.0. Its direction alone decides that.</li>
+<li>The shadow is longest, all 14 of x, when x points straight along a. Then
+θ = 0 and cos θ = 1.</li>
+</ul>
+<p>So a·x = |a| × (the shadow of x on a). Since |a| = √5 never changes, the water
+a plan uses is its shadow on a, times √5.</p>
+<h3>A wall is every plan with the same shadow</h3>
+<figure class="plate"><img src="chapters/01-inside-the-walls/levels.gif" alt="The line through a = (1, 2) drawn from the origin. A solid line at right angles to it starts at the origin and slides outwards as the amount of water b grows from 0 to 40, leaving faint copies at 8, 16, 24, 32 and 40, evenly spaced along a. The side towards the origin is shaded and labelled a·x &lt; b, the far side a·x &gt; b. Three fixed plans report the water they use, 22, 32 and 40, and each is labelled more, on the line, or less as the line reaches and passes it. The line comes back to b = 32 and stays there, labelled the water wall." loading="lazy"></figure>
+<p>Watch the moving line and the three dots.</p>
+<ul>
+<li>The line never turns. Every line a·x = b is at right angles to a, whatever
+b is.</li>
+<li>A dot is on the line exactly when b equals the water that dot uses. Before
+the line reaches it the dot uses more than b; after the line passes it, less.</li>
+<li>The faint copies are evenly spaced: each extra 8 units of water moves the
+line 8 ÷ √5 ≈ 3.6 further along a.</li>
+</ul>
+<p>Why at right angles? Two plans on the same line use the same water, so the
+move d from one to the other has a·d = 0. A dot product is zero only when
+cos θ = 0, so d is at right angles to a.</p>
+<figure class="plate"><img src="chapters/01-inside-the-walls/shadow.gif" alt="The water wall and the arrow a = (1, 2), with a tick on the line through a at 32 ÷ √5 = 14.3. Step 1: a plan slides along the wall from all corn to 19 wheat and 6.5 corn; its shadow, the blue bar, stays exactly at the tick and the readout stays at 32 units. Step 2: the plan steps away from the origin, the bar grows past the tick and turns amber, and the plan is labelled too much water at 42 units. Step 3: it steps back inside, the bar shrinks below the tick, and the plan is labelled water to spare." loading="lazy"></figure>
+<p>Watch the bar and the tick. While the plan stays on the wall the bar does not
+move, though the plan travels a long way. The bar moves only when the plan
+moves along a, and the water readout moves with it.</p>
+<p>So the water wall a·x = 32 is every plan whose shadow on a is
+32 ÷ √5 ≈ 14.3. It cuts the sheet into two halves: a·x &lt; 32 on the origin's
+side and a·x &gt; 32 on the far side. The arrow a points towards the side that
+uses more water.</p>
 <p>Land is the same with the arrow (1, 1), and its wall sits where the shadow is
 20 ÷ √2 ≈ 14.1. More crops change only the number of entries in the
 arrows. With three crops, a·x = 32 is a flat plane at right angles to a;
 with any number of crops it is called a <strong>hyperplane</strong>, and each side of it a
 <strong>half-space</strong>. The region of possible plans is where all the half-spaces
 overlap.</p>
-<p>The lines are straight because of two assumptions. A second acre of corn uses
+<p>The walls are flat because of two assumptions. A second acre of corn uses
 exactly as much water as the first, and the water used by wheat and corn simply
 adds up. Problems with those two properties are called <strong>linear programs</strong>. A
 water company that charged less per unit after the first 20 would bend the
 water line, and the methods in this guide would no longer apply as they stand.</p>
-<blockquote class="takeaway">
-<p><strong>In one sentence.</strong> A plan is a point, each limited resource is a straight wall, and the possible plans are the region inside all the walls.</p>
+<blockquote class="aside">
+<p><strong>The one thing to remember.</strong> A row a·x ≤ b measures each plan's shadow on the arrow a; the plans with shadow exactly b ÷ |a| form a wall at right angles to a, and the allowed side is the side a points away from.</p>
 </blockquote>
 <h2 id="ch2"><span class="num">2</span>The best plan sits on a corner</h2>
+<p>By the end of this page you will see why the best plan is always a corner, and
+you will have a proof that 8 wheat and 12 corn is best which checks no other
+corner.</p>
 <p>Corn earns $5,000 an acre and wheat only $3,000. The obvious plan is to plant
 as much corn as possible. Corn needs 2 units of water an acre, so 32 units are
 gone after 16 acres. That plan earns $80,000 and leaves 4 acres of land empty.</p>
@@ -150,18 +187,23 @@ gone after 16 acres. That plan earns $80,000 and leaves 4 acres of land empty.</
 water used stays the same, the land used goes up by one, and the profit goes
 up by $1,000. Keep swapping until the land runs out, and the farm reaches 8
 acres of wheat and 12 of corn, worth $84,000.</p>
-<p>To see why nothing beats that, draw every plan worth some fixed amount. Those
-plans all lie on one straight line. Raise the amount, and the line slides
-across the region without turning.</p>
-<figure class="plate"><img src="chapters/02-best-is-a-corner/sweep.gif" alt="The farm's region with a dashed line of equal profit sliding up from the corner with no crops. The line leaves the region last at the corner 8 wheat and 12 corn, marked $84,000; the all-corn corner at 16 acres of corn is marked $80,000 and is passed before the end." loading="lazy"></figure>
-<p>The dot product explains the sweep as well. Profit is 3 × w + 5 × c, which is
-c·x for the profit arrow c = (3, 5). A line of equal profit is every plan with
-one shadow length on c, so it lies at right angles to c, and raising the profit
-pushes the shadow further along c. The best plan is the point of the region
-that reaches furthest in the direction c points.</p>
-<p>The last point of the region the line touches is the best plan. Because the
-line is straight and the region's edges are straight, that last point is a
-corner. The region has only four:</p>
+<h3>Profit is a dot product too</h3>
+<p>Profit is 3 × w + 5 × c, which is c·x for the profit arrow c = (3, 5).
+Everything chapter 1 showed for the water arrow holds for c. Plans with the
+same profit have the same shadow on c, so they lie on one line at right angles
+to c, and more profit means a longer shadow along c.</p>
+<figure class="plate"><img src="chapters/02-best-is-a-corner/sweep.gif" alt="The farm's region with the profit arrow c = (3, 5) and a dashed line at right angles to it. The line starts at $0 through the origin and slides out along c, and the part of the region beyond the line, the plans that earn more, is shaded darker. It pauses at $80,000 with all corn on the line while a dark strip of the region still lies beyond it, then moves on until the dark part shrinks to a single point, the corner 8 wheat and 12 corn at $84,000." loading="lazy"></figure>
+<p>Watch the dark part of the region.</p>
+<ul>
+<li>At $80,000 all corn is on the line, but the dark strip beyond the line is
+still part of the region. Those plans earn more, so all corn is not best.</li>
+<li>The dark part shrinks as the line moves out, and it disappears at the last
+point the line touches. That point is the best plan.</li>
+<li>The last point is a corner. The line is straight and the region's edges are
+straight, so the line leaves the region at a single corner, or along a whole
+edge whose two ends are corners.</li>
+</ul>
+<p>The region has only four corners:</p>
 <div class="overflow-x"><table>
 <thead>
 <tr>
@@ -198,32 +240,44 @@ corner. The region has only four:</p>
 </tr>
 </tbody>
 </table></div>
-<p>There is also a proof that 8 wheat and 12 corn is best which needs none of the
-other corners. At that corner the water and the land are both used up. Take
-any other plan x and the move d = x − (8, 12) that gets there. The move cannot
-use extra water, since there is none, so (1, 2)·d ≤ 0; for the same reason
-(1, 1)·d ≤ 0. Now look at the arrows:</p>
-<figure class="plate"><img src="chapters/02-best-is-a-corner/arrows.png" alt="A close-up of the best corner, 8 wheat and 12 corn, where the water wall and the land wall cross. From the corner, two black arrows drawn head to tail, 2 times the water arrow (1, 2) and then 1 times the land arrow (1, 1), end exactly at the tip of the blue profit arrow c = (3, 5)." loading="lazy"></figure>
-<p>c = 2 × (1, 2) + 1 × (1, 1). So the change in profit is
-c·d = 2 × ((1, 2)·d) + 1 × ((1, 1)·d): two times something no bigger than zero,
-plus one times something no bigger than zero. It cannot be positive, so no plan
-earns more than $84,000. This works because both multipliers, 2 and 1, are
-positive: in the picture, c points between the two walls' arrows. Those two
-numbers come back in chapter 4, where they turn out to be what a unit of water
-and an acre of land are worth to this farm.</p>
 <p>So the question &quot;which of infinitely many plans is best?&quot; becomes &quot;which of
 four corners is best?&quot;. With thousands of crops the number of corners is far
 too large to check one by one, and that is what the simplex method in chapter
 12 is for.</p>
-<p>One case looks like an exception and is not. If wheat and corn both earned
-$1,000 an acre, the line of equal profit would lie flat against the land wall,
-and every plan along that edge, from 20 acres of wheat to 8 wheat and 12 corn,
-would tie at $20,000. The best plans would then fill a whole edge, but the two
-ends of that edge are still corners, so checking corners still finds the best
-value.</p>
+<h3>A proof that checks no other corner</h3>
+<p>At 8 wheat and 12 corn the water and the land are both used up. Take any other
+plan x and the move d = x − (8, 12) that gets there. The move cannot use extra
+water, since there is none, so (1, 2)·d ≤ 0; for the same reason
+(1, 1)·d ≤ 0. The question is what that says about the profit.</p>
+<figure class="plate"><img src="chapters/02-best-is-a-corner/why_best.gif" alt="A close-up of the corner 8 wheat and 12 corn, where the water and land walls cross. Step 1 grows the arrow 2 × (1, 2) from the corner; step 2 adds 1 × (1, 1) from its tip; step 3 shows the profit arrow c = (3, 5) ending at exactly the same point. Step 4 swings a move d through every direction that stays in the region, from along the water wall to along the land wall, while the readout gives the extra water (1, 2)·d, the extra land (1, 1)·d, and the extra profit 2 × water + 1 × land, which never rises above zero." loading="lazy"></figure>
+<p>Steps 1 to 3 show that c = 2 × (1, 2) + 1 × (1, 1). So for any move d,
+c·d = 2 × ((1, 2)·d) + 1 × ((1, 1)·d). Watch the readout in step 4.</p>
+<ul>
+<li>The extra water and the extra land are never positive. Every move that stays
+in the region uses less of at least one and more of neither.</li>
+<li>The extra profit comes from those two numbers alone: twice the extra water
+plus the extra land.</li>
+<li>Along the water wall the water change is 0 and the profit change equals the
+land change. Along the land wall it is the other way round, with the water
+counted twice.</li>
+</ul>
+<p>Two times something no bigger than zero, plus one times something no bigger
+than zero, cannot be positive, so no plan earns more than $84,000. This works
+because both multipliers, 2 and 1, are positive: in the picture, c points
+between the two walls' arrows. Those two numbers come back in chapter 4, where
+they turn out to be what a unit of water and an acre of land are worth to this
+farm.</p>
+<h3>Turn the arrow and the corner moves</h3>
+<figure class="plate"><img src="chapters/02-best-is-a-corner/turns.png" alt="Four copies of the farm's region, each with a different profit arrow c and the line of equal profit through its best plan. c = (1, 3): the best plan is all corn, $48,000. c = (3, 5): 8 wheat and 12 corn, $84,000. c = (1, 1): the line lies flat along the land wall and the whole edge from 8 wheat and 12 corn to all wheat ties at $20,000. c = (3, 1): all wheat, $60,000." loading="lazy"></figure>
+<p>Read the panels left to right, top to bottom: c turns from steep to flat, and
+the best corner moves the same way, from all corn to all wheat. In between,
+c = (1, 1) is the land wall's own arrow, so the line of equal profit lies flat
+against the land wall and the whole edge ties. The best plans then fill an
+edge, but its two ends are still corners, so checking corners still finds the
+best value.</p>
 <p><a href="sandbox/02.html">Change what the crops earn →</a></p>
-<blockquote class="takeaway">
-<p><strong>In one sentence.</strong> The best plan is the last point a sliding line of equal profit touches, and that point is always a corner.</p>
+<blockquote class="aside">
+<p><strong>The one thing to remember.</strong> The best plan is the point of the region that reaches furthest along the profit arrow c, and that point is always a corner.</p>
 </blockquote>
 <h2>Glossary</h2>
 <div class="overflow-x"><table>
