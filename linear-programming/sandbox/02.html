@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en" data-page="sandbox">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Change what the crops earn — Illuminate</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/site.css">
+<script>
+  try {
+    var t = localStorage.getItem("illuminate-theme");
+    document.documentElement.dataset.theme = t ||
+      (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  } catch (e) {}
+</script>
+</head>
+<body>
+<header class="bar">
+  <a class="brand" href="../../">ILLUMINATE</a>
+  <button class="toggle" id="theme" type="button" aria-label="Switch colour scheme">DARK</button>
+</header>
+<main class="sandbox">
+  <a class="back" href="../index.html#ch2">← back to chapter 2</a>
+  <h1>Change what the crops earn</h1>
+  <p class="lede">The farm, with the profit per acre of each crop under your control. The dashed line is every plan worth as much as the best one.</p>
+  <p class="try"><strong>Try this.</strong> Start corn at $5,000 and lower it slowly. Nothing happens, and then the best plan jumps to a different corner all at once. Find the price where two corners tie.</p>
+  <canvas id="c" width="660" height="380"></canvas>
+  <div class="controls"><div class="row"><label for="pw">an acre of wheat earns ($ thousand)</label><input type="range" id="pw" min="0.5" max="8" step="0.25" value="3"><output class="val" id="pwv"></output></div><div class="row"><label for="pc">an acre of corn earns ($ thousand)</label><input type="range" id="pc" min="0.5" max="8" step="0.25" value="5"><output class="val" id="pcv"></output></div></div>
+  <pre class="out" id="out"></pre>
+  <p class="note">The page checks all four corners and keeps the best. That only works because the best plan is always at a corner, which is what chapter 2 argues.</p>
+  <nav class="pager"><a href="index.html">all 1</a></nav>
+</main>
+<script src="../../assets/site.js"></script>
+<script>
+
+const USE   = [[1, 2], [1, 1]];   // water, land used by an acre of wheat, of corn
+const STOCK = [32, 20];
+const PROFIT = [3, 5];            // thousand dollars an acre
+
+function feasible(x, A, b) {
+  if (x[0] < -1e-9 || x[1] < -1e-9) return false;
+  for (let i = 0; i < A.length; i++)
+    if (A[i][0] * x[0] + A[i][1] * x[1] > b[i] + 1e-9) return false;
+  return true;
+}
+
+function corners(A, b) {
+  const lines = A.map((r, i) => [r[0], r[1], b[i]]).concat([[1, 0, 0], [0, 1, 0]]);
+  const out = [];
+  for (let i = 0; i < lines.length; i++)
+    for (let j = i + 1; j < lines.length; j++) {
+      const [a1, b1, r1] = lines[i], [a2, b2, r2] = lines[j];
+      const det = a1 * b2 - a2 * b1;
+      if (Math.abs(det) < 1e-12) continue;
+      const x = [(r1 * b2 - r2 * b1) / det, (a1 * r2 - a2 * r1) / det];
+      if (feasible(x, A, b) && !out.some(p => Math.abs(p[0] - x[0]) < 1e-9 &&
+                                              Math.abs(p[1] - x[1]) < 1e-9))
+        out.push(x);
+    }
+  return out;
+}
+
+// Every corner that ties for best, not just the first one found, because the
+// page has to say so when a whole edge ties.
+function bestCorners(c, A, b) {
+  const pts = corners(A, b);
+  const value = p => c[0] * p[0] + c[1] * p[1];
+  const top = Math.max(...pts.map(value));
+  return { value: top, at: pts.filter(p => Math.abs(value(p) - top) < 1e-9) };
+}
+
+function money(thousands) {
+  return "$" + Math.round(thousands * 1000).toLocaleString("en-US");
+}
+
+
+// --- a very small drawing helper, in the site's colours -------------------
+function palette() {
+  const dark = document.documentElement.dataset.theme === "dark";
+  return dark
+    ? { paper: "#1a1816", ink: "#e8e6e0", ink2: "#a8a599", muted: "#787366",
+        rule: "#4a4540", plan: "#4A87CC", price: "#C25A42", ok: "#4E8F55" }
+    : { paper: "#fffff8", ink: "#000000", ink2: "#404040", muted: "#707070",
+        rule: "#C0BDAD", plan: "#1B4F9C", price: "#B4341F", ok: "#2E6B33" };
+}
+
+function Plot(canvas, xlo, xhi, ylo, yhi, pad) {
+  const dpr = window.devicePixelRatio || 1;
+  const cssW = canvas.clientWidth || 660, cssH = canvas.clientHeight || 380;
+  canvas.width = Math.round(cssW * dpr);
+  canvas.height = Math.round(cssH * dpr);
+  const ctx = canvas.getContext("2d");
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  pad = pad || { l: 54, r: 22, t: 18, b: 42 };
+  const P = palette();
+  const X = x => pad.l + (x - xlo) / (xhi - xlo) * (cssW - pad.l - pad.r);
+  const Y = y => cssH - pad.b - (y - ylo) / (yhi - ylo) * (cssH - pad.t - pad.b);
+  const font = n => `${n}px "IBM Plex Mono", ui-monospace, monospace`;
+  return {
+    ctx, X, Y, P, W: cssW, H: cssH, pad, font,
+    clear() { ctx.clearRect(0, 0, cssW, cssH); },
+    grid(stepX, stepY) {
+      ctx.strokeStyle = P.rule; ctx.lineWidth = 1; ctx.setLineDash([1, 4]);
+      for (let x = xlo; x <= xhi + 1e-9; x += stepX) {
+        ctx.beginPath(); ctx.moveTo(X(x), pad.t); ctx.lineTo(X(x), cssH - pad.b); ctx.stroke();
+      }
+      for (let y = ylo; y <= yhi + 1e-9; y += stepY) {
+        ctx.beginPath(); ctx.moveTo(pad.l, Y(y)); ctx.lineTo(cssW - pad.r, Y(y)); ctx.stroke();
+      }
+      ctx.setLineDash([]);
+    },
+    axes(xlabel, ylabel, stepX, stepY) {
+      // Tick labels are formatted from the step size, not rounded to whole
+      // numbers: an axis stepping by 0.2 was previously printing 0 0 0 1 1 1.
+      const label = (v, step) => step < 1
+        ? v.toFixed(Math.max(0, -Math.floor(Math.log10(step))))
+        : String(Math.round(v));
+      ctx.strokeStyle = P.ink; ctx.lineWidth = 1.2;
+      ctx.beginPath(); ctx.moveTo(pad.l, pad.t); ctx.lineTo(pad.l, cssH - pad.b);
+      ctx.lineTo(cssW - pad.r, cssH - pad.b); ctx.stroke();
+      ctx.fillStyle = P.muted; ctx.font = font(11); ctx.textAlign = "center";
+      if (stepX) for (let x = xlo; x <= xhi + 1e-9; x += stepX)
+        ctx.fillText(label(x, stepX), X(x), cssH - pad.b + 17);
+      ctx.textAlign = "right";
+      if (stepY) for (let y = ylo; y <= yhi + 1e-9; y += stepY)
+        ctx.fillText(label(y, stepY), pad.l - 9, Y(y) + 4);
+      ctx.fillStyle = P.ink2; ctx.font = font(12); ctx.textAlign = "center";
+      if (xlabel) ctx.fillText(xlabel, (pad.l + cssW - pad.r) / 2, cssH - 8);
+      if (ylabel) { ctx.save(); ctx.translate(14, (pad.t + cssH - pad.b) / 2);
+        ctx.rotate(-Math.PI / 2); ctx.fillText(ylabel, 0, 0); ctx.restore(); }
+    },
+    polygon(pts, fill, stroke) {
+      if (!pts.length) return;
+      ctx.beginPath(); ctx.moveTo(X(pts[0][0]), Y(pts[0][1]));
+      for (const p of pts.slice(1)) ctx.lineTo(X(p[0]), Y(p[1]));
+      ctx.closePath();
+      if (fill) { ctx.globalAlpha = 0.14; ctx.fillStyle = fill; ctx.fill(); ctx.globalAlpha = 1; }
+      if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = 1.8; ctx.stroke(); }
+    },
+    rect(x0, y0, x1, y1, fill, alpha) {
+      ctx.save(); ctx.globalAlpha = alpha === undefined ? 1 : alpha;
+      ctx.fillStyle = fill;
+      ctx.fillRect(X(x0), Y(y1), X(x1) - X(x0), Y(y0) - Y(y1));
+      ctx.restore();
+    },
+    line(x0, y0, x1, y1, color, width, dash) {
+      ctx.save(); ctx.strokeStyle = color; ctx.lineWidth = width || 1.4;
+      if (dash) ctx.setLineDash(dash);
+      ctx.beginPath(); ctx.moveTo(X(x0), Y(y0)); ctx.lineTo(X(x1), Y(y1));
+      ctx.stroke(); ctx.restore();
+    },
+    dot(x, y, color, r) {
+      ctx.beginPath(); ctx.arc(X(x), Y(y), r || 6, 0, 7);
+      ctx.fillStyle = color; ctx.fill();
+      ctx.lineWidth = 2; ctx.strokeStyle = P.paper; ctx.stroke();
+    },
+    label(x, y, text, color, align, size) {
+      ctx.fillStyle = color; ctx.font = font(size || 12);
+      ctx.textAlign = align || "left"; ctx.fillText(text, X(x), Y(y));
+    }
+  };
+}
+
+function sortRound(pts) {
+  if (!pts.length) return pts;
+  const cx = pts.reduce((s, p) => s + p[0], 0) / pts.length;
+  const cy = pts.reduce((s, p) => s + p[1], 0) / pts.length;
+  return pts.slice().sort((a, b) =>
+    Math.atan2(a[1] - cy, a[0] - cx) - Math.atan2(b[1] - cy, b[0] - cx));
+}
+
+
+const cv = document.getElementById("c"), out = document.getElementById("out");
+const pw = document.getElementById("pw"), pc = document.getElementById("pc");
+function draw() {
+  const c = [+pw.value, +pc.value];
+  document.getElementById("pwv").textContent = money(c[0]);
+  document.getElementById("pcv").textContent = money(c[1]);
+  const p = Plot(cv, 0, 23, 0, 18.5);
+  p.clear(); p.grid(2, 2); p.axes("acres of wheat", "acres of corn", 4, 4);
+  const pts = sortRound(corners(USE, STOCK));
+  p.polygon(pts, p.P.plan, p.P.plan);
+  for (let i = 0; i < USE.length; i++)
+    p.line(0, STOCK[i] / USE[i][1], 23, (STOCK[i] - 23 * USE[i][0]) / USE[i][1], p.P.muted, 1.1);
+  const best = bestCorners(c, USE, STOCK);
+  p.line(0, best.value / c[1], 23, (best.value - 23 * c[0]) / c[1], p.P.ink, 1.6, [6, 3]);
+  for (const q of pts) p.dot(q[0], q[1], p.P.muted, 3.5);
+  for (const q of best.at) p.dot(q[0], q[1], p.P.plan, 7);
+  const plan = q => q[0] + " acres wheat, " + q[1] + " acres corn";
+  out.textContent = (best.at.length > 1
+    ? "a tie: every plan on the edge between\n  " + best.at.map(plan).join("\n  ") +
+      "\nearns the same"
+    : "best plan   " + plan(best.at[0])) +
+    "\nworth       " + money(best.value);
+}
+pw.addEventListener("input", draw); pc.addEventListener("input", draw);
+window.addEventListener("resize", draw);
+document.addEventListener("themechange", draw);
+draw();
+
+</script>
+</body>
+</html>
