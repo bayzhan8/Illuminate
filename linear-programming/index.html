@@ -109,6 +109,31 @@ the farm can actually carry out.</p>
 is, which is fine. It also needs 6 + 28 = 34 units of water, two more than the
 farm has. The point lies just past the water line, and that is the whole
 check.</p>
+<p>Why is the water's boundary a straight line, and why is the allowed side the
+side towards the origin? A plan of w acres of wheat and c acres of corn uses
+1 × w + 2 × c units of water. Put the water each crop needs per acre into an
+arrow a = (1, 2), and the plan into an arrow x = (w, c). Multiplying matching
+entries and adding is the <strong>dot product</strong>, written a·x.</p>
+<p>The dot product also has a geometric meaning. If θ is the angle between the two arrows,
+a·x = |a| |x| cos θ, and |x| cos θ is the length of x's shadow when it is
+dropped at right angles onto the line through a. So a·x = |a| × (the shadow of
+x on a): the water a plan uses is the length of its shadow along a, times the
+fixed number |a| = √5.</p>
+<figure class="plate"><img src="chapters/01-inside-the-walls/shadow.gif" alt="The plane of plans with the arrow a = (1, 2) drawn from the origin and a dotted line continuing in its direction. A plan slides along the water wall while a thick blue bar, its shadow on that line, keeps the same length of 14.3. The plan then moves off the wall away from the origin and the bar grows past the wall, turning amber and labelled too much water, then moves back inside and the bar shrinks. A caption shows a·x and the shadow at every moment." loading="lazy"></figure>
+<p>The water runs out when a·x = 32, which is when the shadow is 32 ÷ √5 ≈ 14.3.
+The plans with exactly that shadow are the points of one line, at right angles
+to a, crossing a's line at the shadow's tip. Slide a plan along that line and
+its shadow does not change. Move it further in the direction of a and the
+shadow grows, so the plan needs more than 32 units; move it back towards the
+origin and it needs less. The wall a·x = 32 therefore cuts the sheet into two
+halves: a·x &lt; 32 on the origin's side and a·x &gt; 32 on the far side. The
+arrow a points towards the side that uses more water.</p>
+<p>Land is the same with the arrow (1, 1), and its wall sits where the shadow is
+20 ÷ √2 ≈ 14.1. More crops change only the number of entries in the
+arrows. With three crops, a·x = 32 is a flat plane at right angles to a;
+with any number of crops it is called a <strong>hyperplane</strong>, and each side of it a
+<strong>half-space</strong>. The region of possible plans is where all the half-spaces
+overlap.</p>
 <p>The lines are straight because of two assumptions. A second acre of corn uses
 exactly as much water as the first, and the water used by wheat and corn simply
 adds up. Problems with those two properties are called <strong>linear programs</strong>. A
@@ -129,6 +154,11 @@ acres of wheat and 12 of corn, worth $84,000.</p>
 plans all lie on one straight line. Raise the amount, and the line slides
 across the region without turning.</p>
 <figure class="plate"><img src="chapters/02-best-is-a-corner/sweep.gif" alt="The farm's region with a dashed line of equal profit sliding up from the corner with no crops. The line leaves the region last at the corner 8 wheat and 12 corn, marked $84,000; the all-corn corner at 16 acres of corn is marked $80,000 and is passed before the end." loading="lazy"></figure>
+<p>The dot product explains the sweep as well. Profit is 3 × w + 5 × c, which is
+c·x for the profit arrow c = (3, 5). A line of equal profit is every plan with
+one shadow length on c, so it lies at right angles to c, and raising the profit
+pushes the shadow further along c. The best plan is the point of the region
+that reaches furthest in the direction c points.</p>
 <p>The last point of the region the line touches is the best plan. Because the
 line is straight and the region's edges are straight, that last point is a
 corner. The region has only four:</p>
@@ -168,6 +198,19 @@ corner. The region has only four:</p>
 </tr>
 </tbody>
 </table></div>
+<p>There is also a proof that 8 wheat and 12 corn is best which needs none of the
+other corners. At that corner the water and the land are both used up. Take
+any other plan x and the move d = x − (8, 12) that gets there. The move cannot
+use extra water, since there is none, so (1, 2)·d ≤ 0; for the same reason
+(1, 1)·d ≤ 0. Now look at the arrows:</p>
+<figure class="plate"><img src="chapters/02-best-is-a-corner/arrows.png" alt="A close-up of the best corner, 8 wheat and 12 corn, where the water wall and the land wall cross. From the corner, two black arrows drawn head to tail, 2 times the water arrow (1, 2) and then 1 times the land arrow (1, 1), end exactly at the tip of the blue profit arrow c = (3, 5)." loading="lazy"></figure>
+<p>c = 2 × (1, 2) + 1 × (1, 1). So the change in profit is
+c·d = 2 × ((1, 2)·d) + 1 × ((1, 1)·d): two times something no bigger than zero,
+plus one times something no bigger than zero. It cannot be positive, so no plan
+earns more than $84,000. This works because both multipliers, 2 and 1, are
+positive: in the picture, c points between the two walls' arrows. Those two
+numbers come back in chapter 4, where they turn out to be what a unit of water
+and an acre of land are worth to this farm.</p>
 <p>So the question &quot;which of infinitely many plans is best?&quot; becomes &quot;which of
 four corners is best?&quot;. With thousands of crops the number of corners is far
 too large to check one by one, and that is what the simplex method in chapter
@@ -210,6 +253,22 @@ value.</p>
 <tr>
 <td>corner</td>
 <td>extreme point, vertex</td>
+</tr>
+<tr>
+<td>arrow a of a resource</td>
+<td>the constraint's row, its normal vector</td>
+</tr>
+<tr>
+<td>shadow on a</td>
+<td>scalar projection, a·x ÷ |a|</td>
+</tr>
+<tr>
+<td>the two halves either side of a wall</td>
+<td>half-spaces</td>
+</tr>
+<tr>
+<td>profit arrow c</td>
+<td>objective vector, gradient of the objective</td>
 </tr>
 </tbody>
 </table></div>

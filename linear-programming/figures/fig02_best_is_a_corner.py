@@ -8,7 +8,7 @@ from fractions import Fraction
 
 from illuminate.draw import PLAN, TEXT_DIM, animate, chapter_dir, figure, margin_note
 from linprog import farm as f
-from scene import draw_axes, draw_region, draw_wall, heading, iso_profit, mark
+from scene import arrow, direction_line, draw_axes, draw_region, draw_wall, foot, heading, iso_profit, mark, norm
 
 OUT = chapter_dir("02-best-is-a-corner")
 
@@ -31,12 +31,18 @@ def sweep_gif():
         draw_wall(ax, 1)
         draw_region(ax)
         iso_profit(ax, level)
+        direction_line(ax, f.PROFIT, TEXT_DIM, "direction of c", reach=21)
+        arrow(ax, (0, 0), (3, 5), TEXT_DIM, "c", dx=0.3, dy=0.0)
+        k = level / norm(f.PROFIT) ** 2
+        ax.plot([0, 3 * k], [0, 5 * k], color=PLAN, lw=4.0, solid_capstyle="butt",
+                zorder=4, alpha=0.85)
         mark(ax, f.ALL_CORN, f"all corn: {f.money(f.ALL_CORN_PROFIT)}",
-             color=TEXT_DIM, size=8, dx=0.6, dy=-2.2)
+             color=TEXT_DIM, size=8, dx=0.6, dy=-3.5)
         if i == frames - 1:
             mark(ax, f.BEST, f"8 wheat, 12 corn: {f.money(f.BEST_PROFIT)}",
                  color=PLAN, size=11, dx=0.5, dy=0.5)
-        note.set_text(f"every plan on the dashed line earns {f.money(Fraction(round(level)))}")
+        note.set_text(f"every plan on the dashed line earns {f.money(Fraction(round(level)))}"
+                      f"   shadow on c = {level / norm(f.PROFIT):4.1f}")
         return []
 
     animate(fig, update, frames, OUT / "sweep.gif", fps=12, hold=3.5)

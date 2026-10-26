@@ -92,3 +92,16 @@ def test_every_invented_phrase_has_its_real_name():
 def test_em_dash_density_is_low():
     words = len(TEXT.split())
     assert TEXT.count("—") * 1000 / words < 3
+
+
+def test_the_shadow_lengths_are_rounded_from_the_exact_values():
+    import math
+    for i, root in ((0, "√5"), (1, "√2")):
+        a, b = f.FARM.A[i], f.FARM.b[i]
+        size = math.sqrt(a[0] ** 2 + a[1] ** 2)
+        assert f"{b} ÷ {root} ≈ {float(b) / size:.1f}" in FLAT
+
+
+def test_the_arrow_decomposition_is_the_prices():
+    y, (w, l) = f.PRICES, f.FARM.A
+    assert (f"c = {y[0]} × ({w[0]}, {w[1]}) + {y[1]} × ({l[0]}, {l[1]})") in FLAT

@@ -79,3 +79,31 @@ def heading(ax, text: str):
     from illuminate.draw import TEXT_FAINT
     ax.set_title(text.upper(), loc="left", fontsize=9.5, color=TEXT_FAINT, pad=12,
                  fontweight="semibold")
+
+
+def norm(v):
+    return math.hypot(float(v[0]), float(v[1]))
+
+
+def foot(x, a):
+    """Where x lands when dropped at right angles onto the line through 0 along a."""
+    k = (float(a[0]) * float(x[0]) + float(a[1]) * float(x[1])) / norm(a) ** 2
+    return (k * float(a[0]), k * float(a[1]))
+
+
+def direction_line(ax, a, color, label=None, reach=24, lw=1.0):
+    u = (float(a[0]) / norm(a), float(a[1]) / norm(a))
+    ax.plot([0, reach * u[0]], [0, reach * u[1]], color=color, lw=lw,
+            dashes=(2, 3), zorder=2)
+    if label:
+        ax.text(reach * u[0] * 0.97, reach * u[1] * 0.97, label, color=color,
+                fontsize=9.5, ha="right", va="bottom", zorder=6)
+
+
+def arrow(ax, start, vec, color, label=None, lw=2.2, dx=0.3, dy=0.3, ha="left"):
+    ax.annotate("", xy=(start[0] + vec[0], start[1] + vec[1]), xytext=start,
+                arrowprops=dict(arrowstyle="-|>", color=color, lw=lw,
+                                shrinkA=0, shrinkB=0, mutation_scale=14), zorder=8)
+    if label:
+        ax.text(start[0] + vec[0] + dx, start[1] + vec[1] + dy, label, color=color,
+                fontsize=10, ha=ha, va="center", zorder=8)

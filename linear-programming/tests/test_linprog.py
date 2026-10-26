@@ -79,3 +79,29 @@ def test_equal_earnings_make_the_land_edge_tie():
     tied = [p for p in vertices(even) if even.value(p) == best_by_enumeration(even)[1]]
     assert sorted(tied) == [(8, 12), (20, 0)]
     assert best_by_enumeration(even)[1] == 20
+
+
+def test_profit_arrow_is_the_prices_times_the_walls_arrows():
+    combo = tuple(sum(f.PRICES[i] * f.FARM.A[i][j] for i in range(f.FARM.m))
+                  for j in range(f.FARM.n))
+    assert f.PRICES == (2, 1) and combo == f.FARM.c == (3, 5)
+    assert all(p > 0 for p in f.PRICES)
+
+
+def test_the_arrow_proof_bounds_every_plan():
+    # c·x = 84 + sum_i y_i (a_i·x - b_i) <= 84, checked on a grid of plans
+    for w in range(0, 21):
+        for c in range(0, 17):
+            x = (Fraction(w), Fraction(c))
+            if f.FARM.feasible(x):
+                rhs = f.BEST_PROFIT - sum(f.PRICES[i] * f.FARM.slack(i, x) for i in range(f.FARM.m))
+                assert f.FARM.value(x) == rhs <= f.BEST_PROFIT
+
+
+def test_every_plan_on_the_water_wall_has_the_same_shadow():
+    a, b = f.FARM.A[0], f.FARM.b[0]
+    for t in range(0, 21):
+        x = (Fraction(t), (b - t) / 2)
+        assert a[0] * x[0] + a[1] * x[1] == b
+    off = (Fraction(21), Fraction(21, 2))
+    assert a[0] * off[0] + a[1] * off[1] > b
