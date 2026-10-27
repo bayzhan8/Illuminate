@@ -282,6 +282,16 @@ main { flex: 1 0 auto; }
 .aside p { margin-bottom: 0.4rem; }
 .aside p:last-child { margin-bottom: 0; }
 
+.proof {
+  border-left: 3px solid var(--ink);
+  background: var(--panel);
+  padding: 0.2rem 0 0.2rem 1.1rem;
+  margin: 0 0 1.4rem;
+  color: var(--ink2);
+}
+.proof p { margin-bottom: 0.4rem; }
+.proof p:last-child { margin-bottom: 0; }
+
 /* the one-line landing a chapter ends on */
 .takeaway {
   border: 0;
