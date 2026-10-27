@@ -45,7 +45,7 @@ def shadow_gif():
             x = (x0 + s * (x1 - x0), y0 + s * (y1 - y0))
         ax.clear()
         draw_axes(ax)
-        draw_wall(ax, 0, "lathe wall", at=13.5, color=TEXT_DIM)
+        draw_wall(ax, 0, "lathe wall", at=21, color=TEXT_DIM)
         direction_line(ax, A, TEXT_DIM, None, reach=20.5)
         arrow(ax, (0, 0), A, TEXT, "a = (1, 2)", dx=0.5, dy=-0.4)
         p = foot(x, A)
@@ -55,8 +55,8 @@ def shadow_gif():
                 solid_capstyle="butt", zorder=3)
         ax.plot([tick[0] - 0.5 * U[1], tick[0] + 0.5 * U[1]],
                 [tick[1] + 0.5 * U[0], tick[1] - 0.5 * U[0]], color=TEXT, lw=1.6, zorder=6)
-        ax.text(tick[0] - 1.6, tick[1] + 0.3, "32 ÷ √5 = 14.3", color=TEXT, fontsize=9,
-                ha="right", va="bottom", zorder=7)
+        ax.text(tick[0] + 0.9, tick[1] + 0.5, "32 ÷ √5 = 14.3", color=TEXT, fontsize=9,
+                ha="left", va="bottom", zorder=7)
         ax.plot([x[0], p[0]], [x[1], p[1]], color=TEXT_DIM, lw=1.0, dashes=(3, 2), zorder=5)
         if norm((x[0] - p[0], x[1] - p[1])) > 0.8:
             right_angle(ax, p, (-U[0], -U[1]), unit((x[0] - p[0], x[1] - p[1])))
