@@ -67,6 +67,10 @@ planning for the US Air Force, knowing nothing of Kantorovich. It starts at a
 corner of the shape, moves along an edge to a neighbouring corner worth more,
 and stops when no neighbour is better. Here it takes two steps: from nothing
 made, to all 5-ply, to 8 batches of 3-ply and 12 of 5-ply.</p>
+<p>Stopping there is a claim, not an observation. The walk compares a corner only
+with its neighbours, never with plans further away. That a corner which beats
+its neighbours beats every plan is a theorem, proved for this mill in chapter 2
+and in general in chapter 12.</p>
 <p>Dantzig did not expect it to work. He pictured it as the animation draws it,
 crawling round the outside of the shape when a path through the middle looked
 shorter, and he set it aside. He tested it only after other people's methods
@@ -166,6 +170,36 @@ back down to 28.0. Its direction alone decides that.</li>
 </ul>
 <p>So a·x = |a| × (the shadow of x on a). Since |a| = √5 never changes, the
 lathe time a plan uses is its shadow on a, times √5.</p>
+<h3>Why the two meanings agree</h3>
+<figure class="plate"><img src="chapters/01-inside-the-walls/cosine.png" alt="The arrows a = (1, 2) and x = (6, 8) drawn from the origin, with an arc marking the angle θ between them and the third side of the triangle, from the tip of a to the tip of x, labelled x − a. A dashed drop from the tip of x meets the line through a at a right angle, at the point p = (4.4, 8.8), and the thick bar from the origin to p is the shadow of x on a, of length 22 ÷ √5 ≈ 9.8." loading="lazy"></figure>
+<p>The two meanings are one fact, and the proof is the triangle in the picture.
+Its sides are a, x, and the arrow x − a from the tip of a to the tip of x.</p>
+<blockquote class="proof">
+<p><strong>Proof that a·x = |a| |x| cos θ.</strong> The law of cosines for this triangle says</p>
+<p>|x − a|² = |a|² + |x|² − 2 |a| |x| cos θ.</p>
+<p>The dot product gives the same side another way. Any arrow v has |v|² = v·v, which is Pythagoras: v·v adds up the squares of the entries. A dot product multiplies out like ordinary brackets, so</p>
+<p>|x − a|² = (x − a)·(x − a) = x·x − 2 a·x + a·a = |x|² − 2 a·x + |a|².</p>
+<p>The two right-hand sides are equal. Cancel |a|² and |x|², divide by −2, and what is left is a·x = |a| |x| cos θ. ∎</p>
+</blockquote>
+<p>The same algebra finds the shadow. The foot of the drop is the point p = s a
+on the line through a, with s = a·x ÷ |a|². It is the right point because the
+drop x − p is at right angles to a:</p>
+<p>a·(x − p) = a·x − s (a·a) = a·x − (a·x ÷ |a|²) |a|² = 0.</p>
+<p>For x = (6, 8), a·x = 22, so p = (22 ÷ 5) × (1, 2) = (4.4, 8.8). The shadow's
+length is |p| = a·x ÷ |a| = 22 ÷ √5 ≈ 9.8, and that is |x| cos θ = 10 cos θ.</p>
+<p>With three sheet types there is still a triangle, lying in the flat sheet
+through 0, a and x, and the proof is unchanged. With fifty there is no
+protractor, so the formula is turned round to define the angle:
+cos θ = a·x ÷ (|a| |x|). That is an honest cosine only if it lies between −1
+and 1, and that is the first basic theorem this guide needs.</p>
+<blockquote class="proof">
+<p><strong>Theorem (Cauchy–Schwarz).</strong> For any two arrows, |a·x| ≤ |a| |x|, with equality exactly when one is a multiple of the other.</p>
+<p><strong>Proof.</strong> If a = 0 both sides are 0. Otherwise let p = s a be the foot of the drop from x, with s = a·x ÷ |a|² as above. The drop x − p is at right angles to p, so Pythagoras splits x into two perpendicular pieces:</p>
+<p>|x|² = |p|² + |x − p|² ≥ |p|² = (a·x)² ÷ |a|².</p>
+<p>Multiply by |a|² and take square roots: |a·x| ≤ |a| |x|. Equality needs |x − p| = 0, which means x = s a. ∎</p>
+</blockquote>
+<p>In words: a shadow is never longer than the arrow that casts it. Every time this
+guide turns a dot product into a distance, this is the step that does it.</p>
 <h3>A wall is every plan with the same shadow</h3>
 <figure class="plate"><img src="chapters/01-inside-the-walls/levels.gif" alt="The line through a = (1, 2) drawn from the origin. A solid line at right angles to it starts at the origin and slides outwards as the allowed lathe hours b grows from 0 to 40, leaving faint copies at 8, 16, 24, 32 and 40, evenly spaced along a. The side towards the origin is shaded and labelled a·x &lt; b, the far side a·x &gt; b. Three fixed plans report their lathe hours, 22, 32 and 40, and each is labelled more, on the line, or less as the line reaches and passes it. The line comes back to b = 32 and stays there, labelled the lathe wall." loading="lazy"></figure>
 <p>Watch the moving line and the three dots.</p>
@@ -180,6 +214,14 @@ line 8 ÷ √5 ≈ 3.6 further along a.</li>
 <p>Why at right angles? Two plans on the same line use the same lathe time, so the
 move d from one to the other has a·d = 0. A dot product is zero only when
 cos θ = 0, so d is at right angles to a.</p>
+<p>That is half of the claim: moves inside the wall are at right angles to a. The
+other half is that every such move stays inside the wall, so the wall is the
+whole line and not some smaller set inside it. Take a plan y on the wall and
+any move d with a·d = 0. Then a·(y + d) = a·y + a·d = 32 + 0 = 32, so y + d is
+on the wall too. Together: the wall is exactly y plus every move at right
+angles to a. In the plane those moves are the multiples of (2, −1), a line.
+With n sheet types, a·d = 0 is one equation in n unknowns, so its solutions
+fill a flat of n − 1 dimensions. That is a hyperplane.</p>
 <figure class="plate"><img src="chapters/01-inside-the-walls/shadow.gif" alt="The lathe wall and the arrow a = (1, 2), with a tick on the line through a at 32 ÷ √5 = 14.3. Step 1: a plan slides along the wall from all 5-ply to 19 batches of 3-ply and 6.5 of 5-ply; its shadow, the blue bar, stays exactly at the tick and the readout stays at 32 hours. Step 2: the plan steps away from the origin, the bar grows past the tick and turns amber, and the plan is labelled over the lathe hours at 42 hours. Step 3: it steps back inside, the bar shrinks below the tick, and the plan is labelled lathe time to spare." loading="lazy"></figure>
 <p>Watch the bar and the tick. While the plan stays on the wall the bar does not
 move, though the plan travels a long way. The bar moves only when the plan
@@ -187,7 +229,25 @@ moves along a, and the lathe readout moves with it.</p>
 <p>So the lathe wall a·x = 32 is every plan whose shadow on a is
 32 ÷ √5 ≈ 14.3. It cuts the sheet into two halves: a·x &lt; 32 on the origin's
 side and a·x &gt; 32 on the far side. The arrow a points towards the side that
-uses more lathe time.</p>
+uses more lathe time: a step s along a changes the lathe hours by
+a·(s a) = s |a|² = 5s, which is positive for every s &gt; 0.</p>
+<h3>How far a plan is from a wall</h3>
+<p>The faint copies in the moving-line animation sit 8 ÷ √5 apart, not 8, and the
+lathe wall sits 32 ÷ √5 from the origin, not 32. Hours and distances are
+different units, and |a| converts one into the other.</p>
+<figure class="plate"><img src="chapters/01-inside-the-walls/nearest.gif" alt="The plan x = (6, 14), 2 lathe hours over, just past the lathe wall. A probe point y slides along the wall from all 5-ply towards all 3-ply, with a dashed segment from x to y and a readout of its length. The length falls to its smallest value, 2 ÷ √5 ≈ 0.89, when y reaches (5.6, 13.2), where the segment meets the wall at a right angle and points straight back along a; then it grows again. The final frame holds y at (5.6, 13.2) with a right-angle mark." loading="lazy"></figure>
+<blockquote class="proof">
+<p><strong>Theorem (distance to a wall).</strong> Let g = a·x − b be how far a plan x is over the wall a·y = b, counted in hours. The point of the wall nearest to x is x − (g ÷ |a|²) a, and the distance is |g| ÷ |a|.</p>
+<p><strong>Proof.</strong> The point y* = x − (g ÷ |a|²) a is on the wall, since a·y* = a·x − (g ÷ |a|²)(a·a) = a·x − g = b. Its distance from x is |g| |a| ÷ |a|² = |g| ÷ |a|. Any point y of the wall has a·(x − y) = a·x − b = g, so Cauchy–Schwarz gives |g| ≤ |a| |x − y|, that is |x − y| ≥ |g| ÷ |a|. No point of the wall is closer than y*. ∎</p>
+</blockquote>
+<p>For x = (6, 14): g = 34 − 32 = 2 hours, the nearest point of the wall is
+(6, 14) − (2 ÷ 5) × (1, 2) = (5.6, 13.2), and the distance is 2 ÷ √5 ≈ 0.89.</p>
+<p>The proof says more than the formula. A step of length r changes the lathe
+hours by a·(step), which is at most |a| r by Cauchy–Schwarz, and exactly |a| r
+when the step points along a. So |a| = √5 is the most lathe time one unit of
+distance can add, and a is the direction that adds it fastest. That is why
+8 extra hours move the line 8 ÷ √5 along a, and why 32 hours put the wall
+32 ÷ √5 from the origin.</p>
 <p>The press is the same with the arrow (1, 1), and its wall sits where the shadow
 is 20 ÷ √2 ≈ 14.1. More sheet types change only the number of entries in the
 arrows. With three products, a·x = 32 is a flat plane at right angles to a;
@@ -208,12 +268,57 @@ carefully stated his axioms. &quot;If you have an application that satisfies the
 axioms, well use it. If it does not, then don't.&quot; The two assumptions above
 are those axioms. Our mill satisfies them by construction. A real one satisfies
 them roughly, and much of the craft is knowing when roughly is enough.</p>
+<h3>Two facts about the whole region</h3>
+<p>Count the axes as rows too: t ≥ 0 is −t ≤ 0, with arrow (−1, 0), and f ≥ 0 is
+−f ≤ 0, with arrow (0, −1). Then the region is the set of plans x with a·x ≤ b
+for each of its four rows. A set cut out by finitely many rows like this is a
+<strong>polyhedron</strong>. Two facts about polyhedra carry the next chapter.</p>
+<p><strong>Convex: the segment between two plans is made of plans.</strong></p>
+<blockquote class="proof">
+<p><strong>Proposition.</strong> If x and y are in a polyhedron, so is every point (1 − s) x + s y with 0 ≤ s ≤ 1.</p>
+<p><strong>Proof.</strong> For each row, a·((1 − s) x + s y) = (1 − s)(a·x) + s (a·y) ≤ (1 − s) b + s b = b. The step that keeps ≤ multiplies a·x ≤ b by 1 − s and a·y ≤ b by s, which is allowed because neither weight is negative. ∎</p>
+</blockquote>
+<p>For example, halfway between 6 batches of 3-ply and 8 of 5-ply, and 8 and 12,
+is the plan (7, 10). It uses 27 lathe hours and 17 press hours, so it is a
+plan, as promised.</p>
+<p><strong>Closed: the region includes its own edge.</strong> A plan on the lathe wall uses
+exactly 32 hours, which is allowed. The precise way to say &quot;includes its edge&quot;
+is that the outside is open: every point outside has a small disc around it
+that lies entirely outside.</p>
+<figure class="plate"><img src="chapters/01-inside-the-walls/ball.gif" alt="A close-up of the lathe wall near the plan x = (6, 14), which is 2 lathe hours over. Step 1 draws a disc of radius 2 around x, the excess in hours: it crosses the wall, and the part inside the region is shaded amber. Step 2 shrinks the disc to radius 2 ÷ √5 ≈ 0.89, the true distance: it touches the wall at (5.6, 13.2), which uses exactly 32 hours. Step 3 shrinks it to half that, 1 ÷ √5 ≈ 0.45, and a probe runs round its edge with a readout of the lathe hours it uses, which never falls below 33. The final frame reads: every point of the disc is over the lathe hours, so the outside is open." loading="lazy"></figure>
+<blockquote class="proof">
+<p><strong>Proposition.</strong> Every polyhedron is closed.</p>
+<p><strong>Proof.</strong> Take a point x outside. It breaks at least one row: a·x &gt; b. Let ε = a·x − b &gt; 0 be how far over it is, in hours, and let r = ε ÷ (2 |a|). Every point of the disc of radius r around x is x + r d for some d with |d| ≤ 1. By Cauchy–Schwarz, a·d ≥ −|a| |d| ≥ −|a|, so</p>
+<p>a·(x + r d) = a·x + r (a·d) ≥ a·x − r |a| = b + ε − ε ÷ 2 = b + ε ÷ 2 &gt; b.</p>
+<p>Every point of the disc breaks the same row, so the whole disc is outside. The outside is open, which is what closed means. ∎</p>
+</blockquote>
+<p>Each piece of r is there for a reason, and the animation shows what goes wrong
+without it.</p>
+<ul>
+<li><strong>Why divide by |a|.</strong> ε is an excess in hours, and a radius is a distance.
+A step of length r can cut the lathe hours by up to |a| r, and cuts them by
+exactly that when it points straight back at the wall. So the excess is used
+up after a distance ε ÷ |a|, the distance to the wall from the theorem above.
+Using ε itself as the radius treats hours as distance and is too big by the
+factor |a|. For x = (6, 14), a disc of radius 2 reaches plans using
+34 − 2√5 ≈ 29.5 hours, well inside the wall.</li>
+<li><strong>Why the 2.</strong> Any radius below ε ÷ |a| works, and halving is the simplest
+choice that leaves room. At exactly ε ÷ |a| the disc touches the wall at
+(5.6, 13.2), which is a plan, so the closed disc is no longer outside. The 2
+leaves a margin of ε ÷ 2 hours: at radius 1 ÷ √5 the worst point of the disc
+uses 34 − 1 = 33 hours.</li>
+<li><strong>Why one row is enough.</strong> x only has to break one row to be outside, and
+the disc only has to keep breaking that same row. The other rows play no
+part.</li>
+</ul>
+<p>Closed, together with bounded, is what guarantees in chapter 2 that a best plan
+exists at all.</p>
 <blockquote class="aside">
 <p><strong>The one thing to remember.</strong> A row a·x ≤ b measures each plan's shadow on the arrow a; the plans with shadow exactly b ÷ |a| form a wall at right angles to a, and the allowed side is the side a points away from.</p>
 </blockquote>
 <h2 id="ch2"><span class="num">2</span>The best plan sits on a corner</h2>
-<p>By the end of this page you will see why the best plan is always a corner, and
-you will have a proof that 8 batches of 3-ply and 12 of 5-ply are best which
+<p>By the end of this page you will see why, whenever a best plan exists, a
+corner is one of them, and you will have a proof that 8 batches of 3-ply and 12 of 5-ply are best which
 checks no other corner.</p>
 <p>A batch of 5-ply is worth 5,000 roubles, more than the 3,000 roubles for
 3-ply. The obvious plan is to make as much 5-ply as possible. A batch of 5-ply
@@ -236,11 +341,137 @@ line is still part of the region. Those plans have more value, so all 5-ply
 is not best.</li>
 <li>The dark part shrinks as the line moves out, and it disappears at the last
 point the line touches. That point is the best plan.</li>
-<li>The last point is a corner. The line is straight and the region's edges are
-straight, so the line leaves the region at a single corner, or along a whole
-edge whose two ends are corners.</li>
+<li>The last point is a corner. The picture suggests why: a straight line
+leaving a region with straight edges leaves at a corner or along an edge.
+A picture is not a proof, and the next three sections give one.</li>
 </ul>
-<p>The region has only four corners:</p>
+<h3>There is a best plan</h3>
+<p>The sweep took for granted that there is a last point to stop at. Some regions
+have none.</p>
+<figure class="plate"><img src="chapters/02-best-is-a-corner/no_best.png" alt="Two regions where no plan is best. Left: a mill with no lathe or press limit, only t ≥ 0 and f ≥ 0; lines of equal value for c = (3, 5) at 20,000, 40,000 and 60,000 roubles move out without end. Right: the mill with its press edge drawn dashed, as if using exactly 20 press hours were forbidden, and the value arrow c = (1, 1); plans worth 19,000, 19,900 and 19,990 roubles approach the missing edge, where the value would be 20,000 roubles, and none reaches it." loading="lazy"></figure>
+<p>The left region is not bounded: 3t + 5f grows without end and every plan is
+beaten by another. The right region is not closed. With value t + f, which is
+just the press hours, every plan is worth less than 20,000 roubles and plans
+come as close to 20,000 as you like, but none is worth 20,000. Chapter 1's
+proposition that every polyhedron is closed is what rules this out.</p>
+<blockquote class="proof">
+<p><strong>Theorem (Weierstrass).</strong> A continuous function on a closed, bounded set has a largest value on it.</p>
+<p><strong>Proof.</strong> Let M be the least upper bound of the values, allowing M = ∞ for now. Pick points x1, x2, x3, … in the set whose values climb towards M: the k-th worth more than M − 1/k, or more than k if M = ∞. The points stay inside a bounded set, so some subsequence of them converges to a point x* (the Bolzano–Weierstrass theorem, a basic fact about the real numbers). The set is closed, so x* is in it. The function is continuous, so the values along the subsequence converge to the value at x*; they also converge to M. So M is finite and is reached at x*. ∎</p>
+</blockquote>
+<p>For the mill each condition takes one line.</p>
+<ul>
+<li><strong>Closed:</strong> the region is a polyhedron (chapter 1).</li>
+<li><strong>Bounded:</strong> every plan has t ≥ 0, f ≥ 0 and t + f ≤ 20, so its length
+√(t² + f²) is at most t + f ≤ 20.</li>
+<li><strong>Continuous:</strong> two plans x and y differ in value by
+|c·x − c·y| = |c·(x − y)| ≤ |c| |x − y| = √34 |x − y|, by Cauchy–Schwarz.
+Nearby plans have nearby values.</li>
+</ul>
+<p>So the mill has a best plan. Weierstrass says nothing about where it is; the
+next two sections do.</p>
+<h3>What a corner is</h3>
+<p>So far &quot;corner&quot; has meant a point that looks pointed. The definition that
+proofs can use:</p>
+<blockquote class="proof">
+<p><strong>Definition.</strong> A <strong>corner</strong> of the region is a plan that is not the midpoint of two different plans.</p>
+</blockquote>
+<p>(4, 14) is not a corner: it is halfway between all 5-ply, (0, 16), and (8, 12),
+both plans, along the lathe wall. (8, 12) is a corner, because of its two tight
+walls. Suppose (8, 12) were the midpoint of plans x and y. Both use at most 32
+lathe hours and their average uses exactly 32, so both use exactly 32. The same
+goes for the press: both use exactly 20. But t + 2f = 32 and t + f = 20 have
+only one solution, (8, 12) itself, so x = y = (8, 12).</p>
+<p>That argument works at any plan where two walls with non-parallel arrows are
+tight: the two equations pin the plan down, so it cannot be the middle of
+anything. The next proof needs the other direction.</p>
+<blockquote class="proof">
+<p><strong>Lemma.</strong> If a plan x is not a corner, some move d ≠ 0 keeps every wall that is tight at x tight: a·d = 0 for each such row.</p>
+<p><strong>Proof.</strong> x is the midpoint of two different plans, x + d and x − d, so d ≠ 0. For a row tight at x, a·x = b, so a·(x + d) ≤ b and a·(x − d) ≤ b say a·d ≤ 0 and −a·d ≤ 0. So a·d = 0. ∎</p>
+</blockquote>
+<h3>Some corner is best</h3>
+<figure class="plate"><img src="chapters/02-best-is-a-corner/slide.gif" alt="The mill with value arrow c = (1, 1), whose lines of equal value lie along the press wall, so every plan on the press edge is worth 20,000 roubles. A best plan x* = (14, 6) sits in the middle of that edge, where only the press wall is tight. Step 1 draws the move d = (1, −1) along the edge both ways, with readouts: press change 0, value change 0. Step 2 slides the plan one way: the lathe hours climb from 26 to 32 while the value stays at 20,000 roubles, and it stops at (8, 12), where the lathe wall is tight too. Step 3 slides the other way to (20, 0), where the axis f = 0 becomes tight. The final frame reads: a best plan that is not a corner slides, without losing value, to one that is." loading="lazy"></figure>
+<blockquote class="proof">
+<p><strong>Theorem.</strong> If the mill has a best plan, some corner is a best plan.</p>
+<p><strong>Proof.</strong> Let x* be a best plan. If it is a corner there is nothing to do. If not, the lemma gives a move d ≠ 0 with a·d = 0 for every row tight at x*.</p>
+<p><em>The value does not change along d.</em> The rows that are not tight at x* have hours to spare, so for a small enough step s &gt; 0 both x* + s d and x* − s d are still plans (how small is worked out below). Neither is worth more than x*, so s (c·d) ≤ 0 and −s (c·d) ≤ 0. So c·d = 0: every plan on the line through x* along d is worth exactly as much as x*.</p>
+<p><em>Slide until a new wall is tight.</em> One entry of d is not zero, and moving along d or along −d makes that entry fall. t and f cannot go below 0, so sliding one way or the other some wall is reached. Stop at the first one. The plan there is still best, and it has a new tight wall. Its arrow a′ has a′·d ≠ 0, since sliding along d is what made it tight, while every arrow that was tight before has a·d = 0. So the new arrow is not parallel to any old one.</p>
+<p><em>Repeat.</em> In the plane, two tight walls with non-parallel arrows make a corner, so at most two slides end at a corner worth as much as x*. With n sheet types it takes at most n slides. ∎</p>
+</blockquote>
+<p>How small a step is small enough comes straight from chapter 1. A row with σ
+hours to spare at x* is σ ÷ |a| from its wall, by the distance theorem, and the
+step s d covers a distance s |d|. So any s up to σ ÷ (|a| |d|) is safe for that
+row. That is the closedness proof run the other way, inside instead of outside.</p>
+<p>Weierstrass gave the mill a best plan, and this theorem puts one at a corner.</p>
+<h3>Finding the corners</h3>
+<p>A corner has two tight walls with non-parallel arrows, so every corner is a
+crossing point of two of the four walls: lathe, press, t = 0 and f = 0. No two
+of their arrows are parallel, so each of the 4 × 3 ÷ 2 = 6 pairs crosses
+exactly once. Not every crossing is a plan.</p>
+<figure class="plate"><img src="chapters/02-best-is-a-corner/crossings.png" alt="The mill's four walls drawn as full lines, lathe, press and the two axes, on a wider window. Their six crossing points are marked. Four of them, (0, 0), (20, 0), (0, 16) and (8, 12), are blue corners of the shaded region. Two are amber crosses outside it: (32, 0), where the lathe wall meets f = 0, uses 32 press hours, and (0, 20), where the press wall meets t = 0, uses 40 lathe hours." loading="lazy"></figure>
+<div class="overflow-x"><table>
+<thead>
+<tr>
+<th>walls that cross</th>
+<th>t</th>
+<th>f</th>
+<th>lathe hours</th>
+<th>press hours</th>
+<th>a plan?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>lathe and press</td>
+<td>8</td>
+<td>12</td>
+<td>32</td>
+<td>20</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>lathe and f = 0</td>
+<td>32</td>
+<td>0</td>
+<td>32</td>
+<td>32</td>
+<td>no, too many press hours</td>
+</tr>
+<tr>
+<td>lathe and t = 0</td>
+<td>0</td>
+<td>16</td>
+<td>32</td>
+<td>16</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>press and f = 0</td>
+<td>20</td>
+<td>0</td>
+<td>20</td>
+<td>20</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>press and t = 0</td>
+<td>0</td>
+<td>20</td>
+<td>40</td>
+<td>20</td>
+<td>no, too many lathe hours</td>
+</tr>
+<tr>
+<td>t = 0 and f = 0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>yes</td>
+</tr>
+</tbody>
+</table></div>
+<p>The four crossings that are plans are the four corners, and by the theorem one
+of them is best:</p>
 <div class="overflow-x"><table>
 <thead>
 <tr>
@@ -278,9 +509,10 @@ edge whose two ends are corners.</li>
 </tbody>
 </table></div>
 <p>So the question &quot;which of infinitely many plans is best?&quot; becomes &quot;which of
-four corners is best?&quot;. With thousands of products the number of corners is far
-too large to check one by one, and that is what the simplex method in chapter
-12 is for.</p>
+four corners is best?&quot;. The count grows fast. With 50 sheet types and 100 walls, a
+crossing point is a choice of 50 walls out of 100, and there are up to
+C(100, 50) ≈ 1.01 × 10²⁹ of them to try. That is what the simplex method in
+chapter 12 is for.</p>
 <p>How large is too large showed up early. In the autumn of 1947 Jack Laderman at
 the National Bureau of Standards tried the new method on George Stigler's diet
 problem: the cheapest mix of 77 foods that meets nine nutritional needs. Nine
@@ -309,6 +541,16 @@ than zero, cannot be positive, so no plan has more value than 84,000 roubles.
 This works because both multipliers, 2 and 1, are positive: in the picture,
 c points between the two walls' arrows. Those two numbers come back in
 chapter 4: 2,000 roubles per lathe hour and 1,000 per press hour.</p>
+<p>Why positive matters shows at all 5-ply, (0, 16). The tight walls there are the
+lathe, arrow (1, 2), and the axis t = 0, arrow (−1, 0). The value arrow still
+splits along them, c = (3, 5) = 2.5 × (1, 2) − 0.5 × (−1, 0), but one
+multiplier is negative. A move that stays in the region makes (−1, 0)·d ≤ 0,
+and −0.5 times a negative number is positive, so the argument fails. It fails
+for a real reason. The move d = (2, −1), two batches of 3-ply for one of 5-ply,
+changes the lathe hours by 0 and (−1, 0)·d by −2, and gains
+2.5 × 0 − 0.5 × (−2) = 1, that is 1,000 roubles. That is the swap from the
+start of this chapter. A negative multiplier marks the wall to step away from,
+and t = 0 is the wall the simplex walk in chapter 0 left on its second step.</p>
 <p>This is the move Kantorovich made in 1938. He did not line the Trust's best
 plan up against the others. He found one multiplier per resource that made
 every alternative visibly worse, and he called them resolving multipliers. The
@@ -324,7 +566,7 @@ edge, but its two ends are still corners, so checking corners still finds the
 best value.</p>
 <p><a href="sandbox/02.html">Change what each sheet is worth →</a></p>
 <blockquote class="aside">
-<p><strong>The one thing to remember.</strong> The best plan is the point of the region that reaches furthest along the value arrow c, and that point is always a corner.</p>
+<p><strong>The one thing to remember.</strong> The best plan is the point of the region that reaches furthest along the value arrow c; when a best plan exists, one of the corners is best.</p>
 </blockquote>
 <h2>Glossary</h2>
 <div class="overflow-x"><table>
@@ -346,6 +588,14 @@ best value.</p>
 <tr>
 <td>wall</td>
 <td>constraint, or the hyperplane where it holds with equality</td>
+</tr>
+<tr>
+<td>hours to spare</td>
+<td>slack</td>
+</tr>
+<tr>
+<td>tight wall</td>
+<td>active (binding) constraint</td>
 </tr>
 <tr>
 <td>line of equal value</td>
