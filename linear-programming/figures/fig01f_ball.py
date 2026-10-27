@@ -3,6 +3,7 @@
 import math
 from fractions import Fraction
 
+import matplotlib.pyplot as plt
 from matplotlib.patches import Circle, Polygon
 
 from illuminate.draw import (HAIRLINE, PLAN, TEXT, TEXT_DIM, WARN, animate,
@@ -16,11 +17,13 @@ B = f.MILL.b[0]
 X = (Fraction(6), Fraction(14))
 EPSILON = f.MILL.used(0, X) - B
 AA = sum((u * u for u in A), Fraction(0))
+PROBE_LABEL_MARGIN = EPSILON / 2
 Y_STAR = tuple(X[i] - EPSILON * A[i] / AA for i in range(2))
 WINDOW_EXACT = (Fraction(5, 2), Fraction(19, 2),
                 Fraction(21, 2), Fraction(33, 2))
 STAGES = Stages((0, 12), (0, 12), (48, 12))
-SUBS = ["radius 2 = epsilon in hours: the disc crosses the lathe wall",
+plt.rcParams["font.family"] = [plt.rcParams["font.family"][0], "DejaVu Sans Mono"]
+SUBS = ["radius 2 = ε in hours: the disc crosses the lathe wall",
         "radius 2 ÷ √5: it touches at the nearest point",
         "radius 1 ÷ √5: a probe circles the edge"]
 TITLE = "a sufficiently small disc stays over the wall"
@@ -83,14 +86,14 @@ def ball_gif():
                          edgecolor=PLAN, linewidth=1.4, zorder=1)
         ax.add_patch(region)
         xlim = ax.get_xlim()
-        for index, (row, rhs) in enumerate(zip(f.MILL.A, f.MILL.b)):
-            rowf = tuple(float(v) for v in row)
-            rhsf = float(rhs)
-            ys = [(rhsf - rowf[0] * t) / rowf[1] for t in xlim]
-            ax.plot(xlim, ys, color=TEXT, lw=1.45 if index == 0 else 1.0,
-                    zorder=2)
-        ax.text(8.15, (float(B) - 8.15 * a[0]) / a[1] + 0.34,
-                "lathe wall", color=TEXT, fontsize=9.2, ha="center", zorder=6,
+        rowf = tuple(float(v) for v in A)
+        rhsf = float(B)
+        ys = [(rhsf - rowf[0] * t) / rowf[1] for t in xlim]
+        ax.plot(xlim, ys, color=TEXT, lw=1.45, zorder=2)
+        label_t = Fraction(14, 5)
+        label_f = (B - A[0] * label_t) / A[1]
+        ax.text(float(label_t), float(label_f), "lathe wall", color=TEXT,
+                fontsize=9.2, ha="left", va="center", zorder=6,
                 bbox=dict(boxstyle="square,pad=0.18", facecolor="#fffff8",
                           edgecolor="none"))
 
@@ -115,8 +118,11 @@ def ball_gif():
                      x[1] + radius * math.sin(theta))
             ax.plot([x[0], probe[0]], [x[1], probe[1]], color=TEXT_DIM,
                     lw=0.8, dashes=(2, 2), zorder=5)
-            mark(ax, probe, "probe", size=7.5, dx=-0.7, dy=-0.35, ha="right")
             used = a[0] * probe[0] + a[1] * probe[1]
+            label_gap = used - float(B) + float(PROBE_LABEL_MARGIN)
+            label_shift = tuple(label_gap * ai / float(AA) for ai in a)
+            mark(ax, probe, "probe", size=7.5, dx=-label_shift[0],
+                 dy=-label_shift[1], ha="right")
             min_used = sum((u * v for u, v in zip(A, X)), Fraction(0)) - EPSILON / 2
             note.set_text(f"lathe hours at probe = {used:.1f}\n"
                           f"minimum on the circle = {min_used} hours")

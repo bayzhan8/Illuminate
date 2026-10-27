@@ -53,7 +53,7 @@ def slide_gif():
         ax.set_xlim(-1, 23)
         ax.set_ylim(-1, 19)
         draw_region(ax)
-        draw_wall(ax, 0, "lathe wall", at=15, color=TEXT_DIM)
+        draw_wall(ax, 0, "lathe wall", at=3, color=TEXT_DIM)
         draw_wall(ax, 1, "press wall", at=3.5, color=TEXT_DIM)
         if k == 0:
             arrow(ax, start, (2 * d[0], 2 * d[1]), TEXT, "+d", dx=0.2, dy=-0.45)
@@ -67,9 +67,9 @@ def slide_gif():
         mark(ax, point, "(14, 6)" if k == 0 else "moving best plan",
              size=9.5, dx=0.42, dy=0.55)
         if k >= 1:
-            mark(ax, minus, "(8, 12)", size=8, dx=-0.6, dy=0.8, ha="right")
+            mark(ax, minus, "(8, 12)", size=8, dx=-1.2, dy=-1.0, ha="right")
         if k >= 2:
-            mark(ax, plus, "(20, 0)", size=8, dx=-0.45, dy=0.85, ha="right")
+            mark(ax, plus, "(20, 0)", size=8, dx=-1.8, dy=1.2, ha="right")
         if i == frames - 1:
             claim(ax, TITLE)
             ax.text(0, 1.025, FINAL, transform=ax.transAxes, fontsize=8.0,
