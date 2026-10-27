@@ -55,7 +55,7 @@ def shadow_gif():
                 solid_capstyle="butt", zorder=3)
         ax.plot([tick[0] - 0.5 * U[1], tick[0] + 0.5 * U[1]],
                 [tick[1] + 0.5 * U[0], tick[1] - 0.5 * U[0]], color=TEXT, lw=1.6, zorder=6)
-        ax.text(tick[0] - 0.7, tick[1] + 0.3, "32 ÷ √5 = 14.3", color=TEXT, fontsize=9,
+        ax.text(tick[0] - 1.6, tick[1] + 0.3, "32 ÷ √5 = 14.3", color=TEXT, fontsize=9,
                 ha="right", va="bottom", zorder=7)
         ax.plot([x[0], p[0]], [x[1], p[1]], color=TEXT_DIM, lw=1.0, dashes=(3, 2), zorder=5)
         if norm((x[0] - p[0], x[1] - p[1])) > 0.8:
