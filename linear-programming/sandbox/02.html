@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Change what the crops earn — Illuminate</title>
+<title>Change what each sheet is worth — Illuminate</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
@@ -23,21 +23,21 @@
 </header>
 <main class="sandbox">
   <a class="back" href="../index.html#ch2">← back to chapter 2</a>
-  <h1>Change what the crops earn</h1>
-  <p class="lede">The farm, with the profit per acre of each crop under your control. The dashed line is every plan worth as much as the best one.</p>
-  <p class="try"><strong>Try this.</strong> Start corn at $5,000 and lower it slowly. Nothing happens, and then the best plan jumps to a different corner all at once. Find the price where two corners tie.</p>
+  <h1>Change what each sheet is worth</h1>
+  <p class="lede">The mill, with the value of each batch under your control. The dashed line is every plan with the same value as the best one.</p>
+  <p class="try"><strong>Try this.</strong> Start 5-ply at 5,000 roubles per batch and lower it slowly. Nothing happens, and then the best plan jumps to a different corner. Find the value where two corners tie.</p>
   <canvas id="c" width="660" height="380"></canvas>
-  <div class="controls"><div class="row"><label for="pw">an acre of wheat earns ($ thousand)</label><input type="range" id="pw" min="0.5" max="8" step="0.25" value="3"><output class="val" id="pwv"></output></div><div class="row"><label for="pc">an acre of corn earns ($ thousand)</label><input type="range" id="pc" min="0.5" max="8" step="0.25" value="5"><output class="val" id="pcv"></output></div></div>
+  <div class="controls"><div class="row"><label for="pt">value of a 3-ply batch (thousand roubles)</label><input type="range" id="pt" min="0.5" max="8" step="0.25" value="3"><output class="val" id="ptv"></output></div><div class="row"><label for="pf">value of a 5-ply batch (thousand roubles)</label><input type="range" id="pf" min="0.5" max="8" step="0.25" value="5"><output class="val" id="pfv"></output></div></div>
   <pre class="out" id="out"></pre>
-  <p class="note">The page checks all four corners and keeps the best. That only works because the best plan is always at a corner, which is what chapter 2 argues.</p>
+  <p class="note">The page checks all four corners and keeps the highest value. That only works because a best plan is always at a corner, which is what chapter 2 argues.</p>
   <nav class="pager"><a href="index.html">all 1</a></nav>
 </main>
 <script src="../../assets/site.js"></script>
 <script>
 
-const USE   = [[1, 2], [1, 1]];   // water, land used by an acre of wheat, of corn
+const USE   = [[1, 2], [1, 1]];   // lathe, press hours per batch of 3-ply, of 5-ply
 const STOCK = [32, 20];
-const PROFIT = [3, 5];            // thousand dollars an acre
+const VALUE = [3, 5];             // thousand roubles per batch
 
 function feasible(x, A, b) {
   if (x[0] < -1e-9 || x[1] < -1e-9) return false;
@@ -72,7 +72,7 @@ function bestCorners(c, A, b) {
 }
 
 function money(thousands) {
-  return "$" + Math.round(thousands * 1000).toLocaleString("en-US");
+  return Math.round(thousands * 1000).toLocaleString("en-US") + " roubles";
 }
 
 
@@ -173,13 +173,13 @@ function sortRound(pts) {
 
 
 const cv = document.getElementById("c"), out = document.getElementById("out");
-const pw = document.getElementById("pw"), pc = document.getElementById("pc");
+const pt = document.getElementById("pt"), pf = document.getElementById("pf");
 function draw() {
-  const c = [+pw.value, +pc.value];
-  document.getElementById("pwv").textContent = money(c[0]);
-  document.getElementById("pcv").textContent = money(c[1]);
+  const c = [+pt.value, +pf.value];
+  document.getElementById("ptv").textContent = money(c[0]);
+  document.getElementById("pfv").textContent = money(c[1]);
   const p = Plot(cv, 0, 23, 0, 18.5);
-  p.clear(); p.grid(2, 2); p.axes("acres of wheat", "acres of corn", 4, 4);
+  p.clear(); p.grid(2, 2); p.axes("3-ply batches t", "5-ply batches f", 4, 4);
   const pts = sortRound(corners(USE, STOCK));
   p.polygon(pts, p.P.plan, p.P.plan);
   for (let i = 0; i < USE.length; i++)
@@ -188,14 +188,14 @@ function draw() {
   p.line(0, best.value / c[1], 23, (best.value - 23 * c[0]) / c[1], p.P.ink, 1.6, [6, 3]);
   for (const q of pts) p.dot(q[0], q[1], p.P.muted, 3.5);
   for (const q of best.at) p.dot(q[0], q[1], p.P.plan, 7);
-  const plan = q => q[0] + " acres wheat, " + q[1] + " acres corn";
+  const plan = q => q[0] + " batches of 3-ply, " + q[1] + " batches of 5-ply";
   out.textContent = (best.at.length > 1
     ? "a tie: every plan on the edge between\n  " + best.at.map(plan).join("\n  ") +
       "\nearns the same"
     : "best plan   " + plan(best.at[0])) +
-    "\nworth       " + money(best.value);
+    "\nvalue       " + money(best.value);
 }
-pw.addEventListener("input", draw); pc.addEventListener("input", draw);
+pt.addEventListener("input", draw); pf.addEventListener("input", draw);
 window.addEventListener("resize", draw);
 document.addEventListener("themechange", draw);
 draw();

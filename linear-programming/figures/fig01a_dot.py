@@ -1,7 +1,7 @@
 """Chapter 1: the dot product two ways, multiply-and-add and length x length x cos.
 
-A plan x of fixed length swings from the wheat axis, through the direction of
-the water arrow a, to the corn axis. Both readouts give the same number every
+A plan x of fixed length swings from the 3-ply axis, through the direction of
+the lathe arrow a, to the 5-ply axis. Both readouts give the same number every
 frame, and the shadow bar shows which one is the picture.
 """
 
@@ -12,13 +12,13 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Arc
 
 from illuminate.draw import PLAN, TEXT, TEXT_DIM, animate, chapter_dir, figure, margin_note
-from linprog import farm as f
+from linprog import mill as f
 from scene import (Stages, arrow, claim, direction_line, dot, draw_axes, foot, norm,
                    right_angle, unit)
 
 OUT = chapter_dir("01-inside-the-walls")
 plt.rcParams["font.family"] = [plt.rcParams["font.family"][0], "DejaVu Sans Mono"]   # Plex Mono has no θ
-A = tuple(float(v) for v in f.FARM.A[0])
+A = tuple(float(v) for v in f.MILL.A[0])
 NA = norm(A)
 L = 14.0
 PHI_A = math.degrees(math.atan2(A[1], A[0]))
@@ -32,14 +32,14 @@ def phi(k, s):
 
 def sub(k, s, done):
     if done:
-        return "x kept length 14 throughout: its direction alone decided the water"
+        return "x kept length 14 throughout: its direction alone decided the lathe time"
     if k == 0:
-        return "x is a plan of length 14 along the wheat axis; θ is its angle to a"
+        return "x is a plan of length 14 along the 3-ply axis; θ is its angle to a"
     if k == 1 and s >= 1:
         return "x points along a: θ = 0, cos θ = 1, the shadow is all of x"
     if k == 1:
-        return "turn x towards a: θ shrinks, the shadow grows, more water"
-    return "turn x past a: θ grows again, the shadow shrinks, less water"
+        return "turn x towards a: θ shrinks, the shadow grows, more lathe time"
+    return "turn x past a: θ grows again, the shadow shrinks, less lathe time"
 
 
 def dot_gif():
@@ -52,6 +52,9 @@ def dot_gif():
     def update(i):
         i = min(i, frames - 1)
         k, s = STAGES(i)
+        done = i == frames - 1
+        if done:
+            s = 1.0
         p_deg = phi(k, s)
         x = (L * math.cos(math.radians(p_deg)), L * math.sin(math.radians(p_deg)))
         ax.clear()
@@ -74,9 +77,9 @@ def dot_gif():
                 rotation=PHI_A, ha="center", va="center", zorder=7)
         used = dot(A, x)
         cos = math.cos(math.radians(p_deg - PHI_A))
-        claim(ax, TITLE, sub(k, s, i == frames - 1))
+        claim(ax, TITLE, sub(k, s, done))
         note.set_text(
-            f"multiply-and-add   {A[0]:g} × {x[0]:4.1f} + {A[1]:g} × {x[1]:4.1f} = {used:4.1f} units of water\n"
+            f"multiply-and-add   {A[0]:g} × {x[0]:4.1f} + {A[1]:g} × {x[1]:4.1f} = {used:4.1f} lathe hours\n"
             f"shadow picture     |a| × |x| cos θ = {NA:.2f} × {L:g} × {cos:.2f} = {used:4.1f}\n"
             f"shadow length      |x| cos θ = {L * cos:4.1f}    θ = {abs(p_deg - PHI_A):4.1f}°")
         return []

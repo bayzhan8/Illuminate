@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Corners, walls and prices: linear programming</title>
-<meta name="description" content="Linear programming from one small farm, following Tovey&#x27;s Linear Optimization and Duality, with every number checked by code.">
+<meta name="description" content="Linear programming from Kantorovich&#x27;s plywood mill, following Tovey&#x27;s Linear Optimization and Duality, with every number checked by code.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
@@ -33,170 +33,207 @@
 </nav>
 <main class="prose">
 <h1>Corners, walls and prices</h1>
-<p>A farmer has 20 acres of land and 32 units of water, and has to decide how much
-wheat and how much corn to plant. That is a linear program. So, with thousands
-of rows instead of two, is an airline's crew schedule or a refinery's daily
-blend.</p>
+<p>In 1938 the laboratory of the Leningrad Plywood Trust brought a question to the
+university's mathematicians. The Trust peeled logs into veneer on several kinds
+of machine, and each machine handled each kind of log at its own speed. The
+plan fixed the mix of products. How should the work be shared out so the
+machines turned out as much as possible?</p>
+<p>The man they asked was Leonid Kantorovich, 26 and already a professor. He saw
+that the question was easy to state and awkward to answer. The possible plans
+form a many-sided shape, the best plan sits at one of its corners, and the
+standard advice was to work out the value at every corner and compare. That
+advice, he wrote later, &quot;lost its force since the vertices number was enormous
+even in very simple problems.&quot;</p>
+<p>So he stopped looking at corners. He looked for one number per resource, an
+exchange rate between machine time and output, that would prove a plan was
+best without comparing it to anything else. He called them resolving
+multipliers. They are the prices this guide keeps coming back to. Soviet
+officials attacked the work soon after it appeared; Anatoly Vershik, who
+studied under him, wrote that it threatened to bury its author &quot;in the most
+direct sense&quot;.</p>
+<p>Our mill is smaller than his. It makes two kinds of sheet, 3-ply and 5-ply,
+from 32 hours of lathe time and 20 hours of press time. The figures are ours,
+chosen so the arithmetic fits in your head; the question is his. Give it
+thousands of rows instead of two and it is an airline's crew schedule or a
+refinery's daily blend.</p>
 <p>This guide follows the first eight chapters of Craig Tovey's <em>Linear
-Optimization and Duality</em>, using that one farm almost the whole way through.
+Optimization and Duality</em>, with that one mill almost the whole way through.
 Every number on the page is computed in exact fractions by the code beside it,
 and a test fails if the prose and the code disagree.</p>
 <h2 id="ch0"><span class="num">0</span>What this is</h2>
-<figure class="plate"><img src="chapters/00-what-this-is/walk.gif" alt="The farm's possible plans drawn as a shaded four-sided region. A dot starts at the corner with nothing planted. Step 1 moves it up the corn axis until the water runs out at 16 acres of corn, $80,000; step 2 moves it along the water wall to 8 acres of wheat and 12 of corn, $84,000, where it stops. A log records each corner reached and the profit gained, and the readout shows the water and land used at every moment." loading="lazy"></figure>
-<p>That walk is the simplex method, which George Dantzig devised in 1947. It starts at a corner of the shape, moves
-along an edge to a neighbouring corner that is worth more, and stops when no
-neighbour is better. Here it takes two steps: from nothing planted, to all
-corn, to 8 acres of wheat and 12 of corn.</p>
-<p>Watch the readout under the picture. In step 1 the water used climbs to 32 and
-stops climbing: the dot has hit the water wall. In step 2 the water stays at 32
-while the land climbs to 20: the dot slides along the water wall until it hits
-the land wall as well. Each step ends when one more resource runs out.</p>
+<figure class="plate"><img src="chapters/00-what-this-is/walk.gif" alt="The mill's possible plans drawn as a shaded four-sided region. A dot starts at the corner where nothing is made. Step 1 moves it up the 5-ply axis until the lathe time runs out at 16 batches of 5-ply, 80,000 roubles; step 2 moves it along the lathe wall to 8 batches of 3-ply and 12 of 5-ply, 84,000 roubles, where it stops. A log records each corner reached and the value gained, and the readout shows the lathe and press hours used at every moment." loading="lazy"></figure>
+<p>That walk is the simplex method. George Dantzig devised it in 1947 while
+planning for the US Air Force, knowing nothing of Kantorovich. It starts at a
+corner of the shape, moves along an edge to a neighbouring corner worth more,
+and stops when no neighbour is better. Here it takes two steps: from nothing
+made, to all 5-ply, to 8 batches of 3-ply and 12 of 5-ply.</p>
+<p>Dantzig did not expect it to work. He pictured it as the animation draws it,
+crawling round the outside of the shape when a path through the middle looked
+shorter, and he set it aside. He tested it only after other people's methods
+had done badly. It was fast, and it has been a workhorse of the subject ever
+since.</p>
+<p>Watch the readout under the picture. In step 1 the lathe hours climb to 32 and
+stop climbing: the dot has hit the lathe wall. In step 2 the lathe stays at 32
+while the press hours climb to 20: the dot slides along the lathe wall until it
+hits the press wall as well. Each step ends when one more resource runs out.</p>
 <p>Getting there takes a few ideas, and each chapter adds one:</p>
 <ul>
 <li><strong>Chapters 1 to 5</strong> set the problem up: what the shape is, why the answer
-sits on a corner, how to turn a story into a problem, and the second problem
-hiding behind every linear program, about what the resources are worth.</li>
+sits on a corner, how to turn a story into a problem, and Kantorovich's
+multipliers, the second problem hiding behind every linear program.</li>
 <li><strong>Chapters 6 to 11</strong> are about the shape itself: walls, corners, and what
 goes wrong when too many walls meet at one point.</li>
-<li><strong>Chapters 12 to 17</strong> are the simplex method: the walk, the table that does
-its bookkeeping, how it avoids walking in circles, and how it finds somewhere
-to start.</li>
-<li><strong>Chapters 18 to 20</strong> come back to prices: why they are right, how far they
-can be trusted, and how the big theorems fit together.</li>
+<li><strong>Chapters 12 to 17</strong> are Dantzig's walk: the table that does its
+bookkeeping, how it avoids walking in circles, and how it finds somewhere to
+start.</li>
+<li><strong>Chapters 18 to 20</strong> come back to the multipliers: why they are right, how
+far they can be trusted, and how the big theorems fit together. In 1975
+Kantorovich shared the Nobel prize in economics with Tjalling Koopmans,
+not with Dantzig.</li>
 </ul>
-<p>Each idea comes as a picture first and a sentence second. Where the textbook
-needs symbols, they appear as a small table of numbers you can check by hand.
-The <a href="#glossary">glossary</a> at the end gives the textbook name for every plain
-word used here.</p>
+<p>Each idea comes as a picture first and a sentence second. The
+<a href="#glossary">glossary</a> at the end gives the textbook name for every plain word
+used here.</p>
 <h2 id="ch1"><span class="num">1</span>A plan inside the walls</h2>
 <p>By the end of this page you will be able to look at one row of a linear
-program, such as 1 × w + 2 × c ≤ 32, and see an arrow, a wall at right angles
+program, such as 1 × t + 2 × f ≤ 32, and see an arrow, a wall at right angles
 to it, and which side of the wall is allowed.</p>
-<p>The farm grows two crops. Each acre uses some land and some water, and earns a
-fixed amount:</p>
+<p>The mill makes two kinds of sheet in batches. Each batch uses lathe and press
+hours, and has a fixed value:</p>
 <div class="overflow-x"><table>
 <thead>
 <tr>
 <th></th>
-<th>water</th>
-<th>land</th>
-<th>earns</th>
+<th>lathe</th>
+<th>press</th>
+<th>value</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>an acre of wheat</td>
-<td>1 unit</td>
-<td>1 acre</td>
-<td>$3,000</td>
+<td>one batch of 3-ply</td>
+<td>1 hour</td>
+<td>1 hour</td>
+<td>3,000 roubles</td>
 </tr>
 <tr>
-<td>an acre of corn</td>
-<td>2 units</td>
-<td>1 acre</td>
-<td>$5,000</td>
+<td>one batch of 5-ply</td>
+<td>2 hours</td>
+<td>1 hour</td>
+<td>5,000 roubles</td>
 </tr>
 <tr>
-<td><strong>the farm has</strong></td>
-<td><strong>32 units</strong></td>
-<td><strong>20 acres</strong></td>
+<td><strong>the mill has</strong></td>
+<td><strong>32 hours</strong></td>
+<td><strong>20 hours</strong></td>
 <td></td>
 </tr>
 </tbody>
 </table></div>
-<p>A plan is just two numbers: acres of wheat and acres of corn. So every plan is
-a point on a sheet of paper, with wheat across and corn up.</p>
-<figure class="plate"><img src="chapters/01-inside-the-walls/region.png" alt="The plane of plans with wheat across and corn up. Two black lines mark where water runs out and where land runs out; the region under both and above the axes is shaded blue. Three test plans: 6 wheat and 8 corn sits inside and fits; 6 wheat and 14 corn sits above the water line and uses too much water; 14 wheat and 9 corn sits above the land line and uses too much land." loading="lazy"></figure>
-<p>Each resource draws one straight line. Below the water line are the plans that
-use at most 32 units of water; on the line itself the water runs out exactly.
-The same goes for land. Planting a negative number of acres is not allowed, so
-the two axes are walls as well. The shaded region is what is left: every plan
-the farm can actually carry out.</p>
-<p>Take 6 acres of wheat and 14 of corn. That uses 20 acres, all the land there
-is, which is fine. It also needs 6 + 28 = 34 units of water, two more than the
-farm has. The point lies just past the water line, and that is the whole
-check. The rest of this page explains why the line is straight, why it sits
-where it does, and why the allowed side is the origin's side.</p>
+<p>A plan is two numbers: t batches of 3-ply and f batches of 5-ply. So every
+plan is a point on a sheet of paper, with 3-ply across and 5-ply up.</p>
+<figure class="plate"><img src="chapters/01-inside-the-walls/region.png" alt="The plane of plans with 3-ply batches t across and 5-ply batches f up. Two black lines mark where lathe and press hours run out; the region under both and above the axes is shaded blue. Three test plans: 6 batches of 3-ply and 8 of 5-ply sits inside and fits; 6 and 14 sits above the lathe line and is over the lathe hours; 14 and 9 sits above the press line and uses too many press hours." loading="lazy"></figure>
+<p>Each resource draws one straight line. Below the lathe line are the plans that
+use at most 32 lathe hours; on the line itself the lathe time runs out exactly.
+The same goes for the press. Making a negative number of batches is not
+allowed, so the two axes are walls as well. The shaded region is what is left:
+every plan the mill can actually carry out.</p>
+<p>Take 6 batches of 3-ply and 14 of 5-ply. That uses 20 press hours, all the
+press time there is, which is fine. It also needs 6 + 28 = 34 lathe hours, two
+more than the mill has. The point lies just past the lathe line, and that is
+the whole check. The rest of this page explains why the line is straight, why
+it sits where it does, and why the allowed side is the origin's side.</p>
 <h3>One row is a dot product</h3>
-<p>A plan of w acres of wheat and c acres of corn uses 1 × w + 2 × c units of
-water. Put the water each crop needs per acre into an arrow a = (1, 2), and the
-plan into an arrow x = (w, c). Multiplying matching entries and adding is the
-<strong>dot product</strong>, written a·x. Every row of a linear program is one dot
+<p>A plan of t batches of 3-ply and f batches of 5-ply uses 1 × t + 2 × f lathe
+hours. Put the lathe time each sheet needs per batch into an arrow a = (1, 2),
+and the plan into an arrow x = (t, f). Multiplying matching entries and adding
+is the <strong>dot product</strong>, written a·x. Every row of a linear program is one dot
 product, and its arrow is the row of numbers in front of the variables.</p>
 <p>The dot product has a second meaning, and it is the picture behind every wall.
 If θ is the angle between the two arrows, a·x = |a| |x| cos θ. The part
 |x| cos θ is the length of x's <strong>shadow</strong> on a: drop a line from the tip of x
 at right angles onto the line through a, and measure from the origin to where
 it lands.</p>
-<figure class="plate"><img src="chapters/01-inside-the-walls/dot.gif" alt="A plan x of length 14 drawn from the origin swings from the wheat axis, through the direction of the water arrow a = (1, 2), up to the corn axis. Its shadow on the line through a is a thick blue bar, the dashed drop from the tip of x meets that line at a right angle, and an arc marks the angle θ between x and a. Under the picture, 1 × w + 2 × c and |a| × |x| × cos θ give the same number at every moment: 14.0 on the wheat axis, 31.3 when x points along a, 28.0 on the corn axis." loading="lazy"></figure>
+<figure class="plate"><img src="chapters/01-inside-the-walls/dot.gif" alt="A plan x of length 14 drawn from the origin swings from the 3-ply axis, through the direction of the lathe arrow a = (1, 2), up to the 5-ply axis. Its shadow on the line through a is a thick blue bar, the dashed drop from the tip of x meets that line at a right angle, and an arc marks the angle θ between x and a. Under the picture, 1 × t + 2 × f and |a| × |x| × cos θ give the same number at every moment: 14.0 on the 3-ply axis, 31.3 when x points along a, 28.0 on the 5-ply axis." loading="lazy"></figure>
 <p>Watch the two readouts under the picture.</p>
 <ul>
 <li>They agree in every frame. Multiply-and-add is the arithmetic, and
 length × length × cos θ is the same number seen as a picture.</li>
-<li>x never changes length, yet the water it needs runs from 14.0 up to 31.3 and
+<li>x never changes length, yet the lathe time it needs runs from 14.0 up to 31.3 and
 back down to 28.0. Its direction alone decides that.</li>
 <li>The shadow is longest, all 14 of x, when x points straight along a. Then
 θ = 0 and cos θ = 1.</li>
 </ul>
-<p>So a·x = |a| × (the shadow of x on a). Since |a| = √5 never changes, the water
-a plan uses is its shadow on a, times √5.</p>
+<p>So a·x = |a| × (the shadow of x on a). Since |a| = √5 never changes, the
+lathe time a plan uses is its shadow on a, times √5.</p>
 <h3>A wall is every plan with the same shadow</h3>
-<figure class="plate"><img src="chapters/01-inside-the-walls/levels.gif" alt="The line through a = (1, 2) drawn from the origin. A solid line at right angles to it starts at the origin and slides outwards as the amount of water b grows from 0 to 40, leaving faint copies at 8, 16, 24, 32 and 40, evenly spaced along a. The side towards the origin is shaded and labelled a·x &lt; b, the far side a·x &gt; b. Three fixed plans report the water they use, 22, 32 and 40, and each is labelled more, on the line, or less as the line reaches and passes it. The line comes back to b = 32 and stays there, labelled the water wall." loading="lazy"></figure>
+<figure class="plate"><img src="chapters/01-inside-the-walls/levels.gif" alt="The line through a = (1, 2) drawn from the origin. A solid line at right angles to it starts at the origin and slides outwards as the allowed lathe hours b grows from 0 to 40, leaving faint copies at 8, 16, 24, 32 and 40, evenly spaced along a. The side towards the origin is shaded and labelled a·x &lt; b, the far side a·x &gt; b. Three fixed plans report their lathe hours, 22, 32 and 40, and each is labelled more, on the line, or less as the line reaches and passes it. The line comes back to b = 32 and stays there, labelled the lathe wall." loading="lazy"></figure>
 <p>Watch the moving line and the three dots.</p>
 <ul>
 <li>The line never turns. Every line a·x = b is at right angles to a, whatever
 b is.</li>
-<li>A dot is on the line exactly when b equals the water that dot uses. Before
+<li>A dot is on the line exactly when b equals the lathe time that plan uses. Before
 the line reaches it the dot uses more than b; after the line passes it, less.</li>
-<li>The faint copies are evenly spaced: each extra 8 units of water moves the
+<li>The faint copies are evenly spaced: each extra 8 lathe hours moves the
 line 8 ÷ √5 ≈ 3.6 further along a.</li>
 </ul>
-<p>Why at right angles? Two plans on the same line use the same water, so the
+<p>Why at right angles? Two plans on the same line use the same lathe time, so the
 move d from one to the other has a·d = 0. A dot product is zero only when
 cos θ = 0, so d is at right angles to a.</p>
-<figure class="plate"><img src="chapters/01-inside-the-walls/shadow.gif" alt="The water wall and the arrow a = (1, 2), with a tick on the line through a at 32 ÷ √5 = 14.3. Step 1: a plan slides along the wall from all corn to 19 wheat and 6.5 corn; its shadow, the blue bar, stays exactly at the tick and the readout stays at 32 units. Step 2: the plan steps away from the origin, the bar grows past the tick and turns amber, and the plan is labelled too much water at 42 units. Step 3: it steps back inside, the bar shrinks below the tick, and the plan is labelled water to spare." loading="lazy"></figure>
+<figure class="plate"><img src="chapters/01-inside-the-walls/shadow.gif" alt="The lathe wall and the arrow a = (1, 2), with a tick on the line through a at 32 ÷ √5 = 14.3. Step 1: a plan slides along the wall from all 5-ply to 19 batches of 3-ply and 6.5 of 5-ply; its shadow, the blue bar, stays exactly at the tick and the readout stays at 32 hours. Step 2: the plan steps away from the origin, the bar grows past the tick and turns amber, and the plan is labelled over the lathe hours at 42 hours. Step 3: it steps back inside, the bar shrinks below the tick, and the plan is labelled lathe time to spare." loading="lazy"></figure>
 <p>Watch the bar and the tick. While the plan stays on the wall the bar does not
 move, though the plan travels a long way. The bar moves only when the plan
-moves along a, and the water readout moves with it.</p>
-<p>So the water wall a·x = 32 is every plan whose shadow on a is
+moves along a, and the lathe readout moves with it.</p>
+<p>So the lathe wall a·x = 32 is every plan whose shadow on a is
 32 ÷ √5 ≈ 14.3. It cuts the sheet into two halves: a·x &lt; 32 on the origin's
 side and a·x &gt; 32 on the far side. The arrow a points towards the side that
-uses more water.</p>
-<p>Land is the same with the arrow (1, 1), and its wall sits where the shadow is
-20 ÷ √2 ≈ 14.1. More crops change only the number of entries in the
-arrows. With three crops, a·x = 32 is a flat plane at right angles to a;
-with any number of crops it is called a <strong>hyperplane</strong>, and each side of it a
-<strong>half-space</strong>. The region of possible plans is where all the half-spaces
+uses more lathe time.</p>
+<p>The press is the same with the arrow (1, 1), and its wall sits where the shadow
+is 20 ÷ √2 ≈ 14.1. More sheet types change only the number of entries in the
+arrows. With three products, a·x = 32 is a flat plane at right angles to a;
+with any number of products it is called a <strong>hyperplane</strong>, and each side of it
+a <strong>half-space</strong>. The region of possible plans is where all the half-spaces
 overlap.</p>
-<p>The walls are flat because of two assumptions. A second acre of corn uses
-exactly as much water as the first, and the water used by wheat and corn simply
-adds up. Problems with those two properties are called <strong>linear programs</strong>. A
-water company that charged less per unit after the first 20 would bend the
-water line, and the methods in this guide would no longer apply as they stand.</p>
+<p>The walls are flat because of two assumptions. A second batch of 5-ply uses
+exactly as much lathe time as the first, and the hours used by the two sheet
+types simply add up. Problems with those two properties are called <strong>linear
+programs</strong>. If later 5-ply batches needed less lathe time than earlier ones,
+the lathe line would bend, and the methods in this guide would no longer apply
+as they stand.</p>
+<p>Dantzig first presented the idea to the Econometric Society in Madison, in
+September 1948. When he finished, Harold Hotelling, a prominent statistician,
+stood up: &quot;But we all know the world is nonlinear.&quot; John von Neumann answered
+on Dantzig's behalf. The speaker had called his talk linear programming and
+carefully stated his axioms. &quot;If you have an application that satisfies the
+axioms, well use it. If it does not, then don't.&quot; The two assumptions above
+are those axioms. Our mill satisfies them by construction. A real one satisfies
+them roughly, and much of the craft is knowing when roughly is enough.</p>
 <blockquote class="aside">
 <p><strong>The one thing to remember.</strong> A row a·x ≤ b measures each plan's shadow on the arrow a; the plans with shadow exactly b ÷ |a| form a wall at right angles to a, and the allowed side is the side a points away from.</p>
 </blockquote>
 <h2 id="ch2"><span class="num">2</span>The best plan sits on a corner</h2>
 <p>By the end of this page you will see why the best plan is always a corner, and
-you will have a proof that 8 wheat and 12 corn is best which checks no other
-corner.</p>
-<p>Corn earns $5,000 an acre and wheat only $3,000. The obvious plan is to plant
-as much corn as possible. Corn needs 2 units of water an acre, so 32 units are
-gone after 16 acres. That plan earns $80,000 and leaves 4 acres of land empty.</p>
-<p>It is not the best plan. Swap one acre of corn for two acres of wheat: the
-water used stays the same, the land used goes up by one, and the profit goes
-up by $1,000. Keep swapping until the land runs out, and the farm reaches 8
-acres of wheat and 12 of corn, worth $84,000.</p>
-<h3>Profit is a dot product too</h3>
-<p>Profit is 3 × w + 5 × c, which is c·x for the profit arrow c = (3, 5).
-Everything chapter 1 showed for the water arrow holds for c. Plans with the
-same profit have the same shadow on c, so they lie on one line at right angles
-to c, and more profit means a longer shadow along c.</p>
-<figure class="plate"><img src="chapters/02-best-is-a-corner/sweep.gif" alt="The farm's region with the profit arrow c = (3, 5) and a dashed line at right angles to it. The line starts at $0 through the origin and slides out along c, and the part of the region beyond the line, the plans that earn more, is shaded darker. It pauses at $80,000 with all corn on the line while a dark strip of the region still lies beyond it, then moves on until the dark part shrinks to a single point, the corner 8 wheat and 12 corn at $84,000." loading="lazy"></figure>
+you will have a proof that 8 batches of 3-ply and 12 of 5-ply are best which
+checks no other corner.</p>
+<p>A batch of 5-ply is worth 5,000 roubles, more than the 3,000 roubles for
+3-ply. The obvious plan is to make as much 5-ply as possible. A batch of 5-ply
+needs 2 lathe hours, so the lathe is gone after 16 batches of 5-ply. That plan
+is worth 80,000 roubles and leaves 4 press hours unused.</p>
+<p>It is not the best plan. Swap one batch of 5-ply for two batches of 3-ply: the
+lathe time stays the same, the press time used goes up by one hour, and the
+value goes up by 1,000 roubles. Keep swapping until the press time runs out,
+and the mill reaches 8 batches of 3-ply and 12 of 5-ply, worth 84,000 roubles.</p>
+<h3>Value is a dot product too</h3>
+<p>Value is 3 × t + 5 × f, which is c·x for the value arrow c = (3, 5).
+Everything chapter 1 showed for the lathe arrow holds for c. Plans with the
+same value have the same shadow on c, so they lie on one line at right angles
+to c, and more value means a longer shadow along c.</p>
+<figure class="plate"><img src="chapters/02-best-is-a-corner/sweep.gif" alt="The mill's region with the value arrow c = (3, 5) and a dashed line at right angles to it. The line starts at 0 roubles through the origin and slides out along c, and the part of the region beyond the line, the plans with more value, is shaded darker. It pauses at 80,000 roubles with all 5-ply on the line while a dark strip of the region still lies beyond it, then moves on until the dark part shrinks to a single point, the corner with 8 batches of 3-ply and 12 of 5-ply at 84,000 roubles." loading="lazy"></figure>
 <p>Watch the dark part of the region.</p>
 <ul>
-<li>At $80,000 all corn is on the line, but the dark strip beyond the line is
-still part of the region. Those plans earn more, so all corn is not best.</li>
+<li>At 80,000 roubles all 5-ply is on the line, but the dark strip beyond the
+line is still part of the region. Those plans have more value, so all 5-ply
+is not best.</li>
 <li>The dark part shrinks as the line moves out, and it disappears at the last
 point the line touches. That point is the best plan.</li>
 <li>The last point is a corner. The line is straight and the region's edges are
@@ -208,76 +245,86 @@ edge whose two ends are corners.</li>
 <thead>
 <tr>
 <th>corner</th>
-<th>wheat</th>
-<th>corn</th>
-<th>earns</th>
+<th>3-ply batches t</th>
+<th>5-ply batches f</th>
+<th>value</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>nothing planted</td>
+<td>nothing made</td>
 <td>0</td>
 <td>0</td>
-<td>$0</td>
+<td>0 roubles</td>
 </tr>
 <tr>
-<td>all wheat</td>
+<td>all 3-ply</td>
 <td>20</td>
 <td>0</td>
-<td>$60,000</td>
+<td>60,000 roubles</td>
 </tr>
 <tr>
-<td>all corn</td>
+<td>all 5-ply</td>
 <td>0</td>
 <td>16</td>
-<td>$80,000</td>
+<td>80,000 roubles</td>
 </tr>
 <tr>
 <td><strong>both walls at once</strong></td>
 <td><strong>8</strong></td>
 <td><strong>12</strong></td>
-<td><strong>$84,000</strong></td>
+<td><strong>84,000 roubles</strong></td>
 </tr>
 </tbody>
 </table></div>
 <p>So the question &quot;which of infinitely many plans is best?&quot; becomes &quot;which of
-four corners is best?&quot;. With thousands of crops the number of corners is far
+four corners is best?&quot;. With thousands of products the number of corners is far
 too large to check one by one, and that is what the simplex method in chapter
 12 is for.</p>
+<p>How large is too large showed up early. In the autumn of 1947 Jack Laderman at
+the National Bureau of Standards tried the new method on George Stigler's diet
+problem: the cheapest mix of 77 foods that meets nine nutritional needs. Nine
+clerks with hand-operated desk calculators took about 120 working days between
+them. The answer, $39.69 a year at 1939 prices, beat Stigler's own careful
+guess by 24 cents.</p>
 <h3>A proof that checks no other corner</h3>
-<p>At 8 wheat and 12 corn the water and the land are both used up. Take any other
-plan x and the move d = x − (8, 12) that gets there. The move cannot use extra
-water, since there is none, so (1, 2)·d ≤ 0; for the same reason
-(1, 1)·d ≤ 0. The question is what that says about the profit.</p>
-<figure class="plate"><img src="chapters/02-best-is-a-corner/why_best.gif" alt="A close-up of the corner 8 wheat and 12 corn, where the water and land walls cross. Step 1 grows the arrow 2 × (1, 2) from the corner; step 2 adds 1 × (1, 1) from its tip; step 3 shows the profit arrow c = (3, 5) ending at exactly the same point. Step 4 swings a move d through every direction that stays in the region, from along the water wall to along the land wall, while the readout gives the extra water (1, 2)·d, the extra land (1, 1)·d, and the extra profit 2 × water + 1 × land, which never rises above zero." loading="lazy"></figure>
+<p>At 8 batches of 3-ply and 12 of 5-ply the lathe and press hours are both used
+up. Take any other plan x and the move d = x − (8, 12) that gets there. The
+move cannot use extra lathe time, since there is none, so (1, 2)·d ≤ 0; for
+the same reason (1, 1)·d ≤ 0. The question is what that says about the value.</p>
+<figure class="plate"><img src="chapters/02-best-is-a-corner/why_best.gif" alt="A close-up of the corner with 8 batches of 3-ply and 12 of 5-ply, where the lathe and press walls cross. Step 1 grows the arrow 2 × (1, 2) from the corner; step 2 adds 1 × (1, 1) from its tip; step 3 shows the value arrow c = (3, 5) ending at exactly the same point. Step 4 swings a move d through every direction that stays in the region, from along the lathe wall to along the press wall, while the readout gives the extra lathe hours (1, 2)·d, the extra press hours (1, 1)·d, and the extra value 2 × lathe + 1 × press, which never rises above zero." loading="lazy"></figure>
 <p>Steps 1 to 3 show that c = 2 × (1, 2) + 1 × (1, 1). So for any move d,
 c·d = 2 × ((1, 2)·d) + 1 × ((1, 1)·d). Watch the readout in step 4.</p>
 <ul>
-<li>The extra water and the extra land are never positive. Every move that stays
+<li>The extra lathe and press hours are never positive. Every move that stays
 in the region uses less of at least one and more of neither.</li>
-<li>The extra profit comes from those two numbers alone: twice the extra water
-plus the extra land.</li>
-<li>Along the water wall the water change is 0 and the profit change equals the
-land change. Along the land wall it is the other way round, with the water
-counted twice.</li>
+<li>The extra value comes from those two numbers alone: twice the extra lathe
+hours plus the extra press hour.</li>
+<li>Along the lathe wall the lathe change is 0 and the value change equals the
+press change. Along the press wall it is the other way round, with the lathe
+change counted twice.</li>
 </ul>
 <p>Two times something no bigger than zero, plus one times something no bigger
-than zero, cannot be positive, so no plan earns more than $84,000. This works
-because both multipliers, 2 and 1, are positive: in the picture, c points
-between the two walls' arrows. Those two numbers come back in chapter 4, where
-they turn out to be what a unit of water and an acre of land are worth to this
-farm.</p>
+than zero, cannot be positive, so no plan has more value than 84,000 roubles.
+This works because both multipliers, 2 and 1, are positive: in the picture,
+c points between the two walls' arrows. Those two numbers come back in
+chapter 4: 2,000 roubles per lathe hour and 1,000 per press hour.</p>
+<p>This is the move Kantorovich made in 1938. He did not line the Trust's best
+plan up against the others. He found one multiplier per resource that made
+every alternative visibly worse, and he called them resolving multipliers. The
+simplex walk of chapter 0 produces the same two numbers at its last corner, as
+chapter 13 will show.</p>
 <h3>Turn the arrow and the corner moves</h3>
-<figure class="plate"><img src="chapters/02-best-is-a-corner/turns.png" alt="Four copies of the farm's region, each with a different profit arrow c and the line of equal profit through its best plan. c = (1, 3): the best plan is all corn, $48,000. c = (3, 5): 8 wheat and 12 corn, $84,000. c = (1, 1): the line lies flat along the land wall and the whole edge from 8 wheat and 12 corn to all wheat ties at $20,000. c = (3, 1): all wheat, $60,000." loading="lazy"></figure>
+<figure class="plate"><img src="chapters/02-best-is-a-corner/turns.png" alt="Four copies of the mill's region, each with a different value arrow c and the line of equal value through its best plan. c = (1, 3): the best plan is all 5-ply, 48,000 roubles. c = (3, 5): 8 batches of 3-ply and 12 of 5-ply, 84,000 roubles. c = (1, 1): the line lies flat along the press wall and the whole edge from 8 batches of 3-ply and 12 of 5-ply to all 3-ply ties at 20,000 roubles. c = (3, 1): all 3-ply, 60,000 roubles." loading="lazy"></figure>
 <p>Read the panels left to right, top to bottom: c turns from steep to flat, and
-the best corner moves the same way, from all corn to all wheat. In between,
-c = (1, 1) is the land wall's own arrow, so the line of equal profit lies flat
-against the land wall and the whole edge ties. The best plans then fill an
+the best corner moves the same way, from all 5-ply to all 3-ply. In between,
+c = (1, 1) is the press wall's own arrow, so the line of equal value lies flat
+against the press wall and the whole edge ties. The best plans then fill an
 edge, but its two ends are still corners, so checking corners still finds the
 best value.</p>
-<p><a href="sandbox/02.html">Change what the crops earn →</a></p>
+<p><a href="sandbox/02.html">Change what each sheet is worth →</a></p>
 <blockquote class="aside">
-<p><strong>The one thing to remember.</strong> The best plan is the point of the region that reaches furthest along the profit arrow c, and that point is always a corner.</p>
+<p><strong>The one thing to remember.</strong> The best plan is the point of the region that reaches furthest along the value arrow c, and that point is always a corner.</p>
 </blockquote>
 <h2>Glossary</h2>
 <div class="overflow-x"><table>
@@ -301,8 +348,8 @@ best value.</p>
 <td>constraint, or the hyperplane where it holds with equality</td>
 </tr>
 <tr>
-<td>line of equal profit</td>
-<td>isoprofit line, level set of the objective</td>
+<td>line of equal value</td>
+<td>level set of the objective</td>
 </tr>
 <tr>
 <td>corner</td>
@@ -321,7 +368,7 @@ best value.</p>
 <td>half-spaces</td>
 </tr>
 <tr>
-<td>profit arrow c</td>
+<td>value arrow c</td>
 <td>objective vector, gradient of the objective</td>
 </tr>
 </tbody>

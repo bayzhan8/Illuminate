@@ -5,7 +5,7 @@ from fractions import Fraction
 
 import pytest
 
-from linprog import farm as f
+from linprog import mill as f
 from linprog.lp import LP, best_by_enumeration, dual_by_enumeration, simplex, vertices
 
 
@@ -17,19 +17,19 @@ def random_lp(rng):
     return LP.build(c, A, b)
 
 
-def test_the_farm_has_the_four_corners_the_table_lists():
+def test_the_mill_has_the_four_corners_the_table_lists():
     assert sorted(f.CORNERS) == [(0, 0), (0, 16), (8, 12), (20, 0)]
 
 
-def test_simplex_and_enumeration_agree_on_the_farm():
+def test_simplex_and_enumeration_agree_on_the_mill():
     for rule in ("dantzig", "bland"):
-        walk = simplex(f.FARM, rule)
+        walk = simplex(f.MILL, rule)
         assert walk.x == f.BEST == (8, 12)
-        assert walk.value == f.BEST_PROFIT == 84
+        assert walk.value == f.BEST_VALUE == 84
 
 
 @pytest.mark.parametrize("rule", ["dantzig", "bland"])
-def test_simplex_and_enumeration_agree_on_random_farms(rule):
+def test_simplex_and_enumeration_agree_on_random_mills(rule):
     rng = random.Random(7)
     for _ in range(300):
         lp = random_lp(rng)
@@ -53,7 +53,7 @@ def test_the_hero_walk_is_the_one_drawn():
 
 def test_prices_from_the_walk_match_the_prices_problem_solved_fresh():
     rng = random.Random(11)
-    for lp in [f.FARM] + [random_lp(rng) for _ in range(200)]:
+    for lp in [f.MILL] + [random_lp(rng) for _ in range(200)]:
         y, bill = dual_by_enumeration(lp)
         walk = simplex(lp)
         assert bill == walk.value
@@ -61,45 +61,45 @@ def test_prices_from_the_walk_match_the_prices_problem_solved_fresh():
 
 
 def test_the_greedy_plan_is_worse_by_the_amount_quoted():
-    assert f.ALL_CORN == (0, 16)
-    assert f.ALL_CORN_PROFIT == 80
-    assert f.ALL_CORN_IDLE_LAND == 4
-    assert f.BEST_PROFIT - f.ALL_CORN_PROFIT == 4
+    assert f.ALL_FIVE == (0, 16)
+    assert f.ALL_FIVE_VALUE == 80
+    assert f.ALL_FIVE_IDLE_PRESS == 4
+    assert f.BEST_VALUE - f.ALL_FIVE_VALUE == 4
 
 
-def test_the_swap_in_chapter_two_keeps_water_and_gains_a_thousand():
-    swap = (Fraction(2), Fraction(-1))   # two more acres of wheat, one less of corn
-    assert f.FARM.A[0][0] * swap[0] + f.FARM.A[0][1] * swap[1] == 0
-    assert f.FARM.A[1][0] * swap[0] + f.FARM.A[1][1] * swap[1] == 1
-    assert f.FARM.value(swap) == 1
+def test_the_swap_in_chapter_two_keeps_lathe_time_and_gains_a_thousand():
+    swap = (Fraction(2), Fraction(-1))   # two more batches of 3-ply, one less of 5-ply
+    assert f.MILL.A[0][0] * swap[0] + f.MILL.A[0][1] * swap[1] == 0
+    assert f.MILL.A[1][0] * swap[0] + f.MILL.A[1][1] * swap[1] == 1
+    assert f.MILL.value(swap) == 1
 
 
-def test_equal_earnings_make_the_land_edge_tie():
-    even = f.FARM.with_c((1, 1))
+def test_equal_values_make_the_press_edge_tie():
+    even = f.MILL.with_c((1, 1))
     tied = [p for p in vertices(even) if even.value(p) == best_by_enumeration(even)[1]]
     assert sorted(tied) == [(8, 12), (20, 0)]
     assert best_by_enumeration(even)[1] == 20
 
 
-def test_profit_arrow_is_the_prices_times_the_walls_arrows():
-    combo = tuple(sum(f.PRICES[i] * f.FARM.A[i][j] for i in range(f.FARM.m))
-                  for j in range(f.FARM.n))
-    assert f.PRICES == (2, 1) and combo == f.FARM.c == (3, 5)
+def test_the_value_arrow_is_the_prices_times_the_walls_arrows():
+    combo = tuple(sum(f.PRICES[i] * f.MILL.A[i][j] for i in range(f.MILL.m))
+                  for j in range(f.MILL.n))
+    assert f.PRICES == (2, 1) and combo == f.MILL.c == (3, 5)
     assert all(p > 0 for p in f.PRICES)
 
 
 def test_the_arrow_proof_bounds_every_plan():
     # c·x = 84 + sum_i y_i (a_i·x - b_i) <= 84, checked on a grid of plans
-    for w in range(0, 21):
-        for c in range(0, 17):
-            x = (Fraction(w), Fraction(c))
-            if f.FARM.feasible(x):
-                rhs = f.BEST_PROFIT - sum(f.PRICES[i] * f.FARM.slack(i, x) for i in range(f.FARM.m))
-                assert f.FARM.value(x) == rhs <= f.BEST_PROFIT
+    for t in range(0, 21):
+        for five in range(0, 17):
+            x = (Fraction(t), Fraction(five))
+            if f.MILL.feasible(x):
+                rhs = f.BEST_VALUE - sum(f.PRICES[i] * f.MILL.slack(i, x) for i in range(f.MILL.m))
+                assert f.MILL.value(x) == rhs <= f.BEST_VALUE
 
 
-def test_every_plan_on_the_water_wall_has_the_same_shadow():
-    a, b = f.FARM.A[0], f.FARM.b[0]
+def test_every_plan_on_the_lathe_wall_has_the_same_shadow():
+    a, b = f.MILL.A[0], f.MILL.b[0]
     for t in range(0, 21):
         x = (Fraction(t), (b - t) / 2)
         assert a[0] * x[0] + a[1] * x[1] == b
