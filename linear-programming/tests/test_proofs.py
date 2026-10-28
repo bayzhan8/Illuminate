@@ -15,6 +15,8 @@ ROOT = Path(__file__).resolve().parents[1]
 TEXT = (ROOT / "lesson.md").read_text()
 FLAT = " ".join(TEXT.split())
 sys.path.insert(0, str(ROOT))
+sys.path.insert(0, str(ROOT / "figures"))
+import fig02g_squeeze as squeeze  # noqa: E402
 from illuminate.site import decorate, renderer  # noqa: E402
 
 
@@ -231,3 +233,22 @@ def test_proof_blocks_get_their_own_class_without_changing_takeaways():
     assert '<blockquote class="aside">' in later_paragraph
     assert '<blockquote class="proof">' not in later_paragraph
     assert '<blockquote class="takeaway">' in takeaway
+
+
+def test_quartering_squeeze_constants_and_increasing_pick_indices():
+    final_side = squeeze.SIDE / (2 ** squeeze.CUTS)
+
+    assert squeeze.N == 5_000
+    assert squeeze.CUTS == 5
+    assert squeeze.SIDE == f.MILL.b[1] == 20
+    assert final_side == Fraction(5, 8)
+    assert f"{squeeze.N:,}" in FLAT
+    assert (f"{squeeze.SIDE} ÷ {2 ** squeeze.CUTS} = "
+            f"{float(final_side):g}") in FLAT
+    assert len(squeeze.POINTS) == squeeze.N
+    assert len(squeeze.PICK_INDICES) == squeeze.CUTS
+    assert all(first < second for first, second in zip(
+        squeeze.PICK_INDICES, squeeze.PICK_INDICES[1:]))
+    assert all(squeeze.in_square(point, square) for point, square in zip(
+        squeeze.PICK_POINTS, squeeze.SQUARES))
+    assert squeeze.COUNTS[-1] >= 3

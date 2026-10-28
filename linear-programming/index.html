@@ -354,9 +354,25 @@ beaten by another. The right region is not closed. With value t + f, which is
 just the press hours, every plan is worth less than 20,000 roubles and plans
 come as close to 20,000 as you like, but none is worth 20,000. Chapter 1's
 proposition that every polyhedron is closed is what rules this out.</p>
+<p>The proof needs two lemmas, and one fact about the real numbers that is
+assumed rather than proved: <strong>completeness</strong>. Every set of real numbers with
+an upper bound has a least upper bound, a number with nothing in the set above
+it and members of the set as close below it as you like. It is what keeps
+holes such as √2 out of the number line, and it is the only thing taken on
+trust in this guide.</p>
+<figure class="plate"><img src="chapters/02-best-is-a-corner/squeeze.gif" alt="The square 0 ≤ t, f ≤ 20 holding the first 5,000 points of a sequence that never settles, x_k = (10 + 9.5 cos k, 10 + 9.5 sin 1.7k). Each step cuts the kept square into four and keeps the quarter holding the most points, drawn in blue, as a stand-in for &quot;infinitely many&quot;; the other three fade. After five cuts the kept square has side 20 ÷ 32 = 0.625. One point is picked from each kept square, each later in the sequence than the one before, and the picked points, joined in order, close in on a single point. The final frame reads: a bounded sequence has a convergent subsequence." loading="lazy"></figure>
+<blockquote class="proof">
+<p><strong>Lemma (Bolzano–Weierstrass).</strong> Every sequence of points in a bounded region has a subsequence that converges.</p>
+<p><strong>Proof.</strong> Put the region inside a square; for the mill, 0 ≤ t, f ≤ 20. Cut the square into four quarters. The sequence has infinitely many terms and four quarters cannot each hold only finitely many of them, so some quarter holds infinitely many; keep it. Cut that quarter into four and keep a piece holding infinitely many terms, and so on. The k-th kept square has side 20 ÷ 2^k. Now pick one term from each kept square, each later in the sequence than the last pick; this is possible because every kept square holds infinitely many terms. These picks are the subsequence.</p>
+<p>Each kept square lies inside the one before, so the left edges never move left, and no left edge passes any right edge. By completeness the left edges have a least upper bound t*, and it lies between the left and right edge of every kept square. The bottom edges give f* the same way. So the point x* = (t*, f*) is in every kept square. Every pick from step k on lies in the k-th square, which also holds x*, so it is within √2 × 20 ÷ 2^k of x*. That shrinks to 0, so the picks converge to x*. In n dimensions, cut a cube into 2ⁿ pieces instead of four; nothing else changes. ∎</p>
+</blockquote>
+<blockquote class="proof">
+<p><strong>Lemma (a closed set keeps its limits).</strong> If points of a closed set converge to x*, then x* is in the set.</p>
+<p><strong>Proof.</strong> Suppose x* is outside. The outside is open, so some disc of radius r &gt; 0 around x* is entirely outside. Convergence means every term from some point on is within r of x*, so inside that disc and outside the set. But every term is in the set. ∎</p>
+</blockquote>
 <blockquote class="proof">
 <p><strong>Theorem (Weierstrass).</strong> A continuous function on a closed, bounded set has a largest value on it.</p>
-<p><strong>Proof.</strong> Let M be the least upper bound of the values, allowing M = ∞ for now. Pick points x1, x2, x3, … in the set whose values climb towards M: the k-th worth more than M − 1/k, or more than k if M = ∞. The points stay inside a bounded set, so some subsequence of them converges to a point x* (the Bolzano–Weierstrass theorem, a basic fact about the real numbers). The set is closed, so x* is in it. The function is continuous, so the values along the subsequence converge to the value at x*; they also converge to M. So M is finite and is reached at x*. ∎</p>
+<p><strong>Proof.</strong> Let M be the least upper bound of the values, which completeness provides if they are bounded above; otherwise write M = ∞ for now. Pick points x1, x2, x3, … in the set whose values climb towards M: the k-th worth more than M − 1/k, or more than k if M = ∞. The points stay inside a bounded set, so by Bolzano–Weierstrass some subsequence converges to a point x*. The set is closed, so x* is in it, by the second lemma. The function is continuous, so the values along the subsequence converge to the value at x*; they also converge to M. So M is finite and is reached at x*. ∎</p>
 </blockquote>
 <p>For the mill each condition takes one line.</p>
 <ul>
