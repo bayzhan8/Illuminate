@@ -181,7 +181,7 @@ def squeeze_gif():
             ax.scatter([t], [v], s=33, color=PLAN, alpha=alpha,
                        edgecolors="#fffff8", linewidths=1.2, zorder=7)
             dt, dv = LABEL_OFFSETS[pick_index]
-            ax.text(t + dt, v + dv, f"x_{point[0]}", color=PLAN,
+            ax.text(t + dt, v + dv, rf"$x_{{{point[0]}}}$", color=PLAN,
                     fontsize=8.2, ha="left" if dt > 0 else "right",
                     va="center", alpha=alpha,
                     bbox=dict(boxstyle="square,pad=0.12",
@@ -197,7 +197,7 @@ def squeeze_gif():
         side = SIDE / (2 ** (k + 1))
         indices = " → ".join(str(index) for index in PICK_INDICES[:k + 1])
         note.set_text(
-            f"cut {k + 1}: side {SIDE} ÷ 2^{k + 1} = {float(side):g}, "
+            f"cut {k + 1}: side {SIDE} ÷ {2 ** (k + 1)} = {float(side):g}, "
             f"points inside = {COUNTS[k]:,}\n"
             f"picked indices: {indices}"
         )
