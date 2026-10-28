@@ -22,6 +22,10 @@ SUBS = (
 FINAL = "10 complete sets, at 10 batches of each"
 
 
+def one_decimal(value):
+    return f"{value:.1f}".removesuffix(".0")
+
+
 def quadrant(z):
     poly = clip(WINDOW_POLY, (1, 0), z, keep_le=False)
     return clip(poly, (0, 1), z, keep_le=False)
@@ -46,7 +50,7 @@ def sets_gif():
             z = 10 + s
         else:
             z = 11 - s
-        warning = stage == 2
+        warning = z > 10
         color = WARN if warning else PLAN
 
         ax.clear()
@@ -75,8 +79,9 @@ def sets_gif():
         lathe_at_tip = float(sum(LATHE)) * z
         press_at_tip = float(sum(PRESS)) * z
         note.set_text(
-            f"z = {z:g}   lathe at (z, z): 3z = {lathe_at_tip:g} of {LATHE_HOURS:g}   "
-            f"press: 2z = {press_at_tip:g} of {PRESS_HOURS:g}"
+            f"z = {one_decimal(z)}   lathe at (z, z): 3z = {one_decimal(lathe_at_tip)} "
+            f"of {LATHE_HOURS:g}   press: 2z = {one_decimal(press_at_tip)} "
+            f"of {PRESS_HOURS:g}"
         )
         return []
 

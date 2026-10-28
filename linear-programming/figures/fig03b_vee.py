@@ -31,13 +31,12 @@ def vee_png():
     region = clip(region, (-1, -1), 0, keep_le=True)
     fill(ax, region, PLAN_FILL, 0.14, z=1)
     ax.axhline(0, color=TEXT_DIM, linewidth=0.9, zorder=2)
-    ax.axvline(0, color=TEXT_DIM, linewidth=0.9, zorder=2)
     ax.plot([-3, 0], [3, 0], color=PLAN, linewidth=1.7, zorder=4)
     ax.plot([0, 3], [0, 3], color=PLAN, linewidth=1.7, zorder=4)
-    tag(ax, -1.95, 2.1, "z ≥ −y", color=PLAN, size=9.5)
-    tag(ax, 1.42, 1.78, "z ≥ y", color=PLAN, size=9.5)
+    tag(ax, -2.0, 1.65, "z ≥ −y", color=PLAN, size=9.5)
+    tag(ax, 1.75, 1.65, "z ≥ y", color=PLAN, size=9.5)
 
-    ax.annotate("", xy=(0, 0), xytext=(0, 2.65),
+    ax.annotate("", xy=(0, 0.12), xytext=(0, 2.2),
                 arrowprops=dict(arrowstyle="-|>", color=TEXT, lw=2.0,
                                 shrinkA=0, shrinkB=0, mutation_scale=14), zorder=7)
     tag(ax, -0.72, 1.34, "minimize z", color=TEXT, size=9.5, ha="center")

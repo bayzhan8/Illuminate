@@ -74,10 +74,19 @@ def disc_gif():
                            center[1] + radius * lathe_unit[1])
             wall_foot = (center[0] + slack * lathe_unit[0],
                          center[1] + slack * lathe_unit[1])
-            ax.annotate("", xy=wall_foot, xytext=circle_edge,
-                        arrowprops=dict(arrowstyle="<->", color=TEXT_DIM, lw=0.9,
-                                        shrinkA=0, shrinkB=0, mutation_scale=7),
-                        zorder=8)
+            ax.plot([circle_edge[0], wall_foot[0]],
+                    [circle_edge[1], wall_foot[1]], color=TEXT_DIM,
+                    linewidth=1.2, zorder=8)
+            perpendicular = (-lathe_unit[1], lathe_unit[0])
+            tick_half_length = 0.1
+            for point in (circle_edge, wall_foot):
+                ax.plot(
+                    [point[0] - tick_half_length * perpendicular[0],
+                     point[0] + tick_half_length * perpendicular[0]],
+                    [point[1] - tick_half_length * perpendicular[1],
+                     point[1] + tick_half_length * perpendicular[1]],
+                    color=TEXT_DIM, linewidth=1.2, zorder=8,
+                )
             midpoint = ((circle_edge[0] + wall_foot[0]) / 2,
                         (circle_edge[1] + wall_foot[1]) / 2)
             tag(ax, midpoint[0] + 0.75 * lathe_unit[0],
