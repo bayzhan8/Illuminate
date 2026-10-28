@@ -29,6 +29,7 @@
     <li><a href="#ch0"><span class="toc-num">0</span><span class="toc-title">What this is</span></a></li>
     <li><a href="#ch1"><span class="toc-num">1</span><span class="toc-title">A plan inside the walls</span></a></li>
     <li><a href="#ch2"><span class="toc-num">2</span><span class="toc-title">The best plan sits on a corner</span></a></li>
+    <li><a href="#ch3"><span class="toc-num">3</span><span class="toc-title">Writing a problem down</span></a></li>
   </ol>
 </nav>
 <main class="prose">
@@ -584,6 +585,149 @@ best value.</p>
 <blockquote class="aside">
 <p><strong>The one thing to remember.</strong> The best plan is the point of the region that reaches furthest along the value arrow c; when a best plan exists, one of the corners is best.</p>
 </blockquote>
+<h2 id="ch3"><span class="num">3</span>Writing a problem down</h2>
+<p>The Trust's real question in 1938 was not how to earn the most roubles. Its
+veneer had to come out in fixed proportions, and what it wanted to know was
+how to assign logs to its peeling machines so that as much as possible came
+out in those proportions. Wanting the most of something is not yet a linear
+program. This chapter is about the step in between: turning a request in words
+into rows, and the small tricks that make requests which do not look linear
+come out linear.</p>
+<h3>From words to rows</h3>
+<p>Tovey's advice for this step is concrete. Be the person who decides. Then
+choose variables as if you could only run the mill by text message: once
+every variable has a number, nobody on the floor has a choice left to make.
+For the mill, &quot;t = batches of 3-ply to make this week, f = batches of 5-ply&quot;
+passes. Three tempting choices fail.</p>
+<ul>
+<li><strong>&quot;t = 3-ply.&quot;</strong> That is a product, not an instruction. Without a unit,
+&quot;make 8 3-ply&quot; could mean sheets, batches or tonnes.</li>
+<li><strong>&quot;h = lathe hours to use.&quot;</strong> Incomplete. Knowing that 32 lathe hours will
+be used does not say what to make with them.</li>
+<li><strong>t, f, and also h = lathe hours used.</strong> Redundant. Once t and f are set,
+h = t + 2f is set too. It is fine to keep h as a name for a quantity, but
+it is not a decision.</li>
+</ul>
+<p>Each rule then becomes a sentence with units on both sides, and the units
+have to agree as in physics:</p>
+<div class="overflow-x"><table>
+<thead>
+<tr>
+<th>words</th>
+<th>lathe hours used</th>
+<th></th>
+<th>lathe hours there are</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>with units</td>
+<td>(1 hour per batch) × (t batches) + (2 hours per batch) × (f batches)</td>
+<td>≤</td>
+<td>32 hours</td>
+</tr>
+<tr>
+<td>as a row</td>
+<td>t + 2f</td>
+<td>≤</td>
+<td>32</td>
+</tr>
+</tbody>
+</table></div>
+<p>The row is linear because of the two facts chapter 1 took on trust: hours
+grow in proportion to batches, and the hours of the two products add.</p>
+<h3>One form for every LP</h3>
+<p>Rows come out of words in every shape: &quot;at least&quot;, &quot;exactly&quot;, &quot;can be
+negative&quot;, &quot;as cheap as possible&quot;. It pays to rewrite all of them into one
+form, because the prices of chapter 4 and the simplex method of chapter 12 are
+defined for that form alone.</p>
+<blockquote class="proof">
+<p><strong>Proposition (one form).</strong> Every linear program can be rewritten as: maximize c·x subject to Ax ≤ b and x ≥ 0, with the same best plans after a change of names.</p>
+<p><strong>Proof.</strong> Four rewrites cover every case.</p>
+<ul>
+<li><em>Minimize c·x.</em> A plan x has c·x ≤ c·y for every plan y exactly when −c·x ≥ −c·y for every y, so minimizing c·x and maximizing (−c)·x pick out the same plans.</li>
+<li><em>a·x ≥ b.</em> Multiplying by −1 reverses an inequality, so this is the same condition as (−a)·x ≤ −b.</li>
+<li><em>a·x = b.</em> This holds exactly when a·x ≤ b and a·x ≥ b both hold, and the second becomes a ≤ row by the previous rewrite.</li>
+<li><em>A variable u that may be negative.</em> Replace it by u⁺ − u⁻ with u⁺, u⁻ ≥ 0. Every number is such a difference, since u = max(u, 0) − max(−u, 0), and every such difference is a number, so the plans reachable before and after are the same. ∎</li>
+</ul>
+</blockquote>
+<p>Two of these have a picture. An equality is a wall with no sides: the plan
+must sit on it, and the two rows a·x ≤ b and a·x ≥ b are the two half-planes
+whose overlap is the wall. A free variable is split into two arrows that
+cancel. The split is not unique, because (u⁺ + s, u⁻ + s) gives the same u for
+every s ≥ 0. When both parts are positive, the point is the midpoint of the
+two splits with s moved up and down a little, so by chapter 2's definition it
+is never a corner. At a corner one of u⁺ and u⁻ is zero, and the split is the
+honest one.</p>
+<h3>Complete sets: the largest of the smallest</h3>
+<p>Say the Trust's order comes in sets of one batch of 3-ply and one of 5-ply.
+Then t batches of 3-ply and f of 5-ply give min(t, f) complete sets, and the
+goal is to make that as large as possible. min(t, f) is not linear: it has a
+crease along t = f, where it switches from following t to following f. The
+trick is one new variable z, the number of sets, with the rows z ≤ t and
+z ≤ f, and the objective &quot;maximize z&quot;.</p>
+<blockquote class="proof">
+<p><strong>Theorem (maximizing a minimum).</strong> Let g1, …, gk be linear and P a region of plans. The largest value of min(g1(x), …, gk(x)) over P equals the largest z over all pairs (x, z) with x in P and z ≤ gi(x) for every i, and the best plans x are the same.</p>
+<p><strong>Proof.</strong> Any pair (x, z) that obeys the rows has z ≤ min gi(x), so the new problem can do no better than the old. For any plan x in P, the pair (x, min gi(x)) obeys every row, so the new problem does at least as well as the old at every plan. The two largest values are therefore equal. At a best pair z = min gi(x), since a smaller z could be raised to min gi(x), so the best x of one problem is a best x of the other. ∎</p>
+</blockquote>
+<figure class="plate"><img src="chapters/03-writing-it-down/sets.gif" alt="The mill's region with the lines of equal complete sets, min(t, f) = z, which are right angles with their tip on the diagonal t = f. The quadrant t ≥ z, f ≥ z of plans with at least z complete sets is shaded and its tip rides up the diagonal as z grows from 0. The readout gives z with the lathe and press hours at the tip (z, z): 3z and 2z. At z = 10 the quadrant touches the region only at (10, 10), which uses 30 lathe hours and all 20 press hours; any larger z leaves the quadrant outside the region. The final frame reads: 10 complete sets, at 10 batches of each." loading="lazy"></figure>
+<p>The plans with at least z complete sets form the quadrant t ≥ z, f ≥ z, an
+intersection of two half-planes. As z grows the quadrant slides up the
+diagonal, and the answer is the last z at which it still meets the region.
+Its tip (z, z) uses 3z lathe hours and 2z press hours, so the press runs out
+first, at z = 10. The best plan is (10, 10): 10 complete sets, 30 lathe hours
+with 2 to spare, all 20 press hours, worth 80,000 roubles. The order in sets
+costs 4,000 roubles against the best plan of chapter 2.</p>
+<p>That 10 is best can be shown without the picture, by the move from chapter 2.
+Add the rows z − t ≤ 0, z − f ≤ 0 and t + f ≤ 20, each with multiplier ½:</p>
+<p>½ (z − t) + ½ (z − f) + ½ (t + f) = z ≤ ½ × 20 = 10.</p>
+<p>Every plan has z ≤ 10, and (10, 10) reaches it.</p>
+<p>The trick has a direction. Minimizing z subject to z ≤ t and z ≤ f is
+hopeless, because the rows only stop z from going up, and z falls without end.
+The new variable has to be pushed by the objective against its own rows:
+maximize a minimum, or minimize a maximum.</p>
+<h3>Absolute values are a maximum too</h3>
+<p>|y| = max(y, −y), so minimizing |y| is minimizing a maximum, and by the
+mirror image of the theorem it is the LP &quot;minimize z subject to z ≥ y and
+z ≥ −y&quot;. Tovey gives a second version that comes up as often: split
+y = y⁺ − y⁻ with y⁺, y⁻ ≥ 0 and minimize y⁺ + y⁻.</p>
+<blockquote class="proof">
+<p><strong>Lemma.</strong> Whatever other rows y must obey, a best split has y⁺ = 0 or y⁻ = 0, and then y⁺ + y⁻ = |y|.</p>
+<p><strong>Proof.</strong> Every split has y⁺ + y⁻ ≥ |y⁺ − y⁻| = |y|, by the triangle inequality. Suppose a best split has both parts positive, and let s be the smaller one. Lowering both by s leaves y⁺ − y⁻, and so y and every other row, unchanged, keeps both parts ≥ 0, and lowers y⁺ + y⁻ by 2s &gt; 0. That contradicts its being best. So one part is 0 and the sum equals |y|. ∎</p>
+</blockquote>
+<figure class="plate"><img src="chapters/03-writing-it-down/vee.png" alt="The graph of |y| as a V over the range −3 ≤ y ≤ 3, with the region above it, z ≥ y and z ≥ −y, shaded blue: two half-planes whose overlap is the region above the V. A downward arrow labelled minimize z ends at the bottom of the V, (0, 0), the smallest |y|. An upward arrow labelled maximize z runs off the top of the picture, because the shaded region has no top." loading="lazy"></figure>
+<p>The same picture shows why maximizing |y| fails. The trick replaces the V by
+the whole region above it. Minimizing slides down to the V, but maximizing
+climbs off the top, since nothing in z ≥ y and z ≥ −y stops z from growing.
+Tovey's example: maximize |y| subject to y = 1. The answer is 1, but the LP
+&quot;maximize y⁺ + y⁻ subject to y⁺ − y⁻ = 1&quot; allows (1 + s, s) for every s ≥ 0,
+worth 1 + 2s, and has no best plan. Maximizing |y| over −1 ≤ y ≤ 2 means
+comparing the two ends; with many such terms the ends multiply, which is why
+maximizing a maximum is not a linear program.</p>
+<h3>The largest disc that fits</h3>
+<p>The same two ideas, one new variable and Cauchy–Schwarz, turn a question of
+geometry into an LP: what is the largest disc inside the mill's region?</p>
+<blockquote class="proof">
+<p><strong>Lemma.</strong> The disc of radius r ≥ 0 around x lies in the half-plane a·y ≤ b exactly when a·x + r |a| ≤ b.</p>
+<p><strong>Proof.</strong> Every point of the disc is x + r d with |d| ≤ 1, and a·(x + r d) = a·x + r (a·d) ≤ a·x + r |a| by Cauchy–Schwarz. So if a·x + r |a| ≤ b, the whole disc obeys the row. Conversely, if a ≠ 0 the point x + r a ÷ |a| is in the disc and gives exactly a·x + r |a|, so if the disc obeys the row this number is at most b. ∎</p>
+</blockquote>
+<p>The factor |a| is the one from chapter 1's closedness proof: the most hours a
+step of length r can add is r |a|. With the four rows of the mill, the
+question becomes an LP in t, f and r:</p>
+<p>maximize r subject to t + 2f + √5 r ≤ 32, t + f + √2 r ≤ 20, r ≤ t, r ≤ f.</p>
+<p>√5 and √2 are only numbers, so every row is linear.</p>
+<figure class="plate"><img src="chapters/03-writing-it-down/disc.gif" alt="The mill's region with a disc whose centre (r, r) climbs the diagonal from the origin, so it always touches both axes while its radius r grows. The readout gives the press row t + f + √2 r and the lathe row t + 2f + √5 r at the current disc. At r = 20 − 10√2 ≈ 5.86 the press row reaches 20 and the disc touches the press wall; the lathe row is 30.67, short of 32, and the disc stays 0.59 away from the lathe wall. The final frame reads: the largest disc touches the press wall and both axes, not the lathe wall." loading="lazy"></figure>
+<p>The largest disc has centre (r, r) with r = 20 − 10√2 ≈ 5.86. It touches both
+axes and the press wall, and misses the lathe wall by 0.59. That this is the
+largest is proved the chapter 2 way, with multipliers 1, 1, 1 on the press row
+and the two axis rows:</p>
+<p>(t + f + √2 r) + (r − t) + (r − f) = (2 + √2) r ≤ 20,</p>
+<p>so every disc that fits has r ≤ 20 ÷ (2 + √2) = 20 − 10√2. Three times now a
+best answer has been proved by adding rows with multipliers that are not
+negative. Chapter 4 turns that move from a trick into a method.</p>
+<blockquote class="aside">
+<p><strong>The one thing to remember.</strong> Write each decision as a number with a unit and each rule as a row whose units agree; a request that maximizes a minimum or minimizes a maximum becomes linear with one new variable that the objective pushes against its rows.</p>
+</blockquote>
 <h2>Glossary</h2>
 <div class="overflow-x"><table>
 <thead>
@@ -636,6 +780,26 @@ best value.</p>
 <tr>
 <td>value arrow c</td>
 <td>objective vector, gradient of the objective</td>
+</tr>
+<tr>
+<td>one form: maximize c·x, Ax ≤ b, x ≥ 0</td>
+<td>canonical (standard inequality) form</td>
+</tr>
+<tr>
+<td>a variable that may be negative</td>
+<td>free (unrestricted) variable</td>
+</tr>
+<tr>
+<td>the new variable z</td>
+<td>auxiliary variable; z with z ≥ each gᵢ is an epigraph variable</td>
+</tr>
+<tr>
+<td>complete sets, the largest of the smallest</td>
+<td>max-min (assortment) objective</td>
+</tr>
+<tr>
+<td>the largest disc that fits</td>
+<td>Chebyshev centre</td>
 </tr>
 </tbody>
 </table></div>
