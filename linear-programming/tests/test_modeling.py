@@ -368,6 +368,8 @@ def test_chapter_headings_and_registered_folders_match_the_renumbering():
         (18, "18-bounds", "Ceilings without rows: bounded variables"),
         (19, "19-primal-dual",
          "Prices first, then plans: the primal–dual method"),
+        (20, "20-strict",
+         "Four outcomes, and the strictest kind of fit"),
     )
     assert tuple((chapter.number, chapter.folder, chapter.title)
                  for chapter in CHAPTERS[4:]) == expected
@@ -390,3 +392,4 @@ def test_chapter_headings_and_registered_folders_match_the_renumbering():
     assert "## 17 · Reading the last dictionary: sensitivity" in TEXT
     assert "## 18 · Ceilings without rows: bounded variables" in TEXT
     assert "## 19 · Prices first, then plans: the primal–dual method" in TEXT
+    assert "## 20 · Four outcomes, and the strictest kind of fit" in TEXT
