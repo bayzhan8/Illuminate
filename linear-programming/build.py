@@ -35,6 +35,8 @@ CHAPTERS = [
     Chapter(15, "15-cycling", "Walking in circles, and the rule that stops it"),
     Chapter(16, "16-dual-simplex",
             "Repairing a plan from the price side: the dual simplex"),
+    Chapter(17, "17-sensitivity",
+            "Reading the last dictionary: sensitivity"),
 ]
 
 # A second copy of src/linprog's corner search, so the pages need no server.

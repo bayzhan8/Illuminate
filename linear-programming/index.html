@@ -43,6 +43,7 @@
     <li><a href="#ch14"><span class="toc-num">14</span><span class="toc-title">Walking the edges: the simplex method</span></a></li>
     <li><a href="#ch15"><span class="toc-num">15</span><span class="toc-title">Walking in circles, and the rule that stops it</span></a></li>
     <li><a href="#ch16"><span class="toc-num">16</span><span class="toc-title">Repairing a plan from the price side: the dual simplex</span></a></li>
+    <li><a href="#ch17"><span class="toc-num">17</span><span class="toc-title">Reading the last dictionary: sensitivity</span></a></li>
   </ol>
 </nav>
 <main class="prose">
@@ -2403,6 +2404,88 @@ branch-and-bound codes, where every branch adds one row to an LP that is already
 <p><strong>The one thing to remember.</strong> The dual simplex keeps the prices fair and repairs the plan. The leaving row is what is broken, and the dual ratio test picks
 the cheapest repair per unit. A broken row that nothing can repair is a proof that no plan exists.</p>
 </blockquote>
+<h2 id="ch17"><span class="num">17</span>Reading the last dictionary: sensitivity</h2>
+<p>The simplex method stops with more than an answer. Its last dictionary</p>
+<p>t = 8 + s₁ − 2s₂
+f = 12 − s₁ + s₂
+z = 84 − 2s₁ − s₂</p>
+<p>says how the answer moves when the data moves. Chapter 7 found the lathe's price range by sliding a wall. This chapter reads the same
+range, and every other one, off these three lines.</p>
+<h3>B⁻¹ is printed in the slack columns</h3>
+<p>The slacks started as the identity: s₁ = 32 − t − 2f and s₂ = 20 − t − f. Each pivot is a row operation, so at the end the slack
+columns record the product of all of them, which is B⁻¹. Read the coefficients of s₁ and s₂ with their signs flipped, because the dictionary has them on
+the right-hand side:</p>
+<p>B⁻¹ = [ −1  2 ]  (row t)
+[  1 −1 ]  (row f)</p>
+<p>Check: B = [ 1 2 ; 1 1 ] has the 3-ply and 5-ply columns, and B⁻¹B = I. B⁻¹(32, 20) = (−32 + 40, 32 − 20) = (8, 12).</p>
+<p>Each column of B⁻¹ is the effect of one extra hour on the plan:</p>
+<ul>
+<li><strong>One more lathe hour, column (−1, 1):</strong> one batch moves from 3-ply to 5-ply. This was chapter 7's sentence.</li>
+<li><strong>One more press hour, column (2, −1):</strong> two more 3-ply and one fewer 5-ply.</li>
+</ul>
+<h3>How far the stock can move</h3>
+<p>Give the lathe 32 + δ hours. The basis stays the same, so the plan is</p>
+<p>(t, f) = (8, 12) + δ(−1, 1) = (8 − δ, 12 + δ),</p>
+<p>which is a plan only while both entries are ≥ 0: −12 ≤ δ ≤ 8, or 20 ≤ lathe ≤ 40. That is chapter 7's range, found here without moving any wall. For the press,
+(8 + 2δ, 12 − δ) ≥ 0 gives −4 ≤ δ ≤ 12, or 16 ≤ press ≤ 32. Inside both ranges the value is 84 + 2δ₁ + δ₂, so the prices are the
+slopes.</p>
+<p>Geometrically, B⁻¹b ≥ 0 says b = t·(1, 1) + f·(2, 1) with t, f ≥ 0: the stock lies in the cone of the two product columns.
+That is chapter 10's cone picture. The ranges are where (32 + δ, 20) and (32, 20 + δ) leave the cone. At lathe 40,
+(40, 20) = 20·(2, 1) lies on the 5-ply edge, and at lathe 20, (20, 20) = 20·(1, 1) lies on the 3-ply edge.</p>
+<h3>How far the values can move</h3>
+<p>Now change the value of 3-ply to 3 + δ. The plan stays put while the prices stay fair. With y = c_B B⁻¹:</p>
+<p>y = (3 + δ, 5) B⁻¹ = (2 − δ, 1 + 2δ),</p>
+<p>which is ≥ 0 while −1/2 ≤ δ ≤ 2, that is 2.5 ≤ value of 3-ply ≤ 5. For 5-ply, y = (2 + δ, 1 − δ) gives
+3 ≤ value of 5-ply ≤ 6.</p>
+<p>This is chapter 2's picture read backwards. The plan (8, 12) is optimal while c = y₁(1, 2) + y₂(1, 1) with y ≥ 0, that is, while the
+value arrow stays between the normals of the two tight walls. At 3-ply worth 2.5, c = (2.5, 5) is parallel to the lathe row and
+the whole lathe edge ties. At 5, c = (5, 5) is parallel to the press row.</p>
+<p>The two kinds of range mirror each other:</p>
+<div class="overflow-x"><table>
+<thead>
+<tr>
+<th>change</th>
+<th>stays optimal while</th>
+<th>cone</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>stock b</td>
+<td>B⁻¹b ≥ 0</td>
+<td>b in the cone of the basic columns</td>
+</tr>
+<tr>
+<td>values c</td>
+<td>c_B B⁻¹ A ≥ c</td>
+<td>c in the cone of the tight rows</td>
+</tr>
+</tbody>
+</table></div>
+<figure class="plate"><img src="chapters/17-sensitivity/ranges.gif" alt="Two panels. Left, stock space: the cone spanned by the columns (1, 1) and (2, 1) is drawn in blue, with (32, 20) inside. A point slides along the lathe axis from (20, 20) to (40, 20), touching the cone's two edges at its ends. Readouts show the plan (8 − δ, 12 + δ) and the value 84 + 2δ. Right, value space: the cone of the rows (1, 2) and (1, 1) is drawn in rust, with c = (3, 5) inside. The arrow c swings as the 3-ply value runs from 2.5 to 5, and readouts show the prices (2 − δ, 1 + 2δ). At each end the corresponding mill edge lights up as tied." loading="lazy"></figure>
+<h3>A new product</h3>
+<p>The Trust proposes birch-faced 5-ply: 2 lathe hours and 2 press hours a batch, worth 7. Is it worth making? Charge the current prices for the hours it uses:</p>
+<p>c̄ = 7 − (2·2 + 1·2) = 7 − 6 = 1 &gt; 0.</p>
+<p>It earns 1 more than its hours are worth, so the current plan is no longer optimal. This needs no re-solve: one dot product with y
+answers it, and the product is worth adding exactly when its value is above 6.</p>
+<p>To find how much to make, pivot it in. Its column in the current basis is B⁻¹(2, 2) = (−2 + 4, 2 − 2) = (2, 0). Each birch batch takes 2 batches of 3-ply and 0 of 5-ply.
+In the ratio test only the 3-ply row is positive: 8 ÷ 2 = 4. So 4 birch batches replace all 8 batches of 3-ply. The new plan is
+(t, f, birch) = (0, 12, 4). It uses 24 + 8 = 32 lathe hours and 12 + 8 = 20 press hours, and its value is 60 + 28 = 88 = 84 + 1·4.</p>
+<p>The new prices solve 2y₁ + y₂ = 5 and 2y₁ + 2y₂ = 7: y = (3/2, 2). The press hour is now worth more than the lathe hour, because the new product is press-heavy.
+The offer is still fair for 3-ply: 3/2 + 2 = 7/2 ≥ 3. The bill is 32·3/2 + 20·2 = 88.</p>
+<h3>A new row</h3>
+<p>A new row is chapter 16. Write the row in the current nonbasic variables. If the current plan violates it, the prices are still fair, so the dual
+simplex repairs the plan in a few pivots.</p>
+<blockquote class="aside">
+<p><strong>Aside: the answer as a function.</strong> In 1955 Saul Gass and Thomas Saaty published the parametric objective
+function method. It treats the value as c + λd and follows the optimal basis as λ moves, which turns these ranges into
+a sweep. Gass wrote the first textbook on linear programming in 1958. Today every LP solver prints a sensitivity
+report, because the people paying for a plan want to know how firm it is.</p>
+</blockquote>
+<blockquote class="aside">
+<p><strong>The one thing to remember.</strong> The last dictionary contains B⁻¹. B⁻¹b ≥ 0 says how far the stocks can move, c_B B⁻¹A ≥ c says how far the
+values can move, and c̄ = c − yA says in one dot product whether a new product is worth making.</p>
+</blockquote>
 <h2>Glossary</h2>
 <div class="overflow-x"><table>
 <thead>
@@ -2659,6 +2742,10 @@ the cheapest repair per unit. A broken row that nothing can repair is a proof th
 <tr>
 <td>cheapest repair per unit</td>
 <td>dual ratio test</td>
+</tr>
+<tr>
+<td>how far the data can move before the basis changes</td>
+<td>ranging (sensitivity analysis)</td>
 </tr>
 <tr>
 <td>the range where the price holds</td>
