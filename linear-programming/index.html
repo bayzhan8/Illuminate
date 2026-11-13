@@ -30,7 +30,9 @@
     <li><a href="#ch1"><span class="toc-num">1</span><span class="toc-title">A plan inside the walls</span></a></li>
     <li><a href="#ch2"><span class="toc-num">2</span><span class="toc-title">The best plan sits on a corner</span></a></li>
     <li><a href="#ch3"><span class="toc-num">3</span><span class="toc-title">Writing a problem down</span></a></li>
-    <li><a href="#ch4"><span class="toc-num">4</span><span class="toc-title">Someone buying the hours</span></a></li>
+    <li><a href="#ch4"><span class="toc-num">4</span><span class="toc-title">More rows from words</span></a></li>
+    <li><a href="#ch5"><span class="toc-num">5</span><span class="toc-title">Yes-or-no decisions</span></a></li>
+    <li><a href="#ch6"><span class="toc-num">6</span><span class="toc-title">Someone buying the hours</span></a></li>
   </ol>
 </nav>
 <main class="prose">
@@ -72,7 +74,7 @@ made, to all 5-ply, to 8 batches of 3-ply and 12 of 5-ply.</p>
 <p>Stopping there is a claim, not an observation. The walk compares a corner only
 with its neighbours, never with plans further away. That a corner which beats
 its neighbours beats every plan is a theorem, proved for this mill in chapter 2
-and in general in chapter 12.</p>
+and in general in chapter 14.</p>
 <p>Dantzig did not expect it to work. He pictured it as the animation draws it,
 crawling round the outside of the shape when a path through the middle looked
 shorter, and he set it aside. He tested it only after other people's methods
@@ -84,15 +86,16 @@ while the press hours climb to 20: the dot slides along the lathe wall until it
 hits the press wall as well. Each step ends when one more resource runs out.</p>
 <p>Getting there takes a few ideas, and each chapter adds one:</p>
 <ul>
-<li><strong>Chapters 1 to 5</strong> set the problem up: what the shape is, why the answer
-sits on a corner, how to turn a story into a problem, and Kantorovich's
-multipliers, the second problem hiding behind every linear program.</li>
-<li><strong>Chapters 6 to 11</strong> are about the shape itself: walls, corners, and what
+<li><strong>Chapters 1 to 7</strong> set the problem up: what the shape is, why the answer
+sits on a corner, how to turn a story into a problem, where linear programs
+stop and yes-or-no decisions begin, and Kantorovich's multipliers, the
+second problem hiding behind every linear program.</li>
+<li><strong>Chapters 8 to 13</strong> are about the shape itself: walls, corners, and what
 goes wrong when too many walls meet at one point.</li>
-<li><strong>Chapters 12 to 17</strong> are Dantzig's walk: the table that does its
-bookkeeping, how it avoids walking in circles, and how it finds somewhere to
-start.</li>
-<li><strong>Chapters 18 to 20</strong> come back to the multipliers: why they are right, how
+<li><strong>Chapters 14 to 20</strong> are Dantzig's walk: the table that does its
+bookkeeping, how it avoids walking in circles, how it finds somewhere to
+start, and the walks that start from the prices instead.</li>
+<li><strong>Chapters 21 to 23</strong> come back to the multipliers: why they are right, how
 far they can be trusted, and how the big theorems fit together. In 1975
 Kantorovich shared the Nobel prize in economics with Tjalling Koopmans,
 not with Dantzig.</li>
@@ -530,7 +533,7 @@ of them is best:</p>
 four corners is best?&quot;. The count grows fast. With 50 sheet types and 100 walls, a
 crossing point is a choice of 50 walls out of 100, and there are up to
 C(100, 50) ≈ 1.01 × 10²⁹ of them to try. That is what the simplex method in
-chapter 12 is for.</p>
+chapter 14 is for.</p>
 <p>How large is too large showed up early. In the autumn of 1947 Jack Laderman at
 the National Bureau of Standards tried the new method on George Stigler's diet
 problem: the cheapest mix of 77 foods that meets nine nutritional needs. Nine
@@ -558,7 +561,7 @@ change counted twice.</li>
 than zero, cannot be positive, so no plan has more value than 84,000 roubles.
 This works because both multipliers, 2 and 1, are positive: in the picture,
 c points between the two walls' arrows. Those two numbers come back in
-chapter 4: 2,000 roubles per lathe hour and 1,000 per press hour.</p>
+chapter 6: 2,000 roubles per lathe hour and 1,000 per press hour.</p>
 <p>Why positive matters shows at all 5-ply, (0, 16). The tight walls there are the
 lathe, arrow (1, 2), and the axis t = 0, arrow (−1, 0). The value arrow still
 splits along them, c = (3, 5) = 2.5 × (1, 2) − 0.5 × (−1, 0), but one
@@ -573,7 +576,7 @@ and t = 0 is the wall the simplex walk in chapter 0 left on its second step.</p>
 plan up against the others. He found one multiplier per resource that made
 every alternative visibly worse, and he called them resolving multipliers. The
 simplex walk of chapter 0 produces the same two numbers at its last corner, as
-chapter 13 will show.</p>
+chapter 15 will show.</p>
 <h3>Turn the arrow and the corner moves</h3>
 <figure class="plate"><img src="chapters/02-best-is-a-corner/turns.png" alt="Four copies of the mill's region, each with a different value arrow c and the line of equal value through its best plan. c = (1, 3): the best plan is all 5-ply, 48,000 roubles. c = (3, 5): 8 batches of 3-ply and 12 of 5-ply, 84,000 roubles. c = (1, 1): the line lies flat along the press wall and the whole edge from 8 batches of 3-ply and 12 of 5-ply to all 3-ply ties at 20,000 roubles. c = (3, 1): all 3-ply, 60,000 roubles." loading="lazy"></figure>
 <p>Read the panels left to right, top to bottom: c turns from steep to flat, and
@@ -640,7 +643,7 @@ grow in proportion to batches, and the hours of the two products add.</p>
 <h3>One form for every LP</h3>
 <p>Rows come out of words in every shape: &quot;at least&quot;, &quot;exactly&quot;, &quot;can be
 negative&quot;, &quot;as cheap as possible&quot;. It pays to rewrite all of them into one
-form, because the prices of chapter 4 and the simplex method of chapter 12 are
+form, because the prices of chapter 6 and the simplex method of chapter 14 are
 defined for that form alone.</p>
 <blockquote class="proof">
 <p><strong>Proposition (one form).</strong> Every linear program can be rewritten as: maximize c·x subject to Ax ≤ b and x ≥ 0, with the same best plans after a change of names.</p>
@@ -725,11 +728,322 @@ and the two axis rows:</p>
 <p>(t + f + √2 r) + (r − t) + (r − f) = (2 + √2) r ≤ 20,</p>
 <p>so every disc that fits has r ≤ 20 ÷ (2 + √2) = 20 − 10√2. Three times now a
 best answer has been proved by adding rows with multipliers that are not
-negative. Chapter 4 turns that move from a trick into a method.</p>
+negative. Chapter 6 turns that move from a trick into a method.</p>
 <blockquote class="aside">
 <p><strong>The one thing to remember.</strong> Write each decision as a number with a unit and each rule as a row whose units agree; a request that maximizes a minimum or minimizes a maximum becomes linear with one new variable that the objective pushes against its rows.</p>
 </blockquote>
-<h2 id="ch4"><span class="num">4</span>Someone buying the hours</h2>
+<h2 id="ch4"><span class="num">4</span>More rows from words</h2>
+<p>Chapter 3 had one trick behind several disguises: a new variable, held on one
+side by rows and pushed against them by the objective. This chapter is the
+rest of the stock of patterns a working modeller reaches for: costs that get
+steeper, penalties for falling short, mixtures with a required proportion,
+stock carried from one week to the next, plans made before the order is known,
+and one more disc. Each pattern comes with the question that keeps it honest:
+does the objective really push the new variable where the words say it is?</p>
+<blockquote class="aside">
+<p><strong>History.</strong> Kantorovich's 1939 booklet, <em>Mathematical Methods of Organizing and Planning Production</em>, grew from a talk he gave at Leningrad State University on 13 May 1939. The plywood problem is only its second appendix. Its chapters work through other kinds of plan, among them the best distribution of arable land between crops. It reached English readers in 1960, in <em>Management Science</em>, because Koopmans pushed for its translation.</p>
+</blockquote>
+<h3>Costs that get steeper</h3>
+<p>Suppose the lathe can run overtime. The first 4 extra hours cost 1,000
+roubles each, because the regular crew stays late. The next 4 cost 3,000 each,
+because a second crew has to be called in. Running u extra hours then costs</p>
+<p>h(u) = u for 0 ≤ u ≤ 4,  and  h(u) = 4 + 3(u − 4) = 3u − 8 for 4 ≤ u ≤ 8.</p>
+<p>The two pieces meet at u = 4, where both give 4, and after that the cost
+rises more steeply. That makes h the larger of the two lines at every u:
+h(u) = max(u, 3u − 8). A function that is the largest of a few linear ones is
+called <strong>piecewise linear and convex</strong>. The smallest of a few linear functions
+is <strong>piecewise linear and concave</strong>.</p>
+<blockquote class="proof">
+<p><strong>Theorem (convex and concave pieces).</strong> If g1, …, gk are linear, then h(x) = max gi(x) is convex: h(λx + (1 − λ)y) ≤ λh(x) + (1 − λ)h(y) for every x, y and 0 ≤ λ ≤ 1. Likewise min gi(x) is concave, with the inequality reversed.</p>
+<p><strong>Proof.</strong> Fix x, y and λ, and let gj be the piece that attains the maximum at the point λx + (1 − λ)y. Linearity gives gj(λx + (1 − λ)y) = λgj(x) + (1 − λ)gj(y). Each piece is at most the maximum, so gj(x) ≤ h(x) and gj(y) ≤ h(y). Both λ and 1 − λ are nonnegative, which keeps those inequalities pointing the same way after multiplying, so h(λx + (1 − λ)y) ≤ λh(x) + (1 − λ)h(y). For the minimum, apply this to the pieces −gi, because min gi = −max(−gi). ∎</p>
+</blockquote>
+<p>In pictures, the graph of a convex function never rises above the straight
+segment joining two of its points. It bends up, never down.</p>
+<p>The mill now earns 3t + 5f − h(u), with t + 2f ≤ 32 + u, and h is not linear.
+Chapter 3's trick works again, the other way up. Add one variable z, the
+overtime bill, with two rows z ≥ u and z ≥ 3u − 8, and subtract z from the
+objective. The rows only stop z from going down. Maximizing 3t + 5f − z pushes
+z down, so at any best plan z sits on the higher of the two lines, z = h(u).
+This is the theorem of chapter 3 with max and min swapped: minimizing a
+maximum (here, a cost) is a linear program.</p>
+<figure class="plate"><img src="chapters/04-more-rows/tiers.png" alt="The overtime cost h(u) for 0 ≤ u ≤ 8 extra lathe hours, drawn in rust as two linear pieces: slope 1 up to (4, 4), then slope 3 up to (8, 16). The extended pieces are dashed beyond their own range, so the cost is visibly the higher of the two lines. A blue line 2u shows the value the extra hours add to the plan, at 2,000 roubles per lathe hour. The vertical gap between the blue line and the rust cost is shaded where the hours pay for themselves. It is widest at u = 4, labelled &quot;net gain 4&quot;, and it narrows after that, closing at u = 8, where the second crew's hours have used the gain up." loading="lazy"></figure>
+<p>How many overtime hours should the lathe run? At the best corner of chapter 2
+both walls are tight. Keeping them tight with 32 + u lathe hours means
+t + 2f = 32 + u and t + f = 20. Subtracting gives f = 12 + u, so t = 8 − u.
+Each extra hour moves the corner by one batch from 3-ply to 5-ply, which adds
+5 − 3 = 2 thousand roubles: the lathe multiplier of chapter 2 again. While
+t ≥ 0, so for u up to 8, an hour adds 2. The first crew costs 1 an hour, which
+leaves 1 of gain. The second crew costs 3, which loses 1. So the best plan
+runs exactly the 4 cheap hours and makes (4, 16): 92,000 roubles of plywood
+less 4,000 of overtime, 88,000 in all, which is 4,000 more than without
+overtime.</p>
+<p>The overtime can also be written as two variables, u1 ≤ 4 at price 1 and
+u2 ≤ 4 at price 3, with t + 2f ≤ 32 + u1 + u2. That only works because the
+cheaper tier comes first. If some plan used dear hours while cheap ones were
+left, moving one hour from u2 to u1 would leave the lathe exactly as it was
+and save 3 − 1 = 2, so no best plan does that. Reverse the prices, a dear
+first crew at 3 and a cheap second crew at 1, and the same argument now runs
+the wrong way. The LP buys the 4 cheap hours of the second crew without the 4
+dear hours that must come before them, reports 88,000 roubles, and describes
+a plan the mill cannot carry out. The real cost is now concave: discounts for
+volume. Minimizing a concave cost is not a linear program. Chapter 5 shows
+what it takes.</p>
+<h3>Falling short of an order</h3>
+<p>A buyer orders 14 batches of 5-ply and charges q thousand roubles for every
+batch short. The shortfall is max(0, 14 − f), the <strong>positive part</strong> of
+14 − f. Write it as a variable u with u ≥ 14 − f and u ≥ 0, and subtract qu
+from the objective. When q &gt; 0 the objective pushes u down onto the larger of
+0 and 14 − f, by the same argument as the overtime bill.</p>
+<p>The best plan of chapter 2 makes only 12, so it is 2 batches short. Making
+another batch of 5-ply means sliding along the lathe wall: one more 5-ply and
+two fewer 3-ply, which loses 6 − 5 = 1 of value. It saves q of penalty. So the
+penalty matters only when it is more than 1:</p>
+<ul>
+<li>at q = ½ the mill stays at (8, 12) and pays 1 thousand roubles, keeping
+83,000;</li>
+<li>at q = 3 it moves to (4, 14), fills the order, and keeps 82,000.</li>
+</ul>
+<figure class="plate"><img src="chapters/04-more-rows/shortfall.gif" alt="The mill's region and the order line f = 14, with the penalty q rising from 0 to 3 thousand roubles per missing batch. The readout shows q, the best plan, its plywood value, the penalty and what the mill keeps. For q below 1 the best plan stays at (8, 12), two batches short, and the penalty bar grows. At q = 1 the whole stretch of the lathe wall from (8, 12) to (4, 14) is drawn as tied. Above 1 the best plan jumps to (4, 14) and the penalty is 0. The final frame holds at q = 3: (4, 14), 82,000 roubles kept." loading="lazy"></figure>
+<p>At q = 3 the move of chapter 2 proves the claim. Take the lathe row with
+multiplier 3 and the order row, −f − u ≤ −14, with multiplier 1:</p>
+<p>3(t + 2f) + (−f − u) = 3t + 5f − u ≤ 3 × 32 − 14 = 82.</p>
+<p>The value is 3t + 5f − 3u, which is at most 3t + 5f − u because u ≥ 0. So no
+plan keeps more than 82, and (4, 14) keeps exactly that. The multiplier on the
+order says a batch of the order is worth 1 thousand roubles to the mill: the
+1 of value lost per batch on the lathe wall.</p>
+<p>The trick needs q &gt; 0. With q = 0 nothing pushes u down, and any u ≥ 14 − f
+is allowed, so u no longer measures anything. The rows say &quot;u is at least the
+shortfall&quot;, never &quot;u is the shortfall&quot;. Only the objective can make it equal.</p>
+<h3>A required proportion</h3>
+<p>Say the Trust rules that at least three batches in five must be 3-ply:
+t ÷ (t + f) ≥ 3/5. A ratio is not linear. When t + f &gt; 0, both sides can be
+multiplied by t + f without turning the inequality round, because t + f is
+positive:</p>
+<p>5t ≥ 3(t + f), that is 3f − 2t ≤ 0.</p>
+<p>This is a wall through the origin, the line f = (2/3)t. That it passes through
+the origin is no accident. Doubling a plan doubles both t and t + f, so the
+ratio does not change, and every rule about proportions is a wall through
+(0, 0). The same rows describe blending in general: if product i has quality qi
+and the mixture must average at least q̄, then Σ qi xi ÷ Σ xi ≥ q̄ becomes
+Σ (qi − q̄) xi ≥ 0.</p>
+<figure class="plate"><img src="chapters/04-more-rows/ratio.png" alt="The mill's region with the proportion wall 3f = 2t drawn through the origin. The part of the region above it, where more than two batches in five are 5-ply, is hatched out. The remaining region has corners (0, 0), (20, 0) and (12, 8). The best corner (12, 8) is marked with its value, 76, and the old best corner (8, 12), value 84, is marked as cut off. A small note at the origin reads &quot;0 of 0: passes the row, ratio undefined&quot;." loading="lazy"></figure>
+<p>The best plan is now (12, 8), worth 76,000 roubles: the rule costs 8,000.
+Multipliers 19/5 on the press row and 2/5 on the proportion row prove it,
+since (19/5)(t + f) + (2/5)(3f − 2t) = 3t + 5f, so 3t + 5f ≤ (19/5) × 20 = 76.</p>
+<p>One thing is lost in the multiplication. At (0, 0) the ratio is 0 ÷ 0, which
+means nothing, but the row 3f − 2t ≤ 0 holds. Here that does no harm, because
+the mill wants to make something. In a model that minimizes cost it can do
+harm: the cheapest mixture that satisfies the row is no mixture at all, unless
+another row demands an amount.</p>
+<h3>Stock that carries over</h3>
+<p>Two weeks now. In week 1 the mill has its usual 32 lathe hours and 20 press
+hours, but buyers will take only 8 batches of 5-ply. In week 2 the press is
+under repair and has 10 hours, and buyers will take 16 batches of 5-ply. A
+batch of 5-ply can be stored from week 1 to week 2 for 1 thousand roubles.
+3-ply sells without limit.</p>
+<p>The new rows are <strong>balances</strong>. What is made either is sold or goes into store:</p>
+<p>made in week 1 = sold in week 1 + stored,  stored + made in week 2 = sold in week 2.</p>
+<p>Each is an equation, so two walls (chapter 3), and they are the only rows that
+mention both weeks. The best plan:</p>
+<div class="overflow-x"><table>
+<thead>
+<tr>
+<th></th>
+<th>3-ply made</th>
+<th>5-ply made</th>
+<th>5-ply sold</th>
+<th>5-ply stored</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>week 1</td>
+<td>8</td>
+<td>12</td>
+<td>8</td>
+<td>4</td>
+</tr>
+<tr>
+<td>week 2</td>
+<td>0</td>
+<td>10</td>
+<td>14</td>
+<td></td>
+</tr>
+</tbody>
+</table></div>
+<p>It is worth 3 × 8 + 5 × 8 + 5 × 14 − 4 = 130 thousand roubles. Week 2 cannot
+make enough 5-ply, because its press runs out at 10 batches. So week 1 makes
+the plan of chapter 2 and stores the 4 batches its own buyers will not take.
+Why not store more? A 6th or 7th batch for week 2 would have to come from
+sliding week 1 along its lathe wall: 6 roubles of 3-ply given up, 1 of
+storage paid, 5 earned in week 2, a loss of 2.</p>
+<p>The multipliers that prove this plan best are, in thousands of roubles: 1 for
+a week-1 lathe hour, 2 for a week-1 press hour, 5 for a week-2 press hour,
+4 for a batch of 5-ply in week 1's balance, 5 in week 2's, and 1 for a
+week-1 buyer. The week-2 lathe gets 0, because 12 of its hours are idle. The
+two balances differ by exactly the cost of storage, 5 − 4 = 1. This is what
+the balances are for: a 5-ply batch in week 1 is worth what it will fetch in
+week 2, less the cost of keeping it. Chapter 7 shows how to read prices like
+these, and the tests check that they add up to 130.</p>
+<p>The same balance governs every network: water through pipes, passengers
+through airports, money through accounts. In at every node equals out.</p>
+<h3>Deciding before the order is known</h3>
+<p>Go back to one week and the order of 5-ply, with a penalty of 3 thousand
+roubles per missing batch. But now the order will be either 12 or 16 batches,
+and the mill must fix its plan before it knows which. The plan (t, f) is one
+choice for both cases. The shortfall is not: if the order is 12 the mill is
+u12 short, if it is 16 it is u16 short, with u12 ≥ 12 − f, u16 ≥ 16 − f, and
+both ≥ 0. With probabilities p12 and p16, the mill maximizes its expected
+earnings,</p>
+<p>3t + 5f − 3(p12 u12 + p16 u16).</p>
+<p>That is still linear, because the probabilities are numbers known in
+advance, not variables. The plan has no index for the case; the shortfalls
+do. That asymmetry is the whole model: a decision made now cannot depend on
+something learned later.</p>
+<p>Between 12 and 16 batches each extra batch of 5-ply costs 1, sliding along
+the lathe wall. It saves 3 only if the order turns out to be 16, so 3 × p16
+on average. It is worth making when 3p16 &gt; 1, that is p16 &gt; 1/3:</p>
+<ul>
+<li>with p16 = ½ the mill makes 16 batches of 5-ply and no 3-ply, and expects
+80,000 roubles;</li>
+<li>with p16 = ¼ it makes the plan of chapter 2 and expects
+84 − 3 × ¼ × 4 = 81 thousand roubles.</li>
+</ul>
+<p>In neither case is it the plan for the average order, which would be 14
+batches when p16 = ½ and 13 when p16 = ¼. What decides is the chance of the
+larger order against the ratio of cost to penalty.</p>
+<h3>The smallest disc that reaches every wall</h3>
+<p>Chapter 3 found the largest disc inside the region. The opposite question has
+a different answer: the smallest disc that meets all four lines, the lathe
+wall, the press wall and the two axes, wherever its centre is. A disc of
+radius r centred at x meets the line a·y = b exactly when the distance from x
+to the line is at most r, and chapter 1 measured that distance:</p>
+<p>r ≥ |a·x − b| ÷ |a|  for every wall.</p>
+<p>This is a minimum of a maximum of absolute values, so each wall gives two
+rows, r ≥ (a·x − b) ÷ |a| and r ≥ (b − a·x) ÷ |a|, and the objective is
+&quot;minimize r&quot;. Both rows are needed. With the centre at (0, 0) and the lathe
+wall, a·x − b = −32, and the first row alone would allow r = 0, a disc of no
+size that is nowhere near the wall. The second row is what says r ≥ 32 ÷ √5.</p>
+<figure class="plate"><img src="chapters/04-more-rows/two_discs.png" alt="Two discs in the mill's region. The blue disc of chapter 3, radius 20 − 10√2 ≈ 5.86, sits inside and touches both axes and the press wall. The rust disc, radius 24 − 8√5 ≈ 6.11, is centred at (6.11, 6.11). It touches both axes and the lathe wall, and the press wall cuts through it, 5.50 from its centre. Each touching point is marked, and the labels name which disc must avoid which wall and which disc must reach it." loading="lazy"></figure>
+<p>The best disc touches both axes, so its centre is (r, r), and it just reaches
+the lathe wall:</p>
+<p>(32 − r − 2r) ÷ √5 = r,  so  r = 32 ÷ (3 + √5) = 24 − 8√5 ≈ 6.11.</p>
+<p>To prove nothing smaller works, add three of the rows. For any centre (t, f),
+r ≥ t, r ≥ f and r ≥ (32 − t − 2f) ÷ √5. Multiply them by 1, 2 and √5,
+divided by 3 + √5, and add. The t and f terms cancel, the r terms add to r,
+and what is left is r ≥ 32 ÷ (3 + √5). The multipliers are positive, so the
+inequalities keep their direction. The press wall plays no part: the disc
+crosses it, 5.50 from the centre.</p>
+<p>The two discs answer opposite questions. The disc inside must keep away from
+its nearest wall, and the press wall stops it. The disc that reaches must get
+to its farthest wall, and the lathe wall stops it.</p>
+<blockquote class="aside">
+<p><strong>The one thing to remember.</strong> A new variable means what the words say only if the objective pushes it against its rows. Before trusting one, ask which way the objective moves it, and what stops it.</p>
+</blockquote>
+<h2 id="ch5"><span class="num">5</span>Yes-or-no decisions</h2>
+<p>Some words do not turn into rows at all. &quot;Either none, or at least 14.&quot;
+&quot;Pay the setup only if the line runs.&quot; &quot;One rule or the other.&quot; This chapter
+shows why no linear program can say them. Then it adds the one ingredient
+that can, a variable allowed only the values 0 and 1, and counts what that
+ingredient costs.</p>
+<h3>A rule no wall can make</h3>
+<p>The 5-ply buyer now takes either nothing or a full contract of at least 14
+batches. The plans that obey are those with f = 0 and those with f ≥ 14. Both
+(20, 0) and (4, 14) are allowed, but their midpoint (12, 7) is not, because
+7 is neither 0 nor at least 14.</p>
+<p>Chapter 1 proved that every region cut out by walls is convex: the segment
+between two of its plans stays inside. This set of plans contains two points
+and not their midpoint, so it is not convex, and no list of walls, however
+long, has it as its region. The words cannot be written as an LP. Something
+other than walls is needed.</p>
+<figure class="plate"><img src="chapters/05-yes-or-no/union.png" alt="The mill's region with the plans that obey &quot;f = 0 or f ≥ 14&quot; drawn in blue: the bottom edge from (0, 0) to (20, 0), and the cap of the region above the line f = 14, with corners (0, 14), (4, 14) and (0, 16). The rest of the region is greyed out. A dashed segment joins (20, 0) to (4, 14), and its midpoint (12, 7) is marked with a cross and the label &quot;midpoint, not allowed&quot;. The plan (8, 12) is marked in amber with the label &quot;relaxation: 84, not a real plan&quot;, and (4, 14) is marked in blue with &quot;best real plan: 82&quot;." loading="lazy"></figure>
+<h3>A variable that is 0 or 1</h3>
+<p>Add z, which can only be 0 or 1, read as &quot;the contract is taken&quot;. Then write</p>
+<p>14z ≤ f ≤ 16z.</p>
+<p>Check both cases, because that is the only way to trust such a pair of rows.
+At z = 0 they say 0 ≤ f ≤ 0, so f = 0. At z = 1 they say 14 ≤ f ≤ 16. The 16
+is not arbitrary: the lathe alone allows at most 32 ÷ 2 = 16 batches of 5-ply,
+so f ≤ 16 removes no plan the mill could make anyway.</p>
+<p>A problem whose rows and objective are linear but which has some variables
+restricted to whole numbers is a <strong>mixed-integer linear program</strong>. It is not a
+linear program, and none of the theory of chapters 6 to 23 applies to it as it
+stands. With one yes-or-no variable it can still be solved by trying both
+values. At z = 1 the best plan is (4, 14), worth 82. At z = 0 it is (20, 0),
+worth 60. So the mill takes the contract and keeps 82,000 roubles. With k such
+variables there are 2^k cases to try, which is why problems with them are hard
+and the methods for them are a subject of their own.</p>
+<blockquote class="aside">
+<p><strong>History.</strong> The standard method for mixed-integer programs, branch and bound, was published in 1960 by Ailsa Land and Alison Doig at the London School of Economics. It avoids trying all 2^k cases by solving relaxations, described next, and discarding every case whose relaxation already does worse than a plan in hand.</p>
+</blockquote>
+<h3>The relaxation, and why it is too hopeful</h3>
+<p>Allow z anywhere from 0 to 1 instead of only 0 or 1. The result is a linear
+program again, the <strong>relaxation</strong>. It answers 84, at (8, 12) with z = ¾: the
+rows 14z ≤ 12 ≤ 16z hold for any z between ¾ and 6/7. The plan of chapter 2
+comes back, with three quarters of a contract.</p>
+<blockquote class="proof">
+<p><strong>Theorem.</strong> The best value of the relaxation is at least the best value of the mixed-integer program.</p>
+<p><strong>Proof.</strong> Every pair (x, z) with z equal to 0 or 1 also has 0 ≤ z ≤ 1, so every plan the integer program allows is allowed by the relaxation. The best of a larger set is at least the best of a smaller one. ∎</p>
+</blockquote>
+<p>That is the use of the relaxation: it is a ceiling, 84 here against the true
+82, and it is quick to compute. A tighter ceiling is more useful, and how
+tight it is depends on how the rows are written.</p>
+<h3>Paying for a setup</h3>
+<p>Return to the plain mill, without the contract. Running the press for 5-ply
+needs a change of glue that costs F thousand roubles, once, if any 5-ply is
+made. With z = 1 meaning &quot;set up for 5-ply&quot;:</p>
+<p>maximize 3t + 5f − Fz, with f ≤ Uz and z equal to 0 or 1,</p>
+<p>where U is any number at least the most 5-ply the mill could make. At z = 0 the
+row forces f = 0. At z = 1 it says f ≤ U, which removes nothing. And since F &gt; 0,
+the objective never sets z = 1 without making some 5-ply.</p>
+<p>With F = 30 the cases are: set up, make (8, 12), and keep 84 − 30 = 54; or do
+not set up, make (20, 0), and keep 60. The mill makes no 5-ply.</p>
+<p>In the relaxation, z only has to be at least f ÷ U, and z costs money, so it
+sits exactly there. The setup is then charged by the batch, F ÷ U per batch,
+instead of all at once. With U = 16, the smallest valid bound, the
+relaxation's answer is 61.5 at (8, 12) with z = ¾: it pays 22.5 of the 30.
+With U = 100, also a valid bound but a careless one, it is 80.4, with
+z = 3/25 and a setup cost of 3.6. Both ceilings are true. Only the first is
+close.</p>
+<figure class="plate"><img src="chapters/05-yes-or-no/setup.gif" alt="The relaxation of the setup problem with F = 30, as the bound U grows from 16 to 100. The readout gives U, the relaxation's z = 12 ÷ U at the plan (8, 12), the part of the setup it pays, 30 × 12 ÷ U, and its value. A rust bar for the relaxation's value climbs from 61.5 towards 80.4, while a blue bar stays fixed at the true best value, 60. The gap between them is labelled. The final frame holds at U = 100: relaxation 80.4, true 60." loading="lazy"></figure>
+<h3>One rule or the other</h3>
+<p>The last pattern switches a whole wall on and off. Say a safety rule allows
+either at most 6 batches of 3-ply, or at most 6 batches of 5-ply. With z
+choosing which rule binds:</p>
+<p>t ≤ 6 + M1 z,  f ≤ 6 + M2 (1 − z).</p>
+<p>At z = 0 the first row is t ≤ 6, and the second must not cut anything. At
+z = 1 it is the other way round. A row that is &quot;switched off&quot; has to be
+switched off for real.</p>
+<blockquote class="proof">
+<p><strong>Theorem (a valid M).</strong> Let X be the plans allowed by the other rows. The row a·x ≤ b + M removes no plan of X exactly when M ≥ a·x − b for every x in X, that is, M is at least the largest amount by which a plan of X breaks the rule.</p>
+<p><strong>Proof.</strong> The row holds at x exactly when a·x − b ≤ M. It holds at every x in X exactly when M is at least every one of these numbers. ∎</p>
+</blockquote>
+<p>For the mill, the largest t is 20 and the largest f is 16, so M1 must be at
+least 20 − 6 = 14 and M2 at least 16 − 6 = 10. If X were unbounded in the
+direction a, no M would be large enough, and the trick would fail.</p>
+<p>With valid bounds the two cases give: rule t ≤ 6, best plan (6, 13) worth
+83; rule f ≤ 6, best plan (14, 6) worth 72. So the mill takes the first rule
+and keeps 83,000 roubles.</p>
+<figure class="plate"><img src="chapters/05-yes-or-no/either_or.png" alt="The mill's region with the two strips allowed by the rule: t ≤ 6 on the left and f ≤ 6 along the bottom, together an L shape, shaded blue. The best plan of each strip is marked: (6, 13) worth 83 and (14, 6) worth 72. A rust line f = 12 crosses the left strip, labelled &quot;M2 = 6: row reads f ≤ 12 even when switched off&quot;. The part of the left strip above it, which contains (6, 13), is hatched as wrongly removed. The point (6, 12), worth 78, is marked as the answer that model gives." loading="lazy"></figure>
+<p>Now take M2 = 6, too small by 4. At z = 0 the second row should be switched
+off, but it still says f ≤ 12. That removes (6, 13), and the model reports
+(6, 12), worth 78. It is not an error message. It is a wrong answer that looks
+like every other answer. A small M can cut off the true best plan, and a
+large M weakens the relaxation, as in the setup. The right M is the smallest
+valid one, computed from the rows, not guessed.</p>
+<p>The steeper-then-cheaper overtime of chapter 4 needs the same tool. Let w = 1
+mean the second crew is called. Then u1 ≥ 4w says the first crew's 4 hours
+are used up before the second crew starts, and u2 ≤ 4w says the second crew
+works only if called. Both cases tie at 84: no overtime, or all 8 hours at
+(0, 20), where 16 of extra value pays exactly 3 × 4 + 1 × 4 = 16 of cost. The
+LP of chapter 4 had reported 88 for a plan that could not be carried out.</p>
+<p>The &quot;big M&quot; of chapter 17 shares only the name. That one is a large penalty
+on artificial variables, used to find a first corner for the simplex method.
+It has no yes-or-no variables and keeps everything a linear program.</p>
+<blockquote class="aside">
+<p><strong>The one thing to remember.</strong> Walls only make convex regions. A rule with an &quot;or&quot; in it needs a 0-or-1 variable; check both of its values by hand, and use the smallest M that removes nothing it should not.</p>
+</blockquote>
+<h2 id="ch6"><span class="num">6</span>Someone buying the hours</h2>
 <p>Three times now a best plan has been proved best by the same move: give each
 row a multiplier that is not negative, add the rows up, and find the value
 sitting on the left with a number on the right. Each time the multipliers
@@ -786,7 +1100,7 @@ right-hand side. Written with the matrix A of chapter 3, the mill's problem
 is maximize c·x with Ax ≤ b and x ≥ 0, and the buyer's is minimize y·b with
 yA ≥ c and y ≥ 0. Nothing has been added. The same numbers have been read
 down the columns instead of across the rows.</p>
-<figure class="plate"><img src="chapters/04-buying-the-hours/offer.gif" alt="The plane of prices: lathe price y₁ across, press price y₂ up. Two rust lines are the products' rows, y₁ + y₂ = 3 for 3-ply and 2y₁ + y₂ = 5 for 5-ply, and the fair offers lie on the far side of both, shaded rust; the region has corners (0, 5), (2, 1) and (3, 0) and runs off to infinity up and to the right. An offer starts at (1, 1) and is coloured amber, with the readout showing 3-ply's hours worth 2 against a value of 3 and 5-ply's worth 3 against 5, so the mill would rather make plywood. The offer moves to (3, 0), turns rust, and the readout shows both products covered, with a bill of 96. Then the line of equal bills, 32y₁ + 20y₂ = k, sweeps down towards the origin, past bills of 100 at (0, 5) and 96 at (3, 0), and stops when it touches the region only at (2, 1). The final frame reads: cheapest fair offer, 2 and 1, a bill of 84,000 roubles." loading="lazy"></figure>
+<figure class="plate"><img src="chapters/06-buying-the-hours/offer.gif" alt="The plane of prices: lathe price y₁ across, press price y₂ up. Two rust lines are the products' rows, y₁ + y₂ = 3 for 3-ply and 2y₁ + y₂ = 5 for 5-ply, and the fair offers lie on the far side of both, shaded rust; the region has corners (0, 5), (2, 1) and (3, 0) and runs off to infinity up and to the right. An offer starts at (1, 1) and is coloured amber, with the readout showing 3-ply's hours worth 2 against a value of 3 and 5-ply's worth 3 against 5, so the mill would rather make plywood. The offer moves to (3, 0), turns rust, and the readout shows both products covered, with a bill of 96. Then the line of equal bills, 32y₁ + 20y₂ = k, sweeps down towards the origin, past bills of 100 at (0, 5) and 96 at (3, 0), and stops when it touches the region only at (2, 1). The final frame reads: cheapest fair offer, 2 and 1, a bill of 84,000 roubles." loading="lazy"></figure>
 <p>The fair offers form a region of their own, cut out by the products' walls
 in the plane of prices. It has three corners: (0, 5) with a bill of 100,000
 roubles, (3, 0) with 96,000, and (2, 1) with 84,000. It is not bounded, which
@@ -829,7 +1143,7 @@ one more in hours than in plywood, and the plan makes 12 of them.</p>
 is an equality: 80 = 80. But the plan leaves 4 press hours idle, and the
 buyer pays 1 for each, so the bill is 84. The whole gap of 4 sits in the
 second step.</p>
-<figure class="plate"><img src="chapters/04-buying-the-hours/sandwich.png" alt="A single number line of thousands of roubles. Below it, in blue, the values of the four corner plans: 0, 60, 80 and 84. Above it, in rust, the bills of the three corner offers and of the fair offer (2, 2): 84, 96, 100 and 104. Every blue mark lies to the left of every rust mark, and the two colours meet only at 84, where the best plan and the cheapest offer coincide." loading="lazy"></figure>
+<figure class="plate"><img src="chapters/06-buying-the-hours/sandwich.png" alt="A single number line of thousands of roubles. Below it, in blue, the values of the four corner plans: 0, 60, 80 and 84. Above it, in rust, the bills of the three corner offers and of the fair offer (2, 2): 84, 96, 100 and 104. Every blue mark lies to the left of every rust mark, and the two colours meet only at 84, where the best plan and the cheapest offer coincide." loading="lazy"></figure>
 <p>The theorem says more than the example. Every plan, not just the four
 corners, earns at most every fair bill, so a single fair offer is a ceiling
 on the whole region, and a single plan is a floor under every offer. When a
@@ -855,7 +1169,7 @@ make because there is nothing finite to pay for.</p>
 have rows that say ≥ or =, and variables that can be negative (chapter 3
 removed them, but removing them is not always convenient). Each such change
 breaks one term of the proof, and the dual has to change to mend it.</p>
-<figure class="plate"><img src="chapters/04-buying-the-hours/signs.png" alt="Two panels in the plane of plans, each with the quadrant of plans with t, f ≥ 0. Left: the fair offer (3, 0) gives yA − c = (0, 1), drawn as an arrow; the half-plane of plans where (yA − c)·x ≥ 0, every plan with f ≥ 0, contains the whole quadrant, so the first step of the proof holds at every plan. Right: the offer (1, 2) prices 5-ply's hours at 4, below its value 5, so yA − c = (0, −1); that half-plane leaves out every plan that makes any 5-ply, shaded amber. The plan (0, 16) is marked there: it earns 80, and the offer's bill is 72, so the would-be ceiling is below it." loading="lazy"></figure>
+<figure class="plate"><img src="chapters/06-buying-the-hours/signs.png" alt="Two panels in the plane of plans, each with the quadrant of plans with t, f ≥ 0. Left: the fair offer (3, 0) gives yA − c = (0, 1), drawn as an arrow; the half-plane of plans where (yA − c)·x ≥ 0, every plan with f ≥ 0, contains the whole quadrant, so the first step of the proof holds at every plan. Right: the offer (1, 2) prices 5-ply's hours at 4, below its value 5, so yA − c = (0, −1); that half-plane leaves out every plan that makes any 5-ply, shaded amber. The plan (0, 16) is marked there: it earns 80, and the offer's bill is 72, so the would-be ceiling is below it." loading="lazy"></figure>
 <p>The picture shows what a broken sign costs. With yA − c = (0, −1), the
 offer undervalues 5-ply, and the first step fails for every plan that makes
 some. At (0, 16) the plan earns 80 while the bill is 32 + 40 = 72. A price
@@ -938,7 +1252,7 @@ eye because it was small. From here on it is solved on purpose.</p>
 every LP with a best plan, some fair offer bills exactly its value. That is
 the strong duality theorem. It is true, and it is proved twice later, once
 from the walk of the simplex method (chapter 14) and once from separating a
-point from a shape (chapter 20). Until then it is a promise, and the
+point from a shape (chapter 23). Until then it is a promise, and the
 chapters in between do not use it.</p>
 <blockquote class="aside">
 <p><strong>The one thing to remember.</strong> Price every resource so that no product is worth more than the hours it uses; then whatever plan you choose earns at most the bill, so one such price list proves a plan best by meeting it.</p>
@@ -1015,6 +1329,70 @@ chapters in between do not use it.</p>
 <tr>
 <td>the largest disc that fits</td>
 <td>Chebyshev centre</td>
+</tr>
+<tr>
+<td>a cost that gets steeper</td>
+<td>piecewise-linear convex function</td>
+</tr>
+<tr>
+<td>a cost that gets cheaper</td>
+<td>piecewise-linear concave function</td>
+</tr>
+<tr>
+<td>the overtime bill z, with z ≥ each piece</td>
+<td>epigraph variable</td>
+</tr>
+<tr>
+<td>the shortfall, max(0, 14 − f)</td>
+<td>positive part</td>
+</tr>
+<tr>
+<td>a required proportion</td>
+<td>ratio (blending) constraint</td>
+</tr>
+<tr>
+<td>a balance: in equals out</td>
+<td>flow conservation, inventory balance</td>
+</tr>
+<tr>
+<td>a plan fixed before the order is known</td>
+<td>first-stage decision (two-stage stochastic program)</td>
+</tr>
+<tr>
+<td>a shortfall for each possible order</td>
+<td>recourse (second-stage) variable</td>
+</tr>
+<tr>
+<td>the smallest disc that reaches every wall</td>
+<td>minimax-distance ball meeting every hyperplane</td>
+</tr>
+<tr>
+<td>a variable that is 0 or 1</td>
+<td>binary variable</td>
+</tr>
+<tr>
+<td>rows and objective linear, some variables whole numbers</td>
+<td>mixed-integer linear program (MILP)</td>
+</tr>
+<tr>
+<td>allowing z anywhere from 0 to 1</td>
+<td>LP relaxation</td>
+</tr>
+<tr>
+<td>paying for a setup</td>
+<td>fixed-charge model</td>
+</tr>
+<tr>
+<td>f = 0 or f ≥ 14</td>
+<td>semi-continuous variable</td>
+</tr>
+<tr>
+<td>one rule or the other</td>
+<td>disjunctive (either–or) constraint</td>
+</tr>
+<tr>
+<td>the bound M</td>
+<td>big-M constant</td>
 </tr>
 <tr>
 <td>the buyer's problem, the price problem</td>

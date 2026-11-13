@@ -9,7 +9,7 @@ from illuminate.draw import (HAIRLINE, PLAN, PRICE, SURFACE, TEXT,
 from linprog import mill as f
 from scene import arrow, claim, mark
 
-OUT = chapter_dir("04-buying-the-hours")
+OUT = chapter_dir("06-buying-the-hours")
 WINDOW = (-1.5, 23, -1.5, 18.5)
 
 

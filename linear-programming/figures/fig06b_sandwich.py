@@ -9,7 +9,7 @@ from linprog import mill as f
 from linprog.lp import solve_square
 from scene import claim
 
-OUT = chapter_dir("04-buying-the-hours")
+OUT = chapter_dir("06-buying-the-hours")
 
 
 def fair_offer_corners():
