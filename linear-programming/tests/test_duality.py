@@ -1,4 +1,4 @@
-"""Exact checks for the chapter 4 duality examples and sign table."""
+"""Exact checks for the chapter 6 duality examples and sign table."""
 
 import random
 from fractions import Fraction
@@ -264,7 +264,7 @@ def test_seeded_mixed_general_programs_preserve_duality_and_weak_duality():
             assert primal_value >= buyer_value
 
 
-def test_chapter_four_numbers_and_figure_paths_match_the_computation():
+def test_chapter_six_numbers_and_figure_paths_match_the_computation():
     for phrase in (
         "84,000", "96,000", "100,000", "3·8 + 6·12 = 96",
         "32 + 40 = 72", "½ × 20 = 10", "20 − 10√2",
@@ -273,6 +273,6 @@ def test_chapter_four_numbers_and_figure_paths_match_the_computation():
         assert phrase in FLAT
 
     for image in ("offer.gif", "sandwich.png", "signs.png"):
-        relative = f"chapters/04-buying-the-hours/{image}"
+        relative = f"chapters/06-buying-the-hours/{image}"
         assert relative in TEXT
         assert (ROOT / relative).is_file()

@@ -21,7 +21,9 @@ CHAPTERS = [
     Chapter(1, "01-inside-the-walls", "A plan inside the walls"),
     Chapter(2, "02-best-is-a-corner", "The best plan sits on a corner"),
     Chapter(3, "03-writing-it-down", "Writing a problem down"),
-    Chapter(4, "04-buying-the-hours", "Someone buying the hours"),
+    Chapter(4, "04-more-rows", "More rows from words"),
+    Chapter(5, "05-yes-or-no", "Yes-or-no decisions"),
+    Chapter(6, "06-buying-the-hours", "Someone buying the hours"),
 ]
 
 # A second copy of src/linprog's corner search, so the pages need no server.

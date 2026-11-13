@@ -9,7 +9,7 @@ from linprog import mill as f
 from linprog.lp import dual_by_enumeration, solve_square
 from scene import Stages, claim, clip, fill
 
-OUT = chapter_dir("04-buying-the-hours")
+OUT = chapter_dir("06-buying-the-hours")
 MILL = f.MILL
 WINDOW = (0, 6, 0, 6)
 PRICE_ROWS = tuple(
