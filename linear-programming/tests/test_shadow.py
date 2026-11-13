@@ -9,6 +9,7 @@ from linprog import mill as f
 from linprog.lp import (LP, best_by_enumeration, dual_by_enumeration,
                         simplex, solve_square, vertices)
 from linprog.modeling import two_week_inventory
+from figures.fig07b_value_curves import fair_offer_corners, offer_line_table
 from test_formulation import complete_sets_lp
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -151,6 +152,29 @@ def test_sample_bills_match_their_best_values():
     assert best_by_enumeration(lathe_lp(32))[1] == 84
     assert best_by_enumeration(lathe_lp(50))[1] == 100
     assert best_by_enumeration(press_lp(20))[1] == 84
+
+
+def test_value_curve_labels_anchor_to_their_own_bill_lines():
+    offers = fair_offer_corners()
+    expected = {
+        0: {
+            (Fraction(3), Fraction(0)): ("(3, 0): 3b", (50, 150)),
+            (Fraction(2), Fraction(1)): ("(2, 1): 2b + 20", (50, 120)),
+            (Fraction(0), Fraction(5)): ("(0, 5): 100", (50, 100)),
+        },
+        1: {
+            (Fraction(3), Fraction(0)): ("(3, 0): 96", (40, 96)),
+            (Fraction(2), Fraction(1)): ("(2, 1): 64 + b", (40, 104)),
+            (Fraction(0), Fraction(5)): ("(0, 5): 5b", (40, 200)),
+        },
+    }
+    for axis, maximum in ((0, 50), (1, 40)):
+        for line in offer_line_table(axis, maximum, offers):
+            label, anchor = expected[axis][line.offer]
+            assert line.label == label
+            assert line.anchor == tuple(Fraction(value) for value in anchor)
+            x, y = line.anchor
+            assert y == line.slope * x + line.intercept
 
 
 def test_complementary_slackness_examples_and_idle_resource_prices():

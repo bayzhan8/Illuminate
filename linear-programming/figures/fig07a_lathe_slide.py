@@ -6,7 +6,7 @@ from illuminate.draw import (PLAN, PRICE, SURFACE, TEXT, TEXT_DIM, animate,
                              chapter_dir, figure, margin_note)
 from linprog import mill as f
 from linprog.lp import best_by_enumeration
-from scene import Stages, claim, draw_axes, draw_region, line_where
+from scene import Stages, claim, draw_axes, line_where, ordered
 
 OUT = chapter_dir("07-one-more")
 START = Fraction(16)
@@ -64,8 +64,6 @@ def lathe_slide():
         best_by_enumeration(lathe_lp(b))[0]
         for b in range(int(START), int(THIRD_BEND) + 1)
     ]
-    path_t = [float(point[0]) for point in path]
-    path_f = [float(point[1]) for point in path]
 
     def update(i):
         i = min(i, frames - 1)
@@ -82,25 +80,39 @@ def lathe_slide():
         draw_axes(ax)
         ax.set_ylim(0, 22)
         ax.set_yticks(range(0, 23, 4))
-        draw_region(ax, lp, alpha=0.08)
+        region = ordered(lp)
+        ax.fill([float(vertex[0]) for vertex in region],
+                [float(vertex[1]) for vertex in region],
+                color=TEXT_DIM, alpha=0.08, zorder=1, linewidth=0)
         line_where(ax, f.MILL.A[0], b, color=TEXT, linewidth=1.35, zorder=4)
         line_where(ax, f.MILL.A[1], f.MILL.b[1],
                    color=TEXT, linewidth=1.35, zorder=4)
-        ax.plot(path_t, path_f, color=PLAN, linewidth=1.8, alpha=0.68, zorder=5)
-        for knot in (path[4], path[16], path[24]):
+        trail_stock = min(b, THIRD_BEND)
+        trail = path[:int(trail_stock - START) + 1]
+        if trail_stock.denominator != 1:
+            trail.append(point)
+        ax.plot([float(vertex[0]) for vertex in trail],
+                [float(vertex[1]) for vertex in trail],
+                color=PLAN, linewidth=1.2, zorder=5,
+                solid_capstyle="round")
+        for stock, knot in ((FIRST_BEND, path[4]),
+                            (SECOND_BEND, path[16]),
+                            (THIRD_BEND, path[24])):
+            if b < stock:
+                continue
             ax.plot([float(knot[0])], [float(knot[1])], "o", color=PLAN,
                     markeredgecolor=SURFACE, markeredgewidth=1.2,
-                    markersize=6, zorder=7)
+                    markersize=5, zorder=7)
         ax.plot([float(point[0])], [float(point[1])], "o", color=PLAN,
                 markeredgecolor=SURFACE, markeredgewidth=1.8,
                 markersize=9, zorder=8)
 
         lathe_label_x = max(Fraction(2), min(Fraction(9), b - 36))
-        lathe_label_y = (b - lathe_label_x) / 2 - Fraction(4, 5)
+        lathe_label_y = (b - lathe_label_x) / 2 - Fraction(9, 2)
         ax.text(float(lathe_label_x), float(lathe_label_y), "lathe wall",
                 color=TEXT_DIM, fontsize=8.6, ha="left", va="top", zorder=9,
-                bbox=dict(boxstyle="square,pad=0.14", facecolor=SURFACE,
-                          edgecolor="none"))
+                bbox=dict(boxstyle="square,pad=0.18", facecolor=SURFACE,
+                          edgecolor=TEXT_DIM, linewidth=0.45))
         ax.text(0.6, 21.15, "press wall", color=TEXT_DIM, fontsize=8.6,
                 ha="left", va="center", zorder=9,
                 bbox=dict(boxstyle="square,pad=0.14", facecolor=SURFACE,
