@@ -29,7 +29,7 @@ MAX_PLAN_VALUE = max(
     for point in MILL_CORNERS
 )
 ORDER_VALUE = sum((a * b for a, b in zip(NORMAL, ORDER)), Fraction(0))
-STAGES = Stages((18, 0), (0, 18), (24, 8))
+STAGES = Stages((18, 0), (0, 18), (24, 0), (18, 8))
 TITLE = "the nearest plan draws a wall the order cannot cross"
 
 
@@ -68,7 +68,9 @@ def probe_at(frame):
         return interpolate(START, CORNER, Fraction(str(progress)))
     if stage == 1:
         return CORNER
-    return interpolate(CORNER, END, Fraction(str(progress)))
+    if stage == 2:
+        return interpolate(CORNER, END, Fraction(str(progress)))
+    return interpolate(END, CORNER, Fraction(str(progress)))
 
 
 def draw_region_and_walls(ax):
@@ -88,13 +90,13 @@ def closest_gif():
 
     def update(i):
         i = min(i, STAGES.total - 1)
-        stage, _ = STAGES(i)
+        stage, progress = STAGES(i)
         probe = probe_at(i)
         separation = (ORDER[0] - probe[0], ORDER[1] - probe[1])
         distance_squared = sum((v * v for v in separation), Fraction(0))
         distance = sqrt(float(distance_squared))
         at_corner = stage == 1
-        final = i == STAGES.total - 1
+        final = stage == len(STAGES.spec) - 1 and progress == 1.0
         _, _, wall_anchor = closest_label_anchors(probe)
 
         ax.clear()
@@ -108,9 +110,10 @@ def closest_gif():
                 color=TEXT_DIM, linewidth=1.2,
                 linestyle="-" if at_corner or final else (0, (3, 3)),
                 zorder=4)
-        ax.plot([float(probe[0])], [float(probe[1])], "o", color=PLAN,
-                markeredgecolor=SURFACE, markeredgewidth=1.5,
-                markersize=9, zorder=7)
+        if not final:
+            ax.plot([float(probe[0])], [float(probe[1])], "o", color=PLAN,
+                    markeredgecolor=SURFACE, markeredgewidth=1.5,
+                    markersize=9, zorder=7)
         ax.plot([float(ORDER[0])], [float(ORDER[1])], "o", color=WARN,
                 markeredgecolor=SURFACE, markeredgewidth=1.3,
                 markersize=8, zorder=7)
@@ -138,16 +141,17 @@ def closest_gif():
         )
         probe_dx = -10 if probe[0] > 18 else 8
         probe_dy = 9 if probe[1] < 16 else -12
-        ax.annotate(
-            "probe", xy=tuple(map(float, probe_anchor)),
-            xytext=(probe_dx, probe_dy), textcoords="offset points",
-            color=PLAN, fontsize=8.5,
-            ha="right" if probe_dx < 0 else "left",
-            va="bottom" if probe_dy > 0 else "top",
-            bbox=dict(boxstyle="square,pad=0.14", facecolor=SURFACE,
-                      edgecolor="none"),
-            zorder=9,
-        )
+        if not final:
+            ax.annotate(
+                "probe", xy=tuple(map(float, probe_anchor)),
+                xytext=(probe_dx, probe_dy), textcoords="offset points",
+                color=PLAN, fontsize=8.5,
+                ha="right" if probe_dx < 0 else "left",
+                va="bottom" if probe_dy > 0 else "top",
+                bbox=dict(boxstyle="square,pad=0.14", facecolor=SURFACE,
+                          edgecolor="none"),
+                zorder=9,
+            )
 
         if final:
             pi, pi0 = separator(ORDER, CORNER)
@@ -192,15 +196,17 @@ def closest_gif():
                 "the probe follows the mill's edge",
                 "the shortest distance is 5.00",
                 "past the corner, the distance grows again",
+                "after the sweep, the probe returns to the nearest plan",
             )
             claim(ax, TITLE, subtitles[stage])
 
-        note.set_text(
-            f"distance from x to probe = {distance:.2f}"
-            + (f"\nwall: {wall_equation_label()}; order gives "
-               f"{display(ORDER_VALUE)}, plans at most {display(MAX_PLAN_VALUE)}"
-               if final else "")
-        )
+        if final:
+            note.set_text(
+                f"nearest plan {display_point(CORNER)}, "
+                f"distance {display(distance)}\nwall: {wall_equation_label()}"
+            )
+        else:
+            note.set_text(f"distance from x to probe = {distance:.2f}")
         return []
 
     animate(fig, update, STAGES.total, OUT / "closest.gif", fps=12, hold=3.0)

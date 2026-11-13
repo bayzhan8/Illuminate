@@ -3,8 +3,8 @@ import re
 from fractions import Fraction
 from pathlib import Path
 
-from figures.fig08a_closest import (CORNER, END, ORDER, START,
-                                    closest_label_anchors)
+from figures.fig08a_closest import (CORNER, END, ORDER, START, STAGES,
+                                    closest_label_anchors, probe_at)
 from figures.fig08b_obtuse import (OUTSIDE, STAR, WALK_MIDPOINT,
                                    obtuse_label_anchors)
 from figures.fig08c_no_wall import (ENDPOINTS, MIDPOINT, TRIAL_NORMALS,
@@ -197,6 +197,14 @@ def test_figure_label_anchors_stay_on_their_objects():
     assert dot_product(mill.MILL.A[1], press_anchor) == mill.MILL.b[1]
     assert len(approach_points()) == 3
     assert all(point[0] + point[1] < 20 for point in approach_points())
+
+
+def test_closest_animation_returns_and_holds_at_the_nearest_plan():
+    first_hold_frame = STAGES.total - STAGES.spec[-1][1]
+    for frame in range(first_hold_frame, STAGES.total):
+        probe = probe_at(frame)
+        assert probe == CORNER
+        assert sum(((a - b) ** 2 for a, b in zip(ORDER, probe)), Q(0)) == 25
 
 
 def test_chapter_numbers_and_figure_paths_match_the_code():
