@@ -3,6 +3,7 @@
 import re
 import sys
 from pathlib import Path
+from urllib.parse import urlsplit
 
 from linprog import mill as f
 
@@ -10,6 +11,15 @@ ROOT = Path(__file__).resolve().parents[1]
 TEXT = (ROOT / "lesson.md").read_text()
 FLAT = " ".join(TEXT.split())
 IMAGE = re.compile(r"!\[(.*?)\]\(([^)]+)\)")
+CHAPTER_REFERENCE = re.compile(
+    r"\bchapters?\s+(\d+)(?:\s+(to|and)\s+(\d+)|\s*([–—-])\s*(\d+))?",
+    re.IGNORECASE,
+)
+ROADMAP_CHAPTER = re.compile(
+    r"\*\*chapters?\s+(\d+)(?:\s+(to|and)\s+(\d+)|\s*([–—-])\s*(\d+))?\*\*",
+    re.IGNORECASE,
+)
+SIBLING_LINK = re.compile(r"\]\((\.\./[^)\s]+)\)")
 
 sys.path.insert(0, str(ROOT))
 import build  # noqa: E402
@@ -76,6 +86,77 @@ def test_the_lesson_splits_into_the_chapters_build_expects():
     front, chapters, _ = build.split_lesson(build.TOPIC)
     assert len(chapters) == len(build.CHAPTERS)
     assert front.startswith(build.TOPIC.heading)
+
+
+def test_every_chapter_reference_names_registered_chapters():
+    registered = {chapter.number for chapter in build.CHAPTERS}
+    maximum = max(registered)
+    references = list(CHAPTER_REFERENCE.finditer(TEXT))
+    assert references
+    for reference in references:
+        first = int(reference.group(1))
+        relation = reference.group(2)
+        second = reference.group(3)
+        dash_end = reference.group(5)
+        if relation == "to" or dash_end is not None:
+            last = int(second if relation == "to" else dash_end)
+            assert first <= last, reference.group()
+            cited = range(first, last + 1)
+        elif relation == "and":
+            cited = (first, int(second))
+        else:
+            cited = (first,)
+        assert all(0 <= number <= maximum and number in registered
+                   for number in cited), reference.group()
+
+
+def test_chapter_zero_roadmap_covers_every_chapter_without_gaps():
+    roadmap = TEXT.split(
+        "Getting there takes a few ideas, and each chapter adds one:", 1
+    )[1].split("\n\nEach idea comes", 1)[0]
+    maximum = max(chapter.number for chapter in build.CHAPTERS)
+    covered = []
+    for reference in ROADMAP_CHAPTER.finditer(roadmap):
+        first = int(reference.group(1))
+        relation = reference.group(2)
+        second = reference.group(3)
+        dash_end = reference.group(5)
+        if relation == "to" or dash_end is not None:
+            last = int(second if relation == "to" else dash_end)
+            covered.extend(range(first, last + 1))
+        elif relation == "and":
+            covered.extend((first, int(second)))
+        else:
+            covered.append(first)
+    assert sorted(covered) == list(range(1, maximum + 1))
+
+
+def test_relative_sibling_links_resolve_to_index_pages():
+    links = SIBLING_LINK.findall(TEXT)
+    assert links
+    for link in links:
+        target = (ROOT / urlsplit(link).path).resolve()
+        assert target.is_dir(), link
+        assert (target / "index.html").is_file(), link
+
+
+def test_where_to_go_next_section_has_its_prose_and_rendered_anchors():
+    start = TEXT.index("## Where to go next")
+    section = " ".join(
+        TEXT[start:TEXT.index("\n## Glossary", start)].split()
+    )
+    assert "## Where to go next" in section
+    for link in (
+        "[simplex against interior point](../corners-vs-centre/)",
+        "[LP on a GPU](../lp-on-gpu/)",
+        "[branch-and-price](../branch-and-price/)",
+    ):
+        assert link in section
+
+    rendered = (ROOT / "index.html").read_text()
+    assert "<h2>Where to go next</h2>" in rendered
+    toc = rendered.split("</nav>", 1)[0]
+    assert "Where to go next" not in toc
 
 
 def test_the_generated_chapter_files_are_up_to_date():

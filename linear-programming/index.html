@@ -104,15 +104,17 @@ hits the press wall as well. Each step ends when one more resource runs out.</p>
 sits on a corner, how to turn a story into a problem, where linear programs
 stop and yes-or-no decisions begin, and Kantorovich's multipliers, the
 second problem hiding behind every linear program.</li>
-<li><strong>Chapters 8 to 13</strong> are about the shape itself: walls, corners, and what
-goes wrong when too many walls meet at one point.</li>
-<li><strong>Chapters 14 to 20</strong> are Dantzig's walk: the table that does its
-bookkeeping, how it avoids walking in circles, how it finds somewhere to
-start, and the walks that start from the prices instead.</li>
-<li><strong>Chapters 21 to 23</strong> come back to the multipliers: why they are right, how
-far they can be trusted, and how the big theorems fit together. In 1975
-Kantorovich shared the Nobel prize in economics with Tjalling Koopmans,
-not with Dantzig.</li>
+<li><strong>Chapters 8 to 13</strong> are about the shape itself: walls that separate,
+shadows, the either-or of Farkas, corners by algebra, and what goes wrong
+when too many walls meet at one point.</li>
+<li><strong>Chapters 14 to 19</strong> are the walks: Dantzig's along the edges, the rule
+that keeps it from walking in circles, the walk that repairs a plan from
+the price side, how far its answer can be trusted, ceilings that need no
+row, and the walk that starts from the prices.</li>
+<li><strong>Chapter 20</strong> comes back to the multipliers: why a best plan always has
+them, what happens when it does not exist, and which of them fit best.
+In 1975 Kantorovich shared the Nobel prize in economics with Tjalling
+Koopmans, not with Dantzig.</li>
 </ul>
 <p>Each idea comes as a picture first and a sentence second. The
 <a href="#glossary">glossary</a> at the end gives the textbook name for every plain word
@@ -590,7 +592,7 @@ and t = 0 is the wall the simplex walk in chapter 0 left on its second step.</p>
 plan up against the others. He found one multiplier per resource that made
 every alternative visibly worse, and he called them resolving multipliers. The
 simplex walk of chapter 0 produces the same two numbers at its last corner, as
-chapter 15 will show.</p>
+chapter 14 will show.</p>
 <h3>Turn the arrow and the corner moves</h3>
 <figure class="plate"><img src="chapters/02-best-is-a-corner/turns.png" alt="Four copies of the mill's region, each with a different value arrow c and the line of equal value through its best plan. c = (1, 3): the best plan is all 5-ply, 48,000 roubles. c = (3, 5): 8 batches of 3-ply and 12 of 5-ply, 84,000 roubles. c = (1, 1): the line lies flat along the press wall and the whole edge from 8 batches of 3-ply and 12 of 5-ply to all 3-ply ties at 20,000 roubles. c = (3, 1): all 3-ply, 60,000 roubles." loading="lazy"></figure>
 <p>Read the panels left to right, top to bottom: c turns from steep to flat, and
@@ -981,7 +983,7 @@ is not arbitrary: the lathe alone allows at most 32 ÷ 2 = 16 batches of 5-ply,
 so f ≤ 16 removes no plan the mill could make anyway.</p>
 <p>A problem whose rows and objective are linear but which has some variables
 restricted to whole numbers is a <strong>mixed-integer linear program</strong>. It is not a
-linear program, and none of the theory of chapters 6 to 23 applies to it as it
+linear program, and none of the theory of chapters 6 to 20 applies to it as it
 stands. With one yes-or-no variable it can still be solved by trying both
 values. At z = 1 the best plan is (4, 14), worth 82. At z = 0 it is (20, 0),
 worth 60. So the mill takes the contract and keeps 82,000 roubles. With k such
@@ -1051,8 +1053,8 @@ are used up before the second crew starts, and u2 ≤ 4w says the second crew
 works only if called. Both cases tie at 84: no overtime, or all 8 hours at
 (0, 20), where 16 of extra value pays exactly 3 × 4 + 1 × 4 = 16 of cost. The
 LP of chapter 4 had reported 88 for a plan that could not be carried out.</p>
-<p>The &quot;big M&quot; of chapter 17 shares only the name. That one is a large penalty
-on artificial variables, used to find a first corner for the simplex method.
+<p>Textbooks also have a &quot;big M method&quot;, which shares only the name. It puts a large
+penalty on chapter 14's artificial variables to find a first corner for the simplex method.
 It has no yes-or-no variables and keeps everything a linear program.</p>
 <blockquote class="aside">
 <p><strong>The one thing to remember.</strong> Walls only make convex regions. A rule with an &quot;or&quot; in it needs a 0-or-1 variable; check both of its values by hand, and use the smallest M that removes nothing it should not.</p>
@@ -1264,9 +1266,10 @@ swapped.</p>
 eye because it was small. From here on it is solved on purpose.</p>
 <p>What weak duality cannot say is that a meeting always happens: that for
 every LP with a best plan, some fair offer bills exactly its value. That is
-the strong duality theorem. It is true, and it is proved twice later, once
-from the walk of the simplex method (chapter 14) and once from separating a
-point from a shape (chapter 23). Until then it is a promise, and the
+the strong duality theorem. It is true, and it is proved three times later: from
+the walk of the simplex method (chapter 15), from Farkas's lemma, which is
+separation written as algebra (chapter 20), and from the directions at a best
+plan (also chapter 20). Until then it is a promise, and the
 chapters in between do not use it.</p>
 <blockquote class="aside">
 <p><strong>The one thing to remember.</strong> Price every resource so that no product is worth more than the hours it uses; then whatever plan you choose earns at most the bill, so one such price list proves a plan best by meeting it.</p>
@@ -1344,12 +1347,12 @@ are 96, 84 and 100, and it is 84. At b = 50 they are 150, 120 and 100, and it
 is 100. A minimum of linear functions is concave (chapter 4), so the value
 bends downwards: each extra lathe hour is worth no more than the one before,
 3, then 2, then 0. That the value is the cheapest fair bill for every stock,
-in every LP, is the strong duality theorem, proved in chapter 23. For the mill
+in every LP, is the strong duality theorem, proved in chapters 15 and 20. For the mill
 the table has just checked it on every range.</p>
 <figure class="plate"><img src="chapters/07-one-more/value_curves.png" alt="Two panels. Left: the best value against lathe hours b from 0 to 50, with the press at 20, drawn in blue as three joined pieces with slopes 3, 2 and 0, bending at b = 20 (value 60) and b = 40 (value 100). The three bills 3b, 2b + 20 and 100 of the offers (3, 0), (2, 1) and (0, 5) are dashed rust lines, and the blue curve runs along the lowest of them. The point (32, 84) is marked. Right: the same for press hours b from 0 to 40 with the lathe at 32: slopes 5, 1 and 0, bends at b = 16 (value 80) and b = 32 (value 96), and the bills 5b, 32 × 2 + b and 96 of the offers (0, 5), (2, 1) and (3, 0), with (20, 84) marked." loading="lazy"></figure>
 <p>At the bends the price is not one number. At b = 20 the offers (3, 0) and
 (2, 1) bill the same 60, and the next hour is worth 2 while the last one was
-worth 3. Chapter 22 is about what goes wrong there.</p>
+worth 3. Chapter 12 is about what goes wrong there.</p>
 <h3>Two rules that link a plan to its prices</h3>
 <p>Chapter 6 split the gap between what a plan earns and what an offer bills
 into two sums:</p>
@@ -1371,7 +1374,7 @@ both of the following hold.</p>
 <p>By chapter 6, a plan and an offer that meet are both best. So the rules
 certify optimality: find a fair offer that obeys them with your plan, and the
 plan is best. The converse, that every best plan has such an offer, needs
-strong duality, and waits for chapter 23.</p>
+strong duality, and waits for chapter 15.</p>
 <p>The rules turn a guess at the plan into equations for the prices. Guess
 (8, 12). Both products are made, so rule 2 says both are priced exactly:
 y1 + y2 = 3 and 2y1 + y2 = 5. That gives y = (2, 1). It is ≥ 0, so it is
@@ -1397,7 +1400,7 @@ cost to buy.</p>
 press hours, so it is out of reach, and saying so is easy. Proving it to
 someone who distrusts the arithmetic, with one inequality they can check, is
 the question of this chapter. The answer is a wall: a line with the order on
-one side and every possible plan on the other. Chapters 10 and 23 build the
+one side and every possible plan on the other. Chapters 10 and 20 build the
 theory of linear programming on it.</p>
 <h3>The nearest plan</h3>
 <p>Every plan is somewhere, and the order (11, 16) is outside. Among all plans,
@@ -1746,7 +1749,7 @@ weighted, add up head to tail to the origin.</p>
 <p>The left panel is chapter 2's arrow picture, c = 2(1, 2) + 1(1, 1), moved to one
 side of the equation.</p>
 <blockquote class="aside">
-<p><strong>History.</strong> Gyula Farkas was a physicist at Kolozsvár (now Cluj) working on Fourier's inequality principle of mechanics, the same problem that led Fourier to elimination. He published the lemma in several attempts from 1894 on, and his clean proof appeared in 1902. Paul Gordan's form is older, from 1873, written in the middle of his work on invariant theory. In 1947 von Neumann recognised Farkas's lemma at once in Dantzig's linear programs (chapter 6), and the duality theorem of chapter 23 is a corollary of it.</p>
+<p><strong>History.</strong> Gyula Farkas was a physicist at Kolozsvár (now Cluj) working on Fourier's inequality principle of mechanics, the same problem that led Fourier to elimination. He published the lemma in several attempts from 1894 on, and his clean proof appeared in 1902. Paul Gordan's form is older, from 1873, written in the middle of his work on invariant theory. In 1947 von Neumann recognised Farkas's lemma at once in Dantzig's linear programs (chapter 6), and the duality theorem of chapter 20 is a corollary of it.</p>
 </blockquote>
 <blockquote class="aside">
 <p><strong>The one thing to remember.</strong> Either the system has a solution, or a nonnegative combination of its rows reads 0 ≤ negative. Elimination finds whichever one exists; geometrically, b is either in the cone or cut off from it by a wall through the origin.</p>
@@ -2245,7 +2248,7 @@ tight rows that remain once x_j ≥ 0 is released.</li>
 <p><em>Proof.</em> c̄ ≤ 0 says yA ≥ c, so y is a fair offer for the dual min yb, yA ≥ c (y free, because the rows are equations; chapter 6's sign table).
 Its bill is yb = c_B B⁻¹b = c_B x_B = cx. A fair offer that bills exactly the plan's value proves the plan optimal, by weak duality. ∎</p>
 </blockquote>
-<p>So a stop is never a guess: it comes with a certificate. Chapter 17 runs this same proof backwards.</p>
+<p>So a stop is never a guess: it comes with a certificate. Chapter 16 runs this same proof backwards.</p>
 <blockquote class="proof">
 <p><strong>Theorem (unbounded).</strong> If some c̄_j &gt; 0 and B⁻¹A_j ≤ 0, the value is unbounded.</p>
 <p><em>Proof.</em> The edge d for j has Ad = 0 and d ≥ 0, so it is a direction (chapter 11), and c·d = c̄_j &gt; 0.
@@ -2906,6 +2909,34 @@ programming came the same year.</p>
 patterns only &quot;both feasible&quot; gives equal values. Among all the optimal prices, the ones in the middle of the face fit strictly, and the
 corners the simplex method finds usually do not.</p>
 </blockquote>
+<h2>Where to go next</h2>
+<p>The mill ends where the subject's first decade ended, around 1956, with the
+duality theorem proved and the simplex method working. Three questions were
+left open, and each became a field.</p>
+<p><strong>Is the walk fast?</strong> In practice it was, and nobody could say why. In 1972
+Klee and Minty built problems on which Dantzig's rule visits every corner. In
+1979 Leonid Khachiyan proved that linear programs can be solved in polynomial
+time, with an ellipsoid method that was hopeless in practice. In 1984 Narendra
+Karmarkar, at Bell Labs, gave a polynomial method that also worked, and it went
+through the middle of the shape, the route Dantzig had pictured and rejected.
+Interior-point methods follow the central path, and chapter 20's strictly
+complementary pair is where that path ends. The <a href="../corners-vs-centre/">simplex against interior
+point</a> guide races the two routes, and <a href="../lp-on-gpu/">LP on a
+GPU</a> takes up first-order methods for problems too big to pivot.</p>
+<p><strong>What if the answers must be whole numbers?</strong> Chapter 5 showed that the theory
+breaks. Ralph Gomory's 1958 cutting planes add rows that remove fractional
+corners. Ailsa Land and Alison Doig's 1960 branch and bound splits the problem
+and uses the LP value as a ceiling, which is chapter 5's relaxation used
+systematically. Each branch adds one row to an LP that is already optimal,
+which is chapter 16's dual simplex at work.</p>
+<p><strong>What if there are too many columns to write down?</strong> In 1961 Gilmore and Gomory
+cut paper rolls with millions of possible patterns. They generated only the
+patterns whose reduced cost was positive, which is chapter 17's new-product
+test asked over and over. The <a href="../branch-and-price/">branch-and-price</a> guide is
+that idea at full size.</p>
+<p>Kantorovich's resolving multipliers run through all three: the prices that
+prove a plan is best are also what the faster methods compute, what the
+integer methods bound with, and what decides which column enters next.</p>
 <h2>Glossary</h2>
 <div class="overflow-x"><table>
 <thead>
@@ -3195,8 +3226,13 @@ corners the simplex method finds usually do not.</p>
 </table></div>
 <h2>Further reading</h2>
 <p>Craig A. Tovey, <em>Linear Optimization and Duality: A Modern Exposition</em>, CRC
-Press, 2021. Chapters 1 and 2 cover what chapters 1 and 2 here do, with more
-examples.</p>
+Press, 2021. Its chapters 1 to 8 cover the ground of this guide, with more
+examples and exercises.</p>
+<p>Vašek Chvátal, <em>Linear Programming</em>, Freeman, 1983. The cycling example of
+chapter 15 is his, and his dictionaries are the ones used here.</p>
+<p>Alexander Schrijver, <em>Theory of Linear and Integer Programming</em>, Wiley, 1986.
+The history notes at the end of its chapters are the best short account of who
+proved what, and when.</p>
 <h2>Running the code</h2>
 <p>From the repository root, <code>make bootstrap</code> once. Then, in this folder,
 <code>make check</code> re-renders every figure, rebuilds the page and runs the tests.</p>
