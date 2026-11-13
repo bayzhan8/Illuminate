@@ -23,6 +23,8 @@ BUYER_CORNERS = tuple(sorted(
     point for point, feasible in basic_points(BUYER_A, BUYER_B) if feasible
 ))
 BUYER_CORNER_LABEL_ANCHORS = BUYER_CORNERS
+BUYER_CORNER_LABEL_OFFSETS = ((8, 8), (-48, -12), (8, -13))
+BUYER_CORNER_LABEL_LEADERS = (False, True, False)
 BUYER_DIRECTION_START = (2, 1)
 BUYER_DIRECTION_VECTORS = ((2, 0), (0, 2))
 BUYER_DIRECTION_LABEL_ANCHOR = (2, 2)
@@ -88,12 +90,15 @@ def _buyer(ax):
     ax.plot(x, [5 - 2 * v for v in x], color=TEXT_DIM, linewidth=1.1, zorder=3)
     ax.axhline(0, color=TEXT_DIM, linewidth=1.0, zorder=2)
     ax.axvline(0, color=TEXT_DIM, linewidth=1.0, zorder=2)
-    offsets = ((8, 8), (-48, -12), (8, -13))
-    for point, offset in zip(BUYER_CORNERS, offsets):
+    for point, anchor, offset, leader in zip(
+            BUYER_CORNERS, BUYER_CORNER_LABEL_ANCHORS,
+            BUYER_CORNER_LABEL_OFFSETS, BUYER_CORNER_LABEL_LEADERS):
         ax.plot([point[0]], [point[1]], "o", color=PRICE, markersize=5.8,
                 markeredgecolor=SURFACE, markeredgewidth=1.1, zorder=7)
-        ax.annotate(f"({point[0]}, {point[1]})", xy=point, xytext=offset,
+        ax.annotate(f"({point[0]}, {point[1]})", xy=anchor, xytext=offset,
                     textcoords="offset points", color=PRICE, fontsize=7.3,
+                    arrowprops=(dict(arrowstyle="-", color=PRICE, linewidth=0.65,
+                                     shrinkA=2, shrinkB=3) if leader else None),
                     bbox=dict(boxstyle="square,pad=0.13", facecolor=SURFACE,
                               edgecolor=PRICE, linewidth=0.4), zorder=8)
     for vector in BUYER_DIRECTION_VECTORS:

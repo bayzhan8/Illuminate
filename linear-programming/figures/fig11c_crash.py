@@ -3,8 +3,8 @@
 from fractions import Fraction as Q
 
 from matplotlib.patches import Polygon
-from illuminate.draw import (PLAN, PRICE, SURFACE, TEXT, TEXT_DIM, animate,
-                             chapter_dir, figure, margin_note, style)
+from illuminate.draw import (PLAN, PRICE, SURFACE, TEXT, TEXT_DIM, WARN,
+                             animate, chapter_dir, figure, margin_note, style)
 from linprog.corners import crash, tight
 from linprog.lp import LP, vertices
 
@@ -19,12 +19,25 @@ OUT = chapter_dir("11-corners-by-algebra")
 OBJECTIVE = (Q(32), Q(20))
 START = (Q(4), Q(4))
 DIRECTIONS = ((Q(-1), Q(-1)), (Q(1), Q(-2)))
+TITLE = "Crash until the rows pin the point"
+SUBTITLES = (
+    "no tight rows: any direction is free",
+    "moving along (−1, −1) until a row goes tight",
+    "one tight row: slide along it, (1, −2), bill falling 8 per unit",
+    "two tight rows, rank 2: a corner, bill 84",
+)
+STAGE_SUBTITLES = (SUBTITLES[0], SUBTITLES[1], SUBTITLES[2],
+                   SUBTITLES[2], SUBTITLES[3])
 BUYER = (
     (Q(-1), Q(-1)), (Q(-2), Q(-1)), (Q(-1), Q(0)), (Q(0), Q(-1))
 )
 BUYER_RHS = (Q(-3), Q(-5), Q(0), Q(0))
 WALL_LABEL_ANCHORS = ((Q(0), Q(3)), (Q(0), Q(5)))
 STOP_LABEL_ANCHORS = (START, (Q(5, 3), Q(5, 3)), (Q(2), Q(1)))
+MID_DIRECTION_ARROW_END = tuple(
+    STOP_LABEL_ANCHORS[1][i] + Q(1, 2) * DIRECTIONS[1][i]
+    for i in range(2)
+)
 STOPS = ((24, 24), (30, 24), (30, 36))
 TOTAL_FRAMES = sum(move + hold for move, hold in STOPS)
 HOLD_FRAMES = tuple(hold for _, hold in STOPS)
@@ -84,12 +97,17 @@ def _fmt(value):
 def crash_gif():
     fig, ax = figure(8.4, 6.4)
     fig.subplots_adjust(left=0.13, right=0.97, bottom=0.20, top=0.80)
+    fig.text(0.08, 0.96, TITLE, fontsize=11, color=TEXT,
+             fontweight="semibold", ha="left")
+    subtitle = fig.text(0.08, 0.895, "", fontsize=9.5, color=TEXT_DIM,
+                        ha="left")
     note = margin_note(fig, y=0.025, size=9.0)
     polygon = _region()
 
     def update(i):
         i = min(i, TOTAL_FRAMES - 1)
         stage, point = _frame(i)
+        subtitle.set_text(STAGE_SUBTITLES[stage])
         ax.clear()
         style(ax, xlabel="3-ply price y₁", ylabel="5-ply price y₂")
         ax.set_xlim(-0.6, 8)
@@ -147,15 +165,32 @@ def crash_gif():
         if direction is not None:
             end = STOP_LABEL_ANCHORS[1] if stage in (0, 1) \
                 else STOP_LABEL_ANCHORS[2]
-            ax.annotate("", xy=tuple(map(float, end)),
-                        xytext=tuple(map(float, point)),
-                        arrowprops=dict(arrowstyle="-|>", color=PLAN,
-                                        linewidth=1.8, mutation_scale=12),
-                        zorder=8)
+            label_anchor = end
+            if stage == 2:
+                ax.annotate("", xy=tuple(map(float, end)),
+                            xytext=tuple(map(float, point)),
+                            arrowprops=dict(arrowstyle="-|>", color=PLAN,
+                                            linewidth=1.8, mutation_scale=12),
+                            zorder=8)
+                ax.annotate(
+                    "", xy=tuple(map(float, MID_DIRECTION_ARROW_END)),
+                    xytext=tuple(map(float, end)),
+                    arrowprops=dict(arrowstyle="-|>", color=WARN,
+                                    linewidth=1.8, mutation_scale=12),
+                    zorder=8,
+                )
+                label_anchor = MID_DIRECTION_ARROW_END
+            else:
+                ax.annotate("", xy=tuple(map(float, end)),
+                            xytext=tuple(map(float, point)),
+                            arrowprops=dict(arrowstyle="-|>", color=PLAN,
+                                            linewidth=1.8, mutation_scale=12),
+                            zorder=8)
             direction_offsets = ((-46, -13), (8, -9))
             ax.annotate(
                 f"d = ({_fmt(direction[0])}, {_fmt(direction[1])})",
-                xy=tuple(map(float, end)), xytext=direction_offsets[0 if stage < 2 else 1],
+                xy=tuple(map(float, label_anchor)),
+                xytext=direction_offsets[0 if stage < 2 else 1],
                 textcoords="offset points", color=PLAN, fontsize=7.1,
                 arrowprops=dict(arrowstyle="-", color=PLAN, linewidth=0.6),
                     bbox=dict(boxstyle="square,pad=0.12", facecolor=SURFACE,

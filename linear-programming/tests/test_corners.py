@@ -1,5 +1,6 @@
 from fractions import Fraction as Q
 from itertools import product
+import math
 from pathlib import Path
 import random
 
@@ -214,6 +215,20 @@ def test_prose_figures_and_label_anchors():
     for point, anchor in zip(rank_figure.RANK_POINTS,
                              rank_figure.POINT_LABEL_ANCHORS):
         assert point == anchor
+    assert rank_figure.BREAKING_LABEL_ANCHORS == rank_figure.BREAKING_ENDS
+    assert rank_figure.BREAKING_LABEL_LEADERS == (True, True)
+    for (direction, label), endpoint in zip(
+            rank_figure.BREAKING_MOVES, rank_figure.BREAKING_ENDS):
+        distance = math.dist(tuple(map(float, rank_figure.CORNER)), endpoint)
+        assert math.isclose(distance, rank_figure.BREAKING_LENGTH)
+        if label == "breaks press":
+            assert math.isclose(endpoint[0] + 2 * endpoint[1], 32)
+            assert endpoint[0] + endpoint[1] > 20
+            assert direction == (Q(2), Q(-1))
+        else:
+            assert math.isclose(endpoint[0] + endpoint[1], 20)
+            assert endpoint[0] + 2 * endpoint[1] > 32
+            assert direction == (Q(-1), Q(1))
     a0, a1 = rank_figure.WALL_LABEL_ANCHORS
     assert a0[0] + 2 * a0[1] == 32
     assert a1[0] + a1[1] == 20
@@ -224,9 +239,30 @@ def test_prose_figures_and_label_anchors():
     assert strip_anchor[0] == -strip_anchor[1]
     assert line_figure.BUYER_CORNERS == ((0, 5), (2, 1), (3, 0))
     assert line_figure.BUYER_CORNER_LABEL_ANCHORS == line_figure.BUYER_CORNERS
+    assert line_figure.BUYER_CORNER_LABEL_LEADERS == (False, True, False)
     buyer_anchor = tuple(line_figure.BUYER_DIRECTION_LABEL_ANCHOR[i]
                          - line_figure.BUYER_DIRECTION_START[i] for i in range(2))
     assert buyer_anchor[0] == 0 and 0 < buyer_anchor[1] < 2
+    assert crash_figure.TITLE == "Crash until the rows pin the point"
+    assert crash_figure.SUBTITLES == (
+        "no tight rows: any direction is free",
+        "moving along (−1, −1) until a row goes tight",
+        "one tight row: slide along it, (1, −2), bill falling 8 per unit",
+        "two tight rows, rank 2: a corner, bill 84",
+    )
+    assert crash_figure.STAGE_SUBTITLES == (
+        crash_figure.SUBTITLES[0], crash_figure.SUBTITLES[1],
+        crash_figure.SUBTITLES[2], crash_figure.SUBTITLES[2],
+        crash_figure.SUBTITLES[3],
+    )
+    mid = crash_figure.STOP_LABEL_ANCHORS[1]
+    arrow_end = crash_figure.MID_DIRECTION_ARROW_END
+    delta = tuple(arrow_end[i] - mid[i] for i in range(2))
+    assert delta == tuple(Q(1, 2) * value
+                          for value in crash_figure.DIRECTIONS[1])
+    assert dot(delta, delta) == Q(5, 4)
+    assert 2 * arrow_end[0] + arrow_end[1] == 5
+    assert sum(arrow_end) < 3
     assert crash_figure.CRASH_STATUS == "bfs"
     assert crash_figure.STOP_LABEL_ANCHORS == tuple(
         point for point, _, _, _ in crash_figure.CRASH_PATH)

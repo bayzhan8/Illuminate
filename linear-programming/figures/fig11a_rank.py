@@ -44,9 +44,18 @@ INTERIOR_RADIUS = min(
     if any(row)
 ) / 4
 BREAKING_MOVES = (
-    ((Q(2), Q(-1)), Q(1, 2), "breaks press"),
-    ((Q(-1), Q(1)), Q(1, 2), "breaks lathe"),
+    ((Q(2), Q(-1)), "breaks press"),
+    ((Q(-1), Q(1)), "breaks lathe"),
 )
+BREAKING_LENGTH = 2.5
+BREAKING_ENDS = tuple(
+    tuple(float(CORNER[i]) + BREAKING_LENGTH * float(direction[i])
+          / math.hypot(*(float(value) for value in direction))
+          for i in range(2))
+    for direction, _ in BREAKING_MOVES
+)
+BREAKING_LABEL_ANCHORS = BREAKING_ENDS
+BREAKING_LABEL_LEADERS = (True, True)
 
 
 def _fmt(point):
@@ -91,7 +100,7 @@ def _base(ax, point):
     )
 
 
-def _arrow(ax, start, end, color, label, offset, ha="left"):
+def _arrow(ax, start, end, color, label, offset, ha="left", leader=False):
     ax.annotate(
         "", xy=tuple(map(float, end)), xytext=tuple(map(float, start)),
         arrowprops=dict(arrowstyle="-|>", color=color, linewidth=1.7,
@@ -101,6 +110,8 @@ def _arrow(ax, start, end, color, label, offset, ha="left"):
     ax.annotate(
         label, xy=tuple(map(float, end)), xytext=offset,
         textcoords="offset points", color=color, fontsize=6.8, ha=ha,
+        arrowprops=(dict(arrowstyle="-", color=color, linewidth=0.65,
+                         shrinkA=2, shrinkB=3) if leader else None),
         bbox=dict(boxstyle="square,pad=0.12", facecolor=SURFACE,
                   edgecolor=color, linewidth=0.4),
         zorder=9,
@@ -121,13 +132,10 @@ def rank_figure():
                  color=TEXT_DIM, ha="left")
 
     first = panels[0]
-    for direction, scale, label, offset, ha in (
-            (BREAKING_MOVES[0][0], BREAKING_MOVES[0][1],
-             BREAKING_MOVES[0][2], (8, -14), "left"),
-            (BREAKING_MOVES[1][0], BREAKING_MOVES[1][1],
-             BREAKING_MOVES[1][2], (-8, 8), "right")):
-        end = tuple(CORNER[i] + scale * direction[i] for i in range(2))
-        _arrow(first, CORNER, end, WARN, label, offset, ha=ha)
+    for (direction, label), end, offset, ha in zip(
+            BREAKING_MOVES, BREAKING_ENDS,
+            ((16, -20), (-16, 16)), ("left", "right")):
+        _arrow(first, CORNER, end, WARN, label, offset, ha=ha, leader=True)
     for anchor, label, offset, ha in (
             (WALL_LABEL_ANCHORS[0], "lathe wall", (8, 5), "left"),
             (WALL_LABEL_ANCHORS[1], "press wall", (-8, 8), "right")):
