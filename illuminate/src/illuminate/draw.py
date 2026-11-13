@@ -186,7 +186,8 @@ def save(fig, path: Path, tight: bool = True) -> Path:
 
 
 def animate(fig, update, frames: int, path: Path, fps: int = 12,
-            hold: float = 2.5, loop_smoothly: bool = False) -> Path:
+            hold: float = 2.5, loop_smoothly: bool = False,
+            preserve_colors: tuple[str, ...] = ()) -> Path:
     """Write a GIF, appending duplicate trailing frames so the last one lasts.
 
     ``hold`` is a duration in seconds. Callers must saturate their own frame
@@ -206,12 +207,13 @@ def animate(fig, update, frames: int, path: Path, fps: int = 12,
     anim.save(path, writer=PillowWriter(fps=fps), dpi=92,
               savefig_kwargs={"facecolor": SURFACE})
     plt.close(fig)
-    shrink_gif(path)
+    shrink_gif(path, preserve_colors=preserve_colors)
     print(f"  wrote {_short(path)} ({path.stat().st_size / 1024:.0f} kB)")
     return path
 
 
-def shrink_gif(path: Path, colours: int = 48) -> None:
+def shrink_gif(path: Path, colours: int = 48,
+               preserve_colors: tuple[str, ...] = ()) -> None:
     """Re-encode the whole animation onto a single quantised palette.
 
     Matplotlib emits anti-aliased 24-bit frames; the default encoder then
@@ -222,6 +224,8 @@ def shrink_gif(path: Path, colours: int = 48) -> None:
 
     Dithering is disabled: it introduces high-frequency noise into flat regions,
     which is the worst possible input for LZW.
+
+    ``preserve_colors`` keeps selected semantic colours exact in the palette.
     """
     from PIL import Image, ImageSequence
 
@@ -240,6 +244,24 @@ def shrink_gif(path: Path, colours: int = 48) -> None:
     for k, frame in enumerate(picks):
         swatch.paste(frame, (0, height * k))
     palette = swatch.quantize(colors=colours, method=Image.Quantize.MEDIANCUT)
+    if preserve_colors:
+        palette_data = palette.getpalette()
+        reserved = set()
+        for value in preserve_colors:
+            color = tuple(int(value[i:i + 2], 16) for i in (1, 3, 5))
+            colors = [tuple(palette_data[i:i + 3]) for i in range(0, colours * 3, 3)]
+            if color in colors:
+                reserved.add(colors.index(color))
+                continue
+            candidates = [i for i in range(colours) if i not in reserved]
+            index = min(
+                candidates,
+                key=lambda i: sum((colors[i][j] - color[j]) ** 2
+                                  for j in range(3)),
+            )
+            palette_data[index * 3:index * 3 + 3] = color
+            reserved.add(index)
+        palette.putpalette(palette_data)
 
     flat = [f.quantize(palette=palette, dither=Image.Dither.NONE) for f in frames]
     # No disposal method is set on purpose. Asking for "restore to background"

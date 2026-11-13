@@ -42,11 +42,12 @@ def fair_offer_corners():
 FAIR_CORNERS = fair_offer_corners()
 BEST_OFFER, BEST_BILL = dual_by_enumeration(MILL)
 INITIAL_BILL = max(bill for _, bill in FAIR_CORNERS) + MILL.b[1]
-STAGES = Stages((0, 18), (30, 12), (48, 12), (0, 36))
+STAGES = Stages((0, 18), (30, 0), (0, 24), (48, 12), (0, 36))
 TITLE = "the cheapest fair offer is 2 and 1"
 SUBTITLES = (
     "the mill compares the buyer's offer with each product's value",
     "raise the offer until both products are covered",
+    "a fair offer: both products covered",
     "move the bill line down to the cheapest fair corner",
     "",
 )
@@ -56,6 +57,10 @@ FINAL = f"cheapest fair offer: 2 and 1, a bill of {f.money(BEST_BILL)}"
 def _sum_offer(offer, product):
     return sum((offer[i] * MILL.A[i][product] for i in range(MILL.m)),
                Fraction(0))
+
+
+def _offer_terms(offer, product):
+    return tuple(offer[i] * MILL.A[i][product] for i in range(MILL.m))
 
 
 def _number(value):
@@ -106,8 +111,8 @@ def offer_gif():
     fig, ax = figure(7.5, 7.0)
     fig.subplots_adjust(left=0.13, right=0.97, top=0.84, bottom=0.2)
     note = margin_note(fig, y=0.025, size=9.0)
+    note.set_linespacing(1.35)
     frames = STAGES.total
-    stock = tuple(float(v) for v in MILL.b)
     fair_corners = tuple((tuple(float(v) for v in point), bill)
                          for point, bill in FAIR_CORNERS)
 
@@ -126,8 +131,12 @@ def offer_gif():
         if stage == 0:
             offer = (Fraction(1), Fraction(1))
         elif stage == 1:
-            offer = (Fraction(1 + 2 * progress), Fraction(1 - progress))
+            progress = min(progress, 0.9)
+            offer = (Fraction(1 + 2 * progress).limit_denominator(10000),
+                     Fraction(1 - progress).limit_denominator(10000))
         elif stage == 2:
+            offer = (Fraction(3), Fraction(0))
+        elif stage == 3:
             bill = float(INITIAL_BILL) + progress * (
                 float(BEST_BILL) - float(INITIAL_BILL)
             )
@@ -141,13 +150,14 @@ def offer_gif():
             color = PRICE if fair else WARN
             ax.plot([point[0]], [point[1]], "o", color=color, markersize=9,
                     markeredgecolor=SURFACE, markeredgewidth=2.0, zorder=8)
-            if stage != 3:
-                ax.text(point[0] + 0.18, point[1] + 0.25, "offer", color=color,
+            if stage != 4:
+                ax.text(point[0] + 0.18, point[1] + 0.25,
+                        "fair offer" if fair else "unfair", color=color,
                         fontsize=9, ha="left", va="bottom", zorder=8,
                         bbox=dict(boxstyle="square,pad=0.15", facecolor=SURFACE,
                                   edgecolor="none"))
 
-        if stage >= 2:
+        if stage >= 3:
             x0, x1 = MILL.b
             y1 = WINDOW[3]
             start = max(0.0, (bill - float(x1) * y1) / float(x0))
@@ -157,13 +167,16 @@ def offer_gif():
                         [(bill - float(x0) * start) / float(x1),
                          (bill - float(x0) * end) / float(x1)],
                         color=TEXT, lw=1.6, dashes=(5, 3), zorder=5)
-            ax.text(4.05, 5.25, "32y₁ + 20y₂ = k", color=TEXT, fontsize=8.8,
-                    ha="left", va="center",
+            line_label_x = min(end - 0.2, max(start + 0.2, (start + end) / 2))
+            line_label_y = (bill - float(x0) * line_label_x) / float(x1)
+            ax.text(line_label_x + 0.12, line_label_y - 0.22,
+                    f"{MILL.b[0]}y₁ + {MILL.b[1]}y₂ = k",
+                    color=TEXT, fontsize=8.3, ha="left", va="top",
                     bbox=dict(boxstyle="square,pad=0.16", facecolor=SURFACE,
                               edgecolor="none"), zorder=7)
             for (exact_point, exact_bill), (point, _) in zip(
                     FAIR_CORNERS, fair_corners):
-                if bill > float(exact_bill) and stage == 2:
+                if bill > float(exact_bill) and stage == 3:
                     continue
                 ax.plot([point[0]], [point[1]], "o", color=PRICE, markersize=5.5,
                         markeredgecolor=SURFACE, markeredgewidth=1.2, zorder=7)
@@ -181,36 +194,70 @@ def offer_gif():
 
         if stage == 0:
             offer = (Fraction(1), Fraction(1))
-            terms = tuple(_sum_offer(offer, j) for j in range(MILL.n))
-            note_lines = [
-                f"3-ply's hours: 1+1 = {terms[0]} < {MILL.c[0]}",
-                f"5-ply's hours: 2+1 = {terms[1]} < {MILL.c[1]}",
-                "mill would rather make plywood",
-            ]
+            note_lines = []
+            for j, product in enumerate(MILL.var_names):
+                terms = _offer_terms(offer, j)
+                value = sum(terms, Fraction(0))
+                note_lines.append(
+                    f"{product}'s hours: {' + '.join(map(_number, terms))} = "
+                    f"{_number(value)} < {MILL.c[j]}"
+                )
+            note_lines.append("mill would rather make plywood")
         elif stage == 1:
-            current = tuple(Fraction(1 + 2 * progress).limit_denominator(10000)
-                            if j == 0 else
-                            Fraction(1 - progress).limit_denominator(10000)
-                            for j in range(MILL.m))
-            terms = tuple(_sum_offer(current, j) for j in range(MILL.n))
+            note_lines = []
+            for j, product in enumerate(MILL.var_names):
+                terms = _offer_terms(offer, j)
+                value = sum(terms, Fraction(0))
+                sign = "≥" if value >= MILL.c[j] else "<"
+                note_lines.append(
+                    f"{product}'s hours: {' + '.join(map(_number, terms))} = "
+                    f"{_number(value)} {sign} {MILL.c[j]}"
+                )
+            bill_terms = tuple(MILL.b[i] * offer[i] for i in range(MILL.m))
+            bill_value = sum(bill_terms, Fraction(0))
+            bill_expression = " + ".join(
+                f"{MILL.b[i]}×{_number(offer[i])}" for i in range(MILL.m)
+            )
+            note_lines.append(f"bill: {bill_expression} = {_number(bill_value)}")
+        elif stage == 2:
+            note_lines = []
+            for j, product in enumerate(MILL.var_names):
+                terms = _offer_terms(offer, j)
+                value = sum(terms, Fraction(0))
+                note_lines.append(
+                    f"{product}'s hours: {' + '.join(map(_number, terms))} = "
+                    f"{_number(value)} ≥ {MILL.c[j]}"
+                )
+            bill_terms = tuple(MILL.b[i] * offer[i] for i in range(MILL.m))
+            bill_value = sum(bill_terms, Fraction(0))
+            bill_expression = " + ".join(
+                f"{MILL.b[i]}×{_number(offer[i])}" for i in range(MILL.m)
+            )
+            note_lines.append(f"bill: {bill_expression} = {_number(bill_value)}")
+        elif stage == 3:
             note_lines = [
-                f"3-ply's hours: {_number(terms[0])} {'≥' if terms[0] >= MILL.c[0] else '<'} {MILL.c[0]}",
-                f"5-ply's hours: {_number(terms[1])} {'≥' if terms[1] >= MILL.c[1] else '<'} {MILL.c[1]}",
-                f"bill: {_number(sum((current[j] * MILL.b[j] for j in range(MILL.m)), Fraction(0)))}",
+                f"bill k = {_number(Fraction(bill).limit_denominator(10000))}"
             ]
         else:
+            product_checks = []
+            for j, product in enumerate(MILL.var_names):
+                terms = _offer_terms(BEST_OFFER, j)
+                value = sum(terms, Fraction(0))
+                product_checks.append(
+                    f"{product}: {' + '.join(map(_number, terms))} = "
+                    f"{_number(value)} = {MILL.c[j]}"
+                )
             note_lines = [
-                f"bill = k = {_number(Fraction(bill).limit_denominator(10000))} thousand roubles",
-                f"cheapest point: ({BEST_OFFER[0]}, {BEST_OFFER[1]})",
+                f"bill k = {_number(BEST_BILL)}",
+                " · ".join(product_checks) + " (both priced exactly at value)",
             ]
-            if stage == 3:
-                note_lines.append(f"bill = {f.money(BEST_BILL)}")
 
         claim(ax, TITLE, FINAL if i == frames - 1 else SUBTITLES[stage])
         note.set_text("\n".join(note_lines))
         return []
 
-    animate(fig, update, frames, OUT / "offer.gif", fps=12, hold=3.0)
+    animate(fig, update, frames, OUT / "offer.gif", fps=12, hold=3.0,
+            preserve_colors=(PRICE, WARN))
 
 
 if __name__ == "__main__":

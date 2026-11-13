@@ -2,6 +2,8 @@
 
 from fractions import Fraction
 
+from matplotlib.patches import Rectangle
+
 from illuminate.draw import (HAIRLINE, PLAN, PRICE, SURFACE, TEXT,
                              TEXT_DIM, WARN, chapter_dir, figure, save)
 from linprog import mill as f
@@ -46,10 +48,17 @@ def signs_still():
                      in zip(priced_products(fair_offer), f.MILL.c))
     assert fair_gap == (0, 1)
     panel_axes(left)
-    left.fill([0, WINDOW[1], WINDOW[1], 0], [0, 0, WINDOW[3], WINDOW[3]],
+    left.fill([WINDOW[0], WINDOW[1], WINDOW[1], WINDOW[0]],
+              [0, 0, WINDOW[3], WINDOW[3]],
               color=PLAN, alpha=0.08, zorder=1)
-    arrow(left, (0, 0), (0, 1), PRICE, "g = (0, 1)", dx=0.7, dy=0.25,
-          lw=2.0)
+    left.add_patch(Rectangle((0, 0), WINDOW[1], WINDOW[3], fill=False,
+                             edgecolor=PLAN, linewidth=0.9, linestyle=(0, (3, 3)),
+                             alpha=0.6, zorder=3))
+    arrow(left, (0, 0), (0, 1), PRICE, lw=2.0)
+    left.text(0.8, 1.35, "g = (0, 1)", color=PRICE, fontsize=9,
+              ha="left", va="center",
+              bbox=dict(boxstyle="square,pad=0.15", facecolor=SURFACE,
+                        edgecolor="none"), zorder=9)
     left.text(1.2, 16.7, "first step holds at every plan", color=PLAN,
               fontsize=8.8, ha="left", va="center",
               bbox=dict(boxstyle="square,pad=0.15", facecolor=SURFACE,
@@ -63,8 +72,11 @@ def signs_still():
     panel_axes(right)
     right.fill([0, WINDOW[1], WINDOW[1], 0],
                [0, 0, WINDOW[3], WINDOW[3]], color=WARN, alpha=0.18, zorder=1)
-    arrow(right, (0, 0), (0, -1), PRICE, "g = (0, −1)", dx=0.8, dy=1.25,
-          lw=2.0)
+    arrow(right, (0, 0), (0, -1), PRICE, lw=2.0)
+    right.text(0.8, -0.95, "g = (0, −1)", color=PRICE, fontsize=9,
+               ha="left", va="center",
+               bbox=dict(boxstyle="square,pad=0.15", facecolor=SURFACE,
+                         edgecolor="none"), zorder=9)
     point = (Fraction(0), Fraction(16))
     value = f.MILL.value(point)
     bill = sum((unfair_offer[i] * f.MILL.b[i] for i in range(f.MILL.m)),
