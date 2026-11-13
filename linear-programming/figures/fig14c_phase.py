@@ -116,9 +116,22 @@ ORDER_REGION = _region(
 
 def _format(value):
     value = Q(value)
+    sign = "−" if value < 0 else ""
+    numerator = abs(value.numerator)
     if value.denominator == 1:
-        return str(value.numerator)
-    return f"{value.numerator}/{value.denominator}"
+        return f"{sign}{numerator}"
+    return f"{sign}{numerator}/{value.denominator}"
+
+
+def _coefficient(variable, value):
+    value = Q(value)
+    if value == 1:
+        return variable
+    if value.denominator == 1:
+        return f"{value.numerator}{variable}"
+    if value.numerator == 1:
+        return f"{variable}/{value.denominator}"
+    return f"({value.numerator}/{value.denominator}){variable}"
 
 
 def _terms(variables, coefficients):
@@ -128,8 +141,7 @@ def _terms(variables, coefficients):
             continue
         sign = "+" if coefficient > 0 else "−"
         magnitude = abs(coefficient)
-        amount = "" if magnitude == 1 else _format(magnitude)
-        text += f" {sign} {amount}{variable}"
+        text += f" {sign} {_coefficient(variable, magnitude)}"
     return text
 
 
@@ -167,6 +179,28 @@ def _phase_data(stage):
     if stage <= 6:
         return RESULT.phase2.steps[1], VARIABLES, C, "PHASE II"
     return RESULT.phase2.steps[2], VARIABLES, C, "PHASE II"
+
+
+def basis_text(iteration, variables):
+    return f"basis: {', '.join(variables[i] for i in iteration.basis)}"
+
+
+def phase_ratio_rows(stage):
+    if stage in (0, 1):
+        values = PHASE1_RATIOS
+    elif stage in (3, 4):
+        values = PHASE2_FIRST_RATIOS
+    elif stage in (5, 6):
+        values = PHASE2_SECOND_RATIOS
+    else:
+        return ()
+    minimum = min(value for _, value in values)
+    return tuple((name, value, value == minimum) for name, value in values)
+
+
+def ratio_value_text(value, leaving):
+    label = _format(value)
+    return f"{label}  ← leaves" if leaving else label
 
 
 def _interpolate(start, end, progress):
@@ -260,7 +294,12 @@ def phase_gif():
         panel.text(0, 1, phase_name, transform=panel.transAxes, va="top",
                    fontsize=9.5, color=TEXT_DIM, family="monospace")
         panel.text(
-            0, 0.83, dictionary_text(iteration, variables, objective),
+            0, 0.89, basis_text(iteration, variables),
+            transform=panel.transAxes, va="top", fontsize=9.3,
+            color=TEXT_DIM, family="monospace",
+        )
+        panel.text(
+            0, 0.76, dictionary_text(iteration, variables, objective),
             transform=panel.transAxes, va="top", fontsize=10.5,
             color=PRICE if stage == 7 else TEXT, family="monospace",
             linespacing=1.55,
@@ -283,31 +322,37 @@ def phase_gif():
                        color=TEXT_DIM)
 
         ratios.axis("off")
-        if stage in (0, 1):
-            values = PHASE1_RATIOS
-        elif stage in (3, 4):
-            values = PHASE2_FIRST_RATIOS
-        elif stage in (5, 6):
-            values = PHASE2_SECOND_RATIOS
-        else:
-            values = ()
+        values = phase_ratio_rows(stage)
         if values:
-            ratios.text(0, 1, "ratio test", transform=ratios.transAxes,
-                        fontsize=7.3, color=TEXT_DIM, va="top")
-            max_value = max(float(value) for _, value in values)
-            for row, (name, value) in enumerate(values):
-                y = 0.72 - row * 0.30
-                ratios.text(0, y, name, transform=ratios.transAxes,
-                            va="center", fontsize=7.1, color=TEXT_DIM)
+            ratios.text(
+                0.02, 0.98, "ratio test  (slack ÷ use)",
+                transform=ratios.transAxes, fontsize=7.3,
+                color=TEXT_DIM, va="top",
+            )
+            maximum = max(float(value) for _, value, _ in values)
+            bar_left = 0.34
+            max_bar_width = 0.43
+            for row, (name, value, leaving) in enumerate(values):
+                y = 0.70 - row * 0.25
+                ratios.text(
+                    bar_left - 0.025, y, name, transform=ratios.transAxes,
+                    va="center", ha="right", fontsize=7.1, color=TEXT_DIM,
+                )
+                bar_width = max_bar_width * float(value) / maximum
                 ratios.add_patch(
                     Rectangle(
-                        (0.34, y - 0.07), 0.47 * float(value) / max_value,
-                        0.14, transform=ratios.transAxes, color=PLAN, alpha=0.82,
+                        (bar_left, y - 0.065), bar_width, 0.13,
+                        transform=ratios.transAxes,
+                        color=PLAN if leaving else TEXT_DIM,
+                        alpha=0.82,
                     )
                 )
-                ratios.text(0.83, y, _format(value),
-                            transform=ratios.transAxes, va="center",
-                            fontsize=7.1, color=TEXT)
+                label = ratio_value_text(value, leaving)
+                ratios.text(
+                    bar_left + bar_width + 0.018, y, label,
+                    transform=ratios.transAxes, va="center",
+                    fontsize=7.1, color=TEXT,
+                )
         return []
 
     animate(fig, update, TOTAL_FRAMES, OUT / "phase.gif", fps=12, hold=3.0,

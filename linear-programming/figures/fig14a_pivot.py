@@ -46,9 +46,22 @@ T_EDGE_LABEL_ANCHOR = (Q(4), Q(14))
 
 def fraction_text(value):
     value = Q(value)
+    sign = "−" if value < 0 else ""
+    numerator = abs(value.numerator)
     if value.denominator == 1:
-        return str(value.numerator)
-    return f"{value.numerator}/{value.denominator}"
+        return f"{sign}{numerator}"
+    return f"{sign}{numerator}/{value.denominator}"
+
+
+def coefficient_text(variable, value):
+    value = Q(value)
+    if value == 1:
+        return variable
+    if value.denominator == 1:
+        return f"{value.numerator}{variable}"
+    if value.numerator == 1:
+        return f"{variable}/{value.denominator}"
+    return f"({value.numerator}/{value.denominator}){variable}"
 
 
 def _ease(index, count):
@@ -97,8 +110,7 @@ def _terms(variables, coefficients):
             continue
         sign = "+" if coefficient > 0 else "−"
         magnitude = abs(coefficient)
-        amount = "" if magnitude == 1 else fraction_text(magnitude)
-        text += f" {sign} {amount}{variable}"
+        text += f" {sign} {coefficient_text(variable, magnitude)}"
     return text
 
 
@@ -125,6 +137,10 @@ def dictionary_text(iteration):
         )
     )
     return "\n".join(lines)
+
+
+def basis_text(iteration):
+    return f"basis: {', '.join(VARIABLES[i] for i in iteration.basis)}"
 
 
 def _active_iteration(stage):
@@ -257,7 +273,7 @@ def pivot_gif():
         iteration = _active_iteration(stage)
         panel.axis("off")
         panel.text(
-            0.0, 1.0, f"BASIS {tuple(VARIABLES[i] for i in iteration.basis)}",
+            0.0, 1.0, basis_text(iteration),
             transform=panel.transAxes, va="top", fontsize=9.5,
             color=TEXT_DIM, family="monospace",
         )
@@ -273,12 +289,15 @@ def pivot_gif():
 
         bars = _bar_data(stage)
         if bars:
-            ratio_ax.set_title("ratio test  (slack ÷ use)", loc="left",
-                               fontsize=7.2, color=TEXT_DIM, pad=4)
+            ratio_ax.text(
+                0.02, 0.98, "ratio test  (slack ÷ use)",
+                transform=ratio_ax.transAxes, fontsize=7.2,
+                color=TEXT_DIM, va="top",
+            )
             ratio_ax.set_xlim(
                 0, max(float(value) for _, value, _ in bars) * 1.2
             )
-            ratio_ax.set_ylim(-0.55, len(bars) - 0.45)
+            ratio_ax.set_ylim(-0.55, len(bars) + 0.6)
             ratio_ax.set_yticks(range(len(bars)))
             ratio_ax.set_yticklabels(
                 [f"{name} — leaves" if leaving else name

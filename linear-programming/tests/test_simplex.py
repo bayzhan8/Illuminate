@@ -14,6 +14,7 @@ from figures.fig14a_pivot import (
     T_EDGE_LABEL_ANCHOR,
     TITLE as PIVOT_TITLE,
     TOTAL_FRAMES as PIVOT_FRAMES,
+    basis_text as pivot_basis_text,
     dictionary_text as pivot_dictionary_text,
     frame_state as pivot_frame_state,
     subtitle_for_frame as pivot_subtitle,
@@ -39,7 +40,12 @@ from figures.fig14c_phase import (
     PRESS_LABEL_ANCHOR,
     TOTAL_FRAMES as PHASE_FRAMES,
     LATHE_LABEL_ANCHOR,
+    _phase_data as phase_data,
+    basis_text as phase_basis_text,
+    dictionary_text as phase_dictionary_text,
     frame_state as phase_frame_state,
+    phase_ratio_rows,
+    ratio_value_text,
     subtitle_for_frame as phase_subtitle,
 )
 from linprog.corners import rank
@@ -105,6 +111,44 @@ def test_three_mill_dictionaries_and_ratio_tests_are_exact():
     assert pivot_dictionary_text(simplex(MILL_A, MILL_B, MILL_C, (2, 3))
                                  .steps[-1]).splitlines()[-1] \
         == "z = 84 − 2s₁ − s₂"
+
+
+def test_figure_dictionary_format_and_phase_ratio_winners():
+    steps = simplex(MILL_A, MILL_B, MILL_C, (2, 3)).steps
+    assert tuple(pivot_dictionary_text(steps[1]).splitlines()) == (
+        "f = 16 − t/2 − s₁/2",
+        "s₂ = 4 − t/2 + s₁/2",
+        "z = 80 + t/2 − (5/2)s₁",
+    )
+    assert pivot_basis_text(steps[1]) == "basis: f, s₂"
+    assert pivot_basis_text(steps[-1]) == "basis: f, t"
+
+    phase1, variables, objective, _ = phase_data(0)
+    assert phase_basis_text(phase1, variables) == "basis: s₁, s₂, a"
+    assert phase_dictionary_text(phase1, variables, objective).splitlines()[-1] \
+        == "z = −14 + f − e"
+    phase2, variables, objective, _ = phase_data(5)
+    phase2_lines = phase_dictionary_text(phase2, variables, objective).splitlines()
+    assert phase_basis_text(phase2, variables) == "basis: e, s₂, f"
+    assert phase2_lines[0] == "e = 2 − t/2 − s₁/2"
+    assert phase2_lines[-1] == "z = 80 + t/2 − (5/2)s₁"
+
+    assert phase_ratio_rows(0) == (
+        ("lathe", Q(16), False),
+        ("press", Q(20), False),
+        ("order", Q(14), True),
+    )
+    assert phase_ratio_rows(3) == (
+        ("lathe", Q(2), True),
+        ("press", Q(6), False),
+    )
+    assert phase_ratio_rows(5) == (
+        ("order e", Q(4), True),
+        ("press", Q(8), False),
+        ("f", Q(32), False),
+    )
+    assert ratio_value_text(Q(14), True) == "14  ← leaves"
+    assert ratio_value_text(Q(20), False) == "20"
 
 
 def test_dantzig_and_bland_choose_their_declared_entering_columns():
