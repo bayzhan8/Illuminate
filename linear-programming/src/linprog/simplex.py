@@ -42,6 +42,8 @@ class SimplexResult:
     basis: tuple[int, ...]
     x: tuple[Fraction, ...]
     value: Fraction
+    cycle: tuple[SimplexIteration, ...] = ()
+    cycle_start: int | None = None
 
 
 @dataclass(frozen=True)
@@ -57,7 +59,7 @@ class TwoPhaseResult:
     artificial_rows: tuple[int, ...]
 
 
-def _system(A, b, c):
+def _system(A, b, c, require_independent=True):
     matrix = tuple(tuple(F(value) for value in row) for row in A)
     rhs = tuple(F(value) for value in b)
     objective = tuple(F(value) for value in c)
@@ -68,7 +70,7 @@ def _system(A, b, c):
         raise ValueError("all rows of A must have the same positive length")
     if len(rhs) != len(matrix) or len(objective) != dimension:
         raise ValueError("A, b, and c have incompatible dimensions")
-    if rank(matrix) != len(matrix):
+    if require_independent and rank(matrix) != len(matrix):
         raise ValueError("the rows of A must be independent")
     return matrix, rhs, objective, len(matrix), dimension
 
@@ -205,19 +207,30 @@ def pivot_step(A, b, c, basis, rule="dantzig"):
     )
 
 
-def simplex(A, b, c, basis, rule="dantzig"):
+def simplex(A, b, c, basis, rule="dantzig", max_pivots=None):
     matrix, rhs, objective, row_count, variable_count = _system(A, b, c)
     basis = tuple(basis)
     if len(basis) != row_count or len(set(basis)) != row_count \
             or any(not isinstance(index, int)
                    or not 0 <= index < variable_count for index in basis):
         raise ValueError("basis must contain one distinct column per row")
+    if max_pivots is not None and (
+            not isinstance(max_pivots, int) or max_pivots < 0):
+        raise ValueError("max_pivots must be a nonnegative integer or None")
     steps = []
-    visited = set()
+    visited = {}
+    pivot_count = 0
     while True:
-        if basis in visited:
-            raise RuntimeError("simplex repeated a basis; try Bland's rule")
-        visited.add(basis)
+        basis_set = tuple(sorted(basis))
+        if basis_set in visited:
+            cycle_start = visited[basis_set]
+            cycle = tuple(steps[cycle_start:])
+            repeated = steps[cycle_start]
+            return SimplexResult(
+                tuple(steps), "cycle", (), basis, repeated.x, repeated.value,
+                cycle, cycle_start,
+            )
+        visited[basis_set] = len(steps)
         state = dictionary(matrix, rhs, objective, basis)
         if any(value < 0 for value in state.x_B):
             raise ValueError("simplex must start from a feasible basis")
@@ -233,14 +246,21 @@ def simplex(A, b, c, basis, rule="dantzig"):
             return SimplexResult(
                 tuple(steps), "unbounded", pivot.ray, basis, point, value
             )
+        if max_pivots is not None and pivot_count >= max_pivots:
+            return SimplexResult(
+                tuple(steps), "limit", (), basis, point, value
+            )
+        pivot_count += 1
         basis = tuple(
             pivot.entering if basic == pivot.leaving else basic
             for basic in basis
         )
 
 
-def two_phase(A, b, c, rule="dantzig"):
-    matrix, rhs, objective, row_count, variable_count = _system(A, b, c)
+def two_phase(A, b, c, rule="dantzig", max_pivots=None):
+    matrix, rhs, objective, row_count, variable_count = _system(
+        A, b, c, require_independent=False
+    )
     signs = tuple(F(-1) if value < 0 else F(1) for value in rhs)
     normalized_A = tuple(
         tuple(sign * value for value in row)
@@ -276,7 +296,15 @@ def two_phase(A, b, c, rule="dantzig"):
     )
     phase1_c = (Fraction(0),) * variable_count + \
         (Fraction(-1),) * len(artificial_indices)
-    phase1 = simplex(augmented_A, normalized_b, phase1_c, basis, rule)
+    phase1 = simplex(
+        augmented_A, normalized_b, phase1_c, basis, rule, max_pivots
+    )
+    if phase1.status in {"cycle", "limit"}:
+        return TwoPhaseResult(
+            phase1.status, phase1, None, phase1.certificate, phase1.basis,
+            phase1.x[:variable_count], phase1.value,
+            artificial_indices, artificial_rows,
+        )
     if phase1.status != "optimal":
         raise ArithmeticError("Phase I objective unexpectedly became unbounded")
 
@@ -293,9 +321,12 @@ def two_phase(A, b, c, rule="dantzig"):
     if phase1.value > 0:
         raise ArithmeticError("Phase I objective must not exceed zero")
 
+    active_rows = list(range(row_count))
     basis = list(phase1.basis)
     while any(column in artificial_indices for column in basis):
-        state = dictionary(augmented_A, normalized_b, phase1_c, basis)
+        active_A = tuple(augmented_A[index] for index in active_rows)
+        active_b = tuple(normalized_b[index] for index in active_rows)
+        state = dictionary(active_A, active_b, phase1_c, basis)
         row = next(index for index, column in enumerate(basis)
                    if column in artificial_indices)
         if state.x_B[row] != 0:
@@ -307,15 +338,23 @@ def two_phase(A, b, c, rule="dantzig"):
             None,
         )
         if entering is None:
-            raise ArithmeticError("independent equations must pivot out artificials")
-        basis[row] = entering
+            active_rows.pop(row)
+            basis.pop(row)
+        else:
+            basis[row] = entering
 
-    phase2 = simplex(normalized_A, normalized_b, objective, basis, rule)
-    certificate = phase2.certificate
+    phase2_A = tuple(normalized_A[index] for index in active_rows)
+    phase2_b = tuple(normalized_b[index] for index in active_rows)
+    phase2 = simplex(
+        phase2_A, phase2_b, objective, basis, rule, max_pivots
+    )
     if phase2.status == "optimal":
-        certificate = tuple(
-            sign * value for sign, value in zip(signs, certificate)
-        )
+        certificate = [Fraction(0)] * row_count
+        for row, value in zip(active_rows, phase2.certificate):
+            certificate[row] = signs[row] * value
+        certificate = tuple(certificate)
+    else:
+        certificate = phase2.certificate
     return TwoPhaseResult(
         phase2.status, phase1, phase2, certificate, phase2.basis,
         phase2.x, phase2.value, artificial_indices, artificial_rows,
