@@ -364,6 +364,7 @@ def test_chapter_headings_and_registered_folders_match_the_renumbering():
         (15, "15-cycling", "Walking in circles, and the rule that stops it"),
         (16, "16-dual-simplex",
          "Repairing a plan from the price side: the dual simplex"),
+        (17, "17-sensitivity", "Reading the last dictionary: sensitivity"),
     )
     assert tuple((chapter.number, chapter.folder, chapter.title)
                  for chapter in CHAPTERS[4:]) == expected
@@ -383,3 +384,4 @@ def test_chapter_headings_and_registered_folders_match_the_renumbering():
         "## 16 · Repairing a plan from the price side: the dual simplex"
         in TEXT
     )
+    assert "## 17 · Reading the last dictionary: sensitivity" in TEXT
