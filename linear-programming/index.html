@@ -30,6 +30,7 @@
     <li><a href="#ch1"><span class="toc-num">1</span><span class="toc-title">A plan inside the walls</span></a></li>
     <li><a href="#ch2"><span class="toc-num">2</span><span class="toc-title">The best plan sits on a corner</span></a></li>
     <li><a href="#ch3"><span class="toc-num">3</span><span class="toc-title">Writing a problem down</span></a></li>
+    <li><a href="#ch4"><span class="toc-num">4</span><span class="toc-title">Someone buying the hours</span></a></li>
   </ol>
 </nav>
 <main class="prose">
@@ -728,6 +729,220 @@ negative. Chapter 4 turns that move from a trick into a method.</p>
 <blockquote class="aside">
 <p><strong>The one thing to remember.</strong> Write each decision as a number with a unit and each rule as a row whose units agree; a request that maximizes a minimum or minimizes a maximum becomes linear with one new variable that the objective pushes against its rows.</p>
 </blockquote>
+<h2 id="ch4"><span class="num">4</span>Someone buying the hours</h2>
+<p>Three times now a best plan has been proved best by the same move: give each
+row a multiplier that is not negative, add the rows up, and find the value
+sitting on the left with a number on the right. Each time the multipliers
+were found by staring at the answer. This chapter asks where they come from,
+and the answer is a second linear program hiding inside the first.</p>
+<h3>An offer for the whole stock</h3>
+<p>Suppose a buyer comes to the Trust and offers to rent every hour the mill
+has: y₁ roubles (in thousands) for each lathe hour and y₂ for each press hour.
+The mill would be paid 32y₁ + 20y₂ and make nothing. When should it say yes?</p>
+<p>Look at one batch of 3-ply. It takes one lathe hour and one press hour, so
+renting those hours out instead earns y₁ + y₂. Making the batch earns 3. If
+y₁ + y₂ &lt; 3, the mill does better keeping the hours and pressing 3-ply. The
+same goes for 5-ply, which takes two lathe hours and one press hour and is
+worth 5. The offer is <strong>fair</strong>, in the sense that no batch the mill could
+make is worth more than the hours it uses, exactly when</p>
+<div class="overflow-x"><table>
+<thead>
+<tr>
+<th></th>
+<th>lathe price</th>
+<th>press price</th>
+<th></th>
+<th>value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>3-ply's hours</td>
+<td>1 × y₁</td>
+<td>+ 1 × y₂</td>
+<td>≥</td>
+<td>3</td>
+</tr>
+<tr>
+<td>5-ply's hours</td>
+<td>2 × y₁</td>
+<td>+ 1 × y₂</td>
+<td>≥</td>
+<td>5</td>
+</tr>
+</tbody>
+</table></div>
+<p>with y₁, y₂ ≥ 0, since a negative price would mean the mill pays to give
+hours away. The buyer wants to pay as little as possible. So the buyer has
+an LP of their own: minimize the bill 32y₁ + 20y₂ subject to the two rows.
+It is called the <strong>dual</strong> of the mill's problem, and the mill's problem is
+then the <strong>primal</strong>.</p>
+<p>Look at where its numbers came from. The mill's table had a row for each
+resource and a column for each product. The buyer's table has a row for each
+product, and that row is the product's <em>column</em> in the mill's table: the
+hours one batch uses. The stocks 32 and 20, which were the mill's right-hand
+side, are the buyer's costs, and the values 3 and 5 have become the buyer's
+right-hand side. Written with the matrix A of chapter 3, the mill's problem
+is maximize c·x with Ax ≤ b and x ≥ 0, and the buyer's is minimize y·b with
+yA ≥ c and y ≥ 0. Nothing has been added. The same numbers have been read
+down the columns instead of across the rows.</p>
+<figure class="plate"><img src="chapters/04-buying-the-hours/offer.gif" alt="The plane of prices: lathe price y₁ across, press price y₂ up. Two rust lines are the products' rows, y₁ + y₂ = 3 for 3-ply and 2y₁ + y₂ = 5 for 5-ply, and the fair offers lie on the far side of both, shaded rust; the region has corners (0, 5), (2, 1) and (3, 0) and runs off to infinity up and to the right. An offer starts at (1, 1) and is coloured amber, with the readout showing 3-ply's hours worth 2 against a value of 3 and 5-ply's worth 3 against 5, so the mill would rather make plywood. The offer moves to (3, 0), turns rust, and the readout shows both products covered, with a bill of 96. Then the line of equal bills, 32y₁ + 20y₂ = k, sweeps down towards the origin, past bills of 100 at (0, 5) and 96 at (3, 0), and stops when it touches the region only at (2, 1). The final frame reads: cheapest fair offer, 2 and 1, a bill of 84,000 roubles." loading="lazy"></figure>
+<p>The fair offers form a region of their own, cut out by the products' walls
+in the plane of prices. It has three corners: (0, 5) with a bill of 100,000
+roubles, (3, 0) with 96,000, and (2, 1) with 84,000. It is not bounded, which
+is right: a buyer can always offer more. What it does have is a floor. The
+cheapest fair offer is 2,000 roubles a lathe hour and 1,000 a press hour,
+the same 2 and 1 that chapter 2 used to prove (8, 12) best. The buyer's
+cheapest bill is 84,000 roubles, and that is what the mill's best plan
+earns.</p>
+<p>That those two numbers agree is not a coincidence of this mill. But the
+first thing to prove is weaker, and it is the half that does the work.</p>
+<h3>Every fair bill is a ceiling</h3>
+<blockquote class="proof">
+<p><strong>Theorem (weak duality).</strong> If x is any plan (Ax ≤ b, x ≥ 0) and y is any fair offer (yA ≥ c, y ≥ 0), then c·x ≤ y·b.</p>
+<p><strong>Proof.</strong> Three steps:</p>
+<p>c·x ≤ (yA)·x = y·(Ax) ≤ y·b.</p>
+<ul>
+<li><em>The first ≤.</em> (yA)·x − c·x = (yA − c)·x = Σⱼ ((yA)ⱼ − cⱼ) xⱼ. Every bracket is ≥ 0 because the offer is fair, and every xⱼ is ≥ 0 because batches cannot be negative, so every term of the sum is ≥ 0.</li>
+<li><em>The equals sign.</em> Both sides are Σᵢ Σⱼ yᵢ Aᵢⱼ xⱼ: one adds each row's contributions first, the other each column's.</li>
+<li><em>The second ≤.</em> y·b − y·(Ax) = Σᵢ yᵢ (bᵢ − Aᵢx). Every yᵢ is ≥ 0, and every bᵢ − Aᵢx is ≥ 0 because the plan fits the stock. ∎</li>
+</ul>
+</blockquote>
+<p>Each step has a reading in roubles. c·x is what the plan earns. (yA)·x is
+what the hours the plan uses would fetch from the buyer, priced product by
+product. y·(Ax) is the same sum priced machine by machine. y·b adds the
+hours the plan leaves idle, which the buyer pays for too. So the two gaps in
+the chain are two different kinds of waste:</p>
+<ul>
+<li><strong>the first gap</strong> is value lost by making something whose hours are worth more than the product;</li>
+<li><strong>the second gap</strong> is money the buyer pays for hours the plan does not use.</li>
+</ul>
+<p>Take the best plan (8, 12) against the fair but expensive offer (3, 0). The
+plan earns 84. Its hours priced product by product, at 3 for a 3-ply batch
+and 3·2 + 0·1 = 6 for a 5-ply batch, come to 3·8 + 6·12 = 96. Priced machine
+by machine, all 32 lathe hours at 3 and all 20 press hours at 0, they come
+to 96 again, and the plan leaves nothing idle, so the bill is 96. The whole
+gap of 12 sits in the first step: at these prices each 5-ply batch is worth
+one more in hours than in plywood, and the plan makes 12 of them.</p>
+<p>Now the plan that makes only 5-ply, (0, 16), against the cheapest offer
+(2, 1). Here every product is priced exactly at its value, so the first step
+is an equality: 80 = 80. But the plan leaves 4 press hours idle, and the
+buyer pays 1 for each, so the bill is 84. The whole gap of 4 sits in the
+second step.</p>
+<figure class="plate"><img src="chapters/04-buying-the-hours/sandwich.png" alt="A single number line of thousands of roubles. Below it, in blue, the values of the four corner plans: 0, 60, 80 and 84. Above it, in rust, the bills of the three corner offers and of the fair offer (2, 2): 84, 96, 100 and 104. Every blue mark lies to the left of every rust mark, and the two colours meet only at 84, where the best plan and the cheapest offer coincide." loading="lazy"></figure>
+<p>The theorem says more than the example. Every plan, not just the four
+corners, earns at most every fair bill, so a single fair offer is a ceiling
+on the whole region, and a single plan is a floor under every offer. When a
+plan and an offer meet, as (8, 12) and (2, 1) meet at 84, neither can be
+improved: the plan is under a ceiling it touches, and the offer is over a
+floor it touches. That is the proof of chapter 2 again, now read as a
+consequence of a theorem rather than an accident of the arithmetic.</p>
+<blockquote class="aside">
+<p><strong>Corollary.</strong> (i) If a plan x and a fair offer y have c·x = y·b, both are best. (ii) If the mill's values have no upper limit, there is no fair offer. (iii) If fair offers can be made as cheap as you like, there is no plan.</p>
+<p><strong>Proof.</strong> (i) Every plan x′ has c·x′ ≤ y·b = c·x, and every fair offer y′ has y′·b ≥ c·x = y·b. (ii) A fair offer y would cap every plan's value at y·b. (iii) A plan x would put a floor c·x under every bill. ∎</p>
+</blockquote>
+<p>Case (ii) is easy to meet. Take the mill with only the rule t − f ≤ 4: the
+3-ply never runs more than 4 batches ahead of the 5-ply. Plans can grow
+along t = f without end. The dual has one price y ≥ 0 and the two rows
+y ≥ 3 and −y ≥ 5, which no number satisfies. The buyer has no fair offer to
+make because there is nothing finite to pay for.</p>
+<blockquote class="aside">
+<p><strong>History.</strong> In October 1947 Dantzig met John von Neumann to describe his linear programs. Von Neumann saw the dual, and the duality theorem, as fast as the problem was explained: he cited Farkas's lemma and guessed that it was the same theorem as his own minimax theorem for two-person games, which Dantzig later checked. Dantzig wrote and circulated the first proof within months but never published it, because he thought of it as von Neumann's. The first published proof is Gale, Kuhn and Tucker's, in 1951. (Tovey, §5.5 notes.)</p>
+</blockquote>
+<h3>Why the signs are what they are</h3>
+<p>The proof used two facts about signs: xⱼ ≥ 0 made each term
+((yA)ⱼ − cⱼ) xⱼ safe, and yᵢ ≥ 0 made each yᵢ (bᵢ − Aᵢx) safe. Real problems
+have rows that say ≥ or =, and variables that can be negative (chapter 3
+removed them, but removing them is not always convenient). Each such change
+breaks one term of the proof, and the dual has to change to mend it.</p>
+<figure class="plate"><img src="chapters/04-buying-the-hours/signs.png" alt="Two panels in the plane of plans, each with the quadrant of plans with t, f ≥ 0. Left: the fair offer (3, 0) gives yA − c = (0, 1), drawn as an arrow; the half-plane of plans where (yA − c)·x ≥ 0, every plan with f ≥ 0, contains the whole quadrant, so the first step of the proof holds at every plan. Right: the offer (1, 2) prices 5-ply's hours at 4, below its value 5, so yA − c = (0, −1); that half-plane leaves out every plan that makes any 5-ply, shaded amber. The plan (0, 16) is marked there: it earns 80, and the offer's bill is 72, so the would-be ceiling is below it." loading="lazy"></figure>
+<p>The picture shows what a broken sign costs. With yA − c = (0, −1), the
+offer undervalues 5-ply, and the first step fails for every plan that makes
+some. At (0, 16) the plan earns 80 while the bill is 32 + 40 = 72. A price
+that is not fair is not a ceiling.</p>
+<p>So the rule is: choose each sign so that every term in the proof is ≥ 0
+whatever the plan does. For a maximization:</p>
+<div class="overflow-x"><table>
+<thead>
+<tr>
+<th>in the primal (maximize)</th>
+<th>the term in the proof</th>
+<th>so in the dual</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>row i says ≤</td>
+<td>yᵢ × (a slack ≥ 0)</td>
+<td>yᵢ ≥ 0</td>
+</tr>
+<tr>
+<td>row i says ≥</td>
+<td>yᵢ × (a slack ≤ 0)</td>
+<td>yᵢ ≤ 0</td>
+</tr>
+<tr>
+<td>row i says =</td>
+<td>yᵢ × 0</td>
+<td>yᵢ any sign</td>
+</tr>
+<tr>
+<td>xⱼ ≥ 0</td>
+<td>((yA)ⱼ − cⱼ) × (a number ≥ 0)</td>
+<td>(yA)ⱼ ≥ cⱼ</td>
+</tr>
+<tr>
+<td>xⱼ ≤ 0</td>
+<td>((yA)ⱼ − cⱼ) × (a number ≤ 0)</td>
+<td>(yA)ⱼ ≤ cⱼ</td>
+</tr>
+<tr>
+<td>xⱼ any sign</td>
+<td>((yA)ⱼ − cⱼ) × (any number)</td>
+<td>(yA)ⱼ = cⱼ</td>
+</tr>
+</tbody>
+</table></div>
+<p>Each line is forced. A product of a fixed number with an unknown number of
+known sign is ≥ 0 every time only if the fixed number has that sign too, and
+a product with an unknown number of either sign is ≥ 0 every time only if
+the fixed number is 0. That is the whole table. There is nothing to
+memorize: rebuild it from the chain whenever you need it.</p>
+<p>For a minimization the chain runs the other way, c·x ≥ (yA)·x = y·(Ax) ≥ y·b,
+so every term must be ≤ 0 instead, and every line flips: a ≥ row gets
+yᵢ ≥ 0, a ≤ row gets yᵢ ≤ 0, an = row a free yᵢ, xⱼ ≥ 0 gets (yA)ⱼ ≤ cⱼ,
+xⱼ ≤ 0 gets (yA)ⱼ ≥ cⱼ, and a free xⱼ gets (yA)ⱼ = cⱼ.</p>
+<p>An equality row gets a free price, and that has a meaning. With
+Ax = b the mill must use exactly its stock, so an hour can be worth a
+negative amount: being forced to use it may cost money. A ≤ row lets the mill
+leave hours idle, and an idle hour cannot be worth less than nothing.</p>
+<blockquote class="proof">
+<p><strong>Proposition (the dual of the dual is the primal).</strong> Apply the table to the buyer's problem, minimize y·b with yA ≥ c and y ≥ 0, and the result is the mill's problem.</p>
+<p><strong>Proof.</strong> The buyer minimizes, has a ≥ row for each product j, and a price yᵢ ≥ 0 for each resource. By the minimization table each ≥ row gets a new variable xⱼ ≥ 0, and each yᵢ ≥ 0 gets a row that says (Ax)ᵢ ≤ bᵢ, where the new problem's objective is to maximize Σⱼ cⱼ xⱼ. That is maximize c·x with Ax ≤ b and x ≥ 0. ∎</p>
+</blockquote>
+<p>So &quot;primal&quot; and &quot;dual&quot; are not two kinds of problem. They are the two ends
+of one pair, and it does not matter which end you start from. A textbook
+that writes the pair as minimize c·x with Ax ≥ b, x ≥ 0 and maximize y·b
+with yA ≤ c, y ≥ 0 is writing the mill and the buyer with the names
+swapped.</p>
+<h3>The three certificates, again</h3>
+<p>Every proof so far was a fair offer in disguise.</p>
+<ul>
+<li><strong>Chapter 2.</strong> The multipliers 2 and 1 on the lathe and press rows are the buyer's cheapest offer. Its bill, 84, meets the plan (8, 12).</li>
+<li><strong>Chapter 3, complete sets.</strong> The rows were lathe, press, z − t ≤ 0 and z − f ≤ 0, and the multipliers were 0, ½, ½ and ½. They are a fair offer for the problem &quot;maximize z&quot;: the column of t gets ½ − ½ = 0 against a value of 0, the column of f the same, and the column of z gets ½ + ½ = 1 against a value of 1. The bill is ½ × 20 = 10, which is where the plan (10, 10, 10) sits.</li>
+<li><strong>Chapter 3, the largest disc.</strong> Multipliers 1, 1 and 1 on three rows gave (2 + √2) r ≤ 20. Divide them by 2 + √2 and each becomes 1 − √2 ÷ 2 ≈ 0.29. That is a fair offer for &quot;maximize r&quot;, and its bill is 20 − 10√2, the radius.</li>
+</ul>
+<p>In each case the buyer's problem was there to be solved. It was solved by
+eye because it was small. From here on it is solved on purpose.</p>
+<p>What weak duality cannot say is that a meeting always happens: that for
+every LP with a best plan, some fair offer bills exactly its value. That is
+the strong duality theorem. It is true, and it is proved twice later, once
+from the walk of the simplex method (chapter 14) and once from separating a
+point from a shape (chapter 20). Until then it is a promise, and the
+chapters in between do not use it.</p>
+<blockquote class="aside">
+<p><strong>The one thing to remember.</strong> Price every resource so that no product is worth more than the hours it uses; then whatever plan you choose earns at most the bill, so one such price list proves a plan best by meeting it.</p>
+</blockquote>
 <h2>Glossary</h2>
 <div class="overflow-x"><table>
 <thead>
@@ -800,6 +1015,26 @@ negative. Chapter 4 turns that move from a trick into a method.</p>
 <tr>
 <td>the largest disc that fits</td>
 <td>Chebyshev centre</td>
+</tr>
+<tr>
+<td>the buyer's problem, the price problem</td>
+<td>dual linear program</td>
+</tr>
+<tr>
+<td>the mill's problem</td>
+<td>primal linear program</td>
+</tr>
+<tr>
+<td>a fair offer</td>
+<td>dual feasible solution</td>
+</tr>
+<tr>
+<td>every fair bill is a ceiling</td>
+<td>weak duality</td>
+</tr>
+<tr>
+<td>a plan and an offer that meet</td>
+<td>strong duality, a primal–dual optimal pair</td>
 </tr>
 </tbody>
 </table></div>
