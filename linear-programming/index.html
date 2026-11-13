@@ -38,6 +38,7 @@
     <li><a href="#ch9"><span class="toc-num">9</span><span class="toc-title">Shadows: eliminating a variable</span></a></li>
     <li><a href="#ch10"><span class="toc-num">10</span><span class="toc-title">Either a plan or a proof</span></a></li>
     <li><a href="#ch11"><span class="toc-num">11</span><span class="toc-title">Corners by algebra</span></a></li>
+    <li><a href="#ch12"><span class="toc-num">12</span><span class="toc-title">Too many walls at one corner</span></a></li>
   </ol>
 </nav>
 <main class="prose">
@@ -1825,6 +1826,157 @@ not unbounded below, and its best offer, (2, 1), is a corner.</p>
 <blockquote class="aside">
 <p><strong>The one thing to remember.</strong> A corner is a point where the tight rows have rank n, so no move keeps them all tight. If the region has no lines, some best plan is a corner, or the value runs off to infinity.</p>
 </blockquote>
+<h2 id="ch12"><span class="num">12</span>Too many walls at one corner</h2>
+<p>Chapter 11 found corners by rank: n independent tight rows. Nothing there
+said <em>exactly</em> n. When more than n rows are tight at one corner, the
+corner is <strong>degenerate</strong>. The region itself looks the same, but the
+algebra no longer matches the picture one to one. Three things change: the bases, the prices and
+the value of one more hour.</p>
+<h3>A row that changes nothing</h3>
+<p>The mill glues its veneer. A 3-ply batch takes 2 tonnes of glue and a 5-ply batch 3, and the store holds 52 tonnes:</p>
+<p>2t + 3f ≤ 52.</p>
+<p>This row adds the lathe and press rows, (1, 2) + (1, 1) = (2, 3) and 32 + 20 = 52,
+so every plan that respects the lathe and the press respects the glue. The
+region is unchanged. But the glue wall passes through (8, 12), since 16 + 36 = 52,
+and now three rows are tight there with n = 2.</p>
+<blockquote class="proof">
+<p><strong>Definition.</strong> A basic point x is <strong>degenerate</strong> if more than n rows are tight at x.</p>
+</blockquote>
+<p>Degeneracy belongs to the list of rows, not to the shape. The same region
+and the same corner were not degenerate one row ago. A repeated row, or any
+combination of tight rows, makes a corner degenerate without moving any wall.</p>
+<h3>One corner, three bases</h3>
+<p>A <strong>basis</strong> at x is a choice of n independent tight rows that pins x
+down. With five rows (lathe, press, glue, t ≥ 0, f ≥ 0) there are C(5, 2) = 10
+pairs. Every pair is independent, and they give only eight points:</p>
+<div class="overflow-x"><table>
+<thead>
+<tr>
+<th>pair</th>
+<th>crossing</th>
+<th>feasible</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>lathe, press</td>
+<td>(8, 12)</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>lathe, glue</td>
+<td>(8, 12)</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>press, glue</td>
+<td>(8, 12)</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>lathe, t ≥ 0</td>
+<td>(0, 16)</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>press, f ≥ 0</td>
+<td>(20, 0)</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>t ≥ 0, f ≥ 0</td>
+<td>(0, 0)</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>lathe, f ≥ 0</td>
+<td>(32, 0)</td>
+<td>no: press 32</td>
+</tr>
+<tr>
+<td>press, t ≥ 0</td>
+<td>(0, 20)</td>
+<td>no: lathe 40</td>
+</tr>
+<tr>
+<td>glue, t ≥ 0</td>
+<td>(0, 52/3)</td>
+<td>no: lathe 104/3</td>
+</tr>
+<tr>
+<td>glue, f ≥ 0</td>
+<td>(26, 0)</td>
+<td>no: press 26</td>
+</tr>
+</tbody>
+</table></div>
+<p>There are four corners but six feasible bases, three of them at (8, 12). The simplex method of
+chapter 14 keeps a basis, not a point, so at (8, 12) it can switch from
+one basis to another without moving and without gaining anything. That is
+a <strong>degenerate pivot</strong>. Chapter 15 shows that such pivots can go round in a circle forever,
+and how to stop it.</p>
+<h3>The prices stop being unique</h3>
+<p>With the glue row, a buyer's offer is a price for each of the three resources,
+y = (y_lathe, y_press, y_glue) ≥ 0. Complementary slackness (chapter 7) at (8, 12) gives:</p>
+<ul>
+<li>every resource is used up, so no price is forced to 0;</li>
+<li>both products are made, so each must be priced at exactly its value:</li>
+</ul>
+<p>y_lathe + y_press + 2y_glue = 3,  2y_lathe + y_press + 3y_glue = 5.</p>
+<p>Two equations in three unknowns. Subtracting the first from the second gives
+y_lathe + y_glue = 2. Write y_glue = s. Then</p>
+<p>y = (2 − s, 1 − s, s),  0 ≤ s ≤ 1,</p>
+<p>where s ≤ 1 keeps the press price at least 0. Every one of these offers bills
+32(2 − s) + 20(1 − s) + 52s = 84, so by weak duality (chapter 6) every one proves that 84 is the best value.
+Raising the glue price by s and lowering the other two by s each costs the same, because
+the glue <em>is</em> a lathe hour plus a press hour. There is a whole segment of
+optimal prices. Its endpoints come from the bases. The basis {lathe, press} leaves the glue
+unpriced, s = 0, which gives (2, 1, 0). The basis {lathe, glue} leaves the press unpriced, s = 1, which gives (1, 0, 1).
+The third basis, {press, glue}, leaves the lathe unpriced, s = 2, which gives (0, −1, 2). It describes the
+same corner but pays −1 for a press hour, so it does not certify anything. That is
+chapter 2's negative multiplier again, at a corner that really is optimal.</p>
+<h3>One more hour, in which direction?</h3>
+<p>Chapter 7 priced a lathe hour at 2,000 roubles. That number was
+the slope of the best value as the lathe stock moves. With the glue store fixed at 52:</p>
+<ul>
+<li><strong>One hour fewer</strong>, 31: the best plan is (9, 11), worth 82. The loss is 2.</li>
+<li><strong>One hour more</strong>, 33: (7, 13) would need 53 tonnes of glue. The best plan is (5, 14), worth 85. The gain is only 1.</li>
+</ul>
+<p>The glue was exactly enough for (8, 12) and for nothing more. The extra lathe hour can only be used
+by giving up glue elsewhere. The value curve
+has a kink at 32: slope 2 on the left and slope 1 on the right, and these are the largest and the smallest
+lathe price in the segment (2 − s, 1 − s, s).</p>
+<blockquote class="proof">
+<p><strong>Theorem (one-sided prices).</strong> Let V(b) be the best value with stock b, and let y be any optimal price vector at b. Then for every change δ in one resource i, positive or negative,</p>
+<p>V(b + δe_i) ≤ V(b) + δ y_i.</p>
+<p><em>Proof.</em> The price vector y is still a fair offer when only the stock changes, since fairness only involves the products' values and uses. So by weak duality, V(b + δe_i) ≤ (b + δe_i)·y = b·y + δy_i = V(b) + δy_i. ∎</p>
+</blockquote>
+<p>For δ &gt; 0, divide by δ: the gain per extra hour is at most y_i, for <em>every</em> optimal y, so it is at most the smallest, 1. For δ &lt; 0, dividing by δ flips the inequality: the loss per hour given up is at least y_i, so at least the largest, 2. The computation above shows that both bounds are reached. At a nondegenerate corner the segment
+shrinks to the single price of chapter 7, and the two slopes agree.</p>
+<figure class="plate"><img src="chapters/12-degeneracy/kink.png" alt="The value of the lathe stock with the press at 20 and glue at 52, drawn in rust: slope 3 up to 20 hours, slope 2 from 20 to 32, slope 1 from 32 to 104/3, then flat at 260/3. At b = 32 two tangent segments are drawn, slope 2 from the left and slope 1 from the right, with the readout &quot;prices 2 − s for s in [0, 1]&quot;. Faint dashes show chapter 7's curve without the glue, which keeps slope 2 up to 40." loading="lazy"></figure>
+<h3>Breaking the tie</h3>
+<p>In 1952, Abraham Charnes suggested moving the stocks by tiny, unequal amounts, so that no
+extra row can pass exactly through a corner. Moving the glue store shows what happens:</p>
+<ul>
+<li><strong>Glue above 52:</strong> the glue wall leaves the corner and does not touch the region. The corner is nondegenerate, and the prices are (2, 1, 0).</li>
+<li><strong>Glue 52 − δ:</strong> the glue wall cuts the corner off. It is replaced by two nondegenerate corners: lathe ∩ glue at (8 − 2δ, 12 + δ), worth 84 − δ, and press ∩ glue at (8 + δ, 12 − δ), worth 84 − 2δ. The best is the first, with prices (1, 0, 1).</li>
+</ul>
+<figure class="plate"><img src="chapters/12-degeneracy/glue.gif" alt="The mill's region with the glue wall 2t + 3f = g sliding as g goes from 56 down to 50. At 56 the wall is outside the region, with the readout &quot;glue slack, 2 tight rows at (8, 12)&quot;. At 52 it touches the corner, which turns amber: &quot;3 tight rows: degenerate&quot;. At 50 it cuts a small triangle off the corner, leaving two corners (4, 14) worth 82 and (10, 10) worth 80, each with two tight rows. The best corner is marked at every frame." loading="lazy"></figure>
+<p>A degenerate corner is a limit of nondegenerate ones. It is the moment when two
+corners, and their two bases, merge into one point. That is why perturbation removes degeneracy and keeps the answer
+within δ of the true one.</p>
+<blockquote class="aside">
+<p><strong>Aside: the first loop.</strong> Charnes's 1952 paper was written against a
+possibility, not an observed failure: could a run of degenerate pivots
+come back to a basis it had already visited? In a 1953 National Bureau of
+Standards report, Alan Hoffman showed that it can. He gave an LP with three rows and eleven
+variables, built from the angles of a regular pentagon, on which the simplex method cycles
+through the same bases forever. Chapter 15 runs a smaller loop of the same kind
+and the rule that ends it.</p>
+</blockquote>
+<blockquote class="aside">
+<p><strong>The one thing to remember.</strong> A degenerate corner has more tight rows than dimensions. The point is the same, but several bases describe it, the prices form a segment instead of a point, and one more unit is worth the smallest price in that segment, while one fewer costs the largest.</p>
+</blockquote>
 <h2>Glossary</h2>
 <div class="overflow-x"><table>
 <thead>
@@ -2033,6 +2185,14 @@ not unbounded below, and its best offer, (2, 1), is a corner.</p>
 <tr>
 <td>a region with no lines</td>
 <td>pointed polyhedron</td>
+</tr>
+<tr>
+<td>too many tight rows at one corner</td>
+<td>degenerate basic solution</td>
+</tr>
+<tr>
+<td>a step that changes the basis but not the point</td>
+<td>degenerate pivot</td>
 </tr>
 <tr>
 <td>the range where the price holds</td>

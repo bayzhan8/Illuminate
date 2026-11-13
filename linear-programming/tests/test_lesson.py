@@ -9,7 +9,7 @@ from linprog import mill as f
 ROOT = Path(__file__).resolve().parents[1]
 TEXT = (ROOT / "lesson.md").read_text()
 FLAT = " ".join(TEXT.split())
-IMAGE = re.compile(r"!\[([^\]]*)\]\(([^)]+)\)")
+IMAGE = re.compile(r"!\[(.*?)\]\(([^)]+)\)")
 
 sys.path.insert(0, str(ROOT))
 import build  # noqa: E402

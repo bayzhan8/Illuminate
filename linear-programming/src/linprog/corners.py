@@ -115,6 +115,29 @@ def is_bfs(A, b, x):
     return rank(matrix[index] for index in indices) == dimension
 
 
+def is_degenerate(A, b, x):
+    """Whether a feasible basic point has more tight rows than dimensions."""
+    matrix, rhs, dimension = _system(A, b)
+    point = tuple(F(value) for value in x)
+    if len(point) != dimension:
+        raise ValueError("x must have one entry per column of A")
+    return is_bfs(matrix, rhs, point) and len(tight(matrix, rhs, point)) > dimension
+
+
+def bases(A, b):
+    """Return every independent n-row basis as (indices, point, feasible)."""
+    matrix, rhs, dimension = _system(A, b)
+    found = []
+    for indices in combinations(range(len(matrix)), dimension):
+        rows = tuple(matrix[index] for index in indices)
+        if rank(rows) != dimension:
+            continue
+        point = solve_square(rows, tuple(rhs[index] for index in indices))
+        if point is not None:
+            found.append((indices, point, _feasible(matrix, rhs, point)))
+    return found
+
+
 def basic_points(A, b):
     """Return unique n-row intersections as (point, feasible) pairs."""
     matrix, rhs, dimension = _system(A, b)
