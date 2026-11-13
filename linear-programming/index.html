@@ -39,6 +39,7 @@
     <li><a href="#ch10"><span class="toc-num">10</span><span class="toc-title">Either a plan or a proof</span></a></li>
     <li><a href="#ch11"><span class="toc-num">11</span><span class="toc-title">Corners by algebra</span></a></li>
     <li><a href="#ch12"><span class="toc-num">12</span><span class="toc-title">Too many walls at one corner</span></a></li>
+    <li><a href="#ch13"><span class="toc-num">13</span><span class="toc-title">Corners and escape routes</span></a></li>
   </ol>
 </nav>
 <main class="prose">
@@ -1977,6 +1978,82 @@ and the rule that ends it.</p>
 <blockquote class="aside">
 <p><strong>The one thing to remember.</strong> A degenerate corner has more tight rows than dimensions. The point is the same, but several bases describe it, the prices form a segment instead of a point, and one more unit is worth the smallest price in that segment, while one fewer costs the largest.</p>
 </blockquote>
+<h2 id="ch13"><span class="num">13</span>Corners and escape routes</h2>
+<p>The buyer's region of chapter 6 has three corners, (0, 5), (2, 1) and
+(3, 0), and runs off to infinity. Is it the corners plus <em>something</em>,
+and what exactly? This chapter's answer: every point is a mix of corners plus a
+move along the region's escape routes, and nothing else is needed. This is the theorem of Minkowski and Weyl.
+It turns a list of rows into a list of points and directions, and back.</p>
+<h3>The escape routes</h3>
+<p>Chapter 11 showed that d is a direction of P = { x : Ax ≤ b } exactly when Ad ≤ 0.
+That test does not mention any point of P, so every point has the same escape
+routes. They form the <strong>recession cone</strong></p>
+<p>rec(P) = { d : Ad ≤ 0 },</p>
+<p>which is again a polyhedron, given by the same rows with b replaced by 0. For the buyer, rec(P) is the quadrant
+d ≥ 0. For the mill, the only solution of Ad ≤ 0 is d = 0, so there is no escape: the region is bounded.</p>
+<blockquote class="proof">
+<p><strong>Theorem (bounded = no escape).</strong> A non-empty polyhedron is bounded if and only if its recession cone is {0}.</p>
+</blockquote>
+<p>The &quot;only if&quot; is immediate: a direction d ≠ 0 gives the unbounded ray x + θd.
+The &quot;if&quot; comes out of the representation theorem below.</p>
+<h3>Every point is corners plus escape</h3>
+<blockquote class="proof">
+<p><strong>Theorem (Minkowski's half).</strong> Let P be a non-empty pointed polyhedron with corners v₁, …, v_k. Every x in P can be written as</p>
+<p>x = λ₁v₁ + ⋯ + λ_kv_k + d,  λ ≥ 0,  Σλ_i = 1,  d ∈ rec(P).</p>
+<p><em>Proof.</em> Induct on n − rank, where rank is the rank of the rows tight at x. If the rank is n, x is a corner (chapter 11). Otherwise take e ≠ 0 with A_T e = 0, as in chapter 11. Because P is pointed, e and −e are not both directions. Swap them if needed so that the move along +e is blocked. Let u = x + αe be the point where the first new row goes tight. Then the tight rows at u have higher rank, by chapter 11's crashing step.</p>
+<ul>
+<li><em>If −e is blocked too</em>, the same construction gives w = x − βe of higher rank. Then x = (β/(α + β))·u + (α/(α + β))·w, a mix of two points that the induction already decomposes. Mixing their decompositions with these weights decomposes x.</li>
+<li><em>If −e is a direction</em>, then x = u + α(−e), and u is decomposed by induction. Adding α(−e) to its d keeps d in the cone, since a sum of directions is a direction.</li>
+</ul>
+<p>In both cases x has the required form. ∎</p>
+</blockquote>
+<p>Run on the buyer's offer (4, 4):</p>
+<ol>
+<li>No row is tight. Take e = (−1, −1): it is blocked after 7/3 by the 5-ply row at u = (5/3, 5/3), while (1, 1) is a direction. So (4, 4) = (5/3, 5/3) + 7/3·(1, 1).</li>
+<li>At (5/3, 5/3) the 5-ply row is tight. Its free direction (1, −2) is blocked both ways: at (2, 1) after 1/3, and at (0, 5) after 5/3 in the opposite direction. So (5/3, 5/3) = 5/6·(2, 1) + 1/6·(0, 5).</li>
+</ol>
+<p>Together:</p>
+<p>(4, 4) = 5/6·(2, 1) + 1/6·(0, 5) + 7/3·(1, 1).</p>
+<p>In the buyer's words, the offer (4, 4) is a blend of two minimal fair offers, plus a raise of 7/3 thousand roubles on both hours. Read through the bill:</p>
+<p>208 = 5/6 · 84 + 1/6 · 100 + 7/3 · 52.</p>
+<p>The bill of any fair offer is a weighted average of corner bills plus the cost of the raise. Raises cost 32d₁ + 20d₂ ≥ 0, so no offer is cheaper than the cheapest corner. That is chapter 11's fundamental theorem again, now read off a formula.</p>
+<figure class="plate"><img src="chapters/13-corners-and-escape/decompose.gif" alt="The buyer's region in rust. Starting at (4, 4), labelled &quot;bill 208&quot;, the frame first draws the blocked move along (−1, −1) to (5/3, 5/3), and the free direction (1, 1) from there back to (4, 4), labelled &quot;+ 7/3 · (1, 1), escape&quot;. It then draws the segment from (0, 5) to (2, 1) through (5/3, 5/3) with the weights 1/6 and 5/6 on its ends. The final frame shows the decomposition with the bill split 70 + 16.67 + 121.33 = 208 underneath." loading="lazy"></figure>
+<p>The theorem also finishes the &quot;if&quot; above. If rec(P) = {0}, every point is a mix of finitely many
+corners, so every point lies within the largest corner distance of the origin, and P is bounded.</p>
+<h3>The escape routes have corners too</h3>
+<p>The cone rec(P) is itself a polyhedron, but its only corner is 0. What lists it
+are its <strong>extreme rays</strong>, the edges of the cone. To find them, cut the cone with one hyperplane that every
+nonzero direction crosses.</p>
+<p>For a pointed region the rows span every direction: if A e = 0 for some e ≠ 0, then e and −e would both be
+directions, and P would contain a line. Take w = −(sum of the rows of A). For d in the cone, Ad ≤ 0, so
+w·d = −Σ A_i d ≥ 0, and it is 0 only if every A_i d = 0, which forces d = 0. So every nonzero direction
+has w·d &gt; 0. After scaling, it lands on the slice</p>
+<p>S = { d : Ad ≤ 0, w·d = 1 }.</p>
+<p>S is a polyhedron whose own escape routes would be directions d of the cone with w·d = 0, and only d = 0 qualifies. So S is
+bounded. By Minkowski's half it is the set of mixes of its finitely many corners. So every direction is a nonnegative
+combination of those corners, and those corners are the extreme rays.</p>
+<p>For the buyer, the rows written as ≤ are (−1, −1), (−2, −1), (−1, 0) and (0, −1), so w = (4, 3). The slice is the segment
+from (1/4, 0) to (0, 1/3), and the extreme rays are (1, 0) and (0, 1): raise one price or the other.</p>
+<figure class="plate"><img src="chapters/13-corners-and-escape/slice.png" alt="Left: the buyer's recession cone, the quadrant d ≥ 0, with the slice 4d₁ + 3d₂ = 1 drawn across it as a short rust segment from (1/4, 0) to (0, 1/3). Rays from the origin through its two endpoints are labelled &quot;extreme ray (1, 0)&quot; and &quot;extreme ray (0, 1)&quot;. A sample direction (1, 1) crosses the slice at (1/7, 1/7), labelled &quot;scaled by 7&quot;." loading="lazy"></figure>
+<h3>And back again</h3>
+<blockquote class="proof">
+<p><strong>Theorem (Weyl's half).</strong> For any finite lists v₁, …, v_k and r₁, …, r_m, the set { Σλ_i v_i + Σμ_j r_j : λ ≥ 0, Σλ_i = 1, μ ≥ 0 } is a polyhedron.</p>
+<p><em>Proof.</em> In the space of (x, λ, μ), the rows x = Σλ_i v_i + Σμ_j r_j, Σλ_i = 1, λ ≥ 0 and μ ≥ 0 define a polyhedron. The set is its shadow on x, and chapter 9 showed that shadows of polyhedra are polyhedra. ∎</p>
+</blockquote>
+<p>So &quot;rows&quot; and &quot;corners plus rays&quot; describe the same objects. Rows are the right form for checking a plan,
+since each row is one dot product. Corners and rays are the right form for optimizing over the region, since a linear value only needs
+the corners and the sign of the value along each ray. The translation in either
+direction can be enormous. The n-dimensional cube has 2n rows and 2ⁿ corners, while the diamond of chapter 9 has 2n corners and 2ⁿ rows.</p>
+<blockquote class="aside">
+<p><strong>Aside: three people, forty years.</strong> Minkowski proved the bounded case in the 1890s, while building the
+geometry of numbers out of convex bodies. In 1935 Weyl gave both directions for cones in a short paper,
+&quot;Elementare Theorie der konvexen Polyeder&quot;, with a purely algebraic proof. Motzkin's 1936 Basel thesis, the same work
+that rediscovered Fourier's elimination, stated the version for regions that are unbounded:
+corners plus cone. That is why the theorem is sometimes called Minkowski–Weyl and sometimes Motzkin's decomposition.</p>
+</blockquote>
+<blockquote class="aside">
+<p><strong>The one thing to remember.</strong> A pointed region is its corners mixed, plus its escape routes, and the escape routes are a cone generated by finitely many extreme rays. A linear value over it is a weighted average of corner values plus the value's change along the routes taken.</p>
+</blockquote>
 <h2>Glossary</h2>
 <div class="overflow-x"><table>
 <thead>
@@ -2193,6 +2270,18 @@ and the rule that ends it.</p>
 <tr>
 <td>a step that changes the basis but not the point</td>
 <td>degenerate pivot</td>
+</tr>
+<tr>
+<td>the escape routes</td>
+<td>recession cone</td>
+</tr>
+<tr>
+<td>an edge of the escape cone</td>
+<td>extreme ray</td>
+</tr>
+<tr>
+<td>corners mixed plus escape</td>
+<td>Minkowski–Weyl / Motzkin decomposition</td>
 </tr>
 <tr>
 <td>the range where the price holds</td>
