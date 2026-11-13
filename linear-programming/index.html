@@ -46,6 +46,7 @@
     <li><a href="#ch17"><span class="toc-num">17</span><span class="toc-title">Reading the last dictionary: sensitivity</span></a></li>
     <li><a href="#ch18"><span class="toc-num">18</span><span class="toc-title">Ceilings without rows: bounded variables</span></a></li>
     <li><a href="#ch19"><span class="toc-num">19</span><span class="toc-title">Prices first, then plans: the primal–dual method</span></a></li>
+    <li><a href="#ch20"><span class="toc-num">20</span><span class="toc-title">Four outcomes, and the strictest kind of fit</span></a></li>
   </ol>
 </nav>
 <main class="prose">
@@ -2645,6 +2646,121 @@ an equivalent problem; his manuscript was published posthumously, in Latin, in 1
 <p><strong>The one thing to remember.</strong> The primal–dual method keeps the prices fair, allows only the pairs the prices make tight, and when those pairs
 can't do the job, the reason (too many lathes chasing too few orders) is itself the direction that raises the prices.</p>
 </blockquote>
+<h2 id="ch20"><span class="num">20</span>Four outcomes, and the strictest kind of fit</h2>
+<p>Chapter 15 proved strong duality by running the simplex method until it stopped. This chapter proves it again from Farkas alone,
+lists everything that can happen to a primal–dual pair, and ends with a sharper fact than complementary slackness.</p>
+<h3>Strong duality from Farkas</h3>
+<blockquote class="proof">
+<p><strong>Theorem.</strong> If the mill's LP max{cx : Ax ≤ b, x ≥ 0} has a best plan worth z*, the buyer's LP has a fair offer billing exactly z*.</p>
+<p><em>Proof.</em> For any ε &gt; 0, no plan reaches z* + ε. In other words, the system Ax ≤ b, −cx ≤ −(z* + ε), x ≥ 0 has no solution. By chapter 10's Farkas lemma there are weights
+(y, μ) ≥ 0 with yA − μc ≥ 0 and yb − μ(z* + ε) &lt; 0.</p>
+<ul>
+<li><strong>μ = 0 is impossible.</strong> Then yA ≥ 0 and yb &lt; 0, which is a proof that Ax ≤ b has no plan at all. But a best plan exists.</li>
+<li><strong>So μ &gt; 0.</strong> Divide by μ. Then ŷ = y ÷ μ satisfies ŷA ≥ c, so it is a fair offer, and ŷb &lt; z* + ε.</li>
+</ul>
+<p>So some fair offer bills less than z* + ε, for every ε, and none bills less than z*, by weak duality. The buyer's LP is therefore feasible and
+bounded below, and its region y ≥ 0 contains no line, so chapter 11's fundamental theorem gives it a best corner with some bill w*.
+Then z* ≤ w* &lt; z* + ε for every ε &gt; 0, so w* = z*. ∎</p>
+</blockquote>
+<p>The division by μ is the step that matters. μ is the weight on the value row. Dividing by it rescales the certificate so that it
+prices one rouble of value at exactly one rouble.</p>
+<h3>The four outcomes</h3>
+<p>Weak duality rules out one combination, a plan worth more than a bill. Strong duality rules out a gap. What is left:</p>
+<div class="overflow-x"><table>
+<thead>
+<tr>
+<th></th>
+<th>buyer has a fair offer</th>
+<th>buyer has none</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>mill has a plan</strong></td>
+<td>both have best points, equal values</td>
+<td>mill's value is unbounded</td>
+</tr>
+<tr>
+<td><strong>mill has none</strong></td>
+<td>buyer's bill is unbounded below</td>
+<td>possible</td>
+</tr>
+</tbody>
+</table></div>
+<p>The bottom-right case needs an example. Take max 2x₁ − x₂ with x₁ − x₂ ≤ 1, −x₁ + x₂ ≤ −2 and x ≥ 0.</p>
+<ul>
+<li><strong>No plan:</strong> the two rows add to 0 ≤ −1.</li>
+<li><strong>No fair offer:</strong> the buyer needs y₁ − y₂ ≥ 2 and −y₁ + y₂ ≥ −1, that is y₁ − y₂ ≤ 1.</li>
+</ul>
+<p>Each side is infeasible by its own Farkas certificate, and neither failure causes the other.</p>
+<h3>Strict complementary slackness</h3>
+<p>Complementary slackness says that in each pair (a slack and its price, or a batch count and its loss per batch), at least one is zero.
+Goldman and Tucker proved in 1956 that some optimal pair gets <strong>exactly</strong> one zero in every pair.</p>
+<p>Chapter 12's glue store of 52 shows why that is not automatic. The plan (8, 12) leaves no lathe, press or glue idle, and both products are made, so every
+primal quantity in sight is positive or tight. The optimal prices are the segment y = (2 − s, 1 − s, s), 0 ≤ s ≤ 1:</p>
+<div class="overflow-x"><table>
+<thead>
+<tr>
+<th>s</th>
+<th>prices</th>
+<th>strict?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>(2, 1, 0)</td>
+<td>no: glue is tight and priced 0</td>
+</tr>
+<tr>
+<td>½</td>
+<td>(3/2, 1/2, 1/2)</td>
+<td>yes: all three tight rows are priced</td>
+</tr>
+<tr>
+<td>1</td>
+<td>(1, 0, 1)</td>
+<td>no: press is tight and priced 0</td>
+</tr>
+</tbody>
+</table></div>
+<figure class="plate"><img src="chapters/20-strict/strict.gif" alt="Three bars show the lathe, press and glue prices along the optimal segment y = (2 − s, 1 − s, s) as s slides from 0 to 1. A readout shows the bill 84 in every frame. At s = 0 the glue bar has height 0, outlined amber with &quot;tight but priced 0: not strict&quot;. In the middle all three bars are positive, outlined blue with &quot;strict: every tight row has a positive price&quot;, and the frame holds at s = ½ with prices (3/2, 1/2, 1/2). At s = 1 the press bar reaches 0, outlined amber. A small segment diagram at the top marks the two ends as &quot;simplex corners&quot; and the open middle as &quot;strictly complementary&quot;." loading="lazy"></figure>
+<p>Every point on the segment bills 84. The two ends are the corners the simplex method returns, and neither is strict. The strict pair lives
+in the middle of the segment, the face of optimal prices. The central path followed by interior-point methods converges to such a middle point, which is strictly
+complementary (Güler and Ye, 1993).</p>
+<blockquote class="proof">
+<p><strong>Theorem (Goldman–Tucker).</strong> Every LP with a best plan has an optimal pair (x, y) in which, for each row, exactly one of the slack and the price is
+zero, and for each column, exactly one of x_j and the loss yA_j − c_j is zero.</p>
+<p><em>Proof.</em> Take a row i. Ask how slack row i can be while the plan stays optimal:
+maximise s_i subject to Ax + s = b, cx ≥ z*, x, s ≥ 0.</p>
+<ul>
+<li><strong>If some optimal plan has s_i &gt; 0,</strong> keep it as row i's witness.</li>
+<li><strong>If not,</strong> this LP has value 0. Strong duality (chapter 15) gives multipliers w ≥ 0 with w_i ≥ 1, and μ ≥ 0 on the value row, such that
+wA ≥ μc and wb = μz*.
+<ul>
+<li>If μ &gt; 0, then y = w ÷ μ is fair and bills z*, so it is optimal, and y_i ≥ 1 ÷ μ &gt; 0.</li>
+<li>If μ = 0, then wA ≥ 0 and wb = 0, so w can be added to any optimal y* without breaking fairness or changing the bill. The price y* + w is
+optimal, and its price for row i is at least 1.</li>
+</ul>
+</li>
+</ul>
+<p>Either way, row i has an optimal witness with a positive slack or a positive price. Columns work the same way, with x_j and the loss yA_j − c_j.
+Now average all the witness plans, and separately all the witness prices. Averages of optimal points are optimal, because the optimal sets are convex,
+and an entry that is positive in one witness stays positive in the average. So every pair has at least one positive member. Complementary slackness
+between two optimal points forbids two, so exactly one is positive. ∎</p>
+</blockquote>
+<p>The averaging step is chapter 1's convexity doing real work. The average of optimal plans is optimal, and a positive entry stays positive in the average.</p>
+<blockquote class="aside">
+<p><strong>Aside: Tucker's seminar.</strong> Alan Goldman and Albert Tucker published this in <em>Linear Inequalities and Related Systems</em> (1956). The same Princeton
+volume carried Dantzig, Ford and Fulkerson's primal–dual algorithm from chapter 19. Tucker's group was where duality became a theory
+rather than a trick. Gale, Kuhn and Tucker had proved the duality theorem for LP in 1951, and Kuhn and Tucker's paper on nonlinear
+programming came the same year.</p>
+</blockquote>
+<blockquote class="aside">
+<p><strong>The one thing to remember.</strong> Strong duality is Farkas with the value row's weight divided out. Of the four sign
+patterns only &quot;both feasible&quot; gives equal values. Among all the optimal prices, the ones in the middle of the face fit strictly, and the
+corners the simplex method finds usually do not.</p>
+</blockquote>
 <h2>Glossary</h2>
 <div class="overflow-x"><table>
 <thead>
@@ -2913,6 +3029,10 @@ can't do the job, the reason (too many lathes chasing too few orders) is itself 
 <tr>
 <td>keep prices fair, use only tight pairs</td>
 <td>primal–dual method (Hungarian method for assignment)</td>
+</tr>
+<tr>
+<td>an optimal pair with exactly one zero in every pair</td>
+<td>strict complementary slackness (Goldman–Tucker)</td>
 </tr>
 <tr>
 <td>the range where the price holds</td>

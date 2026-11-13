@@ -40,6 +40,8 @@ CHAPTERS = [
     Chapter(18, "18-bounds", "Ceilings without rows: bounded variables"),
     Chapter(19, "19-primal-dual",
             "Prices first, then plans: the primal–dual method"),
+    Chapter(20, "20-strict",
+            "Four outcomes, and the strictest kind of fit"),
 ]
 
 # A second copy of src/linprog's corner search, so the pages need no server.
