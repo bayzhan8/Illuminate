@@ -45,6 +45,7 @@
     <li><a href="#ch16"><span class="toc-num">16</span><span class="toc-title">Repairing a plan from the price side: the dual simplex</span></a></li>
     <li><a href="#ch17"><span class="toc-num">17</span><span class="toc-title">Reading the last dictionary: sensitivity</span></a></li>
     <li><a href="#ch18"><span class="toc-num">18</span><span class="toc-title">Ceilings without rows: bounded variables</span></a></li>
+    <li><a href="#ch19"><span class="toc-num">19</span><span class="toc-title">Prices first, then plans: the primal–dual method</span></a></li>
   </ol>
 </nav>
 <main class="prose">
@@ -2548,6 +2549,102 @@ still use the device.</p>
 <p><strong>The one thing to remember.</strong> A bound is a wall that needs no row. A nonbasic variable may sit at its ceiling, a step may end with a bound flip that changes no
 basis, and the ceiling gets a price like any other wall.</p>
 </blockquote>
+<h2 id="ch19"><span class="num">19</span>Prices first, then plans: the primal–dual method</h2>
+<p>The Trust's 1938 question to Kantorovich was about machines: which machine should do which job. Take three lathes and three orders, birch,
+pine and alder sheet. Each lathe does exactly one order. The table gives the hours lathe i needs for order j:</p>
+<div class="overflow-x"><table>
+<thead>
+<tr>
+<th></th>
+<th>birch</th>
+<th>pine</th>
+<th>alder</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>lathe 1</td>
+<td>4</td>
+<td>2</td>
+<td>5</td>
+</tr>
+<tr>
+<td>lathe 2</td>
+<td>3</td>
+<td>6</td>
+<td>4</td>
+</tr>
+<tr>
+<td>lathe 3</td>
+<td>5</td>
+<td>4</td>
+<td>7</td>
+</tr>
+</tbody>
+</table></div>
+<p>The LP, with x_ij = 1 if lathe i takes order j, is: minimise Σ c_ij x_ij subject to every row of x summing to 1, every column summing to 1, and x ≥ 0.
+Its dual has a charge u_i for each lathe and v_j for each order:</p>
+<p>maximise Σu_i + Σv_j subject to u_i + v_j ≤ c_ij for every pair.</p>
+<p>The charges are free in sign because the constraints are equations. <strong>Weak duality</strong> in one line: add u_i + v_j ≤ c_ij over the three pairs of
+any assignment. Each u_i and each v_j appears exactly once, so every assignment takes at least Σu + Σv hours.</p>
+<h3>The idea: let the prices choose which pairs may be used</h3>
+<p>Complementary slackness (chapter 7) says that an optimal assignment uses only <strong>tight</strong> pairs, those with u_i + v_j = c_ij.
+So keep the charges fair and ask a smaller question, the <strong>restricted primal</strong>: can the tight pairs alone make a full assignment?</p>
+<ul>
+<li>If yes, it costs exactly Σu + Σv, and weak duality says it is optimal.</li>
+<li>If no, raise the charges to make more pairs tight, keeping them fair, so that the bound Σu + Σv rises.</li>
+</ul>
+<p>The method improves the prices and only then looks for a plan, which is the reverse of chapter 14's order.</p>
+<h3>The run, every number</h3>
+<p><strong>Round 0.</strong> Charge each lathe its fastest job: u = (2, 3, 4), v = (0, 0, 0). The bound is 9. The tight pairs are lathe 1–pine,
+lathe 2–birch and lathe 3–pine. Lathes 1 and 3 both have only pine. Two lathes with one order between them make a full
+assignment impossible.</p>
+<p>The obstruction says how to move. Raise u₁ and u₃ by θ and lower v_pine by θ:</p>
+<ul>
+<li><strong>Tight pairs:</strong> lathe 1–pine and lathe 3–pine change by +θ − θ = 0, so they stay tight. Lathe 2–pine falls by θ, so it stays fair.</li>
+<li><strong>The bound:</strong> rises by θ(2 − 1) = θ, two lathes raised against one order lowered.</li>
+<li><strong>How far:</strong> θ is limited by the pairs from lathes {1, 3} to the other orders. Their slacks are 4 − 2 = 2, 5 − 2 = 3, 5 − 4 = 1 and 7 − 4 = 3, so
+θ = 1, and lathe 3–birch goes tight.</li>
+</ul>
+<p><strong>Round 1.</strong> u = (3, 3, 5), v = (0, −1, 0), and the bound is 10. Lathe 3 now has birch or pine, but birch is lathe 2's only order. Lathes
+{1, 2, 3} reach only {birch, pine}: three lathes, two orders. Raise all three u by θ and lower v_birch and v_pine by θ. The bound
+rises by θ(3 − 2). The pairs to alder have slacks 2, 1 and 2, so θ = 1, and lathe 2–alder goes tight.</p>
+<p><strong>Round 2.</strong> u = (4, 4, 6), v = (−1, −2, 0), and the bound is 11. Now lathe 1–pine, lathe 2–alder and lathe 3–birch are all tight, so they form a full
+assignment. Its cost is 2 + 4 + 5 = 11 = Σu + Σv, so it is optimal, and the charges prove it.</p>
+<figure class="plate"><img src="chapters/19-primal-dual/hungarian.gif" alt="The 3 × 3 table drawn as a grid, with rows for the lathes and columns for the orders. Each cell shows its slack c_ij − u_i − v_j. Tight cells (slack 0) are outlined in blue. Rust charge labels u and v sit beside the rows and columns and update each round. In rounds 0 and 1 the obstructing set of lathes and its few orders is shaded amber, labelled &quot;2 lathes, 1 order&quot; and then &quot;3 lathes, 2 orders&quot;. The slack that sets θ is circled. A readout under the grid shows &quot;bound Σu + Σv = 9 → 10 → 11&quot;. The final frame shows the three tight cells of the assignment and &quot;cost 11 = bound 11&quot;." loading="lazy"></figure>
+<h3>Why the obstruction always exists</h3>
+<blockquote class="proof">
+<p><strong>Theorem (Hall–Kőnig, as a Farkas certificate).</strong> If the tight pairs contain no full assignment, there is a set S of lathes whose
+tight orders N(S) are fewer than |S|.</p>
+</blockquote>
+<p>Then λ = +1 on the u of S and −1 on the v of N(S) is exactly chapter 10's alternative for the restricted primal:</p>
+<ul>
+<li><strong>It keeps the tight pairs fair:</strong> every tight pair from S lands in N(S), so it changes by +1 − 1 = 0. A tight pair from outside S changes by 0 or −1.</li>
+<li><strong>It raises the bound:</strong> by |S| − |N(S)| &gt; 0.</li>
+</ul>
+<p>To find S, start from an unassigned lathe and follow tight pairs to orders, then assignments back to lathes. Every lathe reached is in S. Each round makes at
+least one new pair tight from S to a new order. Either that order is free, and the assignment grows, or its lathe joins S. So at most n rounds
+pass between growths.</p>
+<h3>The method in general</h3>
+<p>For min cx with Ax = b, x ≥ 0 and b ≥ 0, start with dual-feasible prices π, so that A_jπ ≤ c_j for every j. Let I be the set of tight columns.</p>
+<ol>
+<li><strong>Restricted primal.</strong> Find x_I ≥ 0 with A_I x_I = b, by Phase I using only the columns in I. If it succeeds, x and π satisfy complementary slackness, so both are optimal.</li>
+<li><strong>Otherwise,</strong> Farkas (chapter 10) gives λ with λb &gt; 0 and A_jλ ≤ 0 for every j in I.</li>
+<li><strong>Step.</strong> Move π to π + θλ. The tight columns stay fair, the bound rises by θ·λb, and θ is the largest step keeping every column fair:
+θ = min over j with A_jλ &gt; 0 of (c_j − A_jπ) ÷ A_jλ.</li>
+<li><strong>No limit.</strong> If no j has A_jλ &gt; 0, the dual is unbounded, so the primal has no plan (weak duality).</li>
+</ol>
+<p>In the assignment case, λ is the ±1 vector above, θ is the smallest slack leaving S, and λb = |S| − |N(S)|.</p>
+<blockquote class="aside">
+<p><strong>Aside: a method with three discoverers.</strong> In 1955 Harold Kuhn published the &quot;Hungarian method&quot;. He named it after Dénes Kőnig and
+Jenő Egerváry, whose 1931 papers held its two halves: the matching obstruction, and the reweighting. Dantzig, Ford and Fulkerson
+generalised it to every LP in 1956 as the primal–dual algorithm. Then in 2006 it turned out that Jacobi had described the method for
+an equivalent problem; his manuscript was published posthumously, in Latin, in 1890. Kuhn told the story in 2012 as &quot;a tale of three eras&quot;.</p>
+</blockquote>
+<blockquote class="aside">
+<p><strong>The one thing to remember.</strong> The primal–dual method keeps the prices fair, allows only the pairs the prices make tight, and when those pairs
+can't do the job, the reason (too many lathes chasing too few orders) is itself the direction that raises the prices.</p>
+</blockquote>
 <h2>Glossary</h2>
 <div class="overflow-x"><table>
 <thead>
@@ -2812,6 +2909,10 @@ basis, and the ceiling gets a price like any other wall.</p>
 <tr>
 <td>jumping to the other bound without changing the basis</td>
 <td>bound flip</td>
+</tr>
+<tr>
+<td>keep prices fair, use only tight pairs</td>
+<td>primal–dual method (Hungarian method for assignment)</td>
 </tr>
 <tr>
 <td>the range where the price holds</td>
