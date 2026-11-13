@@ -37,6 +37,7 @@
     <li><a href="#ch8"><span class="toc-num">8</span><span class="toc-title">A wall between a point and a shape</span></a></li>
     <li><a href="#ch9"><span class="toc-num">9</span><span class="toc-title">Shadows: eliminating a variable</span></a></li>
     <li><a href="#ch10"><span class="toc-num">10</span><span class="toc-title">Either a plan or a proof</span></a></li>
+    <li><a href="#ch11"><span class="toc-num">11</span><span class="toc-title">Corners by algebra</span></a></li>
   </ol>
 </nav>
 <main class="prose">
@@ -1741,6 +1742,89 @@ side of the equation.</p>
 <blockquote class="aside">
 <p><strong>The one thing to remember.</strong> Either the system has a solution, or a nonnegative combination of its rows reads 0 ≤ negative. Elimination finds whichever one exists; geometrically, b is either in the cone or cut off from it by a wall through the origin.</p>
 </blockquote>
+<h2 id="ch11"><span class="num">11</span>Corners by algebra</h2>
+<p>Chapter 2 defined a corner by geometry: a plan that is not the midpoint of two
+other plans. To compute with corners, and in chapter 14 to walk between them, we
+need a test that uses only the rows. The test is a rank.</p>
+<h3>Tight rows and the directions they leave free</h3>
+<p>At a plan x, a row is <strong>tight</strong> if it holds with equality there. At (8, 12) both
+the lathe and the press rows are tight. At (4, 14) only the lathe row is tight,
+and at (4, 6) none is.</p>
+<p>The tight rows decide which small moves d keep them tight: a row a stays tight
+at x + d exactly when a·d = 0. The moves that keep every tight row tight form
+the <strong>nullspace</strong> of the tight rows A_T:</p>
+<p>Null(A_T) = { d : A_T d = 0 }.</p>
+<ul>
+<li>At (8, 12): (1, 2)·d = 0 and (1, 1)·d = 0 force d = 0. No move keeps both walls.</li>
+<li>At (4, 14): (1, 2)·d = 0 leaves the whole line of moves d = s(2, −1), sliding along the lathe wall.</li>
+<li>At (4, 6): there are no tight rows, and every d is allowed.</li>
+</ul>
+<p>How many independent free directions there are is counted by the
+<strong>rank</strong> of A_T, the number of independent rows:</p>
+<blockquote class="proof">
+<p><strong>Theorem (rank–nullity).</strong> For a matrix with n columns and rank r, the nullspace has dimension n − r.</p>
+<p><em>Proof.</em> Row reduction does not change the nullspace, because each step is reversible and keeps the solutions of A d = 0. It brings A to echelon form, with r pivot columns and n − r free columns. For each free column, set that free variable to 1 and the other free variables to 0, and solve for the pivot variables from the bottom up. This gives n − r nullspace vectors. They are independent, since each one is the only one with a 1 in its own free position. They span the nullspace, since any solution d equals the combination of them weighted by its own free entries: the difference between the two has every free entry zero, so its pivot entries are zero as well. ∎</p>
+</blockquote>
+<p>So rank(A_T) = n means no free direction at all, and rank(A_T) &lt; n means at least one.</p>
+<h3>Basic solutions</h3>
+<blockquote class="proof">
+<p><strong>Definition.</strong> A point x is <strong>basic</strong> if its tight rows have rank n, the number of variables. A basic point that satisfies every row is a <strong>basic feasible solution</strong> (BFS).</p>
+</blockquote>
+<p>For the mill, n = 2, and a basic point is where two independent rows cross.
+These are chapter 2's six crossings of four walls. Four of them, (0, 0), (20, 0),
+(0, 16) and (8, 12), satisfy every row and are BFSs. (32, 0) and (0, 20) are
+basic but break a row. With m rows there are at most C(m, n) basic points, one
+per choice of n independent rows, here C(4, 2) = 6.</p>
+<blockquote class="proof">
+<p><strong>Theorem (corner = BFS).</strong> A point of a polyhedron P = { x : Ax ≤ b } is a corner if and only if it is a BFS.</p>
+<p><em>Proof, BFS ⇒ corner.</em> Let x be a BFS and suppose x = (u + v)/2 with u, v in P. For each tight row i, A_i u ≤ b_i and A_i v ≤ b_i average to A_i x = b_i, so both are equalities. So A_T(u − x) = 0. The tight rows have rank n, so their nullspace is {0}, and u = x. Likewise v = x. So x is not the midpoint of two <em>other</em> points.</p>
+<p><em>Proof, corner ⇒ BFS.</em> Suppose the tight rows at x have rank below n. By rank–nullity there is d ≠ 0 with A_T d = 0. Moving to x ± εd keeps every tight row tight. Each row j that is not tight has slack s_j = b_j − A_j x &gt; 0, and the move changes its left side by ±ε A_j d. So the row still holds if ε |A_j d| ≤ s_j. Take ε as the smallest s_j ÷ |A_j d| over the slack rows with A_j d ≠ 0, or any positive number if there are none. Then x + εd and x − εd are both in P, they are different, and x is their midpoint. So x is not a corner. ∎</p>
+</blockquote>
+<p>The ε is chapter 1's safe radius again. A slack row with surplus s_j can absorb a move only up to s_j ÷ |A_j d|, its slack measured in units of A_j·d. At (4, 14) with d = (2, −1), the press row has slack 2 and (1, 1)·d = 1, so ε = 2: (8, 12) and (0, 16) are both plans, and (4, 14) is their midpoint.</p>
+<figure class="plate"><img src="chapters/11-corners-by-algebra/rank.png" alt="Three panels on the mill's region. Left, at (8, 12): both walls are tight, the rank readout says 2, and two arrows along the walls each break the other wall, drawn amber; the caption reads &quot;rank 2: no free direction, a corner&quot;. Middle, at (4, 14): only the lathe wall is tight, rank 1, and the free direction d = (2, −1) is drawn both ways along the wall, reaching (8, 12) and (0, 16) at ε = 2; caption &quot;rank 1: midpoint of (0, 16) and (8, 12)&quot;. Right, at (4, 6): no tight rows, rank 0, a small disc of moves all inside; caption &quot;rank 0: every direction is free&quot;." loading="lazy"></figure>
+<h3>Directions and lines</h3>
+<p>The buyer's region of chapter 6 is unbounded:</p>
+<p>y₁ + y₂ ≥ 3,  2y₁ + y₂ ≥ 5,  y ≥ 0.</p>
+<p>Starting from any fair offer, raising either price keeps it fair, so it can run off to infinity in
+any direction d ≥ 0. In general:</p>
+<blockquote class="proof">
+<p><strong>Definition and test.</strong> A vector d is a <strong>direction</strong> of P = { x : Ax ≤ b } if x + θd stays in P for every x in P and every θ ≥ 0. When P is not empty, d is a direction if and only if Ad ≤ 0.</p>
+<p><em>Proof.</em> If Ad ≤ 0, then A(x + θd) = Ax + θAd ≤ Ax ≤ b. Conversely, if some row has A_i d &gt; 0, then A_i(x + θd) = A_i x + θA_i d passes b_i once θ is large. ∎</p>
+</blockquote>
+<p>Written as Ax ≤ b, the buyer's rows are −y₁ − y₂ ≤ −3, −2y₁ − y₂ ≤ −5, −y ≤ 0, and Ad ≤ 0 is exactly d ≥ 0, the raises.</p>
+<p>If both d and −d are directions, P contains whole lines x + θd for every
+real θ, and then Ad = 0. A region with a line has no corners at all: every
+point y is the midpoint of y + d and y − d, both still in P. The strip
+12 ≤ t + f ≤ 20, with no sign limits, is an example. Every point slides both ways along (1, −1), so it has no corner. Maximizing t + f over it gives 20, reached on a whole line but at no corner.
+Regions without lines are called <strong>pointed</strong>.</p>
+<figure class="plate"><img src="chapters/11-corners-by-algebra/lines.png" alt="Two panels. Left: the strip 12 ≤ t + f ≤ 20 drawn across the frame, with the line direction (1, −1) shown both ways from a point, and the caption &quot;a line: no corner anywhere&quot;. Right: the buyer's region with its three corners (0, 5), (2, 1) and (3, 0), with arrows for the directions d ≥ 0 spreading up and to the right, and the caption &quot;pointed: directions only go up&quot;." loading="lazy"></figure>
+<h3>Every pointed region has a corner, and some best plan is one</h3>
+<p>Chapter 2 proved &quot;a best plan sits on a corner&quot; for bounded regions. The
+same idea, run with ranks, handles unbounded regions in any dimension.</p>
+<blockquote class="aside">
+<p><strong>Procedure (crashing).</strong> Start at a point x of P. While the tight rows have rank below n, pick d ≠ 0 in their nullspace with c·d ≤ 0 (for a minimization), and move along d until a new row goes tight. The new row has A_j d &gt; 0, while every old tight row has A_i d = 0, so the new row is independent of them, and the rank goes up by one.</p>
+</blockquote>
+<p>Take the buyer's bill 32y₁ + 20y₂ and start at the fair offer (4, 4), bill 208.</p>
+<ol>
+<li>No row is tight, so any d is free. Take d = (−1, −1), which lowers the bill by 52 per unit. The 5-ply row 2y₁ + y₂ ≥ 5 goes tight first, after 7/3 units, at (5/3, 5/3), with a bill of 260/3 ≈ 86.67.</li>
+<li>One row is tight, of rank 1. Its nullspace is spanned by (1, −2), and the bill changes by 32 − 40 = −8 per unit along it, so move that way. The 3-ply row goes tight after 1/3, at (2, 1), with a bill of 84.</li>
+<li>Two independent tight rows, rank 2: a corner.</li>
+</ol>
+<figure class="plate"><img src="chapters/11-corners-by-algebra/crash.gif" alt="The buyer's region, unbounded up and to the right, with the bill's level lines in rust. The point starts at (4, 4) with the readout &quot;tight rows: none, rank 0, bill 208&quot;. It moves along (−1, −1) to (5/3, 5/3), where the 5-ply wall lights up: &quot;tight: 5-ply, rank 1, bill 86.67&quot;. It then slides along that wall in direction (1, −2) to (2, 1), where the 3-ply wall lights up too: &quot;tight: 3-ply and 5-ply, rank 2, bill 84&quot;. The final frame marks the corner." loading="lazy"></figure>
+<p>Crashing guarantees a corner no worse than the start, not the best one. From (4, 4)
+with d = (0, −1) and then (−1, 0), it stops at the corner (3, 0) with a bill of 96. Finding the
+best corner is the simplex method's job (chapter 14). But crashing is enough to prove that a best corner exists:</p>
+<blockquote class="proof">
+<p><strong>Theorem (fundamental theorem of linear programming).</strong> Let P be a non-empty pointed polyhedron. Then min c·x over P either is unbounded below or is attained at a BFS.</p>
+<p><em>Proof.</em> First, P has a BFS: crash from any point with c = 0. A free direction d with A_T d = 0 cannot have both d and −d as directions of P (that would be a line), so one of them is blocked by some row, and the rank goes up. There are finitely many BFSs, at most C(m, n), so one of them, x*, has the smallest value. Suppose some x in P has c·x &lt; c·x*. Crash from x. The procedure can only fail to find a blocking row along some d with c·d ≤ 0. If c·d &lt; 0, the ray x + θd stays in P while the value goes to −∞: unbounded. If c·d = 0, use −d instead; if that is unblocked too, P contains a line, which it does not. Otherwise crashing ends at a BFS w with c·w ≤ c·x &lt; c·x*, contradicting the choice of x*. ∎</p>
+</blockquote>
+<p>This is chapter 2's theorem with the two assumptions it needed, bounded and
+two-dimensional, replaced by the one that matters: no lines. The buyer's
+region is unbounded, but its bill is at least 0 along every direction d ≥ 0, so it is
+not unbounded below, and its best offer, (2, 1), is a corner.</p>
+<blockquote class="aside">
+<p><strong>The one thing to remember.</strong> A corner is a point where the tight rows have rank n, so no move keeps them all tight. If the region has no lines, some best plan is a corner, or the value runs off to infinity.</p>
+</blockquote>
 <h2>Glossary</h2>
 <div class="overflow-x"><table>
 <thead>
@@ -1933,6 +2017,22 @@ side of the equation.</p>
 <tr>
 <td>no strict improvement</td>
 <td>Gordan's theorem</td>
+</tr>
+<tr>
+<td>a corner, found by rows</td>
+<td>basic feasible solution (BFS)</td>
+</tr>
+<tr>
+<td>rows that hold with equality</td>
+<td>binding (active) constraints</td>
+</tr>
+<tr>
+<td>a way to run forever</td>
+<td>direction (recession direction)</td>
+</tr>
+<tr>
+<td>a region with no lines</td>
+<td>pointed polyhedron</td>
 </tr>
 <tr>
 <td>the range where the price holds</td>
