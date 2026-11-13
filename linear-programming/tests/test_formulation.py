@@ -13,12 +13,16 @@ TEXT = (ROOT / "lesson.md").read_text()
 FLAT = " ".join(TEXT.split())
 
 
-def test_complete_sets_lp_has_the_quoted_best_plan_and_certificate():
-    lp = LP.build(
+def complete_sets_lp():
+    return LP.build(
         c=(0, 0, 1),
         A=[[1, 2, 0], [1, 1, 0], [-1, 0, 1], [0, -1, 1]],
         b=(32, 20, 0, 0),
     )
+
+
+def test_complete_sets_lp_has_the_quoted_best_plan_and_certificate():
+    lp = complete_sets_lp()
     walk = simplex(lp)
     assert walk.x == (10, 10, 10)
     assert walk.value == 10
