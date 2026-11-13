@@ -4,6 +4,7 @@ from pathlib import Path
 
 import pytest
 
+from linprog.alternatives import cone_farkas
 from linprog.corners import rank
 from linprog.simplex import two_phase
 from linprog.strict import strict_pair
@@ -104,6 +105,60 @@ def random_bounded_lp(rng, redundant=False, degenerate=False):
     return matrix, rhs, costs
 
 
+def random_local_cone_lp(rng):
+    variable_count = rng.randint(1, 3)
+    resource_count = rng.randint(1, 3)
+    witness = tuple(
+        Q(rng.randint(1, 5), rng.randint(1, 3))
+        for _ in range(variable_count)
+    )
+    resources = tuple(
+        tuple(Q(rng.randint(0, 4), rng.randint(1, 3))
+              for _ in range(variable_count))
+        for _ in range(resource_count)
+    )
+    resource_bounds = tuple(
+        dot(row, witness) + Q(rng.randint(1, 5), rng.randint(1, 3))
+        for row in resources
+    )
+    upper_rows = tuple(
+        tuple(Q(int(column == index))
+              for column in range(variable_count))
+        for index in range(variable_count)
+    )
+    lower_rows = tuple(
+        tuple(-Q(int(column == index))
+              for column in range(variable_count))
+        for index in range(variable_count)
+    )
+    upper_bounds = tuple(
+        witness[index] + Q(rng.randint(1, 5), rng.randint(1, 3))
+        for index in range(variable_count)
+    )
+    if rng.randrange(4) == 0:
+        resources += (resources[0],)
+        resource_bounds += (resource_bounds[0],)
+    matrix = resources + upper_rows + lower_rows
+    rhs = resource_bounds + upper_bounds + (Q(0),) * variable_count
+    costs = (
+        Q(rng.randint(1, 5), rng.randint(1, 3)),
+    ) + tuple(
+        Q(rng.randint(-5, 5), rng.randint(1, 3))
+        for _ in range(variable_count - 1)
+    )
+    return matrix, rhs, costs
+
+
+def tight_row_prices(matrix, tight_rows, costs):
+    equality = tuple(
+        tuple(matrix[row][column] for row in tight_rows)
+        for column in range(len(costs))
+    )
+    status, prices = cone_farkas(equality, costs)
+    assert status == "solution"
+    return prices
+
+
 def assert_primal(A, b, c, value, x):
     assert all(value >= 0 for value in x)
     assert all(dot(row, x) <= bound for row, bound in zip(A, b))
@@ -201,6 +256,86 @@ def test_both_infeasible_example_has_primal_and_dual_farkas_certificates():
     for row in range(len(matrix)):
         assert dot(matrix[row], primal_ray) <= 0
     assert dot(costs, primal_ray) > 0
+
+
+def test_mill_optimum_is_the_tight_row_price_combination():
+    matrix = (
+        (Q(1), Q(2)),
+        (Q(1), Q(1)),
+        (Q(-1), Q(0)),
+        (Q(0), Q(-1)),
+    )
+    rhs = (Q(32), Q(20), Q(0), Q(0))
+    point = (Q(8), Q(12))
+    costs = (Q(3), Q(5))
+    tight = tuple(
+        index for index, (row, bound) in enumerate(zip(matrix, rhs))
+        if dot(row, point) == bound
+    )
+    assert tight == (0, 1)
+    prices = tight_row_prices(matrix, tight, costs)
+    assert prices == (Q(2), Q(1))
+    assert tuple(
+        sum((prices[index] * matrix[row][column]
+             for index, row in enumerate(tight)), Q(0))
+        for column in range(2)
+    ) == costs
+    assert dot(tuple(rhs[row] for row in tight), prices) \
+        == dot(costs, point) == 84
+
+
+def test_random_local_cone_proofs_and_improving_directions():
+    rng = random.Random(2026)
+    for _ in range(200):
+        matrix, rhs, costs = random_local_cone_lp(rng)
+        variable_count = len(costs)
+        assert matrix[-variable_count:] == tuple(
+            tuple(-Q(int(column == index))
+                  for column in range(variable_count))
+            for index in range(variable_count)
+        )
+        equality, bounds, objective = primal_system(matrix, rhs, costs)
+        optimum = two_phase(
+            equality, bounds, objective, rule="bland"
+        )
+        assert optimum.status == "optimal"
+        point = optimum.x[:variable_count]
+        value = dot(costs, point)
+        assert_primal(matrix, rhs, costs, value, point)
+
+        tight = tuple(
+            index for index, (row, bound) in enumerate(zip(matrix, rhs))
+            if dot(row, point) == bound
+        )
+        assert tight
+        prices = tight_row_prices(matrix, tight, costs)
+        assert all(price >= 0 for price in prices)
+        assert tuple(
+            sum((prices[index] * matrix[row][column]
+                 for index, row in enumerate(tight)), Q(0))
+            for column in range(variable_count)
+        ) == costs
+        assert dot(tuple(rhs[row] for row in tight), prices) == value
+
+        nonoptimal = (Q(0),) * variable_count
+        assert all(
+            dot(row, nonoptimal) <= bound
+            for row, bound in zip(matrix, rhs)
+        )
+        assert dot(costs, nonoptimal) < value
+        tight_at_nonoptimal = tuple(
+            index for index, (row, bound) in enumerate(zip(matrix, rhs))
+            if dot(row, nonoptimal) == bound
+        )
+        direction = tuple(
+            point[column] - nonoptimal[column]
+            for column in range(variable_count)
+        )
+        assert all(
+            dot(matrix[row], direction) <= 0
+            for row in tight_at_nonoptimal
+        )
+        assert dot(costs, direction) > 0
 
 
 def test_four_outcome_table_has_one_exact_example_in_each_cell():
@@ -333,6 +468,14 @@ def test_chapter_20_proofs_numbers_and_figure_anchor():
         "maximise s_i subject to Ax + s = b, cx ≥ z*, x, s ≥ 0.",
         "wA ≥ μc and wb = μz*",
         "The central path followed by interior-point methods",
+        "### A third form: no better direction nearby",
+        "Theorem (local ⇒ global ⇒ dual)",
+        "no direction d with A_I d ≤ 0 has cd > 0",
+        "c = Σ_{i∈I} y_i A_i for some y ≥ 0",
+        "1 ⇒ 2.",
+        "2 ⇒ 3.",
+        "3 ⇒ 1.",
+        "The step 2 ⇒ 1 is the surprising one.",
     ):
         assert phrase in prose
     assert asset in prose
