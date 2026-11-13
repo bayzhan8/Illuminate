@@ -23,7 +23,11 @@ from figures.fig10a_cone import (
 )
 from figures.fig10b_gordan import (
     CHAIN_LABEL_ANCHORS,
+    CHAIN_LABEL_OFFSETS,
     CHAIN_LABELS,
+    CHAIN_LINE_STYLES,
+    CHAIN_PANEL_XLIM,
+    CHAIN_PANEL_YLIM,
     CHAIN_POINTS,
     DIRECTION,
     DIRECTION_LABEL_ANCHOR,
@@ -31,7 +35,8 @@ from figures.fig10b_gordan import (
     HALF_PLANE_POLYGON,
     ROW_LABEL_ANCHORS,
     ROW_ORIGIN,
-    ROW_ORIGIN_LABEL_ANCHOR,
+    ROW_PANEL_XLIM,
+    ROW_PANEL_YLIM,
     ROWS,
     WEIGHTS,
     cross,
@@ -337,14 +342,21 @@ def test_cone_animation_holds_and_all_figure_labels_are_anchored():
 
 def test_gordan_figure_labels_and_half_plane_match_their_objects():
     assert CHAIN_POINTS[0] == CHAIN_POINTS[-1] == (Q(0), Q(0))
-    assert CHAIN_LABELS == tuple(str(weight) for weight in WEIGHTS)
+    assert CHAIN_LABELS == tuple(f"{weight}×" for weight in WEIGHTS)
     assert sum_rows(WEIGHTS, ROWS) == (Q(0), Q(0))
+    assert ROW_ORIGIN == (Q(0), Q(0))
+    assert ROW_LABEL_ANCHORS == ROWS
+    assert ROW_PANEL_XLIM == (-4, 3)
+    assert ROW_PANEL_YLIM == (-6, 3)
+    assert CHAIN_PANEL_XLIM == (-1, 4)
+    assert CHAIN_PANEL_YLIM == (-1, 6)
+    assert CHAIN_LINE_STYLES[0] != CHAIN_LINE_STYLES[2]
+    assert CHAIN_LABEL_OFFSETS[0][0] < 0 < CHAIN_LABEL_OFFSETS[2][0]
 
     for row, anchor in zip(ROWS, ROW_LABEL_ANCHORS):
         vector = tuple(anchor[j] - ROW_ORIGIN[j] for j in range(2))
         assert vector == row
         assert cross(vector, row) == 0
-    assert ROW_ORIGIN_LABEL_ANCHOR == ROW_ORIGIN
 
     for i, (row, weight) in enumerate(zip(ROWS, WEIGHTS)):
         start, end = CHAIN_POINTS[i:i + 2]
@@ -353,6 +365,7 @@ def test_gordan_figure_labels_and_half_plane_match_their_objects():
         anchor = CHAIN_LABEL_ANCHORS[i]
         offset = tuple(anchor[j] - start[j] for j in range(2))
         assert cross(segment, offset) == 0
+        assert 0 <= dot(segment, offset) <= dot(segment, segment)
 
     assert DIRECTION_LABEL_ANCHOR == DIRECTION
     assert all(dot(row, DIRECTION) < 0 for row in ROWS[:2])
