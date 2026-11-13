@@ -24,6 +24,7 @@ CHAPTERS = [
     Chapter(4, "04-more-rows", "More rows from words"),
     Chapter(5, "05-yes-or-no", "Yes-or-no decisions"),
     Chapter(6, "06-buying-the-hours", "Someone buying the hours"),
+    Chapter(7, "07-one-more", "What one more is worth"),
 ]
 
 # A second copy of src/linprog's corner search, so the pages need no server.

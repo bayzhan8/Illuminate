@@ -33,6 +33,7 @@
     <li><a href="#ch4"><span class="toc-num">4</span><span class="toc-title">More rows from words</span></a></li>
     <li><a href="#ch5"><span class="toc-num">5</span><span class="toc-title">Yes-or-no decisions</span></a></li>
     <li><a href="#ch6"><span class="toc-num">6</span><span class="toc-title">Someone buying the hours</span></a></li>
+    <li><a href="#ch7"><span class="toc-num">7</span><span class="toc-title">What one more is worth</span></a></li>
   </ol>
 </nav>
 <main class="prose">
@@ -1257,6 +1258,126 @@ chapters in between do not use it.</p>
 <blockquote class="aside">
 <p><strong>The one thing to remember.</strong> Price every resource so that no product is worth more than the hours it uses; then whatever plan you choose earns at most the bill, so one such price list proves a plan best by meeting it.</p>
 </blockquote>
+<h2 id="ch7"><span class="num">7</span>What one more is worth</h2>
+<p>Kantorovich did not call his multipliers prices. Later he called them
+objectively determined valuations, and his critics heard prices anyway, a
+market sneaking into the plan. This chapter shows what the valuations measure:
+what one more hour of a machine adds to the best plan, and over what range
+that holds. Then it gives the two rules that link a best plan to its prices
+without solving anything.</p>
+<h3>One more lathe hour</h3>
+<p>Give the lathe b hours instead of 32 and keep the press at 20. While both
+walls are tight at the best corner, t + 2f = b and t + f = 20. Subtracting
+gives f = b − 20, so t = 40 − b. The value there is</p>
+<p>3(40 − b) + 5(b − 20) = 2b + 20,</p>
+<p>which gives 84 at b = 32. Each extra lathe hour adds exactly 2 thousand
+roubles: one batch moves from 3-ply to 5-ply, and 5 − 3 = 2. That is the
+lathe multiplier of chapter 2.</p>
+<p>The formula holds only while the corner exists. It needs t = 40 − b ≥ 0 and
+f = b − 20 ≥ 0, so 20 ≤ b ≤ 40. Outside that range a different corner is best:</p>
+<div class="overflow-x"><table>
+<thead>
+<tr>
+<th>lathe hours b</th>
+<th>best plan</th>
+<th>value</th>
+<th>worth of one more hour</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0 to 20</td>
+<td>(b, 0)</td>
+<td>3b</td>
+<td>3</td>
+</tr>
+<tr>
+<td>20 to 40</td>
+<td>(40 − b, b − 20)</td>
+<td>2b + 20</td>
+<td>2</td>
+</tr>
+<tr>
+<td>40 and more</td>
+<td>(0, 20)</td>
+<td>100</td>
+<td>0</td>
+</tr>
+</tbody>
+</table></div>
+<p>Below 20 hours the lathe is so short that the press has hours to spare, and
+the best use of a lathe hour is a whole batch of 3-ply. Above 40 the press is
+the limit, and the lathe hours beyond 40 sit idle and add nothing.</p>
+<figure class="plate"><img src="chapters/07-one-more/lathe_slide.gif" alt="The mill's region as the lathe wall t + 2f = b slides outwards from b = 16 to b = 44 while the press wall stays fixed. The best corner, in blue, starts at (16, 0) on the floor, reaches (20, 0) at b = 20, then climbs the press wall through (8, 12) at b = 32 to (0, 20) at b = 40, where it stops while the lathe wall moves on alone. The readout shows b, the best plan, its value and the worth of the last hour, which reads 3, then 2, then 0. At b = 32 the frame pauses with the value 84 and the label &quot;one more hour: +2&quot;." loading="lazy"></figure>
+<p>The press works the same way. With the lathe at 32 and the press at b hours,
+the tight corner is t = 2b − 32, f = 32 − b, with value b + 64. That gives 84
+at b = 20 and adds 1 per press hour, for 16 ≤ b ≤ 32. Below 16 a press hour
+is worth 5 (all 5-ply, the lathe idle), and above 32 it is worth 0.</p>
+<blockquote class="proof">
+<p><strong>Theorem (the price inside its range).</strong> For lathe stock b between 20 and 40, with the press at 20, the best value is exactly 2b + 20, the bill of the offer (2, 1) for the stock (b, 20).</p>
+<p><strong>Proof.</strong> The fair offers do not depend on the stock: the rows y1 + y2 ≥ 3 and 2y1 + y2 ≥ 5 mention only the products' values and hours. So (2, 1) is fair for every stock, and by weak duality (chapter 6) no plan earns more than its bill, 2b + 20. The plan (40 − b, b − 20) is a plan when 20 ≤ b ≤ 40, and it earns exactly 2b + 20. A plan that reaches a ceiling is best. ∎</p>
+</blockquote>
+<p>The proof uses no picture and no list of corners, and it shows why the price
+can be trusted only on a range. The ceiling 2b + 20 is valid for every b. What
+fails outside the range is the plan that reaches it.</p>
+<h3>The value is the cheapest bill</h3>
+<p>The three rows of the table are three bills. The offer (3, 0) bills 3b for the
+stock (b, 20), the offer (2, 1) bills 2b + 20, and the offer (0, 5) bills 100.
+These are the three corners of the buyer's region from chapter 6. On every
+range the best value is the smallest of the three:</p>
+<p>value(b) = min(3b, 2b + 20, 100).</p>
+<p>At b = 10 the bills are 30, 40 and 100, and the value is 30. At b = 32 they
+are 96, 84 and 100, and it is 84. At b = 50 they are 150, 120 and 100, and it
+is 100. A minimum of linear functions is concave (chapter 4), so the value
+bends downwards: each extra lathe hour is worth no more than the one before,
+3, then 2, then 0. That the value is the cheapest fair bill for every stock,
+in every LP, is the strong duality theorem, proved in chapter 23. For the mill
+the table has just checked it on every range.</p>
+<figure class="plate"><img src="chapters/07-one-more/value_curves.png" alt="Two panels. Left: the best value against lathe hours b from 0 to 50, with the press at 20, drawn in blue as three joined pieces with slopes 3, 2 and 0, bending at b = 20 (value 60) and b = 40 (value 100). The three bills 3b, 2b + 20 and 100 of the offers (3, 0), (2, 1) and (0, 5) are dashed rust lines, and the blue curve runs along the lowest of them. The point (32, 84) is marked. Right: the same for press hours b from 0 to 40 with the lathe at 32: slopes 5, 1 and 0, bends at b = 16 (value 80) and b = 32 (value 96), and the bills 5b, 32 × 2 + b and 96 of the offers (0, 5), (2, 1) and (3, 0), with (20, 84) marked." loading="lazy"></figure>
+<p>At the bends the price is not one number. At b = 20 the offers (3, 0) and
+(2, 1) bill the same 60, and the next hour is worth 2 while the last one was
+worth 3. Chapter 22 is about what goes wrong there.</p>
+<h3>Two rules that link a plan to its prices</h3>
+<p>Chapter 6 split the gap between what a plan earns and what an offer bills
+into two sums:</p>
+<ul>
+<li><strong>gap 1</strong> = Σ over products of (hours' worth − value) × batches made;</li>
+<li><strong>gap 2</strong> = Σ over resources of price × hours left idle.</li>
+</ul>
+<p>Every term of both sums is ≥ 0. A sum of nonnegative terms is zero only if
+every term is zero, so a plan and a fair offer meet, c·x = y·b, exactly when
+both of the following hold.</p>
+<blockquote class="proof">
+<p><strong>Theorem (complementary slackness).</strong> A plan x and a fair offer y have c·x = y·b if and only if</p>
+<ol>
+<li>every resource with hours left idle has price 0: if Aᵢx &lt; bᵢ then yᵢ = 0;</li>
+<li>every product that is made is priced exactly at its value: if xⱼ &gt; 0 then (yA)ⱼ = cⱼ.</li>
+</ol>
+<p><strong>Proof.</strong> c·x = y·b exactly when gap 1 + gap 2 = 0. Both gaps are sums of terms ≥ 0, so this happens exactly when every term is 0. A term of gap 2 is yᵢ(bᵢ − Aᵢx), and it is zero exactly when yᵢ = 0 or the resource is used up, which is rule 1. A term of gap 1 is ((yA)ⱼ − cⱼ)xⱼ, and it is zero exactly when xⱼ = 0 or the product is priced at its value, which is rule 2. ∎</p>
+</blockquote>
+<p>By chapter 6, a plan and an offer that meet are both best. So the rules
+certify optimality: find a fair offer that obeys them with your plan, and the
+plan is best. The converse, that every best plan has such an offer, needs
+strong duality, and waits for chapter 23.</p>
+<p>The rules turn a guess at the plan into equations for the prices. Guess
+(8, 12). Both products are made, so rule 2 says both are priced exactly:
+y1 + y2 = 3 and 2y1 + y2 = 5. That gives y = (2, 1). It is ≥ 0, so it is
+fair, and the plan is best. No corner was compared with any other.</p>
+<p>Guess (0, 16) instead. The press has 4 hours idle, so rule 1 sets y2 = 0. The
+5-ply is made, so rule 2 says 2y1 + y2 = 5, and y1 = 5/2. The 3-ply is not
+made, so rule 2 says nothing about it, but the offer must still be fair, and
+y1 + y2 = 5/2 is less than 3. The only prices the rules allow are not fair,
+so no fair offer meets this plan, and (0, 16) is not best. This is the split
+2.5 and −0.5 from chapter 2, now with a reason: the price that rules allow
+leaves 3-ply worth more than its hours.</p>
+<p>The rules explain the zeros seen so far. In chapter 3 the plan with 10
+complete sets left 2 lathe hours idle, and its multiplier on the lathe row
+was 0. In chapter 4 the second week left 12 lathe hours idle and its lathe
+price was 0. Spare capacity is worth nothing at the margin, however much it
+cost to buy.</p>
+<blockquote class="aside">
+<p><strong>The one thing to remember.</strong> A resource's price is what one more unit adds to the best plan, valid only between the bends where the best corner changes; and a best plan and its prices fit together by two rules: idle resources are free, and whatever is made is worth exactly its resources.</p>
+</blockquote>
 <h2>Glossary</h2>
 <div class="overflow-x"><table>
 <thead>
@@ -1413,6 +1534,22 @@ chapters in between do not use it.</p>
 <tr>
 <td>a plan and an offer that meet</td>
 <td>strong duality, a primal–dual optimal pair</td>
+</tr>
+<tr>
+<td>what one more hour is worth</td>
+<td>shadow price, marginal value</td>
+</tr>
+<tr>
+<td>the range where the price holds</td>
+<td>allowable increase and decrease, ranging</td>
+</tr>
+<tr>
+<td>the best value as stock changes</td>
+<td>optimal value function (concave in b)</td>
+</tr>
+<tr>
+<td>idle resources are free; what is made is priced at its value</td>
+<td>complementary slackness</td>
 </tr>
 </tbody>
 </table></div>

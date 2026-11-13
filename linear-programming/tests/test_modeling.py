@@ -353,9 +353,11 @@ def test_chapter_headings_and_registered_folders_match_the_renumbering():
         (4, "04-more-rows", "More rows from words"),
         (5, "05-yes-or-no", "Yes-or-no decisions"),
         (6, "06-buying-the-hours", "Someone buying the hours"),
+        (7, "07-one-more", "What one more is worth"),
     )
     assert tuple((chapter.number, chapter.folder, chapter.title)
                  for chapter in CHAPTERS[4:]) == expected
     assert "## 4 · More rows from words" in TEXT
     assert "## 5 · Yes-or-no decisions" in TEXT
     assert "## 6 · Someone buying the hours" in TEXT
+    assert "## 7 · What one more is worth" in TEXT
