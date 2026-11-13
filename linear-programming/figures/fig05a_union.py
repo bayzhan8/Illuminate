@@ -2,8 +2,8 @@
 
 from matplotlib.patches import Polygon
 
-from illuminate.draw import (PLAN, PLAN_FILL, SURFACE, TEXT_DIM, WARN,
-                             chapter_dir, figure, margin_note, save, tag)
+from illuminate.draw import (HAIRLINE, PLAN, PLAN_FILL, SURFACE, TEXT_DIM,
+                             WARN, chapter_dir, figure, margin_note, save, tag)
 from linprog import mill as mill
 from linprog.lp import best_by_enumeration, vertices
 from linprog.modeling import CONTRACT_MIN, semicontinuous, solve_binary
@@ -14,11 +14,17 @@ CONTRACT = CONTRACT_MIN
 
 
 def point_mark(ax, point, label, color, dx, dy, marker="o"):
+    cross = marker.lower() in {"x", "+"}
     ax.plot([float(point[0])], [float(point[1])], marker=marker, color=color,
-            markersize=9, markeredgecolor=SURFACE, markeredgewidth=1.5,
+            markersize=13 if cross else 9,
+            markeredgecolor=color if cross else SURFACE,
+            markeredgewidth=2.7 if cross else 1.5,
             linestyle="none", zorder=8)
-    tag(ax, float(point[0]) + dx, float(point[1]) + dy, label,
-        color=color, size=8.5)
+    ax.text(float(point[0]) + dx, float(point[1]) + dy, label,
+            color=color, fontsize=8.5, ha="left", va="center",
+            bbox=dict(boxstyle="square,pad=0.18", facecolor=SURFACE,
+                      edgecolor=HAIRLINE, linewidth=0.6),
+            zorder=9)
 
 
 def union_still():
@@ -47,8 +53,12 @@ def union_still():
     ax.plot([float(p[0]) for p in bottom], [0] * len(bottom),
             color=PLAN, linewidth=3.0, zorder=5)
     tag(ax, 8.5, 0.75, "f = 0: allowed", color=PLAN, size=8.7)
-    tag(ax, 0.6, float(CONTRACT) + 0.5, "f ≥ 14: allowed",
-        color=PLAN, size=8.7)
+    ax.text(0.5, float(CONTRACT) + 0.9,
+            f"f ≥ {CONTRACT}:\nallowed",
+            color=PLAN, fontsize=7.2, ha="center", va="center",
+            bbox=dict(boxstyle="square,pad=0.14", facecolor=SURFACE,
+                      edgecolor=HAIRLINE, linewidth=0.6),
+            zorder=8)
 
     ax.plot([float(midpoint_source[0]), float(real_plan[0])],
             [float(midpoint_source[1]), float(real_plan[1])],
@@ -56,9 +66,9 @@ def union_still():
     point_mark(ax, midpoint, "midpoint, not allowed", WARN,
                dx=0.6, dy=-0.45, marker="x")
     point_mark(ax, relaxed_plan, f"relaxation: {relaxed_value}, not real",
-               WARN, dx=0.65, dy=0.7)
+               WARN, dx=0.8, dy=-1.0)
     point_mark(ax, real_plan, f"best real plan: {real_lp_value}",
-               PLAN, dx=0.65, dy=0.7)
+               PLAN, dx=0.8, dy=-0.9)
 
     claim(ax, "the contract divides the plans into two pieces",
           "the midpoint of two allowed plans need not be allowed")

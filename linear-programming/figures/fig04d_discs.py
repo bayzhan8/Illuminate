@@ -4,8 +4,9 @@ import math
 
 from matplotlib.patches import Circle
 
-from illuminate.draw import (PLAN, PLAN_FILL, PRICE, SURFACE, TEXT_DIM,
-                             chapter_dir, figure, margin_note, save, tag)
+from illuminate.draw import (PLAN, PLAN_FILL, PRICE, PRICE_FILL, SURFACE,
+                             TEXT_DIM, chapter_dir, figure, margin_note, save,
+                             tag)
 from linprog import mill as f
 from scene import claim, draw_axes, draw_region, draw_wall, norm, unit
 
@@ -20,10 +21,10 @@ INSIDE_RADIUS = PRESS_LIMIT / (sum(PRESS) + PRESS_NORM)
 OUTSIDE_RADIUS = LATHE_LIMIT / (sum(LATHE) + LATHE_NORM)
 
 
-def add_touch(ax, point, color, marker="o", size=7):
+def add_touch(ax, point, color, marker="o", size=8):
     ax.plot([point[0]], [point[1]], marker, color=color,
             markeredgecolor=SURFACE, markeredgewidth=1.4,
-            markersize=size, zorder=9)
+            markersize=size, zorder=10, clip_on=False)
 
 
 def discs_still():
@@ -38,30 +39,30 @@ def discs_still():
 
     inside_center = (INSIDE_RADIUS, INSIDE_RADIUS)
     outside_center = (OUTSIDE_RADIUS, OUTSIDE_RADIUS)
+    ax.add_patch(Circle(outside_center, OUTSIDE_RADIUS, facecolor=PRICE_FILL,
+                        edgecolor=PRICE, linewidth=2.0, alpha=0.12, zorder=4))
     ax.add_patch(Circle(inside_center, INSIDE_RADIUS, facecolor=PLAN_FILL,
-                        edgecolor=PLAN, linewidth=2.0, alpha=0.75, zorder=5))
-    ax.add_patch(Circle(outside_center, OUTSIDE_RADIUS, facecolor="none",
-                        edgecolor=PRICE, linewidth=2.0, zorder=6))
+                        edgecolor=PLAN, linewidth=2.0, alpha=0.2, zorder=5))
     for touch in ((0, inside_center[1]), (inside_center[0], 0)):
-        add_touch(ax, touch, PLAN, marker="o", size=6)
+        add_touch(ax, touch, PLAN, marker="o", size=8)
     for touch in ((0, outside_center[1]), (outside_center[0], 0)):
-        add_touch(ax, touch, PRICE, marker="s", size=5.8)
-    add_touch(ax, inside_center, PLAN, marker="o", size=5.5)
-    add_touch(ax, outside_center, PRICE, marker="s", size=5.5)
+        add_touch(ax, touch, PRICE, marker="s", size=8)
+    add_touch(ax, inside_center, PLAN, marker="o", size=7.5)
+    add_touch(ax, outside_center, PRICE, marker="s", size=7.5)
 
     press_unit = unit(PRESS)
     inside_press_touch = (
         inside_center[0] + INSIDE_RADIUS * press_unit[0],
         inside_center[1] + INSIDE_RADIUS * press_unit[1],
     )
-    add_touch(ax, inside_press_touch, PLAN)
+    add_touch(ax, inside_press_touch, PLAN, size=9)
 
     lathe_unit = unit(LATHE)
     outside_lathe_touch = (
         outside_center[0] + OUTSIDE_RADIUS * lathe_unit[0],
         outside_center[1] + OUTSIDE_RADIUS * lathe_unit[1],
     )
-    add_touch(ax, outside_lathe_touch, PRICE)
+    add_touch(ax, outside_lathe_touch, PRICE, size=9)
 
     press_foot_scale = (PRESS_LIMIT - sum(PRESS[i] * outside_center[i]
                                           for i in range(2))) / sum(v * v for v in PRESS)

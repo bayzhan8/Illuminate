@@ -2,7 +2,7 @@
 
 from matplotlib.patches import Polygon
 
-from illuminate.draw import (PLAN, PLAN_FILL, PRICE, SURFACE, TEXT_DIM, WARN,
+from illuminate.draw import (PLAN, PLAN_FILL, SURFACE, TEXT_DIM, WARN,
                              chapter_dir, figure, margin_note, save, tag)
 from linprog import mill as mill
 from linprog.lp import best_by_enumeration
@@ -46,13 +46,13 @@ def either_or_still():
                          edgecolor=PLAN, alpha=0.2, linewidth=1.5, zorder=3))
 
     wrong_level = BAD_M2 + 6
-    ax.axhline(float(wrong_level), color=PRICE, linewidth=1.8,
+    ax.axhline(float(wrong_level), color=WARN, linewidth=1.8,
                dashes=(5, 3), zorder=4)
     ax.add_patch(Polygon(removed, closed=True, facecolor="none",
                          edgecolor=WARN, hatch="////", linewidth=0.9, zorder=5))
     tag(ax, 7.1, float(wrong_level) + 0.65,
         f"M2 = {BAD_M2}: f ≤ {wrong_level} when switched off",
-        color=PRICE, size=8.1)
+        color=WARN, size=8.1)
 
     mark(ax, best_left, f"left rule: ({best_left[0]}, {best_left[1]}), {left_value}",
          PLAN, dx=0.7, dy=1.1)
@@ -60,7 +60,7 @@ def either_or_still():
          f"bottom rule: ({best_bottom[0]}, {best_bottom[1]}), {bottom_value}",
          PLAN, dx=0.7, dy=-1.05)
     mark(ax, bad_point, f"wrong model: ({bad_point[0]}, {bad_point[1]}), {bad_value}",
-         WARN, dx=0.7, dy=-0.8, marker="x")
+         WARN, dx=0.7, dy=-0.8)
 
     claim(ax, "the wrong M cuts off the best plan",
           "the switched-off row must be loose enough for every mill plan")

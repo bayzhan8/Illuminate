@@ -10,7 +10,7 @@ from linprog import mill as mill
 from linprog.lp import best_by_enumeration, vertices
 from linprog.modeling import (SHORTFALL_MAX_PENALTY, SHORTFALL_ORDER,
                               shortfall)
-from scene import Stages, claim, draw_axes, draw_region, draw_wall, line_where
+from scene import Stages, claim, draw_axes, draw_region, line_where
 
 OUT = chapter_dir("04-more-rows")
 TRADE = (Fraction(-2), Fraction(1))
@@ -66,8 +66,6 @@ def shortfall_gif():
         ax.clear()
         draw_axes(ax)
         draw_region(ax, alpha=0.09)
-        draw_wall(ax, 0, color=TEXT_DIM, lw=1.25)
-        draw_wall(ax, 1, color=TEXT_DIM, lw=1.25)
         line_where(ax, (0, 1), SHORTFALL_ORDER, color=TEXT_DIM, linewidth=1.1,
                    dashes=(4, 3), zorder=2)
         tag(ax, 14.5, float(SHORTFALL_ORDER) + 0.55,
@@ -86,6 +84,12 @@ def shortfall_gif():
                 ax.plot([float(p[0])], [float(p[1])], "o", color=PLAN,
                         markeredgecolor=SURFACE, markeredgewidth=1.4,
                         markersize=7.5, zorder=7)
+                ax.text(float(p[0]) + 0.55, float(p[1]) - 0.8,
+                        f"({p[0]}, {p[1]})", color=PLAN, fontsize=8.8,
+                        ha="left", va="top",
+                        bbox=dict(boxstyle="square,pad=0.16",
+                                  facecolor=SURFACE, edgecolor="none"),
+                        zorder=8)
             plan_text = f"({ends[0][0]}, {ends[0][1]}) to ({ends[1][0]}, {ends[1][1]}), tied"
             plywood_text = f"{mill.MILL.value(ends[0])} to {mill.MILL.value(ends[1])}"
             penalty_text = (f"{SHORTFALL_ORDER - ends[0][1]} to "
@@ -96,8 +100,11 @@ def shortfall_gif():
             ax.plot([float(t)], [float(f)], "o", color=PLAN,
                     markeredgecolor=SURFACE, markeredgewidth=1.6,
                     markersize=9, zorder=7)
-            tag(ax, float(t) + 0.55, float(f) + 0.55,
-                f"({t}, {f})", color=PLAN, size=9.2)
+            ax.text(float(t) + 0.55, float(f) - 0.8, f"({t}, {f})",
+                    color=PLAN, fontsize=9.0, ha="left", va="top",
+                    bbox=dict(boxstyle="square,pad=0.16",
+                              facecolor=SURFACE, edgecolor="none"),
+                    zorder=8)
             plan_text = f"({t}, {f})"
             plywood_text = f"{mill.MILL.value((t, f))}"
             penalty_text = display_number(q * u)
@@ -105,7 +112,7 @@ def shortfall_gif():
             penalty_amount = q * u
 
         max_penalty = BREAK_Q * (SHORTFALL_ORDER - mill.BEST[1])
-        bar_start = 0.7
+        bar_start = 12.5
         bar_width = 5.0 * float(penalty_amount / max_penalty) if max_penalty else 0
         ax.add_patch(Rectangle((bar_start, 17.25), 5.0, 0.38,
                                facecolor=SURFACE, edgecolor=TEXT_DIM,

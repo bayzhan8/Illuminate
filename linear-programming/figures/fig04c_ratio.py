@@ -2,8 +2,8 @@
 
 from matplotlib.patches import Polygon
 
-from illuminate.draw import (PLAN, PLAN_FILL, SURFACE, TEXT_DIM, WARN,
-                             chapter_dir, figure, margin_note, save, tag)
+from illuminate.draw import (HAIRLINE, PLAN, PLAN_FILL, SURFACE, TEXT_DIM,
+                             WARN, chapter_dir, figure, margin_note, save, tag)
 from linprog import mill as mill
 from linprog.lp import best_by_enumeration
 from linprog.modeling import ratio
@@ -14,10 +14,17 @@ OUT = chapter_dir("04-more-rows")
 
 def mark(ax, point, label, color, dx, dy, marker="o"):
     x, y = float(point[0]), float(point[1])
-    ax.plot([x], [y], marker=marker, color=color, markersize=9,
-            markeredgecolor=SURFACE, markeredgewidth=1.5,
+    cross = marker.lower() in {"x", "+"}
+    ax.plot([x], [y], marker=marker, color=color,
+            markersize=12 if cross else 9,
+            markeredgecolor=color if cross else SURFACE,
+            markeredgewidth=2.4 if cross else 1.5,
             linestyle="none", zorder=7)
-    tag(ax, x + dx, y + dy, label, color=color, size=8.7)
+    ax.text(x + dx, y + dy, label, color=color, fontsize=8.7,
+            ha="left", va="center",
+            bbox=dict(boxstyle="square,pad=0.18", facecolor=SURFACE,
+                      edgecolor=HAIRLINE, linewidth=0.6),
+            zorder=9)
 
 
 def ratio_still():
@@ -37,14 +44,17 @@ def ratio_still():
     draw_wall(ax, 0, color=TEXT_DIM, lw=1.1)
     draw_wall(ax, 1, color=TEXT_DIM, lw=1.1)
     line_where(ax, lp.A[-1], lp.b[-1], color=TEXT_DIM, linewidth=1.5, zorder=4)
-    tag(ax, 18.2, 12.2, f"{lp.A[-1][1]}f = {-lp.A[-1][0]}t",
-        color=TEXT_DIM, size=8.8)
+    ax.text(18.0, 14.7, f"{lp.A[-1][1]}f = {-lp.A[-1][0]}t",
+            color=TEXT_DIM, fontsize=8.8, ha="left", va="center",
+            bbox=dict(boxstyle="square,pad=0.18", facecolor=SURFACE,
+                      edgecolor=HAIRLINE, linewidth=0.6),
+            zorder=9)
 
     mark(ax, best, f"best ({best[0]}, {best[1]}): {value}",
-         PLAN, dx=0.55, dy=0.8)
+         PLAN, dx=1.1, dy=2.8)
     old = mill.BEST
     mark(ax, old, f"cut off ({old[0]}, {old[1]}): {mill.MILL.value(old)}",
-         WARN, dx=0.55, dy=0.75, marker="x")
+         WARN, dx=0.65, dy=1.1, marker="x")
     ax.plot([0], [0], "o", color=TEXT_DIM, markersize=5.5, zorder=7)
     tag(ax, 1.1, 2.5, "0 of 0: passes; ratio undefined", color=TEXT_DIM, size=8.2)
 
