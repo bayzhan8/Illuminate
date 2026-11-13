@@ -35,6 +35,7 @@
     <li><a href="#ch6"><span class="toc-num">6</span><span class="toc-title">Someone buying the hours</span></a></li>
     <li><a href="#ch7"><span class="toc-num">7</span><span class="toc-title">What one more is worth</span></a></li>
     <li><a href="#ch8"><span class="toc-num">8</span><span class="toc-title">A wall between a point and a shape</span></a></li>
+    <li><a href="#ch9"><span class="toc-num">9</span><span class="toc-title">Shadows: eliminating a variable</span></a></li>
   </ol>
 </nav>
 <main class="prose">
@@ -1463,6 +1464,134 @@ plan's.</p>
 <blockquote class="aside">
 <p><strong>The one thing to remember.</strong> A point outside a closed convex set is cut off by a wall through the midpoint of its shortest path to the set. The nearest point exists because the set is closed, and the angle there is never acute because the set is convex.</p>
 </blockquote>
+<h2 id="ch9"><span class="num">9</span>Shadows: eliminating a variable</h2>
+<p>Chapter 8 found a wall by geometry: nearest points and angles. This chapter
+finds walls by algebra alone, with nothing but adding inequalities, and shows
+that the algebra solves the mill's problem without ever looking at a corner.</p>
+<h3>What a shadow is</h3>
+<p>Shine a light along the t axis onto the mill's region. The shadow on the f
+axis is the set of f for which <strong>some</strong> t makes (t, f) a plan:</p>
+<p>proj_f(P) = { f : there is a t with (t, f) in P }.</p>
+<p>Projection asks whether some t exists, not which one. It is not &quot;set t = 0&quot;: f = 16 is in the shadow because of the plan (0, 16), and f = 18 is not, because no amount of 3-ply makes 18 batches of 5-ply fit the lathe.</p>
+<p>To get the shadow by algebra, read each row as a bound on t:</p>
+<ul>
+<li>lathe t + 2f ≤ 32 says t ≤ 32 − 2f, an upper bound;</li>
+<li>press t + f ≤ 20 says t ≤ 20 − f, an upper bound;</li>
+<li>t ≥ 0 is a lower bound;</li>
+<li>f ≥ 0 does not mention t.</li>
+</ul>
+<p>Some t exists exactly when every lower bound is at most every upper bound. That is two
+pairs plus the row without t:</p>
+<p>0 ≤ 32 − 2f,  0 ≤ 20 − f,  f ≥ 0,</p>
+<p>so the shadow is 0 ≤ f ≤ 16. The middle condition, f ≤ 20, is true but
+redundant, because no plan gets near it.</p>
+<h3>Fourier–Motzkin elimination</h3>
+<p>The general step is the same.</p>
+<ol>
+<li>Pick the variable to eliminate, say t.</li>
+<li>Divide each row by the absolute value of its t coefficient, a positive number, which keeps the direction of the inequality. Each row now has coefficient +1 (an upper bound t ≤ U_i), −1 (a lower bound t ≥ L_j) or 0.</li>
+<li>Replace all rows with t by the pairs L_j ≤ U_i, one for each lower–upper pair. Keep the rows without t.</li>
+</ol>
+<p>With k₊ upper bounds, k₋ lower bounds and k₀ rows without t, the new system
+has k₊k₋ + k₀ rows and one fewer variable.</p>
+<blockquote class="proof">
+<p><strong>Theorem (one elimination step).</strong> For every z (the other variables), the new system holds at z if and only if some t makes (z, t) satisfy the old one.</p>
+<p><em>Proof.</em> If (z, t) is feasible, then L_j(z) ≤ t ≤ U_i(z) for each pair, so L_j(z) ≤ U_i(z); the rows without t do not involve t. Conversely, suppose every L_j(z) ≤ U_i(z). Then the largest lower bound is at most the smallest upper bound, max L_j(z) ≤ min U_i(z), and any t between them satisfies every row with t. If there are no lower bounds, take t below every U_i; if there are no upper bounds, take t above every L_j. ∎</p>
+</blockquote>
+<p>Each new row is the sum of a positive multiple of an upper row and a positive multiple of a lower row,
+chosen so that t cancels. So every row the method produces is a <strong>nonnegative
+combination</strong> of the original rows, exactly the kind of combination the
+multiplier certificates of chapters 2 and 6 use. Collect the multipliers
+in a matrix M ≥ 0. Then the new system is M A x ≤ M b, and the column of M A
+belonging to t is zero.</p>
+<p>Repeating the step on each variable gives the projection onto any set of
+coordinates:</p>
+<blockquote class="aside">
+<p><strong>Corollary.</strong> The projection of a polyhedron onto some of its coordinates is a polyhedron.</p>
+</blockquote>
+<p>The only thing to check is that each step produces finitely many linear
+inequalities, which it does.</p>
+<h3>Solving the mill by shadows</h3>
+<p>Add one variable, v, for the value, and one row, v ≤ 3t + 5f. The pairs
+(t, f, v) that satisfy all the rows are the plans with a value of v or more. The
+best value is the top of the shadow on the v axis. Eliminate t first. The
+row v − 3t − 5f ≤ 0, divided by 3, is the lower bound t ≥ (v − 5f) ÷ 3, and the
+four pairs give</p>
+<div class="overflow-x"><table>
+<thead>
+<tr>
+<th>pair</th>
+<th>new row</th>
+<th>made from</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>lathe with t ≥ 0</td>
+<td>f ≤ 16</td>
+<td>lathe + (t ≥ 0)</td>
+</tr>
+<tr>
+<td>press with t ≥ 0</td>
+<td>f ≤ 20</td>
+<td>press + (t ≥ 0)</td>
+</tr>
+<tr>
+<td>lathe with value</td>
+<td>v + f ≤ 96</td>
+<td>3 × lathe + value</td>
+</tr>
+<tr>
+<td>press with value</td>
+<td>v − 2f ≤ 60</td>
+<td>3 × press + value</td>
+</tr>
+</tbody>
+</table></div>
+<p>plus f ≥ 0. That system is the shadow of the plans on the (f, v) plane. Its
+corners are (0, 60), (12, 84) and (16, 80), and its top is at f = 12.</p>
+<figure class="plate"><img src="chapters/09-shadows/shadow.gif" alt="A 3-D view of the mill's region in the (t, f) floor, with the roof v = 3t + 5f over it and the set below the roof shaded blue. The light comes along the t axis, and the shadow on the (f, v) wall is drawn in rust, outlined by f = 0, f = 16, v + f = 96 and v − 2f = 60, each labelled with the pair it came from. The view turns until the t axis points at the reader and the shadow fills the frame. The final frame marks the top corner (12, 84) and the plan (8, 12) whose value casts it." loading="lazy"></figure>
+<p>Fix v = 78 and the theorem can be watched. For each f, the bounds on t are</p>
+<p>lower: max(0, (78 − 5f) ÷ 3),  upper: min(32 − 2f, 20 − f),</p>
+<p>and the point (f, 78) is in the shadow exactly when lower ≤ upper.</p>
+<figure class="plate"><img src="chapters/09-shadows/pairs.gif" alt="Two panels. Left: a number line for t with the two lower bounds and the two upper bounds as labelled markers, and the interval between the largest lower and the smallest upper bound shaded blue when it is non-empty. Right: the shadow in the (f, v) plane with the line v = 78 and a point sliding along it. As f goes from 0 to 18, the interval is empty until f = 9, where it is the single point t = 11, then it is non-empty through f = 12 (t from 6 to 8) and f = 16 (only t = 0), and empty after. The point on the right is inside the shadow exactly while the interval on the left exists, and amber otherwise." loading="lazy"></figure>
+<p>Eliminate f next. The lower bounds are f ≥ 0 and f ≥ (v − 60) ÷ 2. The upper bounds are 16, 20 and 96 − v.
+The six pairs give v ≤ 96, v ≤ 92, v ≤ 100, two rows without v (0 ≤ 16 and 0 ≤ 20), and</p>
+<p>(v − 60) ÷ 2 ≤ 96 − v, that is, v ≤ 84.</p>
+<p>The smallest bound is 84, the best value. Track the multipliers back through the
+table: this row is 2 × (v + f ≤ 96) + 1 × (v − 2f ≤ 60), which is
+6 × lathe + 3 × press + 3 × value. Divided by 3, it is</p>
+<p>2 × (t + 2f ≤ 32) + 1 × (t + f ≤ 20) + 1 × (v − 3t − 5f ≤ 0),</p>
+<p>which says v ≤ 2 × 32 + 1 × 20 = 84. These are the prices 2 and 1 again. Elimination never looked at a corner and never wrote down the buyer's problem, yet it found the bound and the certificate together. That is no coincidence: every row it produces is a
+nonnegative combination of the original rows, and the last row has no t and no f left.
+Chapter 10 makes this into a theorem.</p>
+<h3>Images of polyhedra</h3>
+<p>The same idea shows that the set of values the mill can reach is a polyhedron,
+without solving anything. Write v = 3t + 5f as two rows, v ≤ 3t + 5f and
+v ≥ 3t + 5f, and eliminate t and f. The result is 0 ≤ v ≤ 84. In general:</p>
+<blockquote class="aside">
+<p><strong>Corollary (linear images).</strong> If P is a polyhedron and T is any matrix, then T(P) = { Tx : x in P } is a polyhedron.</p>
+<p><em>Proof.</em> The set { (x, z) : x in P, z = Tx } is a polyhedron, since z = Tx is two systems of inequalities, and T(P) is its projection onto z. ∎</p>
+</blockquote>
+<p>T need not be square or invertible; here it is the 1 × 2 matrix (3 5). The pattern
+is: introduce variables for the choices, write their relations as linear rows,
+and project onto the quantities you care about. Sums of polyhedra,
+{ s + u : s in S, u in U }, are polyhedra for the same reason.</p>
+<h3>Why nobody solves LPs this way</h3>
+<p>Each step replaces k₊ + k₋ rows by k₊k₋, and most of the new rows are
+redundant. Take the four-dimensional diamond |x₁| + |x₂| + |x₃| + |x₄| ≤ 1,
+whose 16 rows are the sign patterns ±x₁ ± x₂ ± x₃ ± x₄ ≤ 1. Eliminating x₄, x₃
+and x₂ in turn, without removing redundant rows, gives 64, then 288, then
+7,856 rows. All of them describe the interval −1 ≤ x₁ ≤ 1, which needs 2.
+Elimination is the cleanest proof that shadows of polyhedra are polyhedra, and
+a poor way to compute them. The simplex method (chapter 14) is the practical
+alternative.</p>
+<blockquote class="aside">
+<p><strong>History.</strong> Joseph Fourier, better known for heat and his series, described this elimination in 1826 in a short note on &quot;a particular question of the calculus of inequalities&quot;. He came to inequalities through mechanics: the equilibrium of a body that can lift off its supports is described by inequalities, not equations. The method was rediscovered by Lloyd Dines in 1919 and by Theodore Motzkin in his 1936 Basel thesis, which is where the second half of its name comes from.</p>
+</blockquote>
+<blockquote class="aside">
+<p><strong>The one thing to remember.</strong> To eliminate a variable, pair every lower bound with every upper bound. The new rows are nonnegative combinations of the old ones, so when every variable is gone, what is left is a certificate.</p>
+</blockquote>
 <h2>Glossary</h2>
 <div class="overflow-x"><table>
 <thead>
@@ -1635,6 +1764,14 @@ plan's.</p>
 <tr>
 <td>the angle at the nearest point is never acute</td>
 <td>variational inequality (obtuse-angle) characterisation of the projection</td>
+</tr>
+<tr>
+<td>shadow</td>
+<td>projection onto some coordinates</td>
+</tr>
+<tr>
+<td>pair every lower bound with every upper bound</td>
+<td>Fourier–Motzkin elimination</td>
 </tr>
 <tr>
 <td>the range where the price holds</td>
