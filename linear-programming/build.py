@@ -32,6 +32,7 @@ CHAPTERS = [
     Chapter(12, "12-degeneracy", "Too many walls at one corner"),
     Chapter(13, "13-corners-and-escape", "Corners and escape routes"),
     Chapter(14, "14-simplex", "Walking the edges: the simplex method"),
+    Chapter(15, "15-cycling", "Walking in circles, and the rule that stops it"),
 ]
 
 # A second copy of src/linprog's corner search, so the pages need no server.

@@ -41,6 +41,7 @@
     <li><a href="#ch12"><span class="toc-num">12</span><span class="toc-title">Too many walls at one corner</span></a></li>
     <li><a href="#ch13"><span class="toc-num">13</span><span class="toc-title">Corners and escape routes</span></a></li>
     <li><a href="#ch14"><span class="toc-num">14</span><span class="toc-title">Walking the edges: the simplex method</span></a></li>
+    <li><a href="#ch15"><span class="toc-num">15</span><span class="toc-title">Walking in circles, and the rule that stops it</span></a></li>
   </ol>
 </nav>
 <main class="prose">
@@ -2196,6 +2197,143 @@ after a small random wiggle of the data, a variant of the method needs only poly
 <p><strong>The one thing to remember.</strong> A pivot is chapter 11's crash on one edge. The reduced cost is the edge's value per
 step, and the ratio test is the safe step to the next wall. The last z-row is the price certificate: the method's stop is its proof.</p>
 </blockquote>
+<h2 id="ch15"><span class="num">15</span>Walking in circles, and the rule that stops it</h2>
+<p>Chapter 14's termination proof needed θ &gt; 0 at every pivot. At a degenerate corner, like chapter 12's glue corner, the
+ratio test can return θ = 0: the basis changes and the point stays put. Nothing then forces the value to rise, so
+nothing stops the bases from coming back around. This chapter shows that they do, and gives a one-line rule that prevents it.</p>
+<h3>A six-pivot circle</h3>
+<p>A cycle needs a corner with many more tight rows than the dimension, so take the standard example from Chvátal's textbook:</p>
+<p>max 10x₁ − 57x₂ − 9x₃ − 24x₄</p>
+<p>subject to</p>
+<p>½x₁ − 11/2·x₂ − 5/2·x₃ + 9x₄ ≤ 0,
+½x₁ − 3/2·x₂ − ½x₃ + x₄ ≤ 0,
+x₁ ≤ 1,
+x ≥ 0,</p>
+<p>with slacks x₅, x₆, x₇. The start x = 0 is a corner where six of the seven rows (the four signs and the two rows with right-hand side 0) are tight in four dimensions, so it is degenerate. Use Dantzig's rule, taking the largest reduced cost to enter. When the ratio test ties, the lowest-index variable leaves.</p>
+<div class="overflow-x"><table>
+<thead>
+<tr>
+<th>pivot</th>
+<th>enters</th>
+<th>leaves</th>
+<th>point</th>
+<th>z</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>x₁</td>
+<td>x₅</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>2</td>
+<td>x₂</td>
+<td>x₆</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>3</td>
+<td>x₃</td>
+<td>x₁</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>4</td>
+<td>x₄</td>
+<td>x₂</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>5</td>
+<td>x₅</td>
+<td>x₃</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>6</td>
+<td>x₆</td>
+<td>x₄</td>
+<td>0</td>
+<td>0</td>
+</tr>
+</tbody>
+</table></div>
+<p>After six pivots the basis is {x₅, x₆, x₇} again. The dictionary is the starting one, so the same six pivots repeat
+forever. Every ratio test returned θ = 0, and the point never left the origin. The optimum is z = 1, at x = (1, 0, 1, 0).</p>
+<p>Geometrically, the origin is one corner with many bases. Each basis is a choice of four of the six tight
+rows, and each pivot swaps one of them. The method is checking different explanations of the same
+point, and its rule leads it back to an explanation it has already tried.</p>
+<figure class="plate"><img src="chapters/15-cycling/cycle.gif" alt="The six bases at the origin drawn as six nodes on a circle, each labelled with its basic variables. Arrows between them are labelled &quot;x₁ in, x₅ out&quot;, and so on. A readout under every node shows &quot;point 0, z = 0&quot;. The arrow from the sixth node returns to the first in amber, &quot;cycle&quot;. In the second half the same circle is redrawn with Bland's rule: at the sixth node x₁ enters instead of x₆, the path leaves the circle along a rust arrow, and it reaches a node labelled &quot;z = 1, x = (1, 0, 1, 0)&quot;." loading="lazy"></figure>
+<h3>Bland's rule</h3>
+<blockquote class="aside">
+<p><strong>Bland's rule.</strong> Among the variables with positive reduced cost, the one with the smallest index enters. Among the rows tied in the ratio test, the one whose basic variable has the smallest index leaves.</p>
+</blockquote>
+<p>On the example the first five pivots are the same. At the sixth, x₁ and x₆ both have positive reduced cost, and
+Bland takes x₁. One more pivot reaches z = 1, which is optimal.</p>
+<blockquote class="proof">
+<p><strong>Theorem (Bland, 1977).</strong> The simplex method with Bland's rule never cycles.</p>
+<p><em>Proof.</em> Suppose it cycles. Every pivot in the cycle has θ = 0, so the point and the value v stay fixed throughout. A variable is
+<em>fickle</em> if it enters or leaves somewhere in the cycle. Then it does both, because the cycle comes back to its start. Every fickle variable is 0 throughout: it is
+nonbasic at some moment, and the point never moves.</p>
+<p>Let t be the largest fickle index. Let D be a dictionary in the cycle where x_t leaves and x_s enters, so s &lt; t.
+Let D* be one where x_t enters. Write D as</p>
+<p>x_i = b_i − Σ_j a_ij x_j (i basic in D),  z = v + Σ_j c_j x_j,</p>
+<p>and let c*_j be the reduced costs in D*, with c*_j = 0 for the variables basic in D*.</p>
+<p>Every dictionary is a rewriting of the same equations, so any solution of one solves all of them. Take the solution of D in which x_s = y,
+the other nonbasic variables of D are 0, and x_i = b_i − a_is·y. D and D* must give the same z for every y:</p>
+<p>v + c_s y = v + c*<em>s y + Σ</em>{i basic in D} c*_i (b_i − a_is y).</p>
+<p>Compare the coefficients of y:</p>
+<p>c_s − c*_s + Σ_i c*_i a_is = 0.</p>
+<ul>
+<li>c_s &gt; 0, because x_s enters at D.</li>
+<li>c*_s ≤ 0. Otherwise x_s, whose index is below t, would enter at D* instead of x_t.</li>
+</ul>
+<p>So Σ_i c*_i a_is &lt; 0, and some r basic in D has c*_r a_rs &lt; 0. Then c*_r ≠ 0, so r is nonbasic in D*.
+Since r is basic in D, r is fickle, and r ≤ t.</p>
+<p>In fact r ≠ t. At D*, x_t enters, so c*_t &gt; 0. At D, x_t leaves, so the ratio test chose a row with a_ts &gt; 0. That makes c*_t a_ts &gt; 0, not &lt; 0. So r &lt; t.</p>
+<p>Since r &lt; t was not chosen at D*, c*_r ≤ 0, and so c*_r &lt; 0 and a_rs &gt; 0. Being fickle, x_r is 0 at D, so b_r = 0, and its
+row ties x_t's row in the ratio test at D, both with ratio 0. Bland would then have sent out x_r, whose index is smaller than t, not x_t. This contradicts the choice at D. ∎</p>
+</blockquote>
+<p>The proof never uses the sizes of the numbers, only signs and indices. Bland's rule is one of
+several fixes. Charnes's perturbation from chapter 12 is another: replacing b by b + (ε, ε², …, εᵐ) leaves no degenerate corner, so chapter 14's argument
+applies as it stands. Its exact form, the lexicographic rule, compares rows by their ratios and breaks ties with the coefficients of ε, ε², and so on. Bland's rule is
+simplest to state. In practice it is slow, because it ignores how much each variable earns.</p>
+<h3>What termination buys: strong duality</h3>
+<p>With Bland's rule both phases stop, and each stop has a reason:</p>
+<ol>
+<li><strong>Phase I ends below 0.</strong> No plan exists. The Phase I prices are a chapter 10 certificate.</li>
+<li><strong>Phase I ends at 0.</strong> If an artificial variable is still basic, it is at level 0. Pivot it out on any nonzero entry of its row, keeping the point fixed. If the row
+has no nonzero entry outside the artificials, that row is a combination of the others: delete it, as with chapter 12's glue row. Phase II then
+starts from a true basis.</li>
+<li><strong>Phase II stops with a column B⁻¹A_j ≤ 0 and c̄_j &gt; 0.</strong> The value is unbounded along an extreme ray.</li>
+<li><strong>Phase II stops with c̄ ≤ 0.</strong> The plan x and the prices y = c_B B⁻¹ satisfy yA ≥ c and yb = cx.</li>
+</ol>
+<p>Case 4 is the theorem chapter 6 promised.</p>
+<blockquote class="proof">
+<p><strong>Theorem (strong duality).</strong> If an LP has an optimal plan, its dual has an optimal offer, and the two values are equal.</p>
+<p><em>Proof.</em> Write the LP in standard form (chapter 3). Run both phases with Bland's rule. They stop, by the theorem above. The plan is
+feasible, so case 1 is ruled out. It has an optimum, so case 3 is ruled out. Case 4 gives y with yA ≥ c and yb = cx.
+Weak duality makes both optimal. ∎</p>
+</blockquote>
+<p>The mill's 84 = 84 was never a coincidence of small numbers. For every LP with an optimum, the dual has an offer with the same value, and the
+simplex method finds it.</p>
+<blockquote class="aside">
+<p><strong>Aside: a circle mostly seen on paper.</strong> Hoffman built the first cycling example in 1953 at the National Bureau of
+Standards, and Beale published a simpler one in 1955. On real problems cycling was rarely seen, partly because rounding errors
+broke the ties.
+Bland's 1977 rule came from combinatorics, through matroids, not from computation. That is why its proof uses only signs and indices.</p>
+</blockquote>
+<blockquote class="aside">
+<p><strong>The one thing to remember.</strong> Degeneracy lets the method change its explanation of a point without moving. Bland's
+lowest-index rule rules out returning to an old explanation. Once the method always stops, its last dictionary proves strong duality.</p>
+</blockquote>
 <h2>Glossary</h2>
 <div class="overflow-x"><table>
 <thead>
@@ -2436,6 +2574,14 @@ step, and the ratio test is the safe step to the next wall. The last z-row is th
 <tr>
 <td>the walk to a first real plan</td>
 <td>Phase I</td>
+</tr>
+<tr>
+<td>returning to an old basis without moving</td>
+<td>cycling</td>
+</tr>
+<tr>
+<td>lowest index enters and leaves</td>
+<td>Bland's rule</td>
 </tr>
 <tr>
 <td>the range where the price holds</td>
