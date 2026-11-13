@@ -358,6 +358,7 @@ def test_chapter_headings_and_registered_folders_match_the_renumbering():
         (9, "09-shadows", "Shadows: eliminating a variable"),
         (10, "10-plan-or-proof", "Either a plan or a proof"),
         (11, "11-corners-by-algebra", "Corners by algebra"),
+        (12, "12-degeneracy", "Too many walls at one corner"),
     )
     assert tuple((chapter.number, chapter.folder, chapter.title)
                  for chapter in CHAPTERS[4:]) == expected
@@ -369,3 +370,4 @@ def test_chapter_headings_and_registered_folders_match_the_renumbering():
     assert "## 9 · Shadows: eliminating a variable" in TEXT
     assert "## 10 · Either a plan or a proof" in TEXT
     assert "## 11 · Corners by algebra" in TEXT
+    assert "## 12 · Too many walls at one corner" in TEXT

@@ -29,6 +29,7 @@ CHAPTERS = [
     Chapter(9, "09-shadows", "Shadows: eliminating a variable"),
     Chapter(10, "10-plan-or-proof", "Either a plan or a proof"),
     Chapter(11, "11-corners-by-algebra", "Corners by algebra"),
+    Chapter(12, "12-degeneracy", "Too many walls at one corner"),
 ]
 
 # A second copy of src/linprog's corner search, so the pages need no server.
