@@ -6,7 +6,11 @@ from illuminate.draw import (PLAN, PRICE, SURFACE, TEXT, TEXT_DIM, animate,
                              chapter_dir, figure, margin_note)
 from linprog import mill as f
 from linprog.lp import best_by_enumeration
-from scene import Stages, claim, draw_axes, line_where, ordered
+
+if __package__:
+    from .scene import Stages, claim, draw_axes, line_where, ordered
+else:
+    from scene import Stages, claim, draw_axes, line_where, ordered
 
 OUT = chapter_dir("07-one-more")
 START = Fraction(16)
@@ -24,6 +28,8 @@ RANGES = (
 )
 STAGES = Stages(*SPECS)
 TITLE = "the best corner moves until one wall is enough"
+LATHE_LABEL_T = Fraction(6)
+PRESS_LABEL_T = Fraction(16)
 SUBTITLES = (
     "the lathe starts short; the press wall stays fixed",
     "up to 20 hours, each extra lathe hour makes one more 3-ply batch",
@@ -46,6 +52,20 @@ def exact_stage(i):
 
 def lathe_lp(stock):
     return f.MILL.with_b((Fraction(stock), f.MILL.b[1]))
+
+
+def wall_label_anchors(stock):
+    stock = Fraction(stock)
+    lathe_row, press_row = f.MILL.A
+    lathe_anchor = (
+        LATHE_LABEL_T,
+        (stock - lathe_row[0] * LATHE_LABEL_T) / lathe_row[1],
+    )
+    press_anchor = (
+        PRESS_LABEL_T,
+        (f.MILL.b[1] - press_row[0] * PRESS_LABEL_T) / press_row[1],
+    )
+    return lathe_anchor, press_anchor
 
 
 def display(value):
@@ -107,16 +127,26 @@ def lathe_slide():
                 markeredgecolor=SURFACE, markeredgewidth=1.8,
                 markersize=9, zorder=8)
 
-        lathe_label_x = max(Fraction(2), min(Fraction(9), b - 36))
-        lathe_label_y = (b - lathe_label_x) / 2 - Fraction(9, 2)
-        ax.text(float(lathe_label_x), float(lathe_label_y), "lathe wall",
-                color=TEXT_DIM, fontsize=8.6, ha="left", va="top", zorder=9,
+        lathe_anchor, press_anchor = wall_label_anchors(b)
+        for label, anchor, offset, ha, va in (
+            ("lathe wall", lathe_anchor, (-8, -8), "right", "top"),
+            ("press wall", press_anchor, (8, 8), "left", "bottom"),
+        ):
+            ax.annotate(
+                label,
+                xy=tuple(float(value) for value in anchor),
+                xytext=offset,
+                textcoords="offset points",
+                color=TEXT_DIM,
+                fontsize=8.6,
+                ha=ha,
+                va=va,
                 bbox=dict(boxstyle="square,pad=0.18", facecolor=SURFACE,
-                          edgecolor=TEXT_DIM, linewidth=0.45))
-        ax.text(0.6, 21.15, "press wall", color=TEXT_DIM, fontsize=8.6,
-                ha="left", va="center", zorder=9,
-                bbox=dict(boxstyle="square,pad=0.14", facecolor=SURFACE,
-                          edgecolor="none"))
+                          edgecolor=TEXT_DIM, linewidth=0.45),
+                arrowprops=dict(arrowstyle="-", color=TEXT_DIM,
+                                linewidth=0.55, shrinkA=2, shrinkB=1),
+                zorder=9,
+            )
 
         if b == SECOND_BEND:
             ax.text(float(point[0]) + 0.9, float(point[1]) + 0.8,

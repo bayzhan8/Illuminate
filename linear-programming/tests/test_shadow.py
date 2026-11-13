@@ -9,6 +9,7 @@ from linprog import mill as f
 from linprog.lp import (LP, best_by_enumeration, dual_by_enumeration,
                         simplex, solve_square, vertices)
 from linprog.modeling import two_week_inventory
+from figures.fig07a_lathe_slide import wall_label_anchors
 from figures.fig07b_value_curves import fair_offer_corners, offer_line_table
 from test_formulation import complete_sets_lp
 
@@ -175,6 +176,18 @@ def test_value_curve_labels_anchor_to_their_own_bill_lines():
             assert line.anchor == tuple(Fraction(value) for value in anchor)
             x, y = line.anchor
             assert y == line.slope * x + line.intercept
+
+
+def test_wall_label_anchors_follow_their_walls_at_sampled_stocks():
+    for stock in (Fraction(16), Fraction(201, 10), Fraction(32),
+                  Fraction(401, 10), Fraction(44)):
+        lathe_anchor, press_anchor = wall_label_anchors(stock)
+        assert dot(f.MILL.A[0], lathe_anchor) == stock
+        assert dot(f.MILL.A[1], press_anchor) == f.MILL.b[1]
+        assert 0 <= lathe_anchor[0] <= 23
+        assert 0 <= lathe_anchor[1] <= 22
+        assert 0 <= press_anchor[0] <= 23
+        assert 0 <= press_anchor[1] <= 22
 
 
 def test_complementary_slackness_examples_and_idle_resource_prices():
