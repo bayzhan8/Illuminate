@@ -37,6 +37,7 @@ CHAPTERS = [
             "Repairing a plan from the price side: the dual simplex"),
     Chapter(17, "17-sensitivity",
             "Reading the last dictionary: sensitivity"),
+    Chapter(18, "18-bounds", "Ceilings without rows: bounded variables"),
 ]
 
 # A second copy of src/linprog's corner search, so the pages need no server.
