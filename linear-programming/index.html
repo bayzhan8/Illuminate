@@ -44,6 +44,7 @@
     <li><a href="#ch15"><span class="toc-num">15</span><span class="toc-title">Walking in circles, and the rule that stops it</span></a></li>
     <li><a href="#ch16"><span class="toc-num">16</span><span class="toc-title">Repairing a plan from the price side: the dual simplex</span></a></li>
     <li><a href="#ch17"><span class="toc-num">17</span><span class="toc-title">Reading the last dictionary: sensitivity</span></a></li>
+    <li><a href="#ch18"><span class="toc-num">18</span><span class="toc-title">Ceilings without rows: bounded variables</span></a></li>
   </ol>
 </nav>
 <main class="prose">
@@ -2486,6 +2487,67 @@ report, because the people paying for a plan want to know how firm it is.</p>
 <p><strong>The one thing to remember.</strong> The last dictionary contains B⁻¹. B⁻¹b ≥ 0 says how far the stocks can move, c_B B⁻¹A ≥ c says how far the
 values can move, and c̄ = c − yA says in one dot product whether a new product is worth making.</p>
 </blockquote>
+<h2 id="ch18"><span class="num">18</span>Ceilings without rows: bounded variables</h2>
+<p>The Trust's buyer for 5-ply takes at most 10 batches. As a row, that is f ≤ 10: one more slack, one more row, and a 3 × 3 basis
+where 2 × 2 did the job. A bound is a different kind of wall from a machine. It involves one variable, and the
+simplex method can handle it without a row.</p>
+<h3>Nonbasic at a ceiling</h3>
+<p>In chapter 14 every nonbasic variable sat at 0, its floor. Now let a nonbasic variable sit at either end of its interval
+l ≤ x ≤ u. With L the nonbasic variables at their floors and U those at their ceilings,</p>
+<p>x_B = B⁻¹b − B⁻¹A_L l_L − B⁻¹A_U u_U.</p>
+<p>This is the dictionary with the nonbasic variables set to their bounds instead of to 0. The basis is feasible when l_B ≤ x_B ≤ u_B.</p>
+<blockquote class="proof">
+<p><strong>Theorem.</strong> Such a point is a corner of {x : Ax = b, l ≤ x ≤ u}.</p>
+<p><em>Proof.</em> Its tight rows are the m equations and the n − m bounds on the nonbasic variables. The bound rows fix the nonbasic
+coordinates, and the equations then fix x_B = B⁻¹(…), because B is invertible. So the only solution of the tight rows is the point itself. Their rank is n, and by chapter 11 the point is a corner. ∎</p>
+</blockquote>
+<p>The reduced costs are unchanged: c̄_j = c_j − yA_j. What changes is which sign helps.</p>
+<ul>
+<li><strong>At a floor:</strong> raising the variable helps if c̄_j &gt; 0.</li>
+<li><strong>At a ceiling:</strong> lowering it helps if c̄_j &lt; 0.</li>
+</ul>
+<h3>Three ways a step can end</h3>
+<p>When x_k moves, its step θ is limited by three kinds of walls:</p>
+<ol>
+<li>a basic variable falling to its floor: (x_Bi − l_Bi) ÷ h_i for h_i &gt; 0;</li>
+<li>a basic variable rising to its ceiling: (u_Bi − x_Bi) ÷ (−h_i) for h_i &lt; 0;</li>
+<li>x_k itself reaching its other bound: u_k − l_k.</li>
+</ol>
+<p>Here h is B⁻¹A_k, signed so that x_B moves by −θh. The first two are chapter 14's ratio test with the ceiling added. The third is new.
+When it is the tightest, x_k just jumps to its other bound, and nothing enters or leaves. This is a <strong>bound flip</strong>: a pivot that changes no basis.</p>
+<h3>The mill with a market cap</h3>
+<p>Start at (0, 0) with the basis {s₁, s₂} and 0 ≤ f ≤ 10. 5-ply has the larger reduced cost, 5, so f moves up. The limits are:</p>
+<ul>
+<li>lathe 32 ÷ 2 = 16;</li>
+<li>press 20 ÷ 1 = 20;</li>
+<li>its own ceiling 10 − 0 = 10.</li>
+</ul>
+<p>The ceiling is tightest, so f flips to 10 and the basis stays {s₁, s₂}. The point is now (0, 10), worth 50.</p>
+<p>Write f = 10 − f̄, where f̄ ≥ 0 measures how far below its ceiling f is:</p>
+<p>s₁ = 12 − t + 2f̄
+s₂ = 10 − t + f̄
+z = 50 + 3t − 5f̄</p>
+<p>The −5 on f̄ says that lowering f costs 5 a batch, so f stays at its ceiling. t enters. The ratios are 12 for the lathe and 10 for the press, so s₂ leaves:</p>
+<p>t = 10 − s₂ + f̄
+s₁ = 2 + s₂ + f̄
+z = 80 − 3s₂ − 2f̄</p>
+<p>Every coefficient in z is ≤ 0, so this is optimal: (10, 10), worth 80, with 2 lathe hours idle. The prices are</p>
+<ul>
+<li>press hour: 3;</li>
+<li>the cap: 2 per batch. Allowing one more 5-ply batch swaps one 3-ply batch for one 5-ply batch on the press, and gains 5 − 3.</li>
+</ul>
+<p>The bill is 20·3 + 10·2 = 80. With the cap written as a row, the same walk needs a 3 × 3 basis. Here it took one ordinary pivot and one flip, and B stayed 2 × 2.</p>
+<figure class="plate"><img src="chapters/18-bounds/flip.gif" alt="The mill's region with the cap f = 10 drawn as a dashed neutral line. The plan starts at (0, 0). In the first stage it rises along the f-axis, and three bars show the limits: lathe 16, press 20, and its own ceiling 10, marked blue &quot;← flips&quot;. The plan stops at (0, 10), and the subtitle reads &quot;bound flip: no basis change, basis still s₁, s₂&quot;. In the second stage it runs along the cap to (10, 10) as the press wall goes tight. The final frame shows the dictionary z = 80 − 3s₂ − 2f̄ and, in rust, the prices &quot;press 3, cap 2, bill 80&quot;." loading="lazy"></figure>
+<p>Geometrically, the bound is a wall like any other. The method treats it as a wall it knows the position of, so it needs no row of B⁻¹ to find it.</p>
+<blockquote class="aside">
+<p><strong>Aside: why codes care.</strong> Real models are full of bounds: capacities, minimum runs, 0 ≤ x ≤ 1 for every yes-or-no decision once it is relaxed.
+Dantzig handled upper bounds implicitly in 1955, so that a model with n bounded variables does not grow by n rows. Simplex codes
+still use the device.</p>
+</blockquote>
+<blockquote class="aside">
+<p><strong>The one thing to remember.</strong> A bound is a wall that needs no row. A nonbasic variable may sit at its ceiling, a step may end with a bound flip that changes no
+basis, and the ceiling gets a price like any other wall.</p>
+</blockquote>
 <h2>Glossary</h2>
 <div class="overflow-x"><table>
 <thead>
@@ -2746,6 +2808,10 @@ values can move, and c̄ = c − yA says in one dot product whether a new produc
 <tr>
 <td>how far the data can move before the basis changes</td>
 <td>ranging (sensitivity analysis)</td>
+</tr>
+<tr>
+<td>jumping to the other bound without changing the basis</td>
+<td>bound flip</td>
 </tr>
 <tr>
 <td>the range where the price holds</td>

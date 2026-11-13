@@ -77,6 +77,29 @@ class DualSimplexResult:
 
 
 @dataclass(frozen=True)
+class BoundedStep:
+    basis: tuple[int, ...]
+    at_upper: tuple[int, ...]
+    x: tuple[Fraction, ...]
+    value: Fraction
+    entering: int
+    direction: int
+    limits: dict[str, Fraction]
+    kind: str
+
+
+@dataclass(frozen=True)
+class BoundedSimplexResult:
+    status: str
+    steps: tuple[BoundedStep, ...]
+    basis: tuple[int, ...]
+    at_upper: tuple[int, ...]
+    x: tuple[Fraction, ...]
+    value: Fraction
+    y: tuple[Fraction, ...]
+
+
+@dataclass(frozen=True)
 class TwoPhaseResult:
     status: str
     phase1: SimplexResult
@@ -181,6 +204,161 @@ def dictionary(A, b, c, basis):
         for column in range(variable_count)
     )
     return Dictionary(x_B, y, reduced_costs, rows)
+
+
+def _bounded_point(state, basis, lower, upper, at_upper, objective):
+    basis_set = set(basis)
+    point = [Fraction(0)] * len(objective)
+    for column in range(len(objective)):
+        if column not in basis_set:
+            point[column] = (
+                upper[column] if column in at_upper else lower[column]
+            )
+    for row, column in enumerate(basis):
+        value = state.x_B[row] - sum(
+            (state.rows[row][nonbasic] * point[nonbasic]
+             for nonbasic in range(len(objective))
+             if nonbasic not in basis_set),
+            Fraction(0),
+        )
+        if value < lower[column] or (
+                upper[column] is not None and value > upper[column]):
+            raise ValueError("bounded_simplex requires a feasible starting point")
+        point[column] = value
+    point = tuple(point)
+    return point, _dot(objective, point)
+
+
+def bounded_simplex(A, b, c, lower, upper, basis, at_upper=(),
+                    rule="dantzig", max_pivots=None):
+    """Maximize an equality-form LP with explicit variable bounds."""
+    matrix, rhs, objective, _, variable_count = _system(A, b, c)
+    lower = tuple(F(value) for value in lower)
+    upper = tuple(None if value is None else F(value) for value in upper)
+    if len(lower) != variable_count or len(upper) != variable_count:
+        raise ValueError("lower and upper must match the variable count")
+    if any(high is not None and low > high
+           for low, high in zip(lower, upper)):
+        raise ValueError("each lower bound must not exceed its upper bound")
+    if rule not in {"dantzig", "bland"}:
+        raise ValueError("rule must be 'dantzig' or 'bland'")
+    if max_pivots is not None and (
+            not isinstance(max_pivots, int) or max_pivots < 0):
+        raise ValueError("max_pivots must be a nonnegative integer or None")
+
+    basis = tuple(basis)
+    state = dictionary(matrix, rhs, objective, basis)
+    basis_set = set(basis)
+    at_upper = tuple(at_upper)
+    if any(not isinstance(index, int)
+           or not 0 <= index < variable_count for index in at_upper):
+        raise ValueError("at_upper must contain valid variable indices")
+    if len(set(at_upper)) != len(at_upper):
+        raise ValueError("at_upper must not contain duplicate indices")
+    if any(index in basis_set for index in at_upper):
+        raise ValueError("basic variables cannot be at_upper")
+    if any(upper[index] is None for index in at_upper):
+        raise ValueError("a variable at its upper bound needs a finite bound")
+    at_upper = tuple(sorted(at_upper))
+
+    steps = []
+    pivot_count = 0
+    while True:
+        state = dictionary(matrix, rhs, objective, basis)
+        point, value = _bounded_point(
+            state, basis, lower, upper, at_upper, objective
+        )
+        basic = set(basis)
+        eligible = [
+            column for column in range(variable_count)
+            if column not in basic
+            and upper[column] != lower[column]
+            and (
+                state.reduced_costs[column] < 0
+                if column in at_upper
+                else state.reduced_costs[column] > 0
+            )
+        ]
+        if not eligible:
+            return BoundedSimplexResult(
+                "optimal", tuple(steps), basis, at_upper, point, value,
+                state.y,
+            )
+        if rule == "bland":
+            entering = min(eligible)
+        else:
+            entering = min(
+                eligible,
+                key=lambda column: (
+                    -abs(state.reduced_costs[column]), column
+                ),
+            )
+        direction = -1 if entering in at_upper else 1
+        limits = {}
+        basic_limits = []
+        for row, column in enumerate(basis):
+            slope = direction * state.rows[row][entering]
+            if slope > 0:
+                bound = "lower"
+                theta = (point[column] - lower[column]) / slope
+            elif slope < 0 and upper[column] is not None:
+                bound = "upper"
+                theta = (upper[column] - point[column]) / -slope
+            else:
+                continue
+            limits[f"basic x_{column} {bound}"] = theta
+            basic_limits.append((theta, column, bound, row))
+
+        own_limit = None
+        if upper[entering] is not None:
+            own_limit = upper[entering] - lower[entering]
+            limits[f"entering x_{entering} own bound"] = own_limit
+        finite_limits = [limit[0] for limit in basic_limits]
+        if own_limit is not None:
+            finite_limits.append(own_limit)
+        if not finite_limits:
+            return BoundedSimplexResult(
+                "unbounded", tuple(steps), basis, at_upper, point, value,
+                state.y,
+            )
+
+        theta = min(finite_limits)
+        basic_ties = [
+            limit for limit in basic_limits if limit[0] == theta
+        ]
+        flips = own_limit == theta and not basic_ties
+        if not flips and max_pivots is not None \
+                and pivot_count >= max_pivots:
+            return BoundedSimplexResult(
+                "limit", tuple(steps), basis, at_upper, point, value,
+                state.y,
+            )
+
+        kind = "flip" if flips else "pivot"
+        steps.append(BoundedStep(
+            basis, at_upper, point, value, entering, direction, limits, kind
+        ))
+        if flips:
+            updated_at_upper = set(at_upper)
+            if entering in updated_at_upper:
+                updated_at_upper.remove(entering)
+            else:
+                updated_at_upper.add(entering)
+            at_upper = tuple(sorted(updated_at_upper))
+            continue
+
+        _, leaving, leaving_bound, leaving_row = min(
+            basic_ties, key=lambda limit: limit[1]
+        )
+        updated_basis = list(basis)
+        updated_basis[leaving_row] = entering
+        basis = tuple(updated_basis)
+        updated_at_upper = set(at_upper)
+        updated_at_upper.discard(entering)
+        if leaving_bound == "upper":
+            updated_at_upper.add(leaving)
+        at_upper = tuple(sorted(updated_at_upper))
+        pivot_count += 1
 
 
 def _choose_entering(reduced_costs, basis, rule):
