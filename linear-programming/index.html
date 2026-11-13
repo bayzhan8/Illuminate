@@ -34,6 +34,7 @@
     <li><a href="#ch5"><span class="toc-num">5</span><span class="toc-title">Yes-or-no decisions</span></a></li>
     <li><a href="#ch6"><span class="toc-num">6</span><span class="toc-title">Someone buying the hours</span></a></li>
     <li><a href="#ch7"><span class="toc-num">7</span><span class="toc-title">What one more is worth</span></a></li>
+    <li><a href="#ch8"><span class="toc-num">8</span><span class="toc-title">A wall between a point and a shape</span></a></li>
   </ol>
 </nav>
 <main class="prose">
@@ -1378,6 +1379,90 @@ cost to buy.</p>
 <blockquote class="aside">
 <p><strong>The one thing to remember.</strong> A resource's price is what one more unit adds to the best plan, valid only between the bends where the best corner changes; and a best plan and its prices fit together by two rules: idle resources are free, and whatever is made is worth exactly its resources.</p>
 </blockquote>
+<h2 id="ch8"><span class="num">8</span>A wall between a point and a shape</h2>
+<p>The Trust can always ask for more than the mill can make. Say it asks for
+11 batches of 3-ply and 16 of 5-ply. The plan needs 43 lathe hours and 27
+press hours, so it is out of reach, and saying so is easy. Proving it to
+someone who distrusts the arithmetic, with one inequality they can check, is
+the question of this chapter. The answer is a wall: a line with the order on
+one side and every possible plan on the other. Chapters 10 and 23 build the
+theory of linear programming on it.</p>
+<h3>The nearest plan</h3>
+<p>Every plan is somewhere, and the order (11, 16) is outside. Among all plans,
+take the one nearest to it. The candidates are where the region is closest:
+the two walls and the corner where they meet.</p>
+<ul>
+<li>The press wall t + f = 20: its nearest point to (11, 16) would be the foot of the drop, (7.5, 12.5), which uses 32.5 lathe hours. That is not a plan.</li>
+<li>The lathe wall t + 2f = 32: its foot is (8.8, 11.6), which uses 20.4 press hours. That is not a plan either.</li>
+</ul>
+<p>Both feet fall outside the region, so the nearest plan is where the two walls
+meet, the corner s* = (8, 12), at distance √(3² + 4²) = 5. (Step 2 below
+gives a test that confirms it without this case analysis.)</p>
+<figure class="plate"><img src="chapters/08-separation/closest.gif" alt="The mill's region and the order x = (11, 16), above and to the right of it. A probe runs round the edge of the region from (0, 16) down to (20, 0), with a dashed segment from the order to the probe and a readout of its length. The length falls to 5.00 at the corner (8, 12), where the probe pauses and the segment is drawn solid, then rises again along the press wall. The final frame adds the separating line 3t + 4f = 84.5 through the midpoint (9.5, 14) of the solid segment, at right angles to it, with the order on its far side and the whole region on the near side." loading="lazy"></figure>
+<p>Now draw the segment from the order to s*, and the line through its midpoint
+at right angles to it. The segment points along (8, 12) − (11, 16) =
+(−3, −4), so the line is 3t + 4f = constant, and the midpoint (9.5, 14) fixes
+the constant at 3 × 9.5 + 4 × 14 = 84.5. Check the two sides:</p>
+<ul>
+<li>the order: 3 × 11 + 4 × 16 = 97, above 84.5;</li>
+<li>every plan: 3t + 4f is at most 72, the value at (8, 12), because 3t + 4f = 1 × (t + 2f) + 2 × (t + f) ≤ 32 + 2 × 20 = 72.</li>
+</ul>
+<p>The second line is a multiplier certificate of the chapter 2 kind, with
+multipliers 1 and 2. The wall is a proof anyone can check: no plan has
+3t + 4f above 72, and the order has 97.</p>
+<p>The line is not parallel to either wall of the mill. Its direction (3, 4) is
+1 × (1, 2) + 2 × (1, 1), a mixture of the two walls that meet at s*. When
+the nearest plan is on an edge instead of a corner, the wall comes out
+parallel to that edge. The order (14, 10), for instance, has its nearest plan
+at (12, 8), the foot on the press wall, at distance 2√2, and the separating
+line is t + f = 22.</p>
+<h3>The theorem</h3>
+<blockquote class="proof">
+<p><strong>Theorem (separating a point from a closed convex set).</strong> Let S be a closed convex set with at least one point, and x a point not in S. Then there is a vector π and a number π0 with π·x &lt; π0 &lt; π·s for every s in S.</p>
+</blockquote>
+<p>The sign convention puts x below the line and S above it. For the mill,
+π = (−3, −4) and π0 = −84.5, which is the same line as above multiplied by −1.</p>
+<p>The proof has three steps, and each one uses something from chapters 1 and 2.</p>
+<blockquote class="aside">
+<p><strong>Step 1 (a nearest point exists).</strong> Take any s0 in S, and let R = |x − s0|. Points of S further than R from x cannot be nearest, so look only at S ∩ B, where B is the closed disc of radius R around x. That set is closed (an intersection of two closed sets), bounded and not empty, and the distance |x − s| is continuous in s. By Weierstrass (chapter 2) it has a smallest value, at some s*.</p>
+</blockquote>
+<blockquote class="aside">
+<p><strong>Step 2 (the angle at the nearest point is never acute).</strong> For every s in S, (x − s*)·(s − s*) ≤ 0.</p>
+<p><em>Proof.</em> S is convex, so for every λ between 0 and 1 the point s* + λ(s − s*) is in S, and it is no nearer x than s* is. Write d = s − s* and u = x − s*. Then</p>
+<p>|u − λd|² = |u|² − 2λ u·d + λ²|d|² ≥ |u|².</p>
+<p>Cancel |u|² and divide by λ &gt; 0: −2 u·d + λ|d|² ≥ 0. This holds for every small λ, and λ|d|² goes to 0 as λ does, so −2 u·d ≥ 0. ∎</p>
+</blockquote>
+<p>Why the limit is needed: for a fixed λ the inequality only says u·d is at
+most λ|d|²/2, a small positive number. The point near s* on the segment is
+what forces u·d itself to be at most 0. In pictures: if the angle at s*
+between the order and some plan s were less than 90°, walking a short way
+from s* towards s would bring you closer to the order, and convexity says
+that walk stays inside S.</p>
+<figure class="plate"><img src="chapters/08-separation/obtuse.gif" alt="The nearest plan s* = (8, 12), the order x = (11, 16), and a second plan s that moves round the region. The angle at s* between the arrows to x and to s is drawn and labelled, with the readout (x − s*)·(s − s*) = 3t + 4f − 72. As s moves, the angle stays between 90° and 180° and the readout stays at or below 0. It reaches 0, an angle of exactly 90°, only at s* itself. The final frame shows an acute-angle case for a point s′ outside the region, with the short dashed walk from s* towards s′ coming closer to x and leaving the region, labelled &quot;only possible outside S&quot;." loading="lazy"></figure>
+<blockquote class="aside">
+<p><strong>Step 3 (the wall).</strong> Put π = s* − x and π0 = π·m, where m = (x + s*)/2 is the midpoint. Step 2 says π·(s − s*) ≥ 0, so π·s ≥ π·s* for every s in S. Also π·s* − π·x = π·π = |π|² &gt; 0, because s* ≠ x. The midpoint sits halfway: π·m = π·x + |π|²/2 = π·s* − |π|²/2. So</p>
+<p>π·x &lt; π0 &lt; π·s* ≤ π·s. ∎</p>
+</blockquote>
+<p>The midpoint is the ε ÷ 2 of chapter 1 again. Putting the wall at s* would
+let the plan s* touch it, and putting it at x would let the order touch it.
+Halfway leaves a margin of |π|²/2 on each side, which makes both
+inequalities strict. Read with chapter 1's dot product, π·z = |π||z| cos θ
+is |π| times the length of z's shadow on π. The wall is the set of points
+whose shadow is π0 ÷ |π| long, and the order's shadow is shorter than every
+plan's.</p>
+<h3>What fails without convex or closed</h3>
+<p>Both assumptions are used, and without either the theorem is false.</p>
+<ul>
+<li><strong>Not convex.</strong> Take chapter 5's set of plans with f = 0 or f ≥ 14, and the point (12, 7), the midpoint of the allowed plans (20, 0) and (4, 14). A wall with π·(20, 0) &gt; π0 and π·(4, 14) &gt; π0 would have π·(12, 7) &gt; π0 as well, since π·(12, 7) is the average of the two. No wall separates the midpoint from the set, even though the midpoint is not in it. Step 2 is where this breaks: the walk from s* towards another plan leaves the set.</li>
+<li><strong>Not closed.</strong> Take chapter 2's mill with the press edge removed, so t + f &lt; 20, and the point (10, 10) on the missing edge. Any wall π·z = π0 with π·(10, 10) &lt; π0 fails for plans just inside the edge, which are as close to (10, 10) as you like, so π·s comes as close to π·(10, 10) as you like. No π0 sits strictly between them. Step 1 is where this breaks: there is no nearest point, only nearer and nearer ones.</li>
+</ul>
+<figure class="plate"><img src="chapters/08-separation/no_wall.png" alt="Two panels. Left: chapter 5's set f = 0 or f ≥ 14 in blue, with (20, 0) and (4, 14) joined by a dashed segment and the midpoint (12, 7) marked in amber. Three trial lines through the gap are drawn, and each one has (20, 0) or (4, 14) on the wrong side, marked with an amber cross. Caption: &quot;not convex: the midpoint cannot be cut off&quot;. Right: the mill with the press edge dashed (left out) and the point (10, 10) on it in amber. Plans (9.9, 9.9), (9.99, 9.99) and so on approach it from inside. Caption: &quot;not closed: no nearest point, no strict wall&quot;." loading="lazy"></figure>
+<blockquote class="aside">
+<p><strong>History.</strong> The geometry of convex sets, and with it the plane that touches a convex body without cutting it, was Hermann Minkowski's. He developed it for his geometry of numbers, starting in 1896, and his systematic paper on convex bodies appeared in 1911, two years after his death. He is better known for the four-dimensional geometry of special relativity. Linear programming took over his walls whole: every certificate in this guide, from Kantorovich's multipliers on, is a wall between something wanted and what is possible.</p>
+</blockquote>
+<blockquote class="aside">
+<p><strong>The one thing to remember.</strong> A point outside a closed convex set is cut off by a wall through the midpoint of its shortest path to the set. The nearest point exists because the set is closed, and the angle there is never acute because the set is convex.</p>
+</blockquote>
 <h2>Glossary</h2>
 <div class="overflow-x"><table>
 <thead>
@@ -1538,6 +1623,18 @@ cost to buy.</p>
 <tr>
 <td>what one more hour is worth</td>
 <td>shadow price, marginal value</td>
+</tr>
+<tr>
+<td>the nearest plan</td>
+<td>projection onto a closed convex set</td>
+</tr>
+<tr>
+<td>a wall between a point and a shape</td>
+<td>strictly separating hyperplane</td>
+</tr>
+<tr>
+<td>the angle at the nearest point is never acute</td>
+<td>variational inequality (obtuse-angle) characterisation of the projection</td>
 </tr>
 <tr>
 <td>the range where the price holds</td>
