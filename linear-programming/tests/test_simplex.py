@@ -50,6 +50,7 @@ from figures.fig14c_phase import (
 )
 from linprog.corners import rank
 from linprog.lp import LP, best_by_enumeration
+from linprog.sensitivity import basis_inverse
 from linprog.simplex import dictionary, pivot_step, simplex, two_phase
 
 TOPIC = Path(__file__).resolve().parents[1]
@@ -111,6 +112,69 @@ def test_three_mill_dictionaries_and_ratio_tests_are_exact():
     assert pivot_dictionary_text(simplex(MILL_A, MILL_B, MILL_C, (2, 3))
                                  .steps[-1]).splitlines()[-1] \
         == "z = 84 − 2s₁ − s₂"
+
+
+def test_mill_dictionaries_reconstruct_the_three_prose_tableaux():
+    variables = ("t", "f", "s₁", "s₂")
+    result = simplex(MILL_A, MILL_B, MILL_C, (2, 3))
+
+    def tableau(iteration):
+        state = iteration.dictionary
+        rows = tuple(
+            (
+                variables[basic],
+                state.rows[iteration.basis.index(basic)],
+                state.x_B[iteration.basis.index(basic)],
+            )
+            for basic in sorted(iteration.basis)
+        )
+        return rows + (("z", state.reduced_costs, -iteration.value),)
+
+    initial, first_pivot, final = tuple(map(tableau, result.steps))
+    assert initial == (
+        ("s₁", (Q(1), Q(2), Q(1), Q(0)), Q(32)),
+        ("s₂", (Q(1), Q(1), Q(0), Q(1)), Q(20)),
+        ("z", (Q(3), Q(5), Q(0), Q(0)), Q(0)),
+    )
+    assert first_pivot == (
+        ("f", (Q(1, 2), Q(1), Q(1, 2), Q(0)), Q(16)),
+        ("s₂", (Q(1, 2), Q(0), Q(-1, 2), Q(1)), Q(4)),
+        ("z", (Q(1, 2), Q(0), Q(-5, 2), Q(0)), Q(-80)),
+    )
+    assert final == (
+        ("t", (Q(1), Q(0), Q(-1), Q(2)), Q(8)),
+        ("f", (Q(0), Q(1), Q(1), Q(-1)), Q(12)),
+        ("z", (Q(0), Q(0), Q(-2), Q(-1)), Q(-84)),
+    )
+
+    first_rows = initial[:2]
+    assert tuple(
+        (row[2], row[1][1]) for row in first_rows
+    ) == ((Q(32), Q(2)), (Q(20), Q(1)))
+    assert tuple(row[2] / row[1][1] for row in first_rows) \
+        == (Q(16), Q(20))
+    assert tuple(row[1][1] for row in initial[1:]) == (Q(1), Q(5))
+
+    second_rows = first_pivot[:2]
+    assert tuple(
+        (row[2], row[1][0]) for row in second_rows
+    ) == ((Q(16), Q(1, 2)), (Q(4), Q(1, 2)))
+    assert tuple(row[2] / row[1][0] for row in second_rows) \
+        == (Q(32), Q(8))
+    assert tuple(row[1][0] for row in (first_pivot[0], first_pivot[2])) \
+        == (Q(1, 2), Q(1, 2))
+
+    slack_columns = tuple(
+        tuple(row[1][column] for column in (2, 3))
+        for row in final[:2]
+    )
+    assert slack_columns == ((Q(-1), Q(2)), (Q(1), Q(-1)))
+    assert slack_columns == basis_inverse(
+        MILL_A, MILL_B, MILL_C, (0, 1)
+    )
+    assert tuple(-value for value in final[2][1][2:]) == (
+        Q(2), Q(1)
+    )
 
 
 def test_figure_dictionary_format_and_phase_ratio_winners():
@@ -315,6 +379,14 @@ def test_chapter_numbers_figure_assets_and_all_frame_anchors():
     )
     prose = (TOPIC / "lesson.md").read_text()
     for phrase in (
+        "### The same pivots as a tableau",
+        "Most textbooks and every exam write the dictionaries as a **tableau**.",
+        "32/2 < 20/1",
+        "s₂ row loses 1 copy and the z row loses 5",
+        "Divide by 1/2, then clear t's column",
+        "4 ÷ 1/2 = 8 < 16 ÷ 1/2 = 32",
+        "the z row loses 1/2",
+        "B⁻¹:** the slack columns s₁, s₂ of the final tableau",
         "s₁ = 32 − t − 2f",
         "f = 16 − t/2 − s₁/2",
         "z = 80 + t/2 − (5/2)s₁",
