@@ -27,6 +27,7 @@ CHAPTERS = [
     Chapter(7, "07-one-more", "What one more is worth"),
     Chapter(8, "08-separation", "A wall between a point and a shape"),
     Chapter(9, "09-shadows", "Shadows: eliminating a variable"),
+    Chapter(10, "10-plan-or-proof", "Either a plan or a proof"),
 ]
 
 # A second copy of src/linprog's corner search, so the pages need no server.

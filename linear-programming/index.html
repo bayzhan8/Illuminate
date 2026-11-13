@@ -36,6 +36,7 @@
     <li><a href="#ch7"><span class="toc-num">7</span><span class="toc-title">What one more is worth</span></a></li>
     <li><a href="#ch8"><span class="toc-num">8</span><span class="toc-title">A wall between a point and a shape</span></a></li>
     <li><a href="#ch9"><span class="toc-num">9</span><span class="toc-title">Shadows: eliminating a variable</span></a></li>
+    <li><a href="#ch10"><span class="toc-num">10</span><span class="toc-title">Either a plan or a proof</span></a></li>
   </ol>
 </nav>
 <main class="prose">
@@ -1592,6 +1593,154 @@ alternative.</p>
 <blockquote class="aside">
 <p><strong>The one thing to remember.</strong> To eliminate a variable, pair every lower bound with every upper bound. The new rows are nonnegative combinations of the old ones, so when every variable is gone, what is left is a certificate.</p>
 </blockquote>
+<h2 id="ch10"><span class="num">10</span>Either a plan or a proof</h2>
+<p>Every infeasible request so far has come with a reason anyone can check: the
+lathe is 6 hours short, or no plan's value tops 84. This chapter proves that
+this is not luck. For any system of linear inequalities, either it has a
+solution or there is a short certificate that it has none. Never both, and
+never neither.</p>
+<h3>Two impossible orders</h3>
+<p><strong>Too many batches.</strong> The Trust asks for at least 10 batches of 3-ply and 14 of
+5-ply. Add the rows with the multipliers shown:</p>
+<div class="overflow-x"><table>
+<thead>
+<tr>
+<th>row</th>
+<th>multiplier</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>t + 2f ≤ 32</td>
+<td>1</td>
+</tr>
+<tr>
+<td>−t ≤ −10</td>
+<td>1</td>
+</tr>
+<tr>
+<td>−f ≤ −14</td>
+<td>2</td>
+</tr>
+<tr>
+<td><strong>sum: 0 ≤ −6</strong></td>
+<td></td>
+</tr>
+</tbody>
+</table></div>
+<p>Every variable cancels and what is left is false. If a plan met all three rows,
+it would meet any nonnegative combination of them, and this one says 0 ≤ −6.
+In words: the order needs 38 lathe hours and the mill has 32. The press gives
+a second certificate, with multipliers 1, 1, 1 on the press row and the two
+order rows: 0 ≤ −4, the order needs 24 press hours and there are 20.
+Certificates are not unique.</p>
+<p><strong>Too much value.</strong> The Trust asks for a plan worth at least 85,000 roubles:</p>
+<div class="overflow-x"><table>
+<thead>
+<tr>
+<th>row</th>
+<th>multiplier</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>t + 2f ≤ 32</td>
+<td>2</td>
+</tr>
+<tr>
+<td>t + f ≤ 20</td>
+<td>1</td>
+</tr>
+<tr>
+<td>−3t − 5f ≤ −85</td>
+<td>1</td>
+</tr>
+<tr>
+<td><strong>sum: 0 ≤ −1</strong></td>
+<td></td>
+</tr>
+</tbody>
+</table></div>
+<p>The multipliers are the prices 2 and 1 of chapter 6, with weight 1 on the
+value row. The proof that 85 is impossible is the proof that 84 is best.</p>
+<h3>Farkas's lemma</h3>
+<blockquote class="proof">
+<p><strong>Theorem (Farkas, inequality form).</strong> For a matrix A and vector b, exactly one of these holds:</p>
+<p><strong>I.</strong> some x has Ax ≤ b;</p>
+<p><strong>II.</strong> some π ≥ 0 has πA = 0 and π·b &lt; 0.</p>
+</blockquote>
+<p>System II is the table above: π lists the multipliers, πA = 0 says every
+variable cancels, and π·b &lt; 0 says the right side ends negative.</p>
+<blockquote class="aside">
+<p><em>Proof that not both.</em> If Ax ≤ b and π ≥ 0, multiplying row i by π_i ≥ 0 keeps its direction, and adding gives πAx ≤ π·b. With πA = 0 this reads 0 ≤ π·b, so π·b &lt; 0 is impossible.</p>
+</blockquote>
+<p>That half is weak duality again, the same multiply-and-add move as chapters 2 and 6.
+The other half, that a certificate always exists, is the real content, and
+chapter 9 already proved it.</p>
+<blockquote class="aside">
+<p><em>Proof that at least one.</em> Eliminate every variable by Fourier–Motzkin. Each row of the final system is a nonnegative combination πA x ≤ π·b of the original rows (chapter 9) with every coefficient zero, so it reads 0 ≤ π·b. By the elimination theorem, applied once per variable, the final system holds if and only if Ax ≤ b has a solution. So if I fails, some final row is false: π·b &lt; 0, with π ≥ 0 and πA = 0. That is II. ∎</p>
+</blockquote>
+<p>The proof says more than the statement: running elimination either leaves only
+true rows, and then undoing it step by step builds a solution, or produces a
+false row whose multipliers are the certificate.</p>
+<h3>The same lemma as a picture</h3>
+<p>The mill's columns say what one batch uses: 3-ply uses (1, 1), meaning 1 lathe hour and
+1 press hour, and 5-ply uses (2, 1). A plan x ≥ 0 uses Ax = t(1, 1) + f(2, 1).
+The set of all usage vectors that plans can produce is the <strong>cone</strong> spanned by the two columns:</p>
+<p>C = { t(1, 1) + f(2, 1) : t, f ≥ 0 }.</p>
+<p>Can the mill use exactly 32 lathe hours and 20 press hours? Yes,
+8(1, 1) + 12(2, 1) = (32, 20). Exactly 32 and 10? Solving gives t = −12,
+f = 22, which is not a plan. The usage (32, 10) is outside the cone, and a wall
+says why. Take y = (−1, 2):</p>
+<ul>
+<li>y·(1, 1) = 1 ≥ 0 and y·(2, 1) = 0 ≥ 0, so y·(Ax) ≥ 0 for every plan;</li>
+<li>y·(32, 10) = −12 &lt; 0.</li>
+</ul>
+<p>In words: every batch uses at least half as many press hours as lathe hours,
+2 × press − lathe ≥ 0, and (32, 10) has far too few press hours.</p>
+<figure class="plate"><img src="chapters/10-plan-or-proof/cone.gif" alt="The (lathe hours, press hours) plane with the two column arrows (1, 1) and (2, 1) and the cone between them shaded blue. A target vector b sweeps round an arc. While b is inside the cone, a parallelogram shows it as t(1, 1) + f(2, 1), with t and f in a readout, both nonnegative. When b leaves the cone past the (2, 1) edge, the parallelogram turns amber because t goes negative, and a rust line through the origin appears with its normal y. The readout shows y·(1, 1) ≥ 0, y·(2, 1) ≥ 0 and y·b &lt; 0. The arc pauses at b = (32, 20), inside, with t = 8 and f = 12, and at b = (32, 10), outside, with y = (−1, 2) and y·b = −12." loading="lazy"></figure>
+<blockquote class="proof">
+<p><strong>Theorem (Farkas, cone form).</strong> Exactly one of these holds:</p>
+<p><strong>I.</strong> some x ≥ 0 has Ax = b (b is in the cone of the columns);</p>
+<p><strong>II.</strong> some y has yA ≥ 0 and y·b &lt; 0 (a wall through the origin with every column on one side and b strictly on the other).</p>
+</blockquote>
+<blockquote class="aside">
+<p><em>Proof.</em> Not both: if Ax = b with x ≥ 0 and yA ≥ 0, then y·b = (yA)·x ≥ 0.</p>
+<p>At least one, by chapter 8. The cone C = { Ax : x ≥ 0 } is the image of the polyhedron { x ≥ 0 } under A, so by chapter 9 it is a polyhedron, and therefore closed and convex. If b is not in C, separation gives y and y0 with y·b &lt; y0 &lt; y·s for every s in C. The origin is in C, so y0 &lt; 0, and y·b &lt; 0. If some s in C had y·s &lt; 0, then λs would also be in C for every λ &gt; 0, and y·(λs) would drop below y0 for large λ, which is impossible. So y·s ≥ 0 on all of C, in particular on every column: yA ≥ 0. ∎</p>
+</blockquote>
+<p>Closedness is where chapter 9 is needed. Separation needs a closed set
+(chapter 8), and a cone spanned by finitely many vectors is closed because it is a
+shadow of a polyhedron. For a cone spanned by infinitely many vectors this can fail.</p>
+<p>The two forms are one theorem. Write Ax = b, x ≥ 0 as Ax ≤ b, −Ax ≤ −b,
+−x ≤ 0. The inequality form gives multipliers u, w, s ≥ 0 with
+(u − w)A − s = 0 and (u − w)·b &lt; 0, and y = u − w is the cone form's y.</p>
+<h3>Strict inequalities: Gordan's form</h3>
+<p>Is there a change in the plan, d = (Δt, Δf), that saves lathe hours, saves
+press hours and raises value, all strictly? The three conditions are a·d &lt; 0
+for the rows</p>
+<p>(1, 2),  (1, 1),  (−3, −5),</p>
+<p>where the last row is the value with its sign flipped.</p>
+<blockquote class="proof">
+<p><strong>Theorem (Gordan).</strong> Exactly one of these holds:</p>
+<p><strong>I.</strong> some d has Ad &lt; 0 in every row;</p>
+<p><strong>II.</strong> some π ≥ 0, π ≠ 0, has πA = 0.</p>
+</blockquote>
+<blockquote class="aside">
+<p><em>Proof.</em> Scaling: if Ad &lt; 0, then a large multiple of d has Ad ≤ −1 in every row, and conversely Ad ≤ −1 implies Ad &lt; 0. So I is &quot;Ad ≤ −1 has a solution&quot;. By Farkas it fails exactly when some π ≥ 0 has πA = 0 and π·(−1, …, −1) &lt; 0, that is, the entries of π sum to more than 0, that is, π ≠ 0. ∎</p>
+</blockquote>
+<p>For the mill, π = (2, 1, 1): 2(1, 2) + 1(1, 1) + 1(−3, −5) = (0, 0). No change
+saves both resources and earns more, and the certificate is the price vector once more.
+In pictures, I says every row fits in one open half-plane, and II says the rows,
+weighted, add up head to tail to the origin.</p>
+<figure class="plate"><img src="chapters/10-plan-or-proof/gordan.png" alt="Two panels. Left: the three row vectors (1, 2), (1, 1) and (−3, −5) from the origin, then drawn head to tail with weights 2, 1, 1, closing a triangle back at the origin; caption &quot;weights 2, 1, 1 add to zero: no strict improvement&quot;. Right: only the two resource rows (1, 2) and (1, 1), with an open half-plane, shaded blue, containing both and the direction d = (−1, −1) whose dot product with each is negative; caption &quot;without the value row, d = (−1, −1) saves both&quot;." loading="lazy"></figure>
+<p>The left panel is chapter 2's arrow picture, c = 2(1, 2) + 1(1, 1), moved to one
+side of the equation.</p>
+<blockquote class="aside">
+<p><strong>History.</strong> Gyula Farkas was a physicist at Kolozsvár (now Cluj) working on Fourier's inequality principle of mechanics, the same problem that led Fourier to elimination. He published the lemma in several attempts from 1894 on, and his clean proof appeared in 1902. Paul Gordan's form is older, from 1873, written in the middle of his work on invariant theory. In 1947 von Neumann recognised Farkas's lemma at once in Dantzig's linear programs (chapter 6), and the duality theorem of chapter 23 is a corollary of it.</p>
+</blockquote>
+<blockquote class="aside">
+<p><strong>The one thing to remember.</strong> Either the system has a solution, or a nonnegative combination of its rows reads 0 ≤ negative. Elimination finds whichever one exists; geometrically, b is either in the cone or cut off from it by a wall through the origin.</p>
+</blockquote>
 <h2>Glossary</h2>
 <div class="overflow-x"><table>
 <thead>
@@ -1772,6 +1921,18 @@ alternative.</p>
 <tr>
 <td>pair every lower bound with every upper bound</td>
 <td>Fourier–Motzkin elimination</td>
+</tr>
+<tr>
+<td>either a plan or a proof</td>
+<td>theorem of the alternative (Farkas's lemma)</td>
+</tr>
+<tr>
+<td>the cone of the columns</td>
+<td>finitely generated (polyhedral) cone</td>
+</tr>
+<tr>
+<td>no strict improvement</td>
+<td>Gordan's theorem</td>
 </tr>
 <tr>
 <td>the range where the price holds</td>
