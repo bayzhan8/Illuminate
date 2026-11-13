@@ -42,6 +42,7 @@
     <li><a href="#ch13"><span class="toc-num">13</span><span class="toc-title">Corners and escape routes</span></a></li>
     <li><a href="#ch14"><span class="toc-num">14</span><span class="toc-title">Walking the edges: the simplex method</span></a></li>
     <li><a href="#ch15"><span class="toc-num">15</span><span class="toc-title">Walking in circles, and the rule that stops it</span></a></li>
+    <li><a href="#ch16"><span class="toc-num">16</span><span class="toc-title">Repairing a plan from the price side: the dual simplex</span></a></li>
   </ol>
 </nav>
 <main class="prose">
@@ -2334,6 +2335,74 @@ Bland's 1977 rule came from combinatorics, through matroids, not from computatio
 <p><strong>The one thing to remember.</strong> Degeneracy lets the method change its explanation of a point without moving. Bland's
 lowest-index rule rules out returning to an old explanation. Once the method always stops, its last dictionary proves strong duality.</p>
 </blockquote>
+<h2 id="ch16"><span class="num">16</span>Repairing a plan from the price side: the dual simplex</h2>
+<p>The mill has found (8, 12), worth 84, and the buyer has priced it at 2 and 1. Then the glue store is cut from 52 to 50
+tonnes: 2t + 3f ≤ 50. The plan uses 2·8 + 3·12 = 52, so it is broken. The prices are not: they are still a fair offer for
+the products, so they still bound every plan's value. Chapter 14's method needs a feasible plan to start from.
+This chapter's method starts from fair prices instead and repairs the plan.</p>
+<h3>The broken dictionary</h3>
+<p>Add the glue slack s₃ = 50 − 2t − 3f and write it in the final dictionary's nonbasic variables. Using t = 8 + s₁ − 2s₂ and
+f = 12 − s₁ + s₂:</p>
+<p>t = 8 + s₁ − 2s₂
+f = 12 − s₁ + s₂
+s₃ = −2 + s₁ + s₂
+z = 84 − 2s₁ − s₂</p>
+<p>The z-row is still fine: every coefficient is ≤ 0. The basis is <strong>dual feasible</strong>: y is a fair offer, so 84 still bounds every
+plan. The basis is not <strong>primal feasible</strong>, because s₃ = −2 means 2 tonnes of glue over.</p>
+<h3>One dual pivot, every number explained</h3>
+<p><strong>Who leaves.</strong> A negative basic variable leaves; here s₃ is the only one.</p>
+<p><strong>Who enters.</strong> Glue must come down by 2. Raising s₁ (idle lathe hours) or s₂ (idle press hours) frees glue at 1 tonne per hour,
+read from the s₃ row. Each hour of idling costs its price from the z-row, 2 for the lathe and 1 for the press. The cost per tonne of glue freed is</p>
+<p>lathe 2/1 = 2,  press 1/1 = 1.</p>
+<p>This is the <strong>dual ratio test</strong>: |z-row coefficient| ÷ (repair per unit), over the variables that help, meaning a positive coefficient in the
+broken row. The press is cheapest, so s₂ enters. Taking the minimum is what keeps every z-row coefficient ≤ 0, so the prices stay fair
+after the pivot. A larger ratio would push some other coefficient positive.</p>
+<p><strong>Rewriting.</strong> s₂ = 2 + s₃ − s₁, and substituting:</p>
+<p>t = 4 + 3s₁ − 2s₃
+f = 14 − 2s₁ + s₃
+s₂ = 2 − s₁ + s₃
+z = 82 − s₁ − s₃</p>
+<p>Every basic variable is ≥ 0 and every z-row coefficient is ≤ 0, so this is optimal: (4, 14), worth 82, exactly what chapter 12's glue animation showed
+at g = 50. The new prices are lathe 1, press 0 and glue 1. The bill is 32·1 + 50·1 = 82, and the offer is fair:
+1 + 2·1 = 3 for 3-ply and 2 + 3·1 = 5 for 5-ply.</p>
+<p>Geometrically, the plan moved from (8, 12) up the lathe wall to (4, 14), idling 2 press hours. In chapter 14 the plan was always feasible and
+the prices became fair only at the end. Here the prices are fair at every step, and the plan becomes feasible at the end.</p>
+<figure class="plate"><img src="chapters/16-dual-simplex/repair.gif" alt="Left: the mill's region, with the glue wall 2t + 3f = 50 cutting off the corner (8, 12), which is marked amber &quot;52 tonnes of glue, 2 over&quot;. Right: the dual ratio test drawn as two bars, &quot;idle lathe: 2 per tonne&quot; and &quot;idle press: 1 per tonne ← enters&quot;. The point slides from (8, 12) along the lathe wall to (4, 14), with a readout showing glue 52 → 50 and value 84 → 82. The final frame shows the prices (1, 0, 1) in rust and the bill 32 + 50 = 82." loading="lazy"></figure>
+<h3>The method in general</h3>
+<p>The dictionary is x_B = b̄ − Σ ā_j x_j, read row by row, with z = v + Σ c̄_j x_j and c̄ ≤ 0 throughout.</p>
+<ol>
+<li>If b̄ ≥ 0, stop: the basis is optimal (chapter 14's theorem).</li>
+<li>Otherwise pick a row r with b̄_r &lt; 0. Its basic variable leaves.</li>
+<li>Among the nonbasic j that raise x_r, that is ā_rj &lt; 0 in this sign convention (in the mill's s₃ row the coefficients appear as +1), choose the one with the smallest |c̄_j| / |ā_rj|.</li>
+<li>If no j raises x_r, stop: no plan exists.</li>
+</ol>
+<blockquote class="proof">
+<p><strong>Theorem (infeasibility).</strong> If row r has b̄_r &lt; 0 and no nonbasic variable raises x_r, the LP has no plan.</p>
+<p><em>Proof.</em> Every plan satisfies the dictionary's equations. The row reads x_r = b̄_r − Σ ā_rj x_j with b̄_r &lt; 0 and every −ā_rj ≤ 0. For x ≥ 0 the right side is &lt; 0, but x_r ≥ 0. ∎</p>
+</blockquote>
+<p>That row is a Farkas certificate (chapter 10). It is a combination of the original rows, with weights from B⁻¹, that no
+nonnegative plan can satisfy.</p>
+<blockquote class="proof">
+<p><strong>Theorem (the entering variable cannot leave next).</strong> After a dual pivot, the variable that entered is strictly positive. So the next pivot cannot choose it to leave.</p>
+<p><em>Proof.</em> Its new value is b̄_r / ā_rj. Both are negative: b̄_r &lt; 0 by the choice of row, ā_rj &lt; 0 by the choice of column. Only negative variables leave. ∎</p>
+</blockquote>
+<p>At the glue pivot, s₂ entered at 2 &gt; 0.</p>
+<p><strong>Why it is the simplex method on the dual.</strong> Each dual pivot is a primal pivot of the buyer's LP. The z-row coefficients are the buyer's
+slacks, and they stay feasible. The negative b̄_r is a buyer's reduced cost that still improves the bill, and the dual ratio test is the buyer's ordinary ratio test. Each pivot changes the
+value by c̄_j·(b̄_r/ā_rj) ≤ 0. Here it was −1 · 2 = −2, from 84 to 82. The bill falls, or stays put when c̄_j = 0, the dual form of
+degeneracy. The cure is the mirror of chapter 12's: perturb the costs c, not b, so that no c̄_j is 0. Then each pivot lowers the bill strictly, and no basis repeats.</p>
+<p><strong>When to use which.</strong> Use the primal method when the plan is feasible and the prices are not. Use the dual method when the prices are fair and the plan is not. The second case is what
+happens after adding a row, as here, or after cutting a stock. Chapter 17 uses it for that reason. The old basis stays dual feasible, and a
+few dual pivots usually finish the job. Re-solving from scratch would not be needed.</p>
+<blockquote class="aside">
+<p><strong>Aside: the method found sideways.</strong> Lemke published the dual simplex method in 1954, working from the dual problem
+but stepping on the primal tableau. It later became the standard way to re-solve, notably inside
+branch-and-bound codes, where every branch adds one row to an LP that is already optimal. That situation is the glue cut, over and over.</p>
+</blockquote>
+<blockquote class="aside">
+<p><strong>The one thing to remember.</strong> The dual simplex keeps the prices fair and repairs the plan. The leaving row is what is broken, and the dual ratio test picks
+the cheapest repair per unit. A broken row that nothing can repair is a proof that no plan exists.</p>
+</blockquote>
 <h2>Glossary</h2>
 <div class="overflow-x"><table>
 <thead>
@@ -2582,6 +2651,14 @@ lowest-index rule rules out returning to an old explanation. Once the method alw
 <tr>
 <td>lowest index enters and leaves</td>
 <td>Bland's rule</td>
+</tr>
+<tr>
+<td>fair prices, broken plan</td>
+<td>dual feasible, primal infeasible basis</td>
+</tr>
+<tr>
+<td>cheapest repair per unit</td>
+<td>dual ratio test</td>
 </tr>
 <tr>
 <td>the range where the price holds</td>

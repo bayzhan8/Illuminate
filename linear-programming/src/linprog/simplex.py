@@ -26,6 +26,17 @@ class PivotResult:
 
 
 @dataclass(frozen=True)
+class DualPivotResult:
+    status: str
+    entering: int | None = None
+    ratios: tuple[Fraction | None, ...] = ()
+    leaving: int | None = None
+    leaving_row: int | None = None
+    ratio: Fraction | None = None
+    certificate: tuple[Fraction, ...] = ()
+
+
+@dataclass(frozen=True)
 class SimplexIteration:
     basis: tuple[int, ...]
     dictionary: Dictionary
@@ -44,6 +55,25 @@ class SimplexResult:
     value: Fraction
     cycle: tuple[SimplexIteration, ...] = ()
     cycle_start: int | None = None
+
+
+@dataclass(frozen=True)
+class DualSimplexIteration:
+    basis: tuple[int, ...]
+    dictionary: Dictionary
+    x: tuple[Fraction, ...]
+    value: Fraction
+    pivot: DualPivotResult
+
+
+@dataclass(frozen=True)
+class DualSimplexResult:
+    steps: tuple[DualSimplexIteration, ...]
+    status: str
+    certificate: tuple[Fraction, ...]
+    basis: tuple[int, ...]
+    x: tuple[Fraction, ...]
+    value: Fraction
 
 
 @dataclass(frozen=True)
@@ -257,6 +287,93 @@ def simplex(A, b, c, basis, rule="dantzig", max_pivots=None):
         )
 
 
+def dual_pivot_step(A, b, c, basis, rule="dantzig"):
+    matrix, rhs, objective, row_count, variable_count = _system(A, b, c)
+    basis = tuple(basis)
+    if rule not in {"dantzig", "bland"}:
+        raise ValueError("rule must be 'dantzig' or 'bland'")
+    state = dictionary(matrix, rhs, objective, basis)
+    if any(value > 0 for value in state.reduced_costs):
+        raise ValueError("dual_pivot_step requires a dual-feasible basis")
+
+    negative_rows = [
+        row for row, value in enumerate(state.x_B) if value < 0
+    ]
+    if not negative_rows:
+        return DualPivotResult("optimal")
+    if rule == "bland":
+        leaving_row = min(negative_rows, key=lambda row: basis[row])
+    else:
+        leaving_row = min(
+            negative_rows,
+            key=lambda row: (state.x_B[row], basis[row]),
+        )
+    leaving = basis[leaving_row]
+    eligible = [
+        column for column in range(variable_count)
+        if column not in basis and state.rows[leaving_row][column] < 0
+    ]
+    ratios = tuple(
+        abs(state.reduced_costs[column])
+        / abs(state.rows[leaving_row][column])
+        if column in eligible else None
+        for column in range(variable_count)
+    )
+    if not eligible:
+        basis_matrix = tuple(
+            tuple(matrix[row][column] for column in basis)
+            for row in range(row_count)
+        )
+        inverse = _inverse(basis_matrix)
+        certificate = tuple(inverse[leaving_row])
+        return DualPivotResult(
+            "infeasible", ratios=ratios, leaving=leaving,
+            leaving_row=leaving_row, certificate=certificate,
+        )
+
+    entering = min(eligible, key=lambda column: (ratios[column], column))
+    return DualPivotResult(
+        "pivot", entering, ratios, leaving, leaving_row, ratios[entering]
+    )
+
+
+def dual_simplex(A, b, c, basis, rule="dantzig", max_pivots=None):
+    matrix, rhs, objective, _, variable_count = _system(A, b, c)
+    basis = tuple(basis)
+    if max_pivots is not None and (
+            not isinstance(max_pivots, int) or max_pivots < 0):
+        raise ValueError("max_pivots must be a nonnegative integer or None")
+
+    steps = []
+    pivot_count = 0
+    while True:
+        state = dictionary(matrix, rhs, objective, basis)
+        if any(value > 0 for value in state.reduced_costs):
+            raise ValueError("dual_simplex requires a dual-feasible basis")
+        point = _full_point(state.x_B, basis, variable_count)
+        value = _dot(objective, point)
+        pivot = dual_pivot_step(matrix, rhs, objective, basis, rule)
+        steps.append(DualSimplexIteration(basis, state, point, value, pivot))
+        if pivot.status == "optimal":
+            return DualSimplexResult(
+                tuple(steps), "optimal", state.y, basis, point, value
+            )
+        if pivot.status == "infeasible":
+            return DualSimplexResult(
+                tuple(steps), "infeasible", pivot.certificate, basis, point,
+                value,
+            )
+        if max_pivots is not None and pivot_count >= max_pivots:
+            return DualSimplexResult(
+                tuple(steps), "limit", (), basis, point, value
+            )
+        pivot_count += 1
+        basis = tuple(
+            pivot.entering if basic == pivot.leaving else basic
+            for basic in basis
+        )
+
+
 def two_phase(A, b, c, rule="dantzig", max_pivots=None):
     matrix, rhs, objective, row_count, variable_count = _system(
         A, b, c, require_independent=False
@@ -359,3 +476,20 @@ def two_phase(A, b, c, rule="dantzig", max_pivots=None):
         phase2.status, phase1, phase2, certificate, phase2.basis,
         phase2.x, phase2.value, artificial_indices, artificial_rows,
     )
+
+
+def add_row(A, b, c, basis, row, rhs):
+    """Append a <= row and its slack to a standard-form system."""
+    matrix, right_hand_side, objective, _, variable_count = _system(A, b, c)
+    basis = tuple(basis)
+    dictionary(matrix, right_hand_side, objective, basis)
+    row = tuple(F(value) for value in row)
+    if len(row) != variable_count:
+        raise ValueError("the added row must match the variable count")
+    extended_A = tuple(
+        tuple(coefficients) + (Fraction(0),) for coefficients in matrix
+    ) + (row + (Fraction(1),),)
+    extended_b = right_hand_side + (F(rhs),)
+    extended_c = objective + (Fraction(0),)
+    slack = variable_count
+    return extended_A, extended_b, extended_c, basis + (slack,)
